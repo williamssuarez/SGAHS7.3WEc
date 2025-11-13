@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Empleado index{% endblock %}
+
+{% block body %}
+    <h1>Empleado index</h1>
+
+    <table id="dtHere" class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Telefono</th>
+                <th>Direccion</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for empleado in empleados %}
+            <tr>
+                <td>{{ empleado.id }}</td>
+                <td>{{ empleado.nombre }}</td>
+                <td>{{ empleado.apellido }}</td>
+                <td>{{ empleado.telefono }}</td>
+                <td>{{ empleado.direccion }}</td>
+                <td>
+                    <a href="{{ path('app_empleado_show', {'id': empleado.id}) }}">show</a>
+                    <a href="{{ path('app_empleado_edit', {'id': empleado.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-primary" href="{{ path('app_empleado_new') }}">Create new</a>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    $(document).ready(function () {
+        $('#dtHere').DataTable();
+    });
+{% endblock %}

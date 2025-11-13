@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Empleado{% endblock %}
+
+{% block body %}
+    <h1>Empleado</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ empleado.id }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ empleado.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Apellido</th>
+                <td>{{ empleado.apellido }}</td>
+            </tr>
+            <tr>
+                <th>Telefono</th>
+                <td>{{ empleado.telefono }}</td>
+            </tr>
+            <tr>
+                <th>Direccion</th>
+                <td>{{ empleado.direccion }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_empleado_index') }}">back to list</a>
+
+    <a href="{{ path('app_empleado_edit', {'id': empleado.id}) }}">edit</a>
+
+    {{ include('empleado/_delete_form.html.twig') }}
+{% endblock %}
