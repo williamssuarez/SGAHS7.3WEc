@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+use App\Entity\Ciudad;
 use App\Entity\Empleado;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,6 +18,14 @@ class EmpleadoType extends AbstractType
             ->add('apellido')
             ->add('telefono')
             ->add('direccion')
+            ->add('ciudad', EntityType::class, [
+                'class' => Ciudad::class,
+                'choice_label' => 'nombre',
+                //'multiple' => true,
+                'attr' => [
+                    'class' => 'srchSelect'
+                ]
+            ])
         ;
     }
 

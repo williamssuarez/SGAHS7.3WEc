@@ -25,6 +25,9 @@ class Empleado
     #[ORM\Column(length: 255)]
     private ?string $direccion = null;
 
+    #[ORM\ManyToOne(inversedBy: 'empleados')]
+    private ?Ciudad $ciudad = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -74,6 +77,18 @@ class Empleado
     public function setDireccion(string $direccion): static
     {
         $this->direccion = $direccion;
+
+        return $this;
+    }
+
+    public function getCiudad(): ?Ciudad
+    {
+        return $this->ciudad;
+    }
+
+    public function setCiudad(?Ciudad $ciudad): static
+    {
+        $this->ciudad = $ciudad;
 
         return $this;
     }

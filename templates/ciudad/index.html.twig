@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ciudad index{% endblock %}
+
+{% block body %}
+    <h1>Ciudad index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Poblacion</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ciudad in ciudads %}
+            <tr>
+                <td>{{ ciudad.id }}</td>
+                <td>{{ ciudad.nombre }}</td>
+                <td>{{ ciudad.poblacion }}</td>
+                <td>
+                    <a href="{{ path('app_ciudad_show', {'id': ciudad.id}) }}">show</a>
+                    <a href="{{ path('app_ciudad_edit', {'id': ciudad.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_ciudad_new') }}">Create new</a>
+{% endblock %}

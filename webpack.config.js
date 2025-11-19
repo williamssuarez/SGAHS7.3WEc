@@ -57,7 +57,7 @@ Encore
     })
 
     // enables Sass/SCSS support
-    //.enableSassLoader()
+    .enableSassLoader()
 
     // uncomment if you use TypeScript
     //.enableTypeScriptLoader()
@@ -71,6 +71,11 @@ Encore
 
     // uncomment if you're having problems with a jQuery plugin
     .autoProvidejQuery()
+    .copyFiles({
+    // Copy the images used by AdminLTE CSS into public/build/images
+    from: './node_modules/admin-lte/dist/img',
+    to: 'images/[path][name].[ext]',
+})
 ;
 
 module.exports = Encore.getWebpackConfig();

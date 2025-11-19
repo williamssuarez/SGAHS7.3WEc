@@ -5,13 +5,14 @@
 {% block body %}
     <h1>Empleado index</h1>
 
-    <table id="dtHere" class="table">
+    <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Nombre</th>
                 <th>Apellido</th>
                 <th>Telefono</th>
+                <th>Ciudad</th>
                 <th>Direccion</th>
                 <th>actions</th>
             </tr>
@@ -23,6 +24,7 @@
                 <td>{{ empleado.nombre }}</td>
                 <td>{{ empleado.apellido }}</td>
                 <td>{{ empleado.telefono }}</td>
+                <td>{{ empleado.ciudad }}</td>
                 <td>{{ empleado.direccion }}</td>
                 <td>
                     <a href="{{ path('app_empleado_show', {'id': empleado.id}) }}">show</a>
@@ -37,11 +39,8 @@
         </tbody>
     </table>
 
-    <a class="btn btn-primary" href="{{ path('app_empleado_new') }}">Create new</a>
-{% endblock %}
-{% block javascripts %}
-    {{ parent() }}
-    $(document).ready(function () {
-        $('#dtHere').DataTable();
-    });
+    <a href="{{ path('app_empleado_new') }}">Create new</a>
+    <div>
+        <div id="calendar"></div>
+    </div>
 {% endblock %}
