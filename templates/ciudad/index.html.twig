@@ -1,8 +1,56 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Ciudad index{% endblock %}
+{% block title %}Ciudades{% endblock %}
+
+{% block titlewrap %}
+    Ciudades
+{% endblock %}
+
+{% block breadcrumb %}
+    {#<li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Home</a></li>#}
+    <li class="breadcrumb-item active" aria-current="page">Ciudades</li>
+{% endblock %}
 
 {% block body %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="card-title">Ciudades</h3>
+        </div>
+
+        <div class="card-body p-0">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombre</th>
+                        <th>Poblacion</th>
+                        <th>actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for ciudad in ciudads %}
+                    <tr class="align-middle">
+                        <td>{{ ciudad.id }}</td>
+                        <td>{{ ciudad.nombre }}</td>
+                        <td>{{ ciudad.poblacion }}</td>
+                        <td>
+                            <a href="{{ path('app_ciudad_show', {'id': ciudad.id}) }}">show</a>
+                            <a href="{{ path('app_ciudad_edit', {'id': ciudad.id}) }}">edit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">no records found</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer clearfix">
+
+        </div>
+    </div>
     <h1>Ciudad index</h1>
 
     <table class="table">

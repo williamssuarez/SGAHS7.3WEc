@@ -1,6 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Empleado index{% endblock %}
+{% block title %}Empleados{% endblock %}
+
+{% block titlewrap %}
+    Empleados
+{% endblock %}
+
+{% block breadcrumb %}
+    {#<li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Home</a></li>#}
+    <li class="breadcrumb-item active" aria-current="page">Empleados</li>
+{% endblock %}
 
 {% block body %}
     <h1>Empleado index</h1>

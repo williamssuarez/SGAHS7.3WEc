@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'loginBase.html.twig' %}
 
 {% block title %}Log in!{% endblock %}
 
@@ -13,30 +13,39 @@
                 You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
             </div>
         {% endif %}
+        <div class="input-group mb-3">
+            <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
+            {#<label for="username">Email</label>#}
+            <div class="input-group-text"><span class="bi bi-envelope"></span></div>
+        </div>
+        <div class="input-group mb-3">
+            <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+            <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+            {#<label for="password">Password</label>#}
+            <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
+        </div>
 
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-        <label for="username">Email</label>
-        <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
-        <label for="password">Password</label>
-        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
-        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 
-        {#
+
+        <div class="row">
+            {#
             Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
             See https://symfony.com/doc/current/security/remember_me.html
 
-            <div class="checkbox mb-3">
-                <input type="checkbox" name="_remember_me" id="_remember_me">
-                <label for="_remember_me">Remember me</label>
+            <div class="col-8">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="_remember_me" id="_remember_me">
+                    <label class="form-check-label" for="_remember_me"> Remember Me </label>
+                </div>
             </div>
-        #}
-
-        <button class="btn btn-lg btn-success" type="submit">
-            Sign in
-        </button>
-
-        <a class="btn btn-lg btn-primary" href="{{ path('app_register') }}">
-            Register
-        </a>
+            #}
+            <!-- /.col -->
+            <div class="col-12">
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                </div>
+            </div>
+            <!-- /.col -->
+        </div>
     </form>
 {% endblock %}

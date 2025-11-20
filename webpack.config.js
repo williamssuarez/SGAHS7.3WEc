@@ -73,9 +73,13 @@ Encore
     .autoProvidejQuery()
     .copyFiles({
     // Copy the images used by AdminLTE CSS into public/build/images
-    from: './node_modules/admin-lte/dist/img',
-    to: 'images/[path][name].[ext]',
-})
+        from: './node_modules/admin-lte/dist/assets/img/',
+        to: 'assets/img/[path][name].[ext]',
+    })
+    .copyFiles({
+        from: './node_modules/bootstrap-icons/font/fonts',
+        to: 'fonts/[path][name].[ext]',
+    })
 ;
 
 module.exports = Encore.getWebpackConfig();

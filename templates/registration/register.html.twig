@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'registerBase.html.twig' %}
 
 {% block title %}Register{% endblock %}
 
@@ -7,17 +7,39 @@
         <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
     {% endfor %}
 
-    <h1>Register</h1>
-
     {{ form_errors(registrationForm) }}
 
     {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
-
-        <button type="submit" class="btn btn-success">Register</button>
+        {#<div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Full Name" />
+            <div class="input-group-text"><span class="bi bi-person"></span></div>
+        </div>#}
+        <div class="input-group mb-3">
+            {{ form_widget(registrationForm.email) }}
+            <div class="input-group-text">
+                <span class="bi bi-envelope"></span>
+            </div>
+        </div>
+        <div class="input-group mb-3">
+            {{ form_widget(registrationForm.plainPassword) }}
+            <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
+        </div>
+        <!--begin::Row-->
+        <div class="row">
+            <div class="col-8">
+                <div class="form-check">
+                    {{ form_widget(registrationForm.agreeTerms) }}
+                    {{form_label( registrationForm.agreeTerms ) }}
+                </div>
+            </div>
+            <!-- /.col -->
+            <div class="col-4">
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </div>
+            <!-- /.col -->
+        </div>
+        <!--end::Row-->
     {{ form_end(registrationForm) }}
 {% endblock %}
