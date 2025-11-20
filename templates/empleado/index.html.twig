@@ -5,7 +5,7 @@
 {% block body %}
     <h1>Empleado index</h1>
 
-    <table class="table">
+    <table class="table" id="dtHere">
         <thead>
             <tr>
                 <th>Id</th>
@@ -39,7 +39,7 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_empleado_new') }}">Create new</a>
+    <a class="btn btn-success" href="{{ path('app_empleado_new') }}">Create new</a>
     <div>
         <div id="calendar"></div>
     </div>
