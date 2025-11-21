@@ -1,11 +1,26 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Ciudad{% endblock %}
+{% block title %}Nueva Ciudad{% endblock %}
+
+{% block titlewrap %}
+    Nueva Ciudad
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_ciudad_index') }}">Ciudades</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nueva Ciudad</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Create new Ciudad</h1>
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            {#<div class="card-header"><div class="card-title">Quick Example</div></div>#}
 
-    {{ include('ciudad/_form.html.twig') }}
+            {{ include('ciudad/_form.html.twig') }}
 
-    <a href="{{ path('app_ciudad_index') }}">back to list</a>
+            <a href="{{ path('app_ciudad_index') }}">
+                <i class="bi bi-search"></i> Volver
+            </a>
+        </div>
+    </div>
 {% endblock %}

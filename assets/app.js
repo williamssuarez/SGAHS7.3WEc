@@ -33,6 +33,63 @@ import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import esLocale from '@fullcalendar/core/locales/es';
 
+$(document).ready(function () {
+    $('.dtHere').DataTable({
+        pageLength: 5,
+        lengthMenu: [[5, 10, 20, 50, -1], [5, 10, 20, 50, 'All']],
+        language: {
+            decimal: "",
+            emptyTable: "No hay datos disponibles en la tabla",
+            info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            infoEmpty: "Mostrando 0 a 0 de 0 registros",
+            infoFiltered: "(filtrado de _MAX_ registros totales)",
+            lengthMenu: "Mostrar _MENU_ registros",
+            loadingRecords: "Cargando...",
+            processing: "Procesando...",
+            search: "Buscar:",
+            zeroRecords: "No se encontraron resultados",
+        }
+    });
+
+    //Select 2 with search
+    $('#dt-length-0').select2({
+        //theme: "bootstrap-5", // Use the installed Bootstrap 5 theme
+        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+        placeholder: $(this).data('placeholder'),
+        language: "es",
+        minimumResultsForSearch: Infinity,
+    });
+
+    //Select 2 with search
+    $('.srchSelect').select2({
+        //theme: "bootstrap-5", // Use the installed Bootstrap 5 theme
+        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+        placeholder: $(this).data('placeholder'),
+        language: "es"
+        // search is available by default
+    });
+
+    //Select 2 without search
+    $('.noSrchSelect').select2({
+        theme: "bootstrap-5", // Use the installed Bootstrap 5 theme
+        //width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+        //placeholder: $(this).data('placeholder'),
+        // 💡 This option hides the search box
+        minimumResultsForSearch: Infinity,
+        language: "es"
+    });
+});
+
+new Sortable(document.querySelector('.connectedSortable'), {
+    group: 'shared',
+    handle: '.card-header',
+});
+
+const cardHeaders = document.querySelectorAll('.connectedSortable .card-header');
+cardHeaders.forEach((cardHeader) => {
+    cardHeader.style.cursor = 'move';
+});
+
 /* Overlayscrollbars config start */
 const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
 
@@ -51,39 +108,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 /* Overlayscrollbars config end */
-
-new Sortable(document.querySelector('.connectedSortable'), {
-    group: 'shared',
-    handle: '.card-header',
-});
-
-const cardHeaders = document.querySelectorAll('.connectedSortable .card-header');
-cardHeaders.forEach((cardHeader) => {
-    cardHeader.style.cursor = 'move';
-});
-
-$(document).ready(function () {
-    $('#dtHere').DataTable();
-
-    // 2. Initialize Select2 with SEARCH available (ID: srchSelect)
-    $('.srchSelect').select2({
-        //theme: "bootstrap-5", // Use the installed Bootstrap 5 theme
-        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-        placeholder: $(this).data('placeholder'),
-        language: "es"
-        // search is available by default
-    });
-
-    // 3. Initialize Select2 without SEARCH available (ID: noSrchSelect)
-    $('.noSrchSelect').select2({
-        theme: "bootstrap-5", // Use the installed Bootstrap 5 theme
-        //width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-        //placeholder: $(this).data('placeholder'),
-        // 💡 This option hides the search box
-        minimumResultsForSearch: Infinity,
-        language: "es"
-    });
-});
 
 // World map by jsVectorMap
 new jsVectorMap({
