@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Discapacidades index{% endblock %}
+
+{% block body %}
+    <h1>Discapacidades index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Descripcion</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for discapacidade in discapacidades %}
+            <tr>
+                <td>{{ discapacidade.id }}</td>
+                <td>{{ discapacidade.nombre }}</td>
+                <td>{{ discapacidade.descripcion }}</td>
+                <td>
+                    <a href="{{ path('app_discapacidades_show', {'id': discapacidade.id}) }}">show</a>
+                    <a href="{{ path('app_discapacidades_edit', {'id': discapacidade.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_discapacidades_new') }}">Create new</a>
+{% endblock %}

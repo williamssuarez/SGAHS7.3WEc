@@ -23,10 +23,15 @@ class RegistrationFormType extends AbstractType
                     'class' => 'form-control',
                     'placeholder' => 'Email'
                 ],
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Debe ingresar un correo.',
+                    ]),
+                ],
             ])
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
-                'label' => 'I agree to the terms',
+                'label' => 'Estoy de acuerdo con los de servicio',
                 'label_attr' => [
                     'class' => 'form-check-label'
                 ],
@@ -35,7 +40,7 @@ class RegistrationFormType extends AbstractType
                 ],
                 'constraints' => [
                     new IsTrue([
-                        'message' => 'You should agree to our terms.',
+                        'message' => 'Debe estar de acuerdo con los terminos.',
                     ]),
                 ],
             ])
@@ -50,11 +55,11 @@ class RegistrationFormType extends AbstractType
                 ],
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Please enter a password',
+                        'message' => 'Debe ingresar una clave',
                     ]),
                     new Length([
                         'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
+                        'minMessage' => 'La clave debe ser de al menos {{ limit }} caracteres',
                         // max length allowed by Symfony for security reasons
                         'max' => 4096,
                     ]),

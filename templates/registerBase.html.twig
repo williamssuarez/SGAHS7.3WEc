@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Register here!{% endblock %}</title>
+        <title>{% block title %}Register{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
@@ -15,25 +15,25 @@
     <body class="register-page bg-body-secondary">
     <div class="register-box">
         <div class="register-logo">
-            <a href="#"><b>Admin</b>LTE</a>
+            <a href="#"><b>SGAHS</b></a>
         </div>
         <!-- /.register-logo -->
         <div class="card">
             <div class="card-body register-card-body">
-                <p class="register-box-msg">Register a new membership</p>
+                <p class="register-box-msg">Registrar Usuario</p>
                 {% block body %}{% endblock %}
                 <div class="social-auth-links text-center mb-3 d-grid gap-2">
-                    <p>- OR -</p>
-                    <a href="#" class="btn btn-primary">
+                    <p>- O -</p>
+                    {#<a href="#" class="btn btn-primary">
                         <i class="bi bi-facebook me-2"></i> Sign in using Facebook
-                    </a>
+                    </a>#}
                     <a href="#" class="btn btn-danger">
-                        <i class="bi bi-google me-2"></i> Sign in using Google+
+                        <i class="bi bi-google me-2"></i> Ingrese usando Google+
                     </a>
                 </div>
                 <!-- /.social-auth-links -->
                 <p class="mb-0">
-                    <a href="{{ path('app_login') }}" class="text-center"> I already have a membership </a>
+                    <a href="{{ path('app_login') }}" class="text-center"> Si ya tiene cuenta inicie sesion </a>
                 </p>
             </div>
             <!-- /.register-card-body -->

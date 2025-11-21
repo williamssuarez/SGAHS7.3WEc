@@ -9,8 +9,8 @@
         {% endif %}
 
         {% if app.user %}
-            <div class="mb-3">
-                You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+            <div class="mb-3 alert alert-danger">
+                Tienes sesion iniciada como {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Cerrar Sesion</a>
             </div>
         {% endif %}
         <div class="input-group mb-3">
@@ -42,7 +42,7 @@
             <!-- /.col -->
             <div class="col-12">
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Sign In</button>
+                    <button type="submit" class="btn btn-primary">Iniciar Sesion</button>
                 </div>
             </div>
             <!-- /.col -->

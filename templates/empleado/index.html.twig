@@ -1,18 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Empleados{% endblock %}
+{% block title %}Usuarios{% endblock %}
 
 {% block titlewrap %}
-    Empleados
+    Usuarios
 {% endblock %}
 
 {% block breadcrumb %}
     {#<li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Home</a></li>#}
-    <li class="breadcrumb-item active" aria-current="page">Empleados</li>
+    <li class="breadcrumb-item active" aria-current="page">Usuarios</li>
 {% endblock %}
 
 {% block body %}
-    <h1>Empleado index</h1>
+    <h1>Usuarios</h1>
 
     <table class="table dtHere">
         <thead>
@@ -42,13 +42,13 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="6">no records found</td>
+                <td colspan="6">Sin registros</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a class="btn btn-success" href="{{ path('app_empleado_new') }}">Create new</a>
+    <a class="btn btn-success" href="{{ path('app_empleado_new') }}">Crear Nuevo</a>
     <div>
         <div id="calendar"></div>
     </div>

@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Discapacidades{% endblock %}
+
+{% block body %}
+    <h1>Create new Discapacidades</h1>
+
+    {{ include('discapacidades/_form.html.twig') }}
+
+    <a href="{{ path('app_discapacidades_index') }}">back to list</a>
+{% endblock %}

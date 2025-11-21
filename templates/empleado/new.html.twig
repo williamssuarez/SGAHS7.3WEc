@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Empleado{% endblock %}
+{% block title %}Usuarios Nuevos{% endblock %}
 
 {% block body %}
-    <h1>Create new Empleado</h1>
+    <h1>Crear Usuario</h1>
 
     {{ include('empleado/_form.html.twig') }}
 
-    <a href="{{ path('app_empleado_index') }}">back to list</a>
+    <a href="{{ path('app_empleado_index') }}">Volver</a>
 {% endblock %}
