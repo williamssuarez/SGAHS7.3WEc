@@ -1,11 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Paciente{% endblock %}
+{% block title %}Nuevo Paciente{% endblock %}
+
+{% block titlewrap %}
+    Nuevo Paciente
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_paciente_index') }}">Pacientes</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nuevo Paciente</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Create new Paciente</h1>
+    <div class="col-md-12">
+        <div class="card card-primary card-outline mb-4">
 
-    {{ include('paciente/_form.html.twig') }}
-
-    <a href="{{ path('app_paciente_index') }}">back to list</a>
+            {{ include('paciente/_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}

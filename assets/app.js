@@ -78,6 +78,17 @@ $(document).ready(function () {
         minimumResultsForSearch: Infinity,
         language: "es"
     });
+
+    //pls work
+    /*$('.number-only').on('keypress keyup blur', function (event) {
+        // Remove non-digit characters if pasted/typed
+        $(this).val($(this).val().replace(/[^\d].+/, ""));
+
+        // Prevent key presses that are not digits (0-9)
+        if ((event.which < 48 || event.which > 57)) {
+            event.preventDefault();
+        }
+    });*/
 });
 
 new Sortable(document.querySelector('.connectedSortable'), {
