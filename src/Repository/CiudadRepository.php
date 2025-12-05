@@ -16,6 +16,23 @@ class CiudadRepository extends ServiceEntityRepository
         parent::__construct($registry, Ciudad::class);
     }
 
+    public function getActivesforSelect()
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb
+            ->distinct()
+            ->select('u')
+
+            ->where('u.status = :sts')
+            ->addOrderBy('u.name', 'ASC')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository('CoreMainBundle:StatusRecord')->getActive())
+        ;
+
+        return $query;
+    }
+
 //    /**
 //     * @return Ciudad[] Returns an array of Ciudad objects
 //     */

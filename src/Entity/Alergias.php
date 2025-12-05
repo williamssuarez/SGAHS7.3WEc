@@ -2,14 +2,18 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\SoftDeletetableTrait;
 use App\Repository\AlergiasRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AlergiasRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Alergias
 {
+    use SoftDeletetableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

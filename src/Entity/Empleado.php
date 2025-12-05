@@ -2,12 +2,15 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\SoftDeletetableTrait;
 use App\Repository\EmpleadoRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EmpleadoRepository::class)]
 class Empleado
 {
+    use SoftDeletetableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

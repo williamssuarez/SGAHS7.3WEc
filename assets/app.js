@@ -19,15 +19,16 @@ import 'admin-lte/dist/css/adminlte.css';
 
 // js goes here
 import $ from 'jquery';
-import { OverlayScrollbars } from 'overlayscrollbars';
-import 'bootstrap';
+import {OverlayScrollbars} from 'overlayscrollbars';
+//import 'bootstrap';
+import * as bootstrap from 'bootstrap';
 import 'admin-lte/dist/js/adminlte';
 import 'datatables.net-bs5';
 import 'select2';
-import { Sortable } from 'sortablejs';
+import {Sortable} from 'sortablejs';
 import 'jsvectormap';
 import 'apexcharts';
-import { Calendar } from '@fullcalendar/core';
+import {Calendar} from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -52,17 +53,8 @@ $(document).ready(function () {
     });
 
     //Select 2 with search
-    $('#dt-length-0').select2({
-        //theme: "bootstrap-5", // Use the installed Bootstrap 5 theme
-        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-        placeholder: $(this).data('placeholder'),
-        language: "es",
-        minimumResultsForSearch: Infinity,
-    });
-
-    //Select 2 with search
     $('.srchSelect').select2({
-        //theme: "bootstrap-5", // Use the installed Bootstrap 5 theme
+        theme: "bootstrap-5", // Use the installed Bootstrap 5 theme
         width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
         placeholder: $(this).data('placeholder'),
         language: "es"
@@ -71,24 +63,146 @@ $(document).ready(function () {
 
     //Select 2 without search
     $('.noSrchSelect').select2({
-        theme: "bootstrap-5", // Use the installed Bootstrap 5 theme
-        //width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-        //placeholder: $(this).data('placeholder'),
+        theme: "bootstrap-5", // Use the installed Bootstrap 5 theme bruh
+        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+        placeholder: $(this).data('placeholder'),
         // 💡 This option hides the search box
         minimumResultsForSearch: Infinity,
         language: "es"
     });
 
     //pls work
-    /*$('.number-only').on('keypress keyup blur', function (event) {
+    $('.number-only').on('keypress keyup blur', function (e) {
         // Remove non-digit characters if pasted/typed
         $(this).val($(this).val().replace(/[^\d].+/, ""));
 
         // Prevent key presses that are not digits (0-9)
-        if ((event.which < 48 || event.which > 57)) {
-            event.preventDefault();
+        if ((e.which < 48 || e.which > 57)) {
+            e.preventDefault();
         }
-    });*/
+    });
+    let isProgrammaticSwitch = false;
+    const tabList = $('#formTab button');
+    let currentTabIndex = 0;
+    const totalTabs = tabList.length;
+    const progressBarInner = $('#form-progress-bar'); // Target the inner bar element
+    const progressBarWrapper = progressBarInner.closest('.progress'); // Target the wrapper for aria attributes
+
+    /**
+     * Updates the visibility of the navigation buttons based on the current tab.
+     */
+    function updateNavButtons() {
+        const isFirstTab = (currentTabIndex === 0);
+        const isLastTab = (currentTabIndex === totalTabs - 1);
+
+        // Hide/Show Previous button
+        if (isFirstTab){
+            if ($("#prev-tab").is("[disabled]") === false) {
+                $('#prev-tab').attr('disabled', 'disabled');
+            }
+        }
+
+        if (!isFirstTab){
+            $('#prev-tab').removeAttr('disabled');
+        }
+
+        // Manage Next/Submit button visibility
+        if (isLastTab) {
+            $('#next-tab').hide();      // Hide "Next"
+            $('#submit-form').show();   // Show "Guardar"
+        } else {
+            $('#next-tab').show();      // Show "Next"
+            $('#submit-form').hide();   // Hide "Guardar"
+        }
+    }
+
+    /**
+     * Calculates and updates the progress bar width and aria attributes inside the tab forms.
+     */
+    function updateProgressBar() {
+        //idk how this shit works but it's neat
+        // 1. Calculate Percentage
+        // (currentTabIndex + 1) because the index is 0-based, and we want to show 100% on the last tab.
+        // We subtract 1 from totalTabs because the progress is based on the number of steps *between* tabs.
+        const progressSteps = totalTabs - 1;
+        // Calculate percentage (clamped between 0 and 100)
+        let percentage = (currentTabIndex / progressSteps) * 100;
+        percentage = Math.max(0, Math.min(100, percentage)); // Ensure it's between 0 and 100
+
+        // 2. Apply Updates
+        progressBarInner.css('width', percentage + '%');
+
+        // Update accessibility attributes
+        progressBarWrapper.attr('aria-valuenow', Math.round(percentage));
+
+        // Optional: Update the visual label if desired (Bootstrap 5 requires a label inside the bar)
+        // progressBarInner.text(Math.round(percentage) + '%');
+    }
+
+    /**
+     * Switches to the specified tab index.
+     */
+    function goToTab(index) {
+        if (index >= 0 && index < totalTabs) {
+            // 1. SET THE FLAG before initiating the programmatic switch
+            isProgrammaticSwitch = true;
+            currentTabIndex = index;
+
+            // Get the Bootstrap button element for the new tab
+            const newTabButton = tabList.eq(index);
+
+            // Use the Bootstrap JavaScript API to show the tab
+            const tab = new bootstrap.Tab(newTabButton[0]);
+            tab.show();
+
+            // Update button visibility
+            isProgrammaticSwitch = false;
+            updateProgressBar();
+            updateNavButtons();
+        }
+    }
+
+    // --- Event Listeners for tabs ---
+
+    // Initialize on page load (starts on tab 0)
+    updateNavButtons();
+    updateProgressBar();
+
+    //Prevent free navigation between tabs
+    $('#formTab').on('show.bs.tab', 'button', function(e) {
+        if (isProgrammaticSwitch === true) {
+            // If the flag is set, this event was triggered by our goToTab function.
+            // We do NOTHING, allowing the tab switch to complete.
+            //console.log('Programmatic switch detected. Allowing tab to show.');
+            return;
+        }
+
+        // If the flag is FALSE, this was a manual user click (or external, unwanted event).
+        e.preventDefault();
+        //console.log('Free tab toggle attempted and blocked finely');
+    });
+
+    // Handle "Next" button click
+    $('#next-tab').on('click', function() {
+        // NOTE: You can add form validation logic here before advancing:
+        // if (validateCurrentTab() == true) {
+        //     goToTab(currentTabIndex + 1);
+        // }
+        goToTab(currentTabIndex + 1);
+    });
+
+    // Handle "Previous" button click
+    $('#prev-tab').on('click', function() {
+        goToTab(currentTabIndex - 1);
+    });
+
+    // Optional: Keep the current index updated if the tab is changed externally
+    tabList.on('shown.bs.tab', function (e) {
+        const targetId = $(e.target).attr('id'); // e.g., "tab2"
+        currentTabIndex = tabList.index(e.target);
+        updateNavButtons();
+    });
+    // ---End of Event Listeners for tabs ---
 });
 
 new Sortable(document.querySelector('.connectedSortable'), {
@@ -104,10 +218,11 @@ cardHeaders.forEach((cardHeader) => {
 /* Overlayscrollbars config start */
 const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
 
+//ALL DOMCONTENTLOADED EVENTS GO HERE
 document.addEventListener('DOMContentLoaded', function () {
+    console.log('IT LOADS CORRECTLY SO IDK WHATS WRONG');
+    //OverlayScrollbars
     const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
-
-    // 💡 No need to check for a global variable; just use the imported function
     if (sidebarWrapper) {//check
         OverlayScrollbars(sidebarWrapper, {
             scrollbars: {
@@ -116,6 +231,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 clickScroll: true,
             },
         });
+    }
+
+    //fullcalendar
+    var calendarEl = document.getElementById('calendar');
+    if (calendarEl) {
+        var calendar = new Calendar(calendarEl, {
+            // 1. Register the plugins you imported
+            plugins: [ dayGridPlugin, interactionPlugin, timeGridPlugin ],
+            locales: [ esLocale ],
+
+            // 2. Set the initial view and other options
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            locale: 'es',
+
+            // 3. Add sample data
+            events: [
+                { title: 'Meeting', start: '2025-11-14' },
+                { title: 'Project Deadline', start: '2025-11-20', end: '2025-11-22' }
+            ]
+        });
+
+        // 4. Render the calendar
+        calendar.render();
     }
 });
 /* Overlayscrollbars config end */
@@ -210,36 +353,6 @@ const option_sparkline3 = {
 
 const sparkline3 = new ApexCharts(document.querySelector('#sparkline-3'), option_sparkline3);
 sparkline3.render();
-
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-
-    if (calendarEl) {
-        var calendar = new Calendar(calendarEl, {
-            // 1. Register the plugins you imported
-            plugins: [ dayGridPlugin, interactionPlugin, timeGridPlugin ],
-            locales: [ esLocale ],
-
-            // 2. Set the initial view and other options
-            initialView: 'dayGridMonth',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            locale: 'es',
-
-            // 3. Add sample data
-            events: [
-                { title: 'Meeting', start: '2025-11-14' },
-                { title: 'Project Deadline', start: '2025-11-20', end: '2025-11-22' }
-            ]
-        });
-
-        // 4. Render the calendar
-        calendar.render();
-    }
-});
 
 /*Color Mode Toggler Start*/
 (() => {

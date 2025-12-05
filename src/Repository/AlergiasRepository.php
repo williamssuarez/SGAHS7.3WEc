@@ -16,28 +16,20 @@ class AlergiasRepository extends ServiceEntityRepository
         parent::__construct($registry, Alergias::class);
     }
 
-//    /**
-//     * @return Alergias[] Returns an array of Alergias objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getActivesforSelect()
+    {
+        $qb = $this->createQueryBuilder('u');
 
-//    public function findOneBySomeField($value): ?Alergias
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $query = $qb
+            ->distinct()
+            ->select('u')
+
+            ->where('u.status = :sts')
+            ->addOrderBy('u.name', 'ASC')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository('CoreMainBundle:StatusRecord')->getActive())
+        ;
+
+        return $query;
+    }
 }

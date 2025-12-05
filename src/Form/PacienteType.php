@@ -7,6 +7,10 @@ use App\Entity\Discapacidades;
 use App\Entity\Enfermedades;
 use App\Entity\Paciente;
 use App\Entity\Tratamientos;
+use App\Repository\AlergiasRepository;
+use App\Repository\DiscapacidadesRepository;
+use App\Repository\EnfermedadesRepository;
+use App\Repository\TratamientosRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -98,7 +102,10 @@ class PacienteType extends AbstractType
                 'multiple' => true,
                 'attr' => [
                     'class' => 'srchSelect'
-                ]
+                ],
+                'query_builder' => function (EnfermedadesRepository $er) {
+                    return $er->getActivesforSelect();
+                }
             ])
             ->add('alergias', EntityType::class, [
                 'class' => Alergias::class,
@@ -106,7 +113,10 @@ class PacienteType extends AbstractType
                 'multiple' => true,
                 'attr' => [
                     'class' => 'srchSelect'
-                ]
+                ],
+                'query_builder' => function (AlergiasRepository $er) {
+                    return $er->getActivesforSelect();
+                }
             ])
             ->add('discapacidades', EntityType::class, [
                 'class' => Discapacidades::class,
@@ -114,7 +124,10 @@ class PacienteType extends AbstractType
                 'multiple' => true,
                 'attr' => [
                     'class' => 'srchSelect'
-                ]
+                ],
+                'query_builder' => function (DiscapacidadesRepository $er) {
+                    return $er->getActivesforSelect();
+                }
             ])
             ->add('tratamientos', EntityType::class, [
                 'class' => Tratamientos::class,
@@ -122,7 +135,10 @@ class PacienteType extends AbstractType
                 'multiple' => true,
                 'attr' => [
                     'class' => 'srchSelect'
-                ]
+                ],
+                'query_builder' => function (TratamientosRepository $er) {
+                    return $er->getActivesforSelect();
+                }
             ])
             ->add('hasMarcaPaso', CheckboxType::class, [
                 'mapped' => false,
@@ -131,7 +147,7 @@ class PacienteType extends AbstractType
                     'class' => 'form-check-label'
                 ],
                 'attr' => [
-                    'class' => 'form-check-input'
+                    'class' => 'form-check-input bigCheckbox'
                 ],
             ])
         ;
