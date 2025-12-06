@@ -11,13 +11,13 @@ trait SoftDeletetableTrait
     #[ORM\Column]
     private ?int $uidCreate = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $uidUpdate = null;
 
     #[ORM\Column(type: 'datetime_immutable')] // Immutable is preferred for timestamps
     private ?\DateTimeInterface $created = null;
 
-    #[ORM\Column(type: 'datetime_immutable')] // Immutable is preferred for timestamps
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)] // Immutable is preferred for timestamps
     private ?\DateTimeInterface $updated = null;
 
     #[ORM\ManyToOne]

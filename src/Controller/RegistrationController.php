@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\StatusRecord;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
@@ -37,6 +38,10 @@ class RegistrationController extends AbstractController
 
             // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+
+            $user->setUidCreate(-1);
+            $user->setCreated(new \DateTime('now'));
+            $user->setStatus($entityManager->getRepository(StatusRecord::class)->getActive());
 
             $entityManager->persist($user);
             $entityManager->flush();
