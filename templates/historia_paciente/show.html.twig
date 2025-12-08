@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}HistoriaPaciente{% endblock %}
+
+{% block body %}
+    <h1>HistoriaPaciente</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ historia_paciente.id }}</td>
+            </tr>
+            <tr>
+                <th>Bpm</th>
+                <td>{{ historia_paciente.latidos }}</td>
+            </tr>
+            <tr>
+                <th>TipoProcedimiento</th>
+                <td>{{ historia_paciente.tipoProcedimiento }}</td>
+            </tr>
+            <tr>
+                <th>DescripcionProdecimiento</th>
+                <td>{{ historia_paciente.descripcionProdecimiento }}</td>
+            </tr>
+            <tr>
+                <th>MedicamentosObservaciones</th>
+                <td>{{ historia_paciente.medicamentosObservaciones }}</td>
+            </tr>
+            <tr>
+                <th>Observaciones</th>
+                <td>{{ historia_paciente.observaciones }}</td>
+            </tr>
+            <tr>
+                <th>Fecha_atendido</th>
+                <td>{{ historia_paciente.fechaAtendido ? historia_paciente.fechaAtendido|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_paciente_show', {'id': historia_paciente.paciente.id}) }}">back to list</a>
+
+    <a href="{{ path('app_historia_paciente_edit', {'id': historia_paciente.id}) }}">edit</a>
+
+    {{ include('historia_paciente/_delete_form.html.twig') }}
+{% endblock %}

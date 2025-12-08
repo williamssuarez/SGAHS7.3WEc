@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Paciente;
 use App\Form\PacienteType;
+use App\Repository\HistoriaPacienteRepository;
 use App\Repository\PacienteRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,10 +45,28 @@ final class PacienteController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_paciente_show', methods: ['GET'])]
-    public function show(Paciente $paciente): Response
+    public function show(Paciente $paciente, HistoriaPacienteRepository $historiaPacienteRepository): Response
     {
+        $historias = $historiaPacienteRepository->findByPacienteOrderedByDate($paciente->getId());
+
+        $groupedHistorias = [];
+        foreach ($historias as $historia) {
+            // Get the date and format it as a string for grouping (e.g., "10 Feb. 2023")
+            // Use IntlDateFormatter or a simple format string, like below:
+            $dateString = $historia->getFechaAtendido()->format('j M. Y');
+
+            // Initialize the array for this date if it doesn't exist
+            if (!isset($groupedHistorias[$dateString])) {
+                $groupedHistorias[$dateString] = [];
+            }
+
+            // Add the history record to the group
+            $groupedHistorias[$dateString][] = $historia;
+        }
+
         return $this->render('paciente/show.html.twig', [
             'paciente' => $paciente,
+            'grouped_historias' => $groupedHistorias
         ]);
     }
 

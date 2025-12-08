@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Alergias;
+use App\Entity\StatusRecord;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -25,9 +26,9 @@ class AlergiasRepository extends ServiceEntityRepository
             ->select('u')
 
             ->where('u.status = :sts')
-            ->addOrderBy('u.name', 'ASC')
+            ->addOrderBy('u.nombre', 'ASC')
 
-            ->setParameter('sts', $this->getEntityManager()->getRepository('CoreMainBundle:StatusRecord')->getActive())
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
         ;
 
         return $query;

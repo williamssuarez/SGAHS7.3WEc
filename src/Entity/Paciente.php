@@ -64,12 +64,19 @@ class Paciente
     #[ORM\Column]
     private ?bool $hasMarcaPaso = null;
 
+    /**
+     * @var Collection<int, HistoriaPaciente>
+     */
+    #[ORM\OneToMany(targetEntity: HistoriaPaciente::class, mappedBy: 'paciente')]
+    private Collection $historiaPacientes;
+
     public function __construct()
     {
         $this->enfermedades = new ArrayCollection();
         $this->alergias = new ArrayCollection();
         $this->discapacidades = new ArrayCollection();
         $this->tratamientos = new ArrayCollection();
+        $this->historiaPacientes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -253,6 +260,36 @@ class Paciente
     public function setHasMarcaPaso(bool $hasMarcaPaso): static
     {
         $this->hasMarcaPaso = $hasMarcaPaso;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, HistoriaPaciente>
+     */
+    public function getHistoriaPacientes(): Collection
+    {
+        return $this->historiaPacientes;
+    }
+
+    public function addHistoriaPaciente(HistoriaPaciente $historiaPaciente): static
+    {
+        if (!$this->historiaPacientes->contains($historiaPaciente)) {
+            $this->historiaPacientes->add($historiaPaciente);
+            $historiaPaciente->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHistoriaPaciente(HistoriaPaciente $historiaPaciente): static
+    {
+        if ($this->historiaPacientes->removeElement($historiaPaciente)) {
+            // set the owning side to null (unless already changed)
+            if ($historiaPaciente->getPaciente() === $this) {
+                $historiaPaciente->setPaciente(null);
+            }
+        }
 
         return $this;
     }

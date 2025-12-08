@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}HistoriaPaciente index{% endblock %}
+
+{% block body %}
+    <h1>HistoriaPaciente index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Bpm</th>
+                <th>TipoProcedimiento</th>
+                <th>DescripcionProdecimiento</th>
+                <th>MedicamentosObservaciones</th>
+                <th>Observaciones</th>
+                <th>Fecha_atendido</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for historia_paciente in historia_pacientes %}
+            <tr>
+                <td>{{ historia_paciente.id }}</td>
+                <td>{{ historia_paciente.bpm }}</td>
+                <td>{{ historia_paciente.tipoProcedimiento }}</td>
+                <td>{{ historia_paciente.descripcionProdecimiento }}</td>
+                <td>{{ historia_paciente.medicamentosObservaciones }}</td>
+                <td>{{ historia_paciente.observaciones }}</td>
+                <td>{{ historia_paciente.fechaAtendido ? historia_paciente.fechaAtendido|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_historia_paciente_show', {'id': historia_paciente.id}) }}">show</a>
+                    <a href="{{ path('app_historia_paciente_edit', {'id': historia_paciente.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_historia_paciente_new') }}">Create new</a>
+{% endblock %}

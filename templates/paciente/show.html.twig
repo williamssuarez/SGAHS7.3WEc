@@ -2,9 +2,31 @@
 
 {% block title %}Paciente{% endblock %}
 
+{% block titlewrap %}
+    Detalles
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_paciente_index') }}">Pacientes</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Detalles Paciente</li>
+{% endblock %}
+
 {% block body %}
     <h1>Paciente</h1>
+    <div class="row">
+        <div class="col-sm-3">
+            <a class="btn btn-primary" href="{{ path('app_paciente_index') }}">Volver</a>
+        </div>
 
+        <div class="col-sm-3">
+            <a class="btn btn-success" href="{{ path('app_paciente_edit', {'id': paciente.id}) }}">Editar</a>
+        </div>
+
+        <div class="col-sm-3">
+            {{ include('paciente/_delete_form.html.twig') }}
+        </div>
+
+    </div>
     <table class="table">
         <tbody>
             <tr>
@@ -38,9 +60,295 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_paciente_index') }}">back to list</a>
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card card-danger collapsed-card">
+                <div class="card-header">
+                    <h3 class="card-title">Enfermedades</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                            <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                            <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                        </button>
+                    </div>
+                    <!-- /.card-tools -->
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for entity in paciente.enfermedades %}
+                            <tr class="align-middle">
+                                <td>{{ entity.nombre }}</td>
+                                <td>
+                                    <a class="btn btn-secondary" href="#">
+                                        <i class="bi bi-search"></i>
+                                    </a>
+                                    <a class="btn btn-danger" href="#">
+                                        <i class="bi bi-x-circle"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr class="align-middle">
+                                <td colspan="4">no records found</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
 
-    <a href="{{ path('app_paciente_edit', {'id': paciente.id}) }}">edit</a>
+        <div class="col-md-3">
+            <div class="card card-warning collapsed-card">
+                <div class="card-header">
+                    <h3 class="card-title">Discapacidades</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                            <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                            <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                        </button>
+                    </div>
+                    <!-- /.card-tools -->
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for entity in paciente.discapacidades %}
+                            <tr class="align-middle">
+                                <td>{{ entity.nombre }}</td>
+                                <td>
+                                    <a class="btn btn-secondary" href="#">
+                                        <i class="bi bi-search"></i>
+                                    </a>
+                                    <a class="btn btn-danger" href="#">
+                                        <i class="bi bi-x-circle"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr class="align-middle">
+                                <td colspan="4">no records found</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
 
-    {{ include('paciente/_delete_form.html.twig') }}
+        <div class="col-md-3">
+            <div class="card card-dark collapsed-card">
+                <div class="card-header">
+                    <h3 class="card-title">Alergias</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                            <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                            <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                        </button>
+                    </div>
+                    <!-- /.card-tools -->
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for entity in paciente.alergias %}
+                            <tr class="align-middle">
+                                <td>{{ entity.nombre }}</td>
+                                <td>
+                                    <a class="btn btn-secondary" href="#">
+                                        <i class="bi bi-search"></i>
+                                    </a>
+                                    <a class="btn btn-danger" href="#">
+                                        <i class="bi bi-x-circle"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr class="align-middle">
+                                <td colspan="4">no records found</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card card-success collapsed-card">
+                <div class="card-header">
+                    <h3 class="card-title">Tratamientos</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                            <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                            <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                        </button>
+                    </div>
+                    <!-- /.card-tools -->
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for entity in paciente.tratamientos %}
+                            <tr class="align-middle">
+                                <td>{{ entity.nombre }}</td>
+                                <td>
+                                    <a class="btn btn-secondary" href="#">
+                                        <i class="bi bi-search"></i>
+                                    </a>
+                                    <a class="btn btn-danger" href="#">
+                                        <i class="bi bi-x-circle"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr class="align-middle">
+                                <td colspan="4">no records found</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+        </div>
+
+    </div>
+
+    <h1>Historias <a class="btn btn-success" href="{{ path('app_historia_paciente_new', {'id': paciente.id}) }}"><i class="bi bi-plus-circle"></i> Agregar Historia</a></h1>
+    <div class="row">
+        <div class="col-md-12">
+            <!-- The time line -->
+            {#<div class="timeline">
+                <!-- timeline time label -->
+                <div class="time-label"><span class="text-bg-primary">10 Feb. 2023</span></div>
+                <!-- /.timeline-label -->
+                <!-- timeline item -->
+                <div>
+                    <i class="timeline-icon bi bi-envelope text-bg-primary"></i>
+                    <div class="timeline-item">
+                        <span class="time"> <i class="bi bi-clock-fill"></i> 12:05 </span>
+                        <h3 class="timeline-header">
+                            <a href="#">Support Team</a> sent you an email
+                        </h3>
+                        <div class="timeline-body">
+                            Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles, weebly ning
+                            heekya handango imeem plugg dopplr jibjab, movity jajah plickers sifteo
+                            edmodo ifttt zimbra. Babblely odeo kaboodle quora plaxo ideeli hulu weebly
+                            balihoo...
+                        </div>
+                        <div class="timeline-footer">
+                            <a class="btn btn-primary btn-sm">Read more</a>
+                            <a class="btn btn-danger btn-sm">Delete</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- END timeline item -->
+                <!-- timeline time label -->
+                <div class="time-label"><span class="text-bg-success">3 Jan. 2023</span></div>
+                <!-- /.timeline-label -->
+                <!-- timeline item -->
+                <div>
+                    <i class="timeline-icon bi bi-camera-film text-bg-info"></i>
+                    <div class="timeline-item">
+                        <span class="time"> <i class="bi bi-clock-fill"></i> 5 days ago </span>
+                        <h3 class="timeline-header"><a href="#">Mr. Doe</a> shared a video</h3>
+                        <div class="timeline-body">
+                            <div class="ratio ratio-16x9">
+                                <iframe
+                                    src="https://www.youtube.com/embed/tMWkeBIohBs"
+                                    allowfullscreen
+                                ></iframe>
+                            </div>
+                        </div>
+                        <div class="timeline-footer">
+                            <a href="#" class="btn btn-sm text-bg-warning"> See comments </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- END timeline item -->
+                <div><i class="timeline-icon bi bi-clock-fill text-bg-secondary"></i></div>
+            </div>#}
+            {# templates/historia_paciente/timeline.html.twig #}
+
+            <div class="timeline">
+                {% for date, historias in grouped_historias %}
+                    {# 1. Display the date label only once (using the array key) #}
+                    <div class="time-label">
+                        <span class="text-bg-primary">{{ date }}</span>
+                    </div>
+                    {# /.timeline-label #}
+
+                    {# 2. Loop through all the records associated with this date #}
+                    {% for historia in historias %}
+                        <div>
+                            {# You'll need to determine the icon and color based on the history type/status #}
+                            <i class="timeline-icon bi bi-file-text text-bg-info"></i>
+                            <div class="timeline-item">
+                                {# Format the time (hora) #}
+                                <span class="time">
+                        <i class="bi bi-clock-fill"></i>
+                        {{ historia.fechaAtendido|date('H:i') }}
+                    </span>
+
+                                <h3 class="timeline-header">
+                                    {# Assuming a field for the header/title exists, or construct one #}
+                                    <a href="#">Entrada realizada por el Doctor {{ historia.doctor.name }}</a>
+                                </h3>
+
+                                <div class="timeline-body">
+                                    {# Display the relevant information from your entity #}
+                                    <p>{{ historia.descripcionProdecimiento }}...</p>
+                                </div>
+
+                                <div class="timeline-footer">
+                                    {# Example: Link to see the full record #}
+                                    <a href="{{ path('app_historia_paciente_show', {'id': historia.id}) }}" class="btn btn-primary btn-sm">Ver Detalles</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                {% else %}
+
+                {% endfor %}
+
+                {# Final clock icon #}
+                <div><i class="timeline-icon bi bi-clock-fill text-bg-secondary"></i></div>
+            </div>
+        </div>
+        <!-- /.col -->
+    </div>
 {% endblock %}

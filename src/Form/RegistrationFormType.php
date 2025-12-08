@@ -31,7 +31,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
-                'label' => 'Estoy de acuerdo con los de servicio',
+                'label' => 'Estoy de acuerdo con los terminos de servicio',
                 'label_attr' => [
                     'class' => 'form-check-label'
                 ],

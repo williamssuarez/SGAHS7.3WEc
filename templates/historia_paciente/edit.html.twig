@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit HistoriaPaciente{% endblock %}
+
+{% block body %}
+    <h1>Edit HistoriaPaciente</h1>
+
+    {{ include('historia_paciente/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_historia_paciente_index') }}">back to list</a>
+
+    {{ include('historia_paciente/_delete_form.html.twig') }}
+{% endblock %}

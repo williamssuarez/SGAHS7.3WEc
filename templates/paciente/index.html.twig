@@ -1,45 +1,64 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Paciente index{% endblock %}
+{% block title %}Gestion de Pacientes{% endblock %}
+
+{% block titlewrap %}
+    Pacientes
+{% endblock %}
+
+{% block breadcrumb %}
+    {#<li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Home</a></li>#}
+    <li class="breadcrumb-item active" aria-current="page">Pacientes</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Paciente index</h1>
+    <div class="card card-primary card-outline mb-4">
+        <div class="card-header">
+            <h3 class="card-title">Pacientes Registrados</h3>
+        </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Cedula</th>
-                <th>Telefono</th>
-                <th>Correo</th>
-                <th>Direccion</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for paciente in pacientes %}
-            <tr>
-                <td>{{ paciente.id }}</td>
-                <td>{{ paciente.nombre }}</td>
-                <td>{{ paciente.apellido }}</td>
-                <td>{{ paciente.cedula }}</td>
-                <td>{{ paciente.telefono }}</td>
-                <td>{{ paciente.correo }}</td>
-                <td>{{ paciente.direccion }}</td>
-                <td>
-                    <a href="{{ path('app_paciente_show', {'id': paciente.id}) }}">show</a>
-                    <a href="{{ path('app_paciente_edit', {'id': paciente.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="8">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <div class="card-body p-0">
+            <table class="table table-striped dtHere">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Cedula</th>
+                    <th>Telefono</th>
+                    <th>Correo</th>
+                    <th>Direccion</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for paciente in pacientes %}
+                    <tr class="align-middle">
+                        <td>{{ paciente.id }}</td>
+                        <td>{{ paciente.nombre }}</td>
+                        <td>{{ paciente.apellido }}</td>
+                        <td>{{ paciente.cedula }}</td>
+                        <td>{{ paciente.telefono }}</td>
+                        <td>{{ paciente.correo }}</td>
+                        <td>{{ paciente.direccion }}</td>
+                        <td>
+                            <a class="btn btn-secondary" href="{{ path('app_paciente_show', {'id': paciente.id}) }}">
+                                <i class="bi bi-search"></i> Detalles
+                            </a>
+                            <a class="btn btn-success" href="{{ path('app_paciente_edit', {'id': paciente.id}) }}">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-    <a href="{{ path('app_paciente_new') }}">Create new</a>
+        <br>
+
+        <div class="card-footer clearfix">
+            <a href="{{ path('app_paciente_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+        </div>
+    </div>
 {% endblock %}

@@ -141,7 +141,6 @@ class PacienteType extends AbstractType
                 }
             ])
             ->add('hasMarcaPaso', CheckboxType::class, [
-                'mapped' => false,
                 'label' => '¿Tiene marca pasos el paciente?',
                 'label_attr' => [
                     'class' => 'form-check-label'

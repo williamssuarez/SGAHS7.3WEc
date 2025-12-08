@@ -40,10 +40,6 @@
                     <a href="{{ path('app_empleado_edit', {'id': empleado.id}) }}">edit</a>
                 </td>
             </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">Sin registros</td>
-            </tr>
         {% endfor %}
         </tbody>
     </table>

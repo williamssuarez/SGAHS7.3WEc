@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Paciente;
+use App\Entity\StatusRecord;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -27,7 +28,7 @@ class PacienteRepository extends ServiceEntityRepository
             ->where('u.status = :sts')
             ->addOrderBy('u.name', 'ASC')
 
-            ->setParameter('sts', $this->getEntityManager()->getRepository('CoreMainBundle:StatusRecord')->getActive())
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
         ;
 
         return $query;

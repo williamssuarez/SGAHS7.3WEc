@@ -25,6 +25,11 @@ class Medicamentos
     #[ORM\Column]
     private ?float $miligramos = null;
 
+    public function __toString(): string
+    {
+        return $this->getNombre() . '('.$this->getMiligramos().'mg)';
+    }
+
     public function getId(): ?int
     {
         return $this->id;
