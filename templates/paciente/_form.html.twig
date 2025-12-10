@@ -1,4 +1,17 @@
 {{ form_start(form) }}
+{# 💡 DISPLAY GLOBAL ERRORS 💡 #}
+{% if form.vars.errors|length > 0 %}
+    <div class="alert alert-dismissable alert-danger">
+        <h5><i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Error</strong></h5>
+        <ul class="list-unstyled mb-0">
+            {# Loop through all global form errors #}
+            {% for error in form.vars.errors %}
+                <li>{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endif %}
 <div class="card-body">
     <ul class="nav nav-tabs" id="formTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -76,6 +89,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         {{form_label( form.direccion ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
                         {{form_widget( form.direccion ) }}
                     </div>
                 </div>
@@ -84,7 +98,15 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         {{form_label( form.telefono ) }}
-                        {{form_widget( form.telefono ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        <div class="row">
+                            <div class="col-md-3">
+                                {{form_widget( form.startTelefono ) }}
+                            </div>
+                            <div class="col-md-9">
+                                {{form_widget( form.telefono ) }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -92,6 +114,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         {{form_label( form.correo ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
                         {{form_widget( form.correo ) }}
                     </div>
                 </div>
@@ -139,6 +162,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         {{form_label( form.hasMarcaPaso ) }}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         {{form_widget( form.hasMarcaPaso ) }}
                     </div>
                 </div>

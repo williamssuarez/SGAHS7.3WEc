@@ -1,11 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Enfermedades{% endblock %}
+{% block title %}Nueva Enfermedad{% endblock %}
+
+{% block titlewrap %}
+    Nueva Enfermedad
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_enfermedades_index') }}">Enfermedades</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nueva Enfermedad</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Create new Enfermedades</h1>
-
-    {{ include('enfermedades/_form.html.twig') }}
-
-    <a href="{{ path('app_enfermedades_index') }}">back to list</a>
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('enfermedades/_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}

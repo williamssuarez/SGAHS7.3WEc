@@ -3,12 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\Paciente;
+use App\Exception\BusinessRuleException;
 use App\Form\PacienteType;
 use App\Repository\HistoriaPacienteRepository;
 use App\Repository\PacienteRepository;
+use App\Service\FileUploader;
+use App\Service\PatientProcessor;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,7 +25,7 @@ final class PacienteController extends AbstractController
     public function index(PacienteRepository $pacienteRepository): Response
     {
         return $this->render('paciente/index.html.twig', [
-            'pacientes' => $pacienteRepository->findAll(),
+            'pacientes' => $pacienteRepository->getActivesforTable(),
         ]);
     }
 
@@ -29,7 +33,7 @@ final class PacienteController extends AbstractController
     public function new(
         Request $request,
         EntityManagerInterface $entityManager,
-        SluggerInterface $slugger
+        PatientProcessor $patientProcessor
     ): Response
     {
         $paciente = new Paciente();
@@ -37,31 +41,19 @@ final class PacienteController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $fotoFile = $form->get('foto')->getData();
+            try {
+                $telefono = $form->get('startTelefono')->getData() . '-' . $paciente->getTelefono();
+                $paciente->setTelefono($telefono);
+                // dejar que el servicio procese el form
+                $patientProcessor->processFormSubmission($paciente, $form->get('foto')->getData());
 
-            // this condition is needed because the 'brochure' field is not required
-            // so the PDF file must be processed only when a file is uploaded
-            if ($fotoFile) {
-                $originalFilename = pathinfo($fotoFile->getClientOriginalName(), PATHINFO_FILENAME);
-                // this is needed to safely include the file name as part of the URL
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$fotoFile->guessExtension();
+                $this->addFlash('success', 'Registro Agregado.');
+                return $this->redirectToRoute('app_paciente_index', [], Response::HTTP_SEE_OTHER);
 
-                // Move the file to the directory where brochures are stored
-                try {
-                    $fotoFile->move($brochuresDirectory, $newFilename);
-                } catch (FileException $e) {
-                    // ... handle exception if something happens during file upload
-                }
-
-                // updates the 'brochureFilename' property to store the PDF file name
-                // instead of its contents
-                $product->setBrochureFilename($newFilename);
+            } catch (BusinessRuleException $e) {
+                //Obtener el mensaje especifico y mostrar el error
+                $form->addError(new FormError($e->getMessage()));
             }
-            $entityManager->persist($paciente);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_paciente_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('paciente/new.html.twig', [

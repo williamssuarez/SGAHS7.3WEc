@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\HistoriaPaciente;
+use App\Entity\StatusRecord;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -27,6 +28,9 @@ class HistoriaPacienteRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('h')
             // 1. Filter by the patient ID (assuming 'paciente' is the field name)
             ->andWhere('h.paciente = :pacienteId')
+            ->andWhere('h.status = :sts')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
             ->setParameter('pacienteId', $pacienteId)
 
             // 2. Order by the date field, newest first

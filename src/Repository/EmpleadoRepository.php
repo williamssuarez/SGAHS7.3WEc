@@ -34,6 +34,21 @@ class EmpleadoRepository extends ServiceEntityRepository
         return $query;
     }
 
+    public function getActivesforTable()
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb
+            ->select('u')
+
+            ->where('u.status = :sts')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+        ;
+
+        return $query->getQuery()->getResult();
+    }
+
 
 //    /**
 //     * @return Empleado[] Returns an array of Empleado objects

@@ -11,6 +11,20 @@
     </div>
 
     <div class="card-footer">
-        <button class="btn btn-success pull-left">{{ button_label|default('Guardar') }}</button>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-flex justify-content-between">
+                    <a class="btn btn-primary" href="{{ path('app_ciudad_index') }}">
+                        <i class="bi bi-arrow-left"></i> Volver
+                    </a>
+
+                    <div class="d-flex">
+                        <button class="btn btn-success">
+                            {{ button_label|default('Guardar') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 {{ form_end(form) }}

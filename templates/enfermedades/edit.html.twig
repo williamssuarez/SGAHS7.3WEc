@@ -1,13 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Enfermedades{% endblock %}
+{% block title %}Editar Enfermedad{% endblock %}
+
+{% block titlewrap %}
+    Editar Enfermedad
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_enfermedades_index') }}">Enfermedades</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Enfermedad</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Edit Enfermedades</h1>
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
 
-    {{ include('enfermedades/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_enfermedades_index') }}">back to list</a>
-
-    {{ include('enfermedades/_delete_form.html.twig') }}
+            {{ include('enfermedades/_form.html.twig', {'button_label': 'Actualizar'}) }}
+        </div>
+    </div>
 {% endblock %}

@@ -14,6 +14,7 @@ use App\Repository\TratamientosRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -40,9 +41,7 @@ class PacienteType extends AbstractType
                     'class' => 'form-control'
                 ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Debe ingresar un nombre',
-                    ]),
+                    new NotBlank(message: 'Debe ingresar un nombre'),
                 ]
             ])
             ->add('apellido', TextType::class, [
@@ -54,9 +53,7 @@ class PacienteType extends AbstractType
                     'class' => 'form-control'
                 ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Debe ingresar un apellido',
-                    ]),
+                    new NotBlank(message: 'Debe ingresar un apellido'),
                 ]
             ])
             ->add('cedula', NumberType::class, [
@@ -106,6 +103,20 @@ class PacienteType extends AbstractType
                         )
                     ],
             ])
+            ->add('startTelefono', ChoiceType::class, [
+                'choices'  => [
+                    '0412' => '0412',
+                    '0414' => '0414',
+                    '0416' => '0416',
+                    '0422' => '0422',
+                    '0424' => '0424',
+                    '0426' => '0426',
+                ],
+                'attr' => [
+                    'class' => 'noSrchSelect'
+                ],
+                'mapped' => false,
+            ])
             ->add('telefono', TextType::class, [
                 'label' => 'Telefono del Paciente',
                 'label_attr' => [
@@ -143,6 +154,7 @@ class PacienteType extends AbstractType
                 'attr' => [
                     'class' => 'srchSelect'
                 ],
+                'required' => false,
                 'query_builder' => function (EnfermedadesRepository $er) {
                     return $er->getActivesforSelect();
                 }
@@ -154,6 +166,7 @@ class PacienteType extends AbstractType
                 'attr' => [
                     'class' => 'srchSelect'
                 ],
+                'required' => false,
                 'query_builder' => function (AlergiasRepository $er) {
                     return $er->getActivesforSelect();
                 }
@@ -165,6 +178,7 @@ class PacienteType extends AbstractType
                 'attr' => [
                     'class' => 'srchSelect'
                 ],
+                'required' => false,
                 'query_builder' => function (DiscapacidadesRepository $er) {
                     return $er->getActivesforSelect();
                 }
@@ -176,6 +190,7 @@ class PacienteType extends AbstractType
                 'attr' => [
                     'class' => 'srchSelect'
                 ],
+                'required' => false,
                 'query_builder' => function (TratamientosRepository $er) {
                     return $er->getActivesforSelect();
                 }
@@ -185,6 +200,7 @@ class PacienteType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-check-label'
                 ],
+                'required' => false,
                 'attr' => [
                     'class' => 'form-check-input bigCheckbox'
                 ],

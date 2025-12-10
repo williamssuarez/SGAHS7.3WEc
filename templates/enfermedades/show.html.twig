@@ -1,30 +1,54 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Enfermedades{% endblock %}
+{% block title %}Detalles{% endblock %}
+
+{% block titlewrap %}
+    Detalles
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_enfermedades_index') }}">Enfermedades</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Detalles</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Enfermedades</h1>
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            <div class="card-body">
+                <div class="mb-3">
+                    <h3>{{ entity.nombre }}</h3>
+                </div>
+                <div class="mb-3">
+                    <h3>{{ entity.descripcion }}</h3>
+                </div>
+            </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ enfermedade.id }}</td>
-            </tr>
-            <tr>
-                <th>Nombre</th>
-                <td>{{ enfermedade.nombre }}</td>
-            </tr>
-            <tr>
-                <th>Descripcion</th>
-                <td>{{ enfermedade.descripcion }}</td>
-            </tr>
-        </tbody>
-    </table>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-primary" href="{{ path('app_enfermedades_index') }}">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
 
-    <a href="{{ path('app_enfermedades_index') }}">back to list</a>
+                            <a class="btn btn-success" href="{{ path('app_enfermedades_edit', {'id': entity.id}) }}">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
 
-    <a href="{{ path('app_enfermedades_edit', {'id': enfermedade.id}) }}">edit</a>
+                            <div class="d-flex">
+                                <button class="btn btn-danger"
+                                        onclick="softDeleteRecord(
+                                            '{{ path('app_enfermedades_delete', {'id': entity.id}) }}',
+                                            '{{ csrf_token('delete' ~ entity.id) }}'
+                                            )">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    {{ include('enfermedades/_delete_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}

@@ -33,7 +33,61 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import esLocale from '@fullcalendar/core/locales/es';
-import 'inputmask';
+import Swal from 'sweetalert2'
+
+/* SWEETALERTS START */
+function softDeleteRecord(deleteUrl, csrfToken) {
+    Swal.fire({
+        title: '¿Eliminar Registro?',
+        text: 'Está a punto de marcar este registro como inactivo. ¿Desea continuar?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, Eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            //loading
+            Swal.fire({
+                title: 'Eliminando...',
+                text: 'Por favor espere mientras se procesa la solicitud.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            $.ajax({
+                url: deleteUrl, // Use the URL passed as the first argument
+                type: 'POST',
+                data: {
+                    _token: csrfToken
+                },
+                success: function(response) {
+                    Swal.fire({
+                        title: '¡Eliminado!',
+                        text: 'El registro ha sido marcado como inactivo.',
+                        icon: 'success',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Ok'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire(
+                        'Error!',
+                        'No se pudo completar la operación: ' + xhr.responseText,
+                        'error'
+                    );
+                }
+            });
+        }
+    });
+}
+window.softDeleteRecord = softDeleteRecord;
+/* SWEETALERTS END */
 
 $(document).ready(function () {
     $('.dtHere').DataTable({
@@ -72,8 +126,7 @@ $(document).ready(function () {
         language: "es"
     });
 
-    //inputmask
-    $(".mask").inputmask();
+
 
     //pls work
     $('.number-only').on('keypress keyup blur', function (e) {

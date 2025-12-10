@@ -1,34 +1,57 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Medicamentos{% endblock %}
+{% block title %}Detalles{% endblock %}
+
+{% block titlewrap %}
+    Detalles
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_medicamentos_index') }}">Medicamentos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Detalles</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Medicamentos</h1>
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            <div class="card-body">
+                <div class="mb-3">
+                    <h3>{{ entity.nombre }}</h3>
+                </div>
+                <div class="mb-3">
+                    <h3>{{ entity.descripcion }}</h3>
+                </div>
+                <div class="mb-3">
+                    <h3>{{ entity.miligramos }}</h3>
+                </div>
+            </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ medicamento.id }}</td>
-            </tr>
-            <tr>
-                <th>Nombre</th>
-                <td>{{ medicamento.nombre }}</td>
-            </tr>
-            <tr>
-                <th>Descripcion</th>
-                <td>{{ medicamento.descripcion }}</td>
-            </tr>
-            <tr>
-                <th>Miligramos</th>
-                <td>{{ medicamento.miligramos }}</td>
-            </tr>
-        </tbody>
-    </table>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-primary" href="{{ path('app_medicamentos_index') }}">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
 
-    <a href="{{ path('app_medicamentos_index') }}">back to list</a>
+                            <a class="btn btn-success" href="{{ path('app_medicamentos_edit', {'id': entity.id}) }}">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
 
-    <a href="{{ path('app_medicamentos_edit', {'id': medicamento.id}) }}">edit</a>
+                            <div class="d-flex">
+                                <button class="btn btn-danger"
+                                        onclick="softDeleteRecord(
+                                            '{{ path('app_medicamentos_delete', {'id': entity.id}) }}',
+                                            '{{ csrf_token('delete' ~ entity.id) }}'
+                                            )">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    {{ include('medicamentos/_delete_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}

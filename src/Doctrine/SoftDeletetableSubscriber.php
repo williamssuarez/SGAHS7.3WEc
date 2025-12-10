@@ -11,7 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PrePersistEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
-use PHPUnit\Runner\readonly;
+//use PHPUnit\Runner\readonly;
 use Symfony\Bundle\SecurityBundle\Security; // For Symfony 6.2+
 use App\Entity\User; // Your User entity class
 

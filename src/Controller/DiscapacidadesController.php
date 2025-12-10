@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Discapacidades;
+use App\Entity\StatusRecord;
 use App\Form\DiscapacidadesType;
 use App\Repository\DiscapacidadesRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,7 +20,7 @@ final class DiscapacidadesController extends AbstractController
     public function index(DiscapacidadesRepository $discapacidadesRepository): Response
     {
         return $this->render('discapacidades/index.html.twig', [
-            'discapacidades' => $discapacidadesRepository->findAll(),
+            'entities' => $discapacidadesRepository->getActivesforTable(),
         ]);
     }
 
@@ -33,49 +35,76 @@ final class DiscapacidadesController extends AbstractController
             $entityManager->persist($discapacidade);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Registro Agregado.');
             return $this->redirectToRoute('app_discapacidades_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('discapacidades/new.html.twig', [
-            'discapacidade' => $discapacidade,
+            'entity' => $discapacidade,
             'form' => $form,
         ]);
     }
 
     #[Route('/{id}', name: 'app_discapacidades_show', methods: ['GET'])]
-    public function show(Discapacidades $discapacidade): Response
+    public function show(Discapacidades $discapacidades, EntityManagerInterface $entityManager): Response
     {
+        $discapacidad = $entityManager->getRepository(Discapacidades::class)->findOneBy([
+            'id' => $discapacidades->getId(),
+            'status' => $entityManager->getRepository(StatusRecord::class)->getActive()
+        ]);
+
+        if (!$discapacidad) {
+            $this->addFlash('danger', 'Informacion no encontrada');
+            return $this->redirectToRoute('app_discapacidades_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         return $this->render('discapacidades/show.html.twig', [
-            'discapacidade' => $discapacidade,
+            'entity' => $discapacidad,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_discapacidades_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Discapacidades $discapacidade, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Discapacidades $discapacidades, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(DiscapacidadesType::class, $discapacidade);
+        $discapacidad = $entityManager->getRepository(Discapacidades::class)->findOneBy([
+            'id' => $discapacidades->getId(),
+            'status' => $entityManager->getRepository(StatusRecord::class)->getActive()
+        ]);
+
+        if (!$discapacidad) {
+            $this->addFlash('danger', 'Informacion no encontrada');
+            return $this->redirectToRoute('app_discapacidades_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $form = $this->createForm(DiscapacidadesType::class, $discapacidad);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
+            $this->addFlash('success', 'Registro Editado');
             return $this->redirectToRoute('app_discapacidades_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('discapacidades/edit.html.twig', [
-            'discapacidade' => $discapacidade,
+            'entity' => $discapacidad,
             'form' => $form,
         ]);
     }
 
     #[Route('/{id}', name: 'app_discapacidades_delete', methods: ['POST'])]
-    public function delete(Request $request, Discapacidades $discapacidade, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Discapacidades $discapacidad, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$discapacidade->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($discapacidade);
+        $submittedToken = $request->request->get('_token');
+
+        if ($this->isCsrfTokenValid('delete' . $discapacidad->getId(), $submittedToken)) {
+            $discapacidad->setStatus($entityManager->getRepository(StatusRecord::class)->getRemove());
+            $entityManager->persist($discapacidad);
             $entityManager->flush();
+        } else {
+            return new JsonResponse('Token Invalido', Response::HTTP_UNAUTHORIZED);
         }
 
-        return $this->redirectToRoute('app_discapacidades_index', [], Response::HTTP_SEE_OTHER);
+        return new JsonResponse('Eliminado con exito', Response::HTTP_OK);
     }
 }

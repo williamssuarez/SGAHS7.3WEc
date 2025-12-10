@@ -33,4 +33,20 @@ class AlergiasRepository extends ServiceEntityRepository
 
         return $query;
     }
+
+    public function getActivesforTable()
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb
+            ->select('u')
+
+            ->where('u.status = :sts')
+            ->addOrderBy('u.nombre', 'ASC')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+        ;
+
+        return $query->getQuery()->getResult();
+    }
 }

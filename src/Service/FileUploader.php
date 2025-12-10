@@ -23,7 +23,10 @@ class FileUploader
         try {
             $file->move($this->getTargetDirectory(), $fileName);
         } catch (FileException $e) {
-            // ... handle exception if something happens during file upload
+            throw new \RuntimeException('Unable to upload the file.', 0, $e);
+
+            // para pasar el error crudo
+            // throw $e;
         }
 
         return $fileName;

@@ -1,13 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Alergias{% endblock %}
+{% block title %}Editar Alergia{% endblock %}
+
+{% block titlewrap %}
+    Editar Alergia
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_alergias_index') }}">Alergias</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Alergia</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Edit Alergias</h1>
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
 
-    {{ include('alergias/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_alergias_index') }}">back to list</a>
-
-    {{ include('alergias/_delete_form.html.twig') }}
+            {{ include('alergias/_form.html.twig', {'button_label': 'Actualizar'}) }}
+        </div>
+    </div>
 {% endblock %}

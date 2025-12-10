@@ -305,7 +305,7 @@ class Paciente
         return $this->fechaNacimiento;
     }
 
-    public function setFechaNacimiento(\DateTime $fechaNacimiento): static
+    public function setFechaNacimiento(?\DateTime $fechaNacimiento): static
     {
         $this->fechaNacimiento = $fechaNacimiento;
 

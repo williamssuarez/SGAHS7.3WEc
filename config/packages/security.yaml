@@ -36,9 +36,19 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/login, roles: PUBLIC_ACCESS  }
+        - { path: ^/register, roles: PUBLIC_ACCESS  }
+
+        - { path: ^/dashboard, roles: ROLE_USER }
         - { path: ^/empleado, roles: ROLE_USER }
         - { path: ^/ciudad, roles: ROLE_USER }
-        - { path: ^/dashboard, roles: ROLE_USER }
+        - { path: ^/enfermedades, roles: ROLE_USER }
+        - { path: ^/alergias, roles: ROLE_USER }
+        - { path: ^/medicamentos, roles: ROLE_USER }
+        - { path: ^/tratamientos, roles: ROLE_USER }
+        - { path: ^/discapacidades, roles: ROLE_USER }
+        - { path: ^/paciente, roles: ROLE_USER }
+        - { path: ^/historia/paciente, roles: ROLE_USER }
 
 when@test:
     security:

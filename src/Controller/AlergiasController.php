@@ -3,10 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\Alergias;
+use App\Entity\Enfermedades;
+use App\Entity\StatusRecord;
 use App\Form\AlergiasType;
 use App\Repository\AlergiasRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,7 +21,7 @@ final class AlergiasController extends AbstractController
     public function index(AlergiasRepository $alergiasRepository): Response
     {
         return $this->render('alergias/index.html.twig', [
-            'alergias' => $alergiasRepository->findAll(),
+            'entities' => $alergiasRepository->getActivesforTable(),
         ]);
     }
 
@@ -33,37 +36,59 @@ final class AlergiasController extends AbstractController
             $entityManager->persist($alergia);
             $entityManager->flush();
 
+            $this->addFlash('success', 'Registro Agregado.');
             return $this->redirectToRoute('app_alergias_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('alergias/new.html.twig', [
-            'alergia' => $alergia,
+            'entity' => $alergia,
             'form' => $form,
         ]);
     }
 
     #[Route('/{id}', name: 'app_alergias_show', methods: ['GET'])]
-    public function show(Alergias $alergia): Response
+    public function show(Alergias $alergias, EntityManagerInterface $entityManager): Response
     {
+        $alergia = $entityManager->getRepository(Alergias::class)->findOneBy([
+            'id' => $alergias->getId(),
+            'status' => $entityManager->getRepository(StatusRecord::class)->getActive()
+        ]);
+
+        if (!$alergia) {
+            $this->addFlash('danger', 'Informacion no encontrada');
+            return $this->redirectToRoute('app_alergias_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         return $this->render('alergias/show.html.twig', [
-            'alergia' => $alergia,
+            'entity' => $alergia,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_alergias_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Alergias $alergia, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Alergias $alergias, EntityManagerInterface $entityManager): Response
     {
+        $alergia = $entityManager->getRepository(Alergias::class)->findOneBy([
+            'id' => $alergias->getId(),
+            'status' => $entityManager->getRepository(StatusRecord::class)->getActive()
+        ]);
+
+        if (!$alergia) {
+            $this->addFlash('danger', 'Informacion no encontrada');
+            return $this->redirectToRoute('app_alergias_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         $form = $this->createForm(AlergiasType::class, $alergia);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
+            $this->addFlash('success', 'Registro Editado.');
             return $this->redirectToRoute('app_alergias_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('alergias/edit.html.twig', [
-            'alergia' => $alergia,
+            'entity' => $alergia,
             'form' => $form,
         ]);
     }
@@ -71,11 +96,16 @@ final class AlergiasController extends AbstractController
     #[Route('/{id}', name: 'app_alergias_delete', methods: ['POST'])]
     public function delete(Request $request, Alergias $alergia, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$alergia->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($alergia);
+        $submittedToken = $request->request->get('_token');
+
+        if ($this->isCsrfTokenValid('delete' . $alergia->getId(), $submittedToken)) {
+            $alergia->setStatus($entityManager->getRepository(StatusRecord::class)->getRemove());
+            $entityManager->persist($alergia);
             $entityManager->flush();
+        } else {
+            return new JsonResponse('Token Invalido', Response::HTTP_UNAUTHORIZED);
         }
 
-        return $this->redirectToRoute('app_alergias_index', [], Response::HTTP_SEE_OTHER);
+        return new JsonResponse('Eliminado con exito', Response::HTTP_OK);
     }
 }

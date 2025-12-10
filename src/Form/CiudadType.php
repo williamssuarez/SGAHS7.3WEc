@@ -23,9 +23,7 @@ class CiudadType extends AbstractType
                     'class' => 'form-control'
                 ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Debe ingresar un nombre',
-                    ]),
+                    new NotBlank(message: 'Debe ingresar un nombre'),
                 ]
             ])
             ->add('poblacion', TextType::class, [
@@ -37,9 +35,7 @@ class CiudadType extends AbstractType
                     'class' => 'form-control'
                 ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Debe ingresar una cantidad aproximada de poblacion',
-                    ]),
+                    new NotBlank(message: 'Debe ingresar una cantidad aproximada de poblacion'),
                 ]
             ])
         ;
