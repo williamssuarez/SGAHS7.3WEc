@@ -33,6 +33,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import esLocale from '@fullcalendar/core/locales/es';
+import 'inputmask';
 
 $(document).ready(function () {
     $('.dtHere').DataTable({
@@ -70,6 +71,9 @@ $(document).ready(function () {
         minimumResultsForSearch: Infinity,
         language: "es"
     });
+
+    //inputmask
+    $(".mask").inputmask();
 
     //pls work
     $('.number-only').on('keypress keyup blur', function (e) {

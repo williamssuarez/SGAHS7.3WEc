@@ -29,6 +29,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         {{form_label( form.nombre ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
                         {{form_widget( form.nombre ) }}
                     </div>
                 </div>
@@ -37,6 +38,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         {{form_label( form.apellido ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
                         {{form_widget( form.apellido ) }}
                     </div>
                 </div>
@@ -45,8 +47,26 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         {{form_label( form.cedula ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
                         {{form_widget( form.cedula ) }}
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.fechaNacimiento ) }}
+                        {{form_widget( form.fechaNacimiento ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        {{form_widget( form.foto ) }}
+                        {{form_label( form.foto ) }}
+                    </div>
+                    <small>Archivos <strong>JPG y PNG</strong>, tamaño máximo <strong>2mb</strong></small> <p class="text-justify" style="font-size: 10pt; font-style: italic;">Tomele una foto al paciente y subala para guardarla (opcional)</p>
                 </div>
             </div>
         </div>

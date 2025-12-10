@@ -70,6 +70,12 @@ class Paciente
     #[ORM\OneToMany(targetEntity: HistoriaPaciente::class, mappedBy: 'paciente')]
     private Collection $historiaPacientes;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $fechaNacimiento = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $foto = null;
+
     public function __construct()
     {
         $this->enfermedades = new ArrayCollection();
@@ -290,6 +296,30 @@ class Paciente
                 $historiaPaciente->setPaciente(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFechaNacimiento(): ?\DateTime
+    {
+        return $this->fechaNacimiento;
+    }
+
+    public function setFechaNacimiento(\DateTime $fechaNacimiento): static
+    {
+        $this->fechaNacimiento = $fechaNacimiento;
+
+        return $this;
+    }
+
+    public function getFoto(): ?string
+    {
+        return $this->foto;
+    }
+
+    public function setFoto(?string $foto): static
+    {
+        $this->foto = $foto;
 
         return $this;
     }

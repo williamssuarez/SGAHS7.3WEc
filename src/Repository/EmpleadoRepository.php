@@ -26,7 +26,7 @@ class EmpleadoRepository extends ServiceEntityRepository
             ->select('u')
 
             ->where('u.status = :sts')
-            ->addOrderBy('u.name', 'ASC')
+            ->addOrderBy('u.nombre', 'ASC')
 
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
         ;

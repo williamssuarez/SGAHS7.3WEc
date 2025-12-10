@@ -14,12 +14,15 @@ use App\Repository\TratamientosRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -65,6 +68,43 @@ class PacienteType extends AbstractType
                     'class' => 'form-control number-only'
                 ],
                 'required' => true,
+            ])
+            ->add(
+                'fechaNacimiento',
+                DateType::class,
+                [
+                    //'format' => 'dd/MM/yyyy',
+                    'widget' => 'single_text',
+                    'label' => 'Fecha de Nacimiento',
+                    'label_attr' => [
+                        'class' => 'form-label mask'
+                    ],
+                    'attr' => [
+                        'class' => 'mask form-control',
+                        'data-inputmask' => " 'alias': 'date', 'clearIncomplete': true "
+                    ],
+                    'required' => false,
+                    //'data' => new \DateTime(),
+                ]
+            )
+            ->add('foto', FileType::class,
+                [
+                    'label' => 'Foto del Paciente',
+                    'label_attr' => [
+                        'class' => 'input-group-text'
+                    ],
+                    'attr' => [
+                        'class' => 'form-control'
+                    ],
+                    'mapped' => false,
+                    'required' => false,
+                    'constraints' => [
+                        new File(
+                            maxSize: '2024k',
+                            extensions: ['jpg', 'png'],
+                            extensionsMessage: 'Por Favor suba un documento valido',
+                        )
+                    ],
             ])
             ->add('telefono', TextType::class, [
                 'label' => 'Telefono del Paciente',
