@@ -21,17 +21,14 @@ class PacienteRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('u');
 
-        $query = $qb
+        return $qb
             ->distinct()
             ->select('u')
 
             ->where('u.status = :sts')
             ->addOrderBy('u.nombre', 'ASC')
 
-            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
-        ;
-
-        return $query;
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive());
     }
 
     public function getActivesforTable()
@@ -49,28 +46,23 @@ class PacienteRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-//    /**
-//     * @return Paciente[] Returns an array of Paciente objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getPatientbyValueforCheck($field, $value, $id)
+    {
+        $qb = $this->createQueryBuilder('u');
+        $whereField = 'u.' . $field . ' = :value';
 
-//    public function findOneBySomeField($value): ?Paciente
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $query = $qb
+            ->select('u')
+
+            ->where('u.status = :sts')
+            ->andWhere($whereField)
+            ->andWhere('u.id != :patientId')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('value', $value)
+            ->setParameter('patientId', $id)
+        ;
+
+        return $query->getQuery()->getOneOrNullResult();
+    }
 }

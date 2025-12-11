@@ -30,11 +30,7 @@ final class PacienteController extends AbstractController
     }
 
     #[Route('/new', name: 'app_paciente_new', methods: ['GET', 'POST'])]
-    public function new(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        PatientProcessor $patientProcessor
-    ): Response
+    public function new(Request $request, PatientProcessor $patientProcessor): Response
     {
         $paciente = new Paciente();
         $form = $this->createForm(PacienteType::class, $paciente);
@@ -42,8 +38,6 @@ final class PacienteController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $telefono = $form->get('startTelefono')->getData() . '-' . $paciente->getTelefono();
-                $paciente->setTelefono($telefono);
                 // dejar que el servicio procese el form
                 $patientProcessor->processFormSubmission($paciente, $form->get('foto')->getData());
 
@@ -89,15 +83,24 @@ final class PacienteController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_paciente_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Paciente $paciente, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Paciente $paciente, EntityManagerInterface $entityManager, PatientProcessor $patientProcessor): Response
     {
         $form = $this->createForm(PacienteType::class, $paciente);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            try {
+                // dejar que el servicio procese el form
 
-            return $this->redirectToRoute('app_paciente_index', [], Response::HTTP_SEE_OTHER);
+                $patientProcessor->processFormSubmission($paciente, $form->get('foto')->getData());
+
+                $this->addFlash('success', 'Registro Editado.');
+                return $this->redirectToRoute('app_paciente_index', [], Response::HTTP_SEE_OTHER);
+
+            } catch (BusinessRuleException $e) {
+                //Obtener el mensaje especifico y mostrar el error
+                $form->addError(new FormError($e->getMessage()));
+            }
         }
 
         return $this->render('paciente/edit.html.twig', [

@@ -7,6 +7,8 @@ use App\Entity\Discapacidades;
 use App\Entity\Enfermedades;
 use App\Entity\Paciente;
 use App\Entity\Tratamientos;
+use App\Form\DataTransformer\PhoneNumberTransformer;
+use App\Form\Type\PhoneType;
 use App\Repository\AlergiasRepository;
 use App\Repository\DiscapacidadesRepository;
 use App\Repository\EnfermedadesRepository;
@@ -22,6 +24,7 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\IsTrue;
@@ -104,7 +107,7 @@ class PacienteType extends AbstractType
                         )
                     ],
             ])
-            ->add('startTelefono', ChoiceType::class, [
+            /*->add('startTelefono', ChoiceType::class, [
                 'choices'  => [
                     '0412' => '0412',
                     '0414' => '0414',
@@ -128,6 +131,11 @@ class PacienteType extends AbstractType
                     'maxlength' => '7'
                 ],
                 'required' => true,
+                'mapped' => false,
+            ])*/
+            ->add('telefono', PhoneType::class, [ // This will use the entity's 'telefono' property
+                'label' => 'Teléfono',
+                //'mapped' => false,
             ])
             ->add('correo', EmailType::class, [
                 'label' => 'Correo del Paciente',
@@ -214,6 +222,7 @@ class PacienteType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Paciente::class,
+            'empty_data' => fn (FormInterface $form) => $form->get('startTelefono')->getData() . '-' . $form->get('telefonoExtension')->getData(),
         ]);
     }
 }

@@ -2,6 +2,7 @@
 // src/Service/FileUploader.php
 namespace App\Service;
 
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -11,6 +12,7 @@ class FileUploader
     public function __construct(
         private string $targetDirectory,
         private SluggerInterface $slugger,
+        private  readonly Filesystem $filesystem,
     ) {
     }
 
@@ -30,6 +32,20 @@ class FileUploader
         }
 
         return $fileName;
+    }
+
+    public function delete(string $fileName): void
+    {
+        $filePath = $this->getTargetDirectory() . '/' . $fileName;
+
+        // Check if the file exists and is not a default/placeholder image
+        if ($this->filesystem->exists($filePath)) {
+            try {
+                $this->filesystem->remove($filePath);
+            } catch (\Exception $e) {
+                // Create a log service and log this
+            }
+        }
     }
 
     public function getTargetDirectory(): string

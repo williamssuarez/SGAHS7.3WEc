@@ -3,17 +3,34 @@
 
 namespace App\Twig;
 
+use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension
 {
+    private $requestStack;
+
+    public function __construct(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+    }
+
     public function getFilters(): array
     {
         return [
             // Registers a new filter named 'calculate_age' that calls the 'calculateAge' method
             new TwigFilter('calculate_age', $this->calculateAge(...)),
             new TwigFilter('time_ago', $this->getTimeAgo(...)),
+        ];
+    }
+
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('is_active', $this->isActive(...)),
+            new TwigFunction('is_tree_active', $this->isTreeActive(...)),
         ];
     }
 
@@ -94,5 +111,47 @@ class AppExtension extends AbstractExtension
 
         // Return the final formatted string
         return sprintf('Hace %d %s', $value, $unit);
+    }
+
+    /**
+     * Checks if the current route matches any of the given routes.
+     * Use this to apply the 'active' class to an <a> or <li> element.
+     *
+     * @param string|array $routes The route name(s) to check against.
+     * @param string $class The class name to return (e.g., 'active').
+     * @return string The class name or an empty string.
+     */
+    public function isActive($routes, string $class = 'active'): string
+    {
+        $currentRoute = $this->requestStack->getCurrentRequest()?->get('_route');
+
+        if (!is_array($routes)) {
+            $routes = [$routes];
+        }
+
+        if (in_array($currentRoute, $routes)) {
+            return $class;
+        }
+
+        return '';
+    }
+
+    /**
+     * Checks if any route in the list is active, used for AdminLTE tree-view state.
+     *
+     * @param array $childRoutes A list of route names inside the tree.
+     * @return string 'menu-open' or an empty string.
+     */
+    public function isTreeActive(array $childRoutes): string
+    {
+        // Reuse the isActive logic, but set 'menu-open' and 'active' on the parent
+        $currentRoute = $this->requestStack->getCurrentRequest()?->get('_route');
+
+        if (in_array($currentRoute, $childRoutes)) {
+            // Must return both for the parent <li>: 'active' for highlight, 'menu-open' for expanded state
+            return 'menu-open';
+        }
+
+        return '';
     }
 }

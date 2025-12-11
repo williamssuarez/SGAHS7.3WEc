@@ -1,0 +1,23 @@
+# config/packages/menu.yaml
+parameters:
+    app_menu.sidebar:
+        -
+            title: Dashboard
+            icon: 'bi bi-house-door-fill'
+            route: app_dashboard
+        -
+            title: Configuraciones
+            icon: 'bi bi-gear'
+            children:
+                -   title: Atencion
+                    icon: 'bi bi-tools'
+                    children: # <-- This triggers the recursion
+                        - { title: Empleados, route: app_empleado_index, icon: 'bi bi-person-lines-fill' }
+                        - { title: Ciudades, route: app_ciudad_index, icon: 'bi bi-journal-check' }
+                - { title: Alergias, route: app_alergias_index }
+                - { title: Discapacidades, route: app_discapacidades_index }
+                - { title: Tratamientos, route: app_tratamientos_index }
+        -
+            title: Pacientes
+            icon: 'bi bi-people'
+            route: app_paciente_index
