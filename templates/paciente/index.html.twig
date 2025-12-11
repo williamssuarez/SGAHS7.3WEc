@@ -36,6 +36,8 @@
                     <th>Telefono</th>
                     <th>Correo</th>
                     <th>Direccion</th>
+                    {#<th>Edad</th>
+                    <th>Creado</th>#}
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -49,6 +51,8 @@
                         <td>{{ paciente.telefono }}</td>
                         <td>{{ paciente.correo }}</td>
                         <td>{{ paciente.direccion }}</td>
+                        {#<td>{{ paciente.fechaNacimiento|calculate_age }}</td>
+                        <td>{{ paciente.created|time_ago }}</td>#}
                         <td>
                             <a class="btn btn-secondary" href="{{ path('app_paciente_show', {'id': paciente.id}) }}">
                                 <i class="bi bi-search"></i> Detalles

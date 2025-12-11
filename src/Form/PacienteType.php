@@ -62,7 +62,8 @@ class PacienteType extends AbstractType
                     'class' => 'form-label'
                 ],
                 'attr' => [
-                    'class' => 'form-control number-only'
+                    'class' => 'form-control number-only',
+                    'maxlength' => '9'
                 ],
                 'required' => true,
             ])
@@ -123,7 +124,8 @@ class PacienteType extends AbstractType
                     'class' => 'form-label'
                 ],
                 'attr' => [
-                    'class' => 'form-control number-only'
+                    'class' => 'form-control number-only',
+                    'maxlength' => '7'
                 ],
                 'required' => true,
             ])
