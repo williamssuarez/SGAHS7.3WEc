@@ -76,6 +76,12 @@ class Paciente
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $foto = null;
 
+    #[ORM\Column(length: 255, nullable: false)]
+    private ?string $sexo;
+
+    #[ORM\Column]
+    private ?bool $fallecido = null;
+
     public function __construct()
     {
         $this->enfermedades = new ArrayCollection();
@@ -320,6 +326,30 @@ class Paciente
     public function setFoto(?string $foto): static
     {
         $this->foto = $foto;
+
+        return $this;
+    }
+
+    public function getSexo(): ?string
+    {
+        return $this->sexo;
+    }
+
+    public function setSexo(string $sexo): static
+    {
+        $this->sexo = $sexo;
+
+        return $this;
+    }
+
+    public function isFallecido(): ?bool
+    {
+        return $this->fallecido;
+    }
+
+    public function setFallecido(bool $fallecido): static
+    {
+        $this->fallecido = $fallecido;
 
         return $this;
     }

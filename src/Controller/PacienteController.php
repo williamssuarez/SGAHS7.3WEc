@@ -39,6 +39,7 @@ final class PacienteController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 // dejar que el servicio procese el form
+                $paciente->setFallecido(0);
                 $patientProcessor->processFormSubmission($paciente, $form->get('foto')->getData());
 
                 $this->addFlash('success', 'Registro Agregado.');

@@ -2,6 +2,7 @@ twig:
     file_name_pattern: '*.twig'
     globals:
         sidebar_menu: '%app_menu.sidebar%'
+        paciente_photo_path: '%app.paciente_photo_path%'
 
 when@test:
     twig:

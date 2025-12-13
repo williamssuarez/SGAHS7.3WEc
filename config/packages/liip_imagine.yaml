@@ -1,0 +1,33 @@
+# config/packages/liip_imagine.yaml
+liip_imagine:
+    driver: "gd"
+    filter_sets:
+        # -----------------------------------------------------------------
+        # 1. Thumbnail Filter (Used for lists/data tables)
+        # -----------------------------------------------------------------
+        patient_thumb:
+            quality: 75
+            # Adjust the path resolution (optional, but good practice)
+            # cache: ~
+            filters:
+                # Resize and crop the image to exactly 100x100
+                thumbnail:
+                    size: [100, 100]
+                    mode: outbound  # Crops to fit the box, ensuring aspect ratio is maintained inside the box
+
+        # -----------------------------------------------------------------
+        # 2. Profile Photo Filter (Used for the edit form or profile page)
+        # -----------------------------------------------------------------
+        patient_profile:
+            quality: 75
+            filters:
+                thumbnail:
+                    size: [400, 400]
+                    mode: inset
+
+        patient_viewer_full:
+            quality: 100
+            filters:
+                thumbnail:
+                    size: [2200, 2200]
+                    mode: inset

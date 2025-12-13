@@ -3,6 +3,9 @@
 
 namespace App\Twig;
 
+use App\Entity\StatusRecord;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -10,11 +13,13 @@ use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension
 {
-    private $requestStack;
+    private RequestStack $requestStack;
+    private EntityManagerInterface $entityManager;
 
-    public function __construct(RequestStack $requestStack)
+    public function __construct(RequestStack $requestStack, EntityManagerInterface $entityManager)
     {
         $this->requestStack = $requestStack;
+        $this->entityManager = $entityManager;
     }
 
     public function getFilters(): array
@@ -23,6 +28,7 @@ class AppExtension extends AbstractExtension
             // Registers a new filter named 'calculate_age' that calls the 'calculateAge' method
             new TwigFilter('calculate_age', $this->calculateAge(...)),
             new TwigFilter('time_ago', $this->getTimeAgo(...)),
+            new TwigFilter('public_username', $this->getPublicUsername(...)),
         ];
     }
 
@@ -106,11 +112,38 @@ class AppExtension extends AbstractExtension
         }
         // Check seconds (or just return 'just now')
         else {
-            return 'Hace un momento';
+            return 'un momento';
         }
 
         // Return the final formatted string
         return sprintf('Hace %d %s', $value, $unit);
+    }
+
+    /**
+     * Returns a username string by a specific id.
+     *
+     * @param int|null $id The id to search
+     * @return string
+     */
+    public function getPublicUsername(?int $id): string
+    {
+        if (!$id) {
+            return 'No encontrado';
+        }
+
+        if ($id == -1){
+            $name = 'Sistema';
+        } else {
+            $user = $this->entityManager->getRepository(User::class)->findOneBy([
+                'id' => $id,
+                'status' => $this->entityManager->getRepository(StatusRecord::class)->getActive()
+            ]);
+
+            $name = sprintf('usuario %s %s', $user->getFirstName(), $user->getLastName());
+        }
+
+        // Return the final formatted string
+        return $name;
     }
 
     /**

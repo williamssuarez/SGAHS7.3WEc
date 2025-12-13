@@ -69,6 +69,7 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         {{form_label( form.fechaNacimiento ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
                         {{form_widget( form.fechaNacimiento ) }}
                     </div>
                 </div>
@@ -116,6 +117,15 @@
                         {{form_label( form.correo ) }}
                         <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
                         {{form_widget( form.correo ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.sexo ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.sexo ) }}
                     </div>
                 </div>
             </div>

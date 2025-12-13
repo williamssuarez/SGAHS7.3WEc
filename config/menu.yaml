@@ -9,14 +9,16 @@ parameters:
             title: Configuraciones
             icon: 'bi bi-gear'
             children:
-                -   title: Atencion
+                -   title: Sistema
                     icon: 'bi bi-tools'
                     children: # <-- This triggers the recursion
-                        - { title: Empleados, route: app_empleado_index, icon: 'bi bi-person-lines-fill' }
+                        - { title: Usuarios, route: app_empleado_index, icon: 'bi bi-person-lines-fill' }
                         - { title: Ciudades, route: app_ciudad_index, icon: 'bi bi-journal-check' }
                 - { title: Alergias, route: app_alergias_index }
                 - { title: Discapacidades, route: app_discapacidades_index }
                 - { title: Tratamientos, route: app_tratamientos_index }
+                - { title: Enfermedades, route: app_enfermedades_index }
+                - { title: Medicamentos, route: app_medicamentos_index }
         -
             title: Pacientes
             icon: 'bi bi-people'

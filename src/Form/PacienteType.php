@@ -107,32 +107,17 @@ class PacienteType extends AbstractType
                         )
                     ],
             ])
-            /*->add('startTelefono', ChoiceType::class, [
-                'choices'  => [
-                    '0412' => '0412',
-                    '0414' => '0414',
-                    '0416' => '0416',
-                    '0422' => '0422',
-                    '0424' => '0424',
-                    '0426' => '0426',
-                ],
-                'attr' => [
-                    'class' => 'noSrchSelect'
-                ],
-                'mapped' => false,
-            ])
-            ->add('telefono', TextType::class, [
-                'label' => 'Telefono del Paciente',
+            ->add('sexo', ChoiceType::class, [
+                'label' => 'Sexo',
                 'label_attr' => [
                     'class' => 'form-label'
                 ],
-                'attr' => [
-                    'class' => 'form-control number-only',
-                    'maxlength' => '7'
+                'choices'  => [
+                    'Masculino' => 'M',
+                    'Femenino' => 'F'
                 ],
-                'required' => true,
-                'mapped' => false,
-            ])*/
+                'attr' => ['class' => 'noSrchSelect']
+            ])
             ->add('telefono', PhoneType::class, [ // This will use the entity's 'telefono' property
                 'label' => 'Teléfono',
                 //'mapped' => false,

@@ -29,7 +29,7 @@
             <table class="table table-striped dtHere">
                 <thead>
                 <tr>
-                    <th>Id</th>
+                    <th>#</th>
                     <th>Nombre</th>
                     <th>Apellido</th>
                     <th>Cedula</th>
@@ -44,7 +44,18 @@
                 <tbody>
                 {% for paciente in pacientes %}
                     <tr class="align-middle">
-                        <td>{{ paciente.id }}</td>
+                        <td>
+                            {% if paciente.foto %}
+                                {% set full_photo_path = paciente_photo_path ~ paciente.foto %}
+                                <img
+                                    src="{{ asset(full_photo_path) | imagine_filter('patient_thumb') }}"
+                                    alt="{{ paciente.nombre }} Thumbnail Photo"
+                                    style="cursor: pointer; max-width: 50px; height: auto; border-radius: 100%;"
+                                >
+                            {% else %}
+                                <p>---</p>
+                            {% endif %}
+                        </td>
                         <td>{{ paciente.nombre }}</td>
                         <td>{{ paciente.apellido }}</td>
                         <td>{{ paciente.cedula }}</td>

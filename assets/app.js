@@ -16,6 +16,7 @@ import 'select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css';
 import 'jsvectormap/dist/jsvectormap.css';
 import 'apexcharts/dist/apexcharts.css';
 import 'admin-lte/dist/css/adminlte.css';
+import 'viewerjs/dist/viewer.css';
 
 // js goes here
 import $ from 'jquery';
@@ -33,7 +34,8 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import esLocale from '@fullcalendar/core/locales/es';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import Viewer from 'viewerjs';
 
 /* SWEETALERTS START */
 function softDeleteRecord(deleteUrl, csrfToken) {
@@ -126,9 +128,7 @@ $(document).ready(function () {
         language: "es"
     });
 
-
-
-    //pls work
+    //make inputs number only
     $('.number-only').on('keypress keyup blur', function (e) {
         // Remove non-digit characters if pasted/typed
         $(this).val($(this).val().replace(/[^\d].+/, ""));
@@ -138,6 +138,8 @@ $(document).ready(function () {
             e.preventDefault();
         }
     });
+
+    // --- Start Event Listeners for tabs ---
     let isProgrammaticSwitch = false;
     const tabList = $('#formTab button');
     let currentTabIndex = 0;
@@ -219,8 +221,6 @@ $(document).ready(function () {
         }
     }
 
-    // --- Event Listeners for tabs ---
-
     // Initialize on page load (starts on tab 0)
     updateNavButtons();
     updateProgressBar();
@@ -260,6 +260,27 @@ $(document).ready(function () {
         updateNavButtons();
     });
     // ---End of Event Listeners for tabs ---
+
+    // ---Start of Viewer.js definition ---
+    const container = document.getElementById('photo-container');
+    if (container) {
+        new Viewer(container, {
+            inline: false,
+            title: false,
+            navbar: false,
+            zIndex: 9999,
+            url(image) {
+                return image.getAttribute('data-original');
+            },
+            toolbar: {
+                zoomIn: true,
+                zoomOut: true,
+                oneToOne: true,
+                reset: true,
+            },
+        });
+    }
+    // ---End of Viewer.js definition ---
 });
 
 new Sortable(document.querySelector('.connectedSortable'), {
