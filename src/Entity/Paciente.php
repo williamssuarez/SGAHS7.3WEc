@@ -82,6 +82,15 @@ class Paciente
     #[ORM\Column]
     private ?bool $fallecido = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $tipoDocumento = null;
+
+    /**
+     * @var Collection<int, Attachments>
+     */
+    #[ORM\OneToMany(targetEntity: Attachments::class, mappedBy: 'paciente')]
+    private Collection $attachments;
+
     public function __construct()
     {
         $this->enfermedades = new ArrayCollection();
@@ -89,6 +98,7 @@ class Paciente
         $this->discapacidades = new ArrayCollection();
         $this->tratamientos = new ArrayCollection();
         $this->historiaPacientes = new ArrayCollection();
+        $this->attachments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -350,6 +360,48 @@ class Paciente
     public function setFallecido(bool $fallecido): static
     {
         $this->fallecido = $fallecido;
+
+        return $this;
+    }
+
+    public function getTipoDocumento(): ?string
+    {
+        return $this->tipoDocumento;
+    }
+
+    public function setTipoDocumento(string $tipoDocumento): static
+    {
+        $this->tipoDocumento = $tipoDocumento;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Attachments>
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    public function addAttachment(Attachments $attachment): static
+    {
+        if (!$this->attachments->contains($attachment)) {
+            $this->attachments->add($attachment);
+            $attachment->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAttachment(Attachments $attachment): static
+    {
+        if ($this->attachments->removeElement($attachment)) {
+            // set the owning side to null (unless already changed)
+            if ($attachment->getPaciente() === $this) {
+                $attachment->setPaciente(null);
+            }
+        }
 
         return $this;
     }

@@ -7,20 +7,17 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-class FileUploader
+readonly class FileUploader
 {
     public function __construct(
-        private string $targetDirectory,
-        private SluggerInterface $slugger,
-        private  readonly Filesystem $filesystem,
+        private string           $targetDirectory,
+        private Filesystem       $filesystem,
     ) {
     }
 
     public function upload(UploadedFile $file): string
     {
-        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeFilename = $this->slugger->slug($originalFilename);
-        $fileName = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+        $fileName = uniqid().'.'.$file->guessExtension();
 
         try {
             $file->move($this->getTargetDirectory(), $fileName);
@@ -43,7 +40,7 @@ class FileUploader
             try {
                 $this->filesystem->remove($filePath);
             } catch (\Exception $e) {
-                // Create a log service and log this
+                // TODO: Create a log service and log this
             }
         }
     }

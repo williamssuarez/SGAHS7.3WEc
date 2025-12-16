@@ -4,7 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    app.paciente_photo_path: '/uploads/pacientes/fotos/'
+    app.paciente_photo_path: '/uploads/pacientes/files/'
 
 
 imports:
@@ -25,7 +25,7 @@ services:
     # please note that last definitions always *replace* previous ones
     App\Service\FileUploader:
         arguments:
-            $targetDirectory: '%kernel.project_dir%/public/uploads/pacientes/fotos'
+            $targetDirectory: '%kernel.project_dir%/public/uploads/pacientes/files'
 
     App\Service\PatientProcessor:
         autowire: true

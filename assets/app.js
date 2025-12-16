@@ -11,6 +11,7 @@ import 'overlayscrollbars/styles/overlayscrollbars.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
+import 'datatables.net-responsive-bs5/css/responsive.bootstrap5.css';
 import 'select2/dist/css/select2.min.css';
 import 'select2-bootstrap-5-theme/dist/select2-bootstrap-5-theme.min.css';
 import 'jsvectormap/dist/jsvectormap.css';
@@ -21,11 +22,11 @@ import 'viewerjs/dist/viewer.css';
 // js goes here
 import $ from 'jquery';
 import {OverlayScrollbars} from 'overlayscrollbars';
-//import 'bootstrap';
 import * as bootstrap from 'bootstrap';
 import 'admin-lte/dist/js/adminlte';
 import 'datatables.net-bs5';
-import 'select2';
+import 'datatables.net-responsive-bs5'
+;import 'select2';
 import {Sortable} from 'sortablejs';
 import 'jsvectormap';
 import 'apexcharts';
@@ -106,7 +107,8 @@ $(document).ready(function () {
             processing: "Procesando...",
             search: "Buscar:",
             zeroRecords: "No se encontraron resultados",
-        }
+        },
+        responsive: true,
     });
 
     //Select 2 with search
@@ -264,19 +266,48 @@ $(document).ready(function () {
     // ---Start of Viewer.js definition ---
     const container = document.getElementById('photo-container');
     if (container) {
-        new Viewer(container, {
+        // 1. Declare the variable that will hold the Viewer instance
+        let viewerInstance;
+
+        // 2. Initialize the Viewer, assigning the instance to the variable
+        viewerInstance = new Viewer(container, {
             inline: false,
             title: false,
             navbar: false,
             zIndex: 9999,
+
             url(image) {
                 return image.getAttribute('data-original');
             },
+
             toolbar: {
                 zoomIn: true,
                 zoomOut: true,
                 oneToOne: true,
                 reset: true,
+                download: {
+                    show: true,
+                    title: 'Descargar',
+                    content: '<i class="bi bi-download"></i>',
+                    click: function () {
+                            // This logic is already proven to work:
+                            const imageUrl = viewerInstance.image.src;
+                            const filename = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+
+                            const link = document.createElement('a');
+                            link.href = imageUrl;
+                            link.download = filename;
+
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+                    },
+
+                rotateLeft: true,
+                rotateRight: true,
+                flipHorizontal: true,
+                flipVertical: true,
             },
         });
     }

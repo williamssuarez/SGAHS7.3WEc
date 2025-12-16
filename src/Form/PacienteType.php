@@ -70,6 +70,13 @@ class PacienteType extends AbstractType
                 ],
                 'required' => true,
             ])
+            ->add('tipoDocumento', ChoiceType::class, [
+                'choices'  => [
+                    'V' => 'V',
+                    'E' => 'E'
+                ],
+                'attr' => ['class' => 'noSrchSelect']
+            ])
             ->add(
                 'fechaNacimiento',
                 DateType::class,

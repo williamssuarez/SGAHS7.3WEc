@@ -7,7 +7,7 @@
 /var/
 /vendor/
 /migrations/
-/public/uploads/pacientes/fotos
+/public/uploads/pacientes/files
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###

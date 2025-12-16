@@ -8,9 +8,9 @@ use App\Exception\BusinessRuleException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class PatientProcessor
+readonly class PatientProcessor
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly FileUploader $fileUploader
+    public function __construct(private EntityManagerInterface $entityManager, private FileUploader $fileUploader
     ){}
 
     /**

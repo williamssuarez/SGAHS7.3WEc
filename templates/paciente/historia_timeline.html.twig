@@ -1,0 +1,45 @@
+<div class="timeline">
+    {% for date, historias in grouped_historias %}
+        {# 1. Display the date label only once (using the array key) #}
+        <div class="time-label">
+            <span class="text-bg-primary">{{ date }}</span>
+        </div>
+        {# /.timeline-label #}
+
+        {# 2. Loop through all the records associated with this date #}
+        {% for historia in historias %}
+            <div>
+                {# You'll need to determine the icon and color based on the history type/status #}
+                <i class="timeline-icon bi bi-file-text text-bg-info"></i>
+                <div class="timeline-item">
+                    {# Format the time (hora) #}
+                    <span class="time">
+                        <i class="bi bi-clock-fill"></i>
+                        {{ historia.fechaAtendido|date('H:i') }}
+                    </span>
+
+                    <h3 class="timeline-header">
+                        {# Assuming a field for the header/title exists, or construct one #}
+                        <a href="#">Entrada realizada por el Doctor {{ historia.doctor.name }}</a>
+                    </h3>
+
+                    <div class="timeline-body">
+                        {# Display the relevant information from your entity #}
+                        <p>{{ historia.descripcionProdecimiento }}...</p>
+                    </div>
+
+                    <div class="timeline-footer">
+                        {# Example: Link to see the full record #}
+                        <a href="{{ path('app_historia_paciente_show', {'id': historia.id}) }}" class="btn btn-primary btn-sm">Ver Detalles</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    {% else %}
+
+    {% endfor %}
+
+    {# Final clock icon #}
+    <div><i class="timeline-icon bi bi-clock-fill text-bg-secondary"></i></div>
+</div>
