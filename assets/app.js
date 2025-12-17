@@ -90,6 +90,57 @@ function softDeleteRecord(deleteUrl, csrfToken) {
     });
 }
 window.softDeleteRecord = softDeleteRecord;
+function deleteFile(deleteUrl, csrfToken) {
+    Swal.fire({
+        title: '¿Eliminar Archivo?',
+        text: 'Está a punto de eliminar un archivo, esta accion no se puede revertir. ¿Desea continuar?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, Eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            //loading
+            Swal.fire({
+                title: 'Eliminando...',
+                text: 'Por favor espere mientras se procesa la solicitud.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            $.ajax({
+                url: deleteUrl, // Use the URL passed as the first argument
+                type: 'POST',
+                data: {
+                    _token: csrfToken
+                },
+                success: function(response) {
+                    Swal.fire({
+                        title: '¡Eliminado!',
+                        text: 'El archivo ha sido eliminado definitivamente.',
+                        icon: 'success',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'Ok'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                },
+                error: function(xhr, status, error) {
+                    Swal.fire(
+                        'Error!',
+                        'No se pudo completar la operación: ' + xhr.responseText,
+                        'error'
+                    );
+                }
+            });
+        }
+    });
+}
+window.deleteFile = deleteFile;
 /* SWEETALERTS END */
 
 $(document).ready(function () {

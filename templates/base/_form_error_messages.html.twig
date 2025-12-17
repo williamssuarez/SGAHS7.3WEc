@@ -1,0 +1,30 @@
+{# Check if the form as a whole (global errors) or any of its fields have errors #}
+{% if not form.vars.valid %}
+    <div class="alert alert-dismissable alert-danger mt-2">
+        <h5><i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Error en Formulario</strong></h5>
+        <ul class="list-unstyled mb-0">
+
+            {# 1. Display GLOBAL Errors from controller in ->addError #}
+            {% for error in form.vars.errors %}
+                <li>{{ error.message }}</li>
+            {% endfor %}
+
+            {# -------------------------------------------------------------------------- #}
+            {# 2. Display FIELD-SPECIFIC Errors (Access messages directly, not form_errors) #}
+            {# -------------------------------------------------------------------------- #}
+            {% for child in form.children %}
+                {# Iterate through the errors attached to the child field #}
+                {% for error in child.vars.errors %}
+                    <li>
+                        {# Add the label for context, then the error message #}
+                        <strong>{{ child.vars.label|default(child.vars.name)|capitalize }}:</strong>
+                        {{ error.message }}
+                    </li>
+                {% endfor %}
+            {% endfor %}
+            {# -------------------------------------------------------------------------- #}
+
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+{% endif %}

@@ -7,6 +7,7 @@ use App\Exception\BusinessRuleException;
 use App\Form\PacienteType;
 use App\Repository\HistoriaPacienteRepository;
 use App\Repository\PacienteRepository;
+use App\Repository\StatusRecordRepository;
 use App\Service\FileUploader;
 use App\Service\PatientProcessor;
 use Doctrine\ORM\EntityManager;
@@ -58,8 +59,13 @@ final class PacienteController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_paciente_show', methods: ['GET'])]
-    public function show(Paciente $paciente, HistoriaPacienteRepository $historiaPacienteRepository): Response
+    public function show(Paciente $paciente, HistoriaPacienteRepository $historiaPacienteRepository, StatusRecordRepository $statusRecordRepository): Response
     {
+        if ($paciente->getStatus() == $statusRecordRepository->getRemove()){
+            $this->addFlash('danger', 'Registro no encontrado.');
+            return $this->redirectToRoute('app_paciente_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         $historias = $historiaPacienteRepository->findByPacienteOrderedByDate($paciente->getId());
 
         $groupedHistorias = [];
@@ -84,8 +90,13 @@ final class PacienteController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_paciente_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Paciente $paciente, EntityManagerInterface $entityManager, PatientProcessor $patientProcessor): Response
+    public function edit(Request $request, Paciente $paciente, EntityManagerInterface $entityManager, PatientProcessor $patientProcessor, StatusRecordRepository $statusRecordRepository): Response
     {
+        if ($paciente->getStatus() == $statusRecordRepository->getRemove()){
+            $this->addFlash('danger', 'Registro no encontrado.');
+            return $this->redirectToRoute('app_paciente_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         $form = $this->createForm(PacienteType::class, $paciente);
         $form->handleRequest($request);
 

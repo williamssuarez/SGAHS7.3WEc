@@ -46,7 +46,7 @@ class PacienteRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    public function getPatientbyValueforCheck($field, $value, $id)
+    public function getPatientbyValueforCheck($field, $value, $id = null, $extraField = null, $extraValue = null)
     {
         $qb = $this->createQueryBuilder('u');
         $whereField = 'u.' . $field . ' = :value';
@@ -55,12 +55,21 @@ class PacienteRepository extends ServiceEntityRepository
             ->select('u')
 
             ->where('u.status = :sts')
-            ->andWhere($whereField)
-            ->andWhere('u.id != :patientId')
+            ->andWhere($whereField);
 
-            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
-            ->setParameter('value', $value)
-            ->setParameter('patientId', $id)
+        if ($extraField) {
+            $extra = 'u.' . $extraField . ' = :extra';
+            $qb->andWhere($extra)
+            ->setParameter('extra', $extraValue);
+        }
+
+        if ($id){
+            $qb->andWhere('u.id != :patientId')
+            ->setParameter('patientId', $id);
+        }
+
+        $qb->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+        ->setParameter('value', $value)
         ;
 
         return $query->getQuery()->getOneOrNullResult();

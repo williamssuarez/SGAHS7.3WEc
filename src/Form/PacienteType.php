@@ -108,9 +108,10 @@ class PacienteType extends AbstractType
                     'required' => false,
                     'constraints' => [
                         new File(
-                            maxSize: '2024k',
+                            maxSize: '2M',
+                            maxSizeMessage: 'El archivo es demasiado grande. El tamaño maximo permitido es 2MB.',
                             extensions: ['jpg', 'png'],
-                            extensionsMessage: 'Por Favor suba un documento valido',
+                            extensionsMessage: 'Por Favor suba un archivo valido. Los tipos de archivos validos son .jpg .png',
                         )
                     ],
             ])

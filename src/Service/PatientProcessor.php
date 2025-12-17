@@ -30,15 +30,27 @@ readonly class PatientProcessor
         // ----------------------------------------------------
         // B. Business Logic Check 2: Verificar Cedula
         // ----------------------------------------------------
-        $pacienteCheck = $this->entityManager->getRepository(Paciente::class)->getPatientbyValueforCheck('cedula', $paciente->getCedula(), $paciente->getId());
+        $ident = $paciente->getId() ? $paciente->getId() : null;
+        $pacienteCheck = $this->entityManager->getRepository(Paciente::class)->getPatientbyValueforCheck(
+            'cedula',
+            $paciente->getCedula(),
+            $ident,
+            'tipoDocumento',
+            $paciente->getTipoDocumento()
+        );
         if ($pacienteCheck) {
-            throw new BusinessRuleException('Ya existe un paciente registrado con esa cedula, por favor verifique.');
+            throw new BusinessRuleException('Ya existe un paciente registrado con ese documento, por favor verifique.');
         }
 
         // ----------------------------------------------------
         // C. Business Logic Check 3: Verificar el telefono
         // ----------------------------------------------------
-        $pacienteCheck = $this->entityManager->getRepository(Paciente::class)->getPatientbyValueforCheck('telefono', $paciente->getTelefono(), $paciente->getId());
+        $ident = $paciente->getId() ? $paciente->getId() : null;
+        $pacienteCheck = $this->entityManager->getRepository(Paciente::class)->getPatientbyValueforCheck(
+            'telefono',
+            $paciente->getTelefono(),
+            $ident
+        );
         if ($pacienteCheck) {
             throw new BusinessRuleException('Ya existe un paciente registrado con ese telefono, por favor verifique.');
         }

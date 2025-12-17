@@ -2,6 +2,7 @@
 // src/Service/FileUploader.php
 namespace App\Service;
 
+use App\Exception\BusinessRuleException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -17,12 +18,13 @@ readonly class FileUploader
 
     public function upload(UploadedFile $file): string
     {
-        $fileName = uniqid().'.'.$file->guessExtension();
+        $fileName = uniqid("", true).'.'.$file->guessExtension();
 
         try {
             $file->move($this->getTargetDirectory(), $fileName);
         } catch (FileException $e) {
-            throw new \RuntimeException('Unable to upload the file.', 0, $e);
+            //throw new \RuntimeException('Unable to upload the file.', 0, $e);
+            throw new BusinessRuleException('No se pudo subir el archivo, por favor intente mas tarde o verifique.');
 
             // para pasar el error crudo
             // throw $e;

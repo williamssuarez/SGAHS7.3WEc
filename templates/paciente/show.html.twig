@@ -33,7 +33,7 @@
                                         src="{{ asset(full_photo_path) | imagine_filter('patient_profile') }}"
                                         alt="{{ paciente.nombre }} Profile Photo"
                                         class="img-fluid"
-                                        style="cursor: pointer; height: auto; border-radius: 0%;"
+                                        style="cursor: pointer; height: auto; border-radius: 0%; width: 100%;"
                                         data-original="{{ asset(full_photo_path) | imagine_filter('patient_viewer_full') }}"
                                     >
                                 {% else %}
@@ -59,21 +59,33 @@
                                 <h4>
                                     <span class="badge rounded-pill text-bg-secondary">{{ paciente.tipoDocumento|title }} - {{ paciente.cedula|number_format(0, '', '.') }}</span>
                                 </h4>
-                                <h4>
-                                    <i class="bi bi-telephone" style="color: crimson"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ paciente.telefono }}
-                                </h4>
-                                <h4>
-                                    <i class="bi bi-envelope-at" style="color: dodgerblue"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ paciente.correo }}
-                                </h4>
                             </div>
                             <div class="accordion" id="accordionExample">
                                 <div class="accordion-item">
                                     <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="false" aria-controls="collapse1">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContact" aria-expanded="false" aria-controls="collapseContact">
+                                            <i class="bi bi-telephone" style="color: crimson"></i> &nbsp;Información de Contacto
+                                        </button>
+                                    </h2>
+                                    <div id="collapseContact" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+                                        <div class="accordion-body">
+                                            <h4>
+                                                <i class="bi bi-telephone" style="color: crimson"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ paciente.telefono }}
+                                            </h4>
+                                            <h4>
+                                                <i class="bi bi-envelope-at" style="color: dodgerblue"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ paciente.correo }}
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDirect" aria-expanded="false" aria-controls="collapseDirect">
                                             <i class="bi bi-building-fill" style="color: forestgreen"></i> &nbsp;Dirección
                                         </button>
                                     </h2>
-                                    <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+                                    <div id="collapseDirect" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
                                         <div class="accordion-body">
                                             {{ paciente.direccion }}
                                         </div>
@@ -82,11 +94,11 @@
 
                                 <div class="accordion-item">
                                     <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
                                             <i class="bi bi-three-dots-vertical"></i> &nbsp; Mas Información
                                         </button>
                                     </h2>
-                                    <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+                                    <div id="collapseMoreInfo" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
                                         <div class="accordion-body">
                                             Registrado el <strong>{{ paciente.created|date('d-m-Y') }}</strong> <i>({{ paciente.created|time_ago }})</i> por <strong>{{ paciente.uidCreate|public_username|title }}</strong>
                                         </div>

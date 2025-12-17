@@ -7,6 +7,7 @@ use App\Entity\Paciente;
 use App\Exception\BusinessRuleException;
 use App\Form\AttachmentType;
 use App\Service\FileUploader;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -32,6 +33,11 @@ final class AttachmentController extends AbstractController
 
             //process and upload the file
             try {
+
+                if (!$file) {
+                    throw new BusinessRuleException('Debe subir un archivo.');
+                }
+
                 if ($name){
                     $attachment->setFilename($name);
                 } else {
@@ -51,7 +57,7 @@ final class AttachmentController extends AbstractController
                 $this->addFlash('success', 'Archivo Subido.');
                 return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()], Response::HTTP_SEE_OTHER);
 
-            } catch (\RuntimeException $e) {
+            } catch (BusinessRuleException $e) {
                 //Obtener el mensaje especifico y mostrar el error
                 $form->addError(new FormError($e->getMessage()));
             }
@@ -61,5 +67,21 @@ final class AttachmentController extends AbstractController
             'paciente' => $paciente,
             'form' => $form,
         ]);
+    }
+
+    #[Route('/{id}', name: 'app_attachment_delete', methods: ['POST'])]
+    public function delete(Request $request, Attachments $attachments, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
+    {
+        $submittedToken = $request->request->get('_token');
+
+        if ($this->isCsrfTokenValid('delete' . $attachments->getId(), $submittedToken)) {
+            $fileUploader->delete($attachments->getFilehash());
+            $entityManager->remove($attachments);
+            $entityManager->flush();
+        } else {
+            return new JsonResponse('Token Invalido', Response::HTTP_UNAUTHORIZED);
+        }
+
+        return new JsonResponse('Eliminado con exito', Response::HTTP_OK);
     }
 }

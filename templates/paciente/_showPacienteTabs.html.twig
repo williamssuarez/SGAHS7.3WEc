@@ -177,10 +177,10 @@
                                 <i class="bi bi-download"></i>
                             </a>
                             <button class="btn btn-danger"
-                                    {#onclick="softDeleteRecord(
-                                        '{{ path('app_enfermedades_delete', {'id': entity.id}) }}',
+                                    onclick="deleteFile(
+                                        '{{ path('app_attachment_delete', {'id': entity.id}) }}',
                                         '{{ csrf_token('delete' ~ entity.id) }}'
-                                        )"#}>
+                                        )">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </td>
