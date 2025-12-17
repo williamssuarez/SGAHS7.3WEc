@@ -1,12 +1,31 @@
 {{ form_start(form) }}
 <div class="card-body">
     <div class="mb-3">
-        {{form_label( form.nombre ) }}
-        {{form_widget( form.nombre ) }}
+        {{form_label( form.alergeno ) }}
+        {{form_widget( form.alergeno ) }}
     </div>
     <div class="mb-3">
-        {{form_label( form.descripcion ) }}
-        {{form_widget( form.descripcion ) }}
+        {{form_label( form.reacciones ) }}
+        {{form_widget( form.reacciones ) }}
+    </div>
+    <div class="mb-3">
+        {{ form_label(form.severidad) }}
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="d-flex flex-wrap"> {# Use flex for easy alignment #}
+                    {% for child in form.severidad %}
+                        <div class="form-check form-check-inline me-3">
+                            {{ form_widget(child) }}
+                            {{ form_label(child) }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        {{form_label( form.observaciones ) }}
+        {{form_widget( form.observaciones ) }}
     </div>
 </div>
 
@@ -14,7 +33,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between">
-                <a class="btn btn-primary" href="{{ path('app_alergias_index') }}">
+                <a class="btn btn-primary" href="{{ path('app_paciente_show', {'id': paciente.id}) }}">
                     <i class="bi bi-arrow-left"></i> Volver
                 </a>
 

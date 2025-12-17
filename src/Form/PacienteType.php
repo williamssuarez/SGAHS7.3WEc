@@ -2,14 +2,14 @@
 
 namespace App\Form;
 
-use App\Entity\Alergias;
+use App\Entity\Alergenos;
 use App\Entity\Discapacidades;
 use App\Entity\Enfermedades;
 use App\Entity\Paciente;
 use App\Entity\Tratamientos;
 use App\Form\DataTransformer\PhoneNumberTransformer;
 use App\Form\Type\PhoneType;
-use App\Repository\AlergiasRepository;
+use App\Repository\AlergenosRepository;
 use App\Repository\DiscapacidadesRepository;
 use App\Repository\EnfermedadesRepository;
 use App\Repository\TratamientosRepository;
@@ -162,18 +162,18 @@ class PacienteType extends AbstractType
                     return $er->getActivesforSelect();
                 }
             ])
-            ->add('alergias', EntityType::class, [
-                'class' => Alergias::class,
+            /*->add('alergenos', EntityType::class, [
+                'class' => Alergenos::class,
                 'choice_label' => 'nombre',
                 'multiple' => true,
                 'attr' => [
                     'class' => 'srchSelect'
                 ],
                 'required' => false,
-                'query_builder' => function (AlergiasRepository $er) {
+                'query_builder' => function (AlergenosRepository $er) {
                     return $er->getActivesforSelect();
                 }
-            ])
+            ])*/
             ->add('discapacidades', EntityType::class, [
                 'class' => Discapacidades::class,
                 'choice_label' => 'nombre',

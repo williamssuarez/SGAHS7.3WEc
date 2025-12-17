@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Alergeno{% endblock %}
+
+{% block titlewrap %}
+    Editar Alergeno
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_alergenos_index') }}">Alergenos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Alergeno</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+
+            {{ include('alergenos/_form.html.twig', {'button_label': 'Actualizar'}) }}
+        </div>
+    </div>
+{% endblock %}

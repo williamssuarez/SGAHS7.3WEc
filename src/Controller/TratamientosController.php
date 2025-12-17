@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Alergias;
+use App\Entity\Alergenos;
 use App\Entity\StatusRecord;
 use App\Entity\Tratamientos;
 use App\Form\TratamientosType;

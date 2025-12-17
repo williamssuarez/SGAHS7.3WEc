@@ -10,6 +10,7 @@ import './styles/app.css';
 import 'overlayscrollbars/styles/overlayscrollbars.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import '@fortawesome/fontawesome-free/css/all.min.css'
 import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css';
 import 'datatables.net-responsive-bs5/css/responsive.bootstrap5.css';
 import 'select2/dist/css/select2.min.css';
@@ -23,10 +24,11 @@ import 'viewerjs/dist/viewer.css';
 import $ from 'jquery';
 import {OverlayScrollbars} from 'overlayscrollbars';
 import * as bootstrap from 'bootstrap';
+import '@fortawesome/fontawesome-free/js/all';
 import 'admin-lte/dist/js/adminlte';
 import 'datatables.net-bs5';
-import 'datatables.net-responsive-bs5'
-;import 'select2';
+import 'datatables.net-responsive-bs5';
+import 'select2';
 import {Sortable} from 'sortablejs';
 import 'jsvectormap';
 import 'apexcharts';

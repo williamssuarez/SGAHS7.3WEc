@@ -1,18 +1,28 @@
 <div class="card-body">
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="tabEnfermedades" data-bs-toggle="tab" data-bs-target="#tabEnfermedades-pane" type="button" role="tab" aria-controls="tabEnfermedades-pane" aria-selected="true">
-                Enfermedades
+            <button class="nav-link active" id="tabVitales" data-bs-toggle="tab" data-bs-target="#tabVitales-pane" type="button" role="tab" aria-controls="tabVitales-pane" aria-selected="true">
+                <i class="bi bi-heart-pulse-fill"></i> Vitales y biométricos
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabMedicaciones" data-bs-toggle="tab" data-bs-target="#tabMedicaciones-pane" type="button" role="tab" aria-controls="tabMedicaciones-pane" aria-selected="false">
+                <i class="bi bi-capsule-pill"></i> Medicaciones
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabAlergias" data-bs-toggle="tab" data-bs-target="#tabAlergias-pane" type="button" role="tab" aria-controls="tabAlergias-pane" aria-selected="false">
+                <i class="bi bi-virus"></i> Alergias
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabEnfermedades" data-bs-toggle="tab" data-bs-target="#tabEnfermedades-pane" type="button" role="tab" aria-controls="tabEnfermedades-pane" aria-selected="false">
+                <i class="fa-solid fa-syringe"></i> Enfermedades
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="tabDiscapacidades" data-bs-toggle="tab" data-bs-target="#tabDiscapacidades-pane" type="button" role="tab" aria-controls="tabDiscapacidades-pane" aria-selected="false">
                 Discapacidades
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tabAlergias" data-bs-toggle="tab" data-bs-target="#tabAlergias-pane" type="button" role="tab" aria-controls="tabAlergias-pane" aria-selected="false">
-                Alergias
             </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -22,172 +32,31 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="tabArchivos" data-bs-toggle="tab" data-bs-target="#tabArchivos-pane" type="button" role="tab" aria-controls="tabArchivos-pane" aria-selected="false">
-                Archivos
+                <i class="bi bi-folder-fill"></i> Archivos
             </button>
         </li>
     </ul>
     <div class="tab-content" id="formTabContent">
-        <div class="tab-pane fade show active" id="tabEnfermedades-pane" role="tabpanel" aria-labelledby="tabEnfermedades" tabindex="0">
-            <h4>Enfermedades Registradas</h4>
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Descripcion</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in paciente.enfermedades %}
-                    <tr class="align-middle">
-                        <td>{{ entity.nombre }}</td>
-                        <td>{{ entity.descripcion }}</td>
-                        <td>
-                            <a class="btn btn-secondary" href="{{ path('app_enfermedades_index', {'id': entity.id}) }}">
-                                <i class="bi bi-search"></i> Detalles
-                            </a>
-                            <a class="btn btn-success" href="{{ path('app_enfermedades_edit', {'id': entity.id}) }}">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div class="tab-pane fade show active" id="tabVitales-pane" role="tabpanel" aria-labelledby="tabVitales" tabindex="0">
+
         </div>
-        <div class="tab-pane fade" id="tabDiscapacidades-pane" role="tabpanel" aria-labelledby="tabDiscapacidades" tabindex="0">
-            <h4>Discapacidades Registradas</h4>
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Descripcion</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in paciente.discapacidades %}
-                    <tr class="align-middle">
-                        <td>{{ entity.nombre }}</td>
-                        <td>{{ entity.descripcion }}</td>
-                        <td>
-                            <a class="btn btn-secondary" href="{{ path('app_discapacidades_index', {'id': entity.id}) }}">
-                                <i class="bi bi-search"></i> Detalles
-                            </a>
-                            <a class="btn btn-success" href="{{ path('app_discapacidades_edit', {'id': entity.id}) }}">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div class="tab-pane fade show active" id="tabMedicaciones-pane" role="tabpanel" aria-labelledby="tabMedicaciones" tabindex="0">
+
         </div>
         <div class="tab-pane fade" id="tabAlergias-pane" role="tabpanel" aria-labelledby="tabAlergias" tabindex="0">
-            <h4>Alergias Registradas</h4>
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Descripcion</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in paciente.alergias %}
-                    <tr class="align-middle">
-                        <td>{{ entity.nombre }}</td>
-                        <td>{{ entity.descripcion }}</td>
-                        <td>
-                            <a class="btn btn-secondary" href="{{ path('app_alergias_index', {'id': entity.id}) }}">
-                                <i class="bi bi-search"></i> Detalles
-                            </a>
-                            <a class="btn btn-success" href="{{ path('app_alergias_edit', {'id': entity.id}) }}">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            {{ include('paciente/tabs/paciente_alergias.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabEnfermedades-pane" role="tabpanel" aria-labelledby="tabEnfermedades" tabindex="0">
+            {{ include('paciente/tabs/paciente_enfermedades.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabDiscapacidades-pane" role="tabpanel" aria-labelledby="tabDiscapacidades" tabindex="0">
+            {{ include('paciente/tabs/paciente_discapacidades.html.twig') }}
         </div>
         <div class="tab-pane fade" id="tabTratamientos-pane" role="tabpanel" aria-labelledby="tabTratamientos" tabindex="0">
-            <h4>Tratamientos Registrados</h4>
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Descripcion</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in paciente.tratamientos %}
-                    <tr class="align-middle">
-                        <td>{{ entity.nombre }}</td>
-                        <td>{{ entity.descripcion }}</td>
-                        <td>
-                            <a class="btn btn-secondary" href="{{ path('app_tratamientos_index', {'id': entity.id}) }}">
-                                <i class="bi bi-search"></i> Detalles
-                            </a>
-                            <a class="btn btn-success" href="{{ path('app_tratamientos_edit', {'id': entity.id}) }}">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            {{ include('paciente/tabs/paciente_tratamientos.html.twig') }}
         </div>
         <div class="tab-pane fade" id="tabArchivos-pane" role="tabpanel" aria-labelledby="tabArchivos" tabindex="0">
-            <h4>
-                Archivos Subidos <a class="btn btn-primary btn-sm" href="{{ path('app_attachment_paciente_upload', {'id': paciente.id}) }}"><i class="bi bi-plus-circle"></i> Subir</a>
-            </h4>
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Tipo de Archivo</th>
-                    <th>Subido</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in paciente.attachments %}
-                    <tr class="align-middle">
-                        <td>{{ entity.fileName }}</td>
-                        <td>
-                            {% if entity.fileType == 'image/jpeg' or entity.fileType == 'image/png' %}
-                                <h4>
-                                    <span class="badge rounded-pill text-bg-success">
-                                        <i class="bi bi-card-image"></i>
-                                    </span>
-                                </h4>
-                            {% elseif entity.fileType == 'application/pdf' %}
-                                <h4>
-                                    <span class="badge rounded-pill text-bg-danger">
-                                        <i class="bi bi-file-earmark-pdf"></i>
-                                    </span>
-                                </h4>
-                            {% endif %}
-                        </td>
-                        <td>{{ entity.dateUploaded|date('d/m/Y') }}</td>
-                        <td>
-                            <a class="btn btn-success" href="{{ asset(paciente_photo_path ~ entity.fileHash) }}" target="_blank">
-                                <i class="bi bi-download"></i>
-                            </a>
-                            <button class="btn btn-danger"
-                                    onclick="deleteFile(
-                                        '{{ path('app_attachment_delete', {'id': entity.id}) }}',
-                                        '{{ csrf_token('delete' ~ entity.id) }}'
-                                        )">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            {{ include('paciente/tabs/paciente_archivos.html.twig') }}
         </div>
     </div>
 </div>

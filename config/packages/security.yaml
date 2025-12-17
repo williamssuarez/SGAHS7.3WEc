@@ -43,7 +43,7 @@ security:
         - { path: ^/empleado, roles: ROLE_USER }
         - { path: ^/ciudad, roles: ROLE_USER }
         - { path: ^/enfermedades, roles: ROLE_USER }
-        - { path: ^/alergias, roles: ROLE_USER }
+        - { path: ^/alergenos, roles: ROLE_USER }
         - { path: ^/medicamentos, roles: ROLE_USER }
         - { path: ^/tratamientos, roles: ROLE_USER }
         - { path: ^/discapacidades, roles: ROLE_USER }

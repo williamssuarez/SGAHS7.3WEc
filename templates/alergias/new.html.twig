@@ -1,18 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nueva Alergia{% endblock %}
+{% block title %}Nueva Alergia para {{ paciente.nombre|title }}{% endblock %}
 
 {% block titlewrap %}
-    Nueva Alergia
+    Nueva Alergia para {{ paciente.nombre|title }}
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_alergias_index') }}">Alergias</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_paciente_index') }}">Pacientes</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_paciente_show', {'id': paciente.id}) }}">Detalles</a></li>
     <li class="breadcrumb-item active" aria-current="page">Nueva Alergia</li>
 {% endblock %}
 
 {% block body %}
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="card card-primary card-outline mb-4">
             {{ include('alergias/_form.html.twig') }}
         </div>

@@ -1,0 +1,26 @@
+<h4>Enfermedades Registradas</h4>
+<table class="table table-striped dtHere">
+    <thead>
+    <tr>
+        <th>Nombre</th>
+        <th>Descripcion</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for entity in paciente.enfermedades %}
+        <tr class="align-middle">
+            <td>{{ entity.nombre }}</td>
+            <td>{{ entity.descripcion }}</td>
+            <td>
+                <a class="btn btn-secondary" href="{{ path('app_enfermedades_index', {'id': entity.id}) }}">
+                    <i class="bi bi-search"></i> Detalles
+                </a>
+                <a class="btn btn-success" href="{{ path('app_enfermedades_edit', {'id': entity.id}) }}">
+                    <i class="bi bi-pencil-square"></i> Editar
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

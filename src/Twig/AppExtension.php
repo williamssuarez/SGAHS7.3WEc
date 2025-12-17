@@ -29,6 +29,7 @@ class AppExtension extends AbstractExtension
             new TwigFilter('calculate_age', $this->calculateAge(...)),
             new TwigFilter('time_ago', $this->getTimeAgo(...)),
             new TwigFilter('public_username', $this->getPublicUsername(...)),
+            new TwigFilter('filter_severity', $this->filterSeverity(...)),
         ];
     }
 
@@ -140,6 +141,35 @@ class AppExtension extends AbstractExtension
             ]);
 
             $name = sprintf('usuario %s %s', $user->getFirstName(), $user->getLastName());
+        }
+
+        // Return the final formatted string
+        return $name;
+    }
+
+    /**
+     * Returns a severity string.
+     *
+     * @param string|null $severity The value to filter
+     * @return string
+     */
+    public function filterSeverity(?string $severity): string
+    {
+        if (!$severity) {
+            return 'No encontrado';
+        }
+
+        switch ($severity) {
+            case 'min':
+                $name = '<span class="badge rounded-pill text-bg-secondary">Minima</span>';
+                break;
+            case 'mod':
+                $name = '<span class="badge rounded-pill text-bg-warning">Moderada</span>';
+                break;
+            case 'sev':
+                $name = '<span class="badge rounded-pill text-bg-danger">Severa</span>';
+                break;
+            default: $name = 'No encontrado';
         }
 
         // Return the final formatted string

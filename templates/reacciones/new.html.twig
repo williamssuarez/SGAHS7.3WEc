@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nueva Reacción{% endblock %}
+
+{% block titlewrap %}
+    Nueva Reacción
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_reacciones_index') }}">Reacciones</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nueva Reacción</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('reacciones/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

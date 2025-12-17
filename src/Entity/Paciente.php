@@ -44,12 +44,6 @@ class Paciente
     private Collection $enfermedades;
 
     /**
-     * @var Collection<int, Alergias>
-     */
-    #[ORM\ManyToMany(targetEntity: Alergias::class, inversedBy: 'pacientes')]
-    private Collection $alergias;
-
-    /**
      * @var Collection<int, Discapacidades>
      */
     #[ORM\ManyToMany(targetEntity: Discapacidades::class, inversedBy: 'pacientes')]
@@ -91,14 +85,20 @@ class Paciente
     #[ORM\OneToMany(targetEntity: Attachments::class, mappedBy: 'paciente')]
     private Collection $attachments;
 
+    /**
+     * @var Collection<int, Alergias>
+     */
+    #[ORM\OneToMany(targetEntity: Alergias::class, mappedBy: 'paciente')]
+    private Collection $alergias;
+
     public function __construct()
     {
         $this->enfermedades = new ArrayCollection();
-        $this->alergias = new ArrayCollection();
         $this->discapacidades = new ArrayCollection();
         $this->tratamientos = new ArrayCollection();
         $this->historiaPacientes = new ArrayCollection();
         $this->attachments = new ArrayCollection();
+        $this->alergias = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -198,30 +198,6 @@ class Paciente
     public function removeEnfermedade(Enfermedades $enfermedade): static
     {
         $this->enfermedades->removeElement($enfermedade);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Alergias>
-     */
-    public function getAlergias(): Collection
-    {
-        return $this->alergias;
-    }
-
-    public function addAlergia(Alergias $alergia): static
-    {
-        if (!$this->alergias->contains($alergia)) {
-            $this->alergias->add($alergia);
-        }
-
-        return $this;
-    }
-
-    public function removeAlergia(Alergias $alergia): static
-    {
-        $this->alergias->removeElement($alergia);
 
         return $this;
     }
@@ -400,6 +376,36 @@ class Paciente
             // set the owning side to null (unless already changed)
             if ($attachment->getPaciente() === $this) {
                 $attachment->setPaciente(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Alergias>
+     */
+    public function getAlergias(): Collection
+    {
+        return $this->alergias;
+    }
+
+    public function addAlergia(Alergias $alergia): static
+    {
+        if (!$this->alergias->contains($alergia)) {
+            $this->alergias->add($alergia);
+            $alergia->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAlergia(Alergias $alergia): static
+    {
+        if ($this->alergias->removeElement($alergia)) {
+            // set the owning side to null (unless already changed)
+            if ($alergia->getPaciente() === $this) {
+                $alergia->setPaciente(null);
             }
         }
 
