@@ -1,69 +1,76 @@
-{# sidebar.html.twig (Add this macro block at the very top of the file) #}
-
 {% import _self as macros %}
 
 {% macro render_menu_items(items) %}
     {% for item in items %}
 
         {# ---------------------------------------------------------------- #}
-        {# 1. CALCULATE ALL DESCENDANT ROUTES (RE-ENHANCED Iterative Approach) #}
-
-        {% set descendant_routes = item.route is defined ? [item.route] : [] %}
-
-        {# Only run this complex check if the item is a parent with children #}
-        {% if item.children is defined %}
-            {# Use an array stack to manage deep children for the active check #}
-            {% set stack = item.children %}
-
-            {% for child in stack %}
-                {# If this node has a route, add it to the final list #}
-                {% if child.route is defined %}
-                    {% set descendant_routes = descendant_routes|merge([child.route]) %}
-                {% endif %}
-
-                {# If this node has children, push them onto the stack to process next #}
-                {% if child.children is defined %}
-                    {% set stack = stack|merge(child.children) %}
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+        {# 0. SECURITY CHECK (New Addition)                                #}
+        {# ---------------------------------------------------------------- #}
+        {# If 'roles' is not defined, we assume it's public/shared.         #}
+        {# If 'roles' IS defined, we check against the user's permissions.  #}
         {# ---------------------------------------------------------------- #}
 
-        {# 2. Determine Activation Classes (Logic remains correct using the complete list) #}
-        {# This check now runs at every level with the complete list of its descendants #}
-        {% if item.children is defined %}
-            {% set active_class = is_tree_active(descendant_routes) %}
-        {% else %}
-            {% set active_class = is_active(descendant_routes) %}
-        {% endif %}
-        {# ---------------------------------------------------------------- #}
+        {% if item.roles is not defined or is_granted(item.roles) %}
+            {# ---------------------------------------------------------------- #}
+            {# 1. CALCULATE ALL DESCENDANT ROUTES (RE-ENHANCED Iterative Approach) #}
 
-        <li class="nav-item {{ item.children is defined ? 'has-treeview' : '' }} {{ active_class }}">
+            {% set descendant_routes = item.route is defined ? [item.route] : [] %}
 
-            {# 3. The Link (Your final fix logic is here) #}
-            <a href="{% if item.route is defined %}{{ path(item.route) }}{% else %}#{% endif %}"
-               class="nav-link {% if item.route is defined %}{{ is_active(item.route) }}{% endif %}">
-
-                {% if item.icon is defined %}
-                    <i class="nav-icon {{ item.icon }}"></i>
-                {% else %}
-                    <i class="nav-icon bi bi-circle-fill"></i>
-                {% endif %}
-                <p>
-                    {{ item.title }}
-                    {% if item.children is defined %}
-                        <i class="nav-arrow bi bi-chevron-right"></i>
-                    {% endif %}
-                </p>
-            </a>
-
-            {# 4. Recursion for Children #}
+            {# Only run this complex check if the item is a parent with children #}
             {% if item.children is defined %}
-                <ul class="nav nav-treeview">
-                    {{ _self.render_menu_items(item.children) }}
-                </ul>
+                {# Use an array stack to manage deep children for the active check #}
+                {% set stack = item.children %}
+
+                {% for child in stack %}
+                    {# If this node has a route, add it to the final list #}
+                    {% if child.route is defined %}
+                        {% set descendant_routes = descendant_routes|merge([child.route]) %}
+                    {% endif %}
+
+                    {# If this node has children, push them onto the stack to process next #}
+                    {% if child.children is defined %}
+                        {% set stack = stack|merge(child.children) %}
+                    {% endif %}
+                {% endfor %}
             {% endif %}
-        </li>
+            {# ---------------------------------------------------------------- #}
+
+            {# 2. Determine Activation Classes (Logic remains correct using the complete list) #}
+            {# This check now runs at every level with the complete list of its descendants #}
+            {% if item.children is defined %}
+                {% set active_class = is_tree_active(descendant_routes) %}
+            {% else %}
+                {% set active_class = is_active(descendant_routes) %}
+            {% endif %}
+            {# ---------------------------------------------------------------- #}
+
+            <li class="nav-item {{ item.children is defined ? 'has-treeview' : '' }} {{ active_class }}">
+
+                {# 3. The Link (Your final fix logic is here) #}
+                <a href="{% if item.route is defined %}{{ path(item.route) }}{% else %}#{% endif %}"
+                   class="nav-link {% if item.route is defined %}{{ is_active(item.route) }}{% endif %}">
+
+                    {% if item.icon is defined %}
+                        <i class="nav-icon {{ item.icon }}"></i>
+                    {% else %}
+                        <i class="nav-icon bi bi-circle-fill"></i>
+                    {% endif %}
+                    <p>
+                        {{ item.title }}
+                        {% if item.children is defined %}
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        {% endif %}
+                    </p>
+                </a>
+
+                {# 4. Recursion for Children #}
+                {% if item.children is defined %}
+                    <ul class="nav nav-treeview">
+                        {{ _self.render_menu_items(item.children) }}
+                    </ul>
+                {% endif %}
+            </li>
+        {% endif %}
     {% endfor %}
 {% endmacro %}
 
@@ -80,7 +87,7 @@
             />
             <!--end::Brand Image-->
             <!--begin::Brand Text-->
-            <span class="brand-text fw-light">AdminLTE 4</span>
+            <span class="brand-text fw-light">SGAHS</span>
             <!--end::Brand Text-->
         </a>
         <!--end::Brand Link-->

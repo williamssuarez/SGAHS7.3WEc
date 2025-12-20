@@ -1,4 +1,13 @@
 security:
+    role_hierarchy:
+        # ROLE_EXTERNAL is for patients
+        ROLE_EXTERNAL: ROLE_USER
+
+        # ROLE_INTERNAL is for staff. They inherit everything from EXTERNAL
+        ROLE_INTERNAL: [ROLE_EXTERNAL]
+
+        # ROLE_ADMIN is for the boss. They inherit everything from INTERNAL
+        ROLE_ADMIN: [ROLE_INTERNAL]
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
@@ -25,6 +34,8 @@ security:
                 path: app_logout
                 # where to redirect after logout
                 target: app_login
+            custom_authenticators:
+                - App\Security\GoogleAuthenticator
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -40,15 +51,15 @@ security:
         - { path: ^/register, roles: PUBLIC_ACCESS  }
 
         - { path: ^/dashboard, roles: ROLE_USER }
-        - { path: ^/empleado, roles: ROLE_USER }
-        - { path: ^/ciudad, roles: ROLE_USER }
-        - { path: ^/enfermedades, roles: ROLE_USER }
-        - { path: ^/alergenos, roles: ROLE_USER }
-        - { path: ^/medicamentos, roles: ROLE_USER }
-        - { path: ^/tratamientos, roles: ROLE_USER }
-        - { path: ^/discapacidades, roles: ROLE_USER }
-        - { path: ^/paciente, roles: ROLE_USER }
-        - { path: ^/historia/paciente, roles: ROLE_USER }
+        - { path: ^/empleado, roles: ROLE_ADMIN }
+        - { path: ^/ciudad, roles: ROLE_ADMIN }
+        - { path: ^/enfermedades, roles: ROLE_ADMIN }
+        - { path: ^/alergenos, roles: ROLE_ADMIN }
+        - { path: ^/medicamentos, roles: ROLE_ADMIN }
+        - { path: ^/tratamientos, roles: ROLE_ADMIN }
+        - { path: ^/discapacidades, roles: ROLE_ADMIN }
+        - { path: ^/paciente, roles: ROLE_INTERNAL }
+        - { path: ^/historia/paciente, roles: ROLE_INTERNAL }
 
 when@test:
     security:

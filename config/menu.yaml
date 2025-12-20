@@ -8,11 +8,12 @@ parameters:
         -
             title: Configuraciones
             icon: 'bi bi-gear'
+            roles: 'ROLE_ADMIN'
             children:
                 -   title: Sistema
                     icon: 'bi bi-tools'
                     children: # <-- This triggers the recursion
-                        - { title: Usuarios, route: app_empleado_index, icon: 'bi bi-person-lines-fill' }
+                        - { title: Usuarios, route: app_user_index, icon: 'bi bi-person-lines-fill' }
                         - { title: Ciudades, route: app_ciudad_index, icon: 'bi bi-journal-check' }
                 -   title: Alergias
                     icon: 'bi bi-virus'
@@ -26,4 +27,6 @@ parameters:
         -
             title: Pacientes
             icon: 'bi bi-people'
-            route: app_paciente_index
+            roles: 'ROLE_INTERNAL'
+            children:
+                - { title: Pacientes Registrados, route: app_paciente_index, icon: 'bi bi-person-badge-fill' }

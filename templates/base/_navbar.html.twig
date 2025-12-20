@@ -8,12 +8,6 @@
                     <i class="bi bi-list"></i>
                 </a>
             </li>
-            <li class="nav-item d-none d-md-block">
-                <a href="#" class="nav-link">Home</a>
-            </li>
-            <li class="nav-item d-none d-md-block">
-                <a href="#" class="nav-link">Contact</a>
-            </li>
         </ul>
         <!--end::Start Navbar Links-->
 
@@ -142,44 +136,36 @@
             <!--end::Fullscreen Toggle-->
 
             <!--begin::User Menu Dropdown-->
+            {# Define variables at the start for cleanliness #}
+            {% set display_name = app.user.displayName %}
+            {% set role_label = app.user.displayRoleLabel %}
+            {% set avatar = app.user.avatarUrl|default('build/assets/img/user2-160x160.jpg') %}
+
             <li class="nav-item dropdown user-menu">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                    <img src="{{ asset('build/assets/img/user2-160x160.jpg') }}" class="user-image rounded-circle shadow" alt="User Image">
-                    <span class="d-none d-md-inline">Alexander Pierce</span>
+                    <img src="{{ asset(avatar) }}" class="rounded-circle" width="35" alt="User Image">
+                    <span class="d-none d-md-inline">{{ display_name }}</span>
                 </a>
+
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                    <!--begin::User Image-->
-                    <li class="user-header text-bg-primary">
-                        <img src="{{ asset('build/assets/img/user2-160x160.jpg') }}" class="rounded-circle shadow" alt="User Image">
+                    <li class="user-header text-bg-dark">
+                        <img src="{{ asset(avatar) }}" class="rounded-circle shadow" alt="User Image">
                         <p>
-                            Alexander Pierce - Web Developer
-                            <small>Member since Nov. 2023</small>
+                            {{ display_name }}
+                            <small>{{ role_label }}</small>
+                            <small>Registrado desde {{ app.user.created|time_since }}</small>
                         </p>
                     </li>
-                    <!--end::User Image-->
-                    <!--begin::Menu Body-->
-                    <li class="user-body">
-                        <!--begin::Row-->
-                        <div class="row">
-                            <div class="col-4 text-center">
-                                <a href="#">Followers</a>
-                            </div>
-                            <div class="col-4 text-center">
-                                <a href="#">Sales</a>
-                            </div>
-                            <div class="col-4 text-center">
-                                <a href="#">Friends</a>
-                            </div>
-                        </div>
-                        <!--end::Row-->
-                    </li>
-                    <!--end::Menu Body-->
-                    <!--begin::Menu Footer-->
+
                     <li class="user-footer">
-                        <a href="#" class="btn btn-default btn-flat">Profile</a>
-                        <a href="{{ path('app_logout') }}" class="btn btn-default btn-flat float-end">Sign out</a>
+                        {% if is_granted('ROLE_INTERNAL') %}
+                            <a href="#" class="btn btn-primary btn-flat">Mi Perfil</a>
+                        {% else %}
+                            <a href="{{ path('app_profile_complete') }}" class="btn btn-success btn-flat">Mi Perfil</a>
+                        {% endif %}
+
+                        <a href="{{ path('app_logout') }}" class="btn btn-danger btn-flat float-end">Salir</a>
                     </li>
-                    <!--end::Menu Footer-->
                 </ul>
             </li>
             <!--end::User Menu Dropdown-->

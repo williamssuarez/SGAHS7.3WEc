@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\StatusRecord;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -33,28 +34,41 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-//    /**
-//     * @return User[] Returns an array of User objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('u.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getActivesInternalsforTable()
+    {
+        $qb = $this->createQueryBuilder('u');
 
-//    public function findOneBySomeField($value): ?User
-//    {
-//        return $this->createQueryBuilder('u')
-//            ->andWhere('u.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $query = $qb
+            ->select('u')
+
+            ->where('u.status = :sts')
+            ->andWhere('u.roles LIKE :role_internal') //get internal only
+            ->andWhere('u.roles NOT LIKE :role_external') //exclude external
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('role_external', '%"ROLE_EXTERNAL"%')
+            ->setParameter('role_internal', '%"ROLE_INTERNAL"%')
+        ;
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getActivesExternalsforTable()
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb
+            ->select('u')
+
+            ->where('u.status = :sts')
+            ->andWhere('u.roles LIKE :role_external') //get external only
+            ->andWhere('u.roles NOT LIKE :role_internal') //exclude internal
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('role_external', '%"ROLE_EXTERNAL"%')
+            ->setParameter('role_internal', '%"ROLE_INTERNAL"%')
+        ;
+
+        return $query->getQuery()->getResult();
+    }
 }

@@ -30,6 +30,7 @@ class AppExtension extends AbstractExtension
             new TwigFilter('time_ago', $this->getTimeAgo(...)),
             new TwigFilter('public_username', $this->getPublicUsername(...)),
             new TwigFilter('filter_severity', $this->filterSeverity(...)),
+            new TwigFilter('time_since', $this->getTimeSince(...)),
         ];
     }
 
@@ -174,6 +175,26 @@ class AppExtension extends AbstractExtension
 
         // Return the final formatted string
         return $name;
+    }
+
+    /**
+     * Calculates the human-readable time elapsed since the given date. (e.g., "Desde Noviembre 2025")
+     *
+     * @param \DateTimeInterface|null $dateTime The date to compare against the present.
+     * @return string
+     */
+    public function getTimeSince(?\DateTimeInterface $dateTime): string
+    {
+        if (!$dateTime) {
+            return 'N/D';
+        }
+
+        $locale = 'es_ES';
+        $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::FULL, \IntlDateFormatter::NONE, null, null, 'MMMM YYYY');
+        $period = $formatter->format($dateTime);
+
+        // Return the final formatted string
+        return $period;
     }
 
     /**

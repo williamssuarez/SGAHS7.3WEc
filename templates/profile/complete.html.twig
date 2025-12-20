@@ -1,0 +1,106 @@
+{% extends 'completeBase.html.twig' %}
+
+{% block body %}
+    {{ form_start(form) }}
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-group">
+                <div class="col-md-12">
+                    {{form_label( form.nombre ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                </div>
+                <div class="col-md-12">
+                    {{form_widget( form.nombre ) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-group">
+                <div class="col-md-12">
+                    {{form_label( form.apellido ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                </div>
+                <div class="col-md-12">
+                    {{form_widget( form.apellido ) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="input-group">
+                <div class="col-md-12">
+                    {{form_label( form.nroDocumento ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                </div>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            {{form_widget( form.tipoDocumento ) }}
+                        </div>
+                        <div class="col-md-9">
+                            {{form_widget( form.nroDocumento ) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="input-group">
+                <div class="col-md-12">
+                    {{form_label( form.telefono ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                </div>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            {{form_widget( form.telefono.prefix ) }}
+                        </div>
+                        <div class="col-md-9">
+                            {{form_widget( form.telefono.number ) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="input-group">
+                <div class="col-md-12">
+                    {{form_label( form.direccion ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                </div>
+                <div class="col-md-12">
+                    {{form_widget( form.direccion ) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <div class="row">
+        {#<div class="col-8">
+            <div class="form-check">
+                {{ form_widget(registrationForm.agreeTerms) }}
+                {{form_label( registrationForm.agreeTerms ) }}
+            </div>
+        </div>#}
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-success btn-lg form-control">
+                <i class="bi bi-check2-circle"></i> Finalizar Registro
+            </button>
+        </div>
+        <!-- /.col -->
+    </div>
+    <!--end::Row-->
+    {{ form_end(form) }}
+{% endblock %}
