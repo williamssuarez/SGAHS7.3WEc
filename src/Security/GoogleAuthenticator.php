@@ -41,10 +41,10 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 $googleUser = $client->fetchUserFromToken($accessToken);
                 $email = $googleUser->getEmail();
 
-                // 1) Find existing user
+                // 1) Find existing user_internal
                 $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
 
-                // 2) If new user, create them
+                // 2) If new user_internal, create them
                 if (!$user) {
                     $user = new User();
                     $user->setEmail($email);

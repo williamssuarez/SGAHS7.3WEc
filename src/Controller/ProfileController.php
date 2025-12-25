@@ -27,7 +27,7 @@ final class ProfileController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        // 1. Security: If user is not logged in or already has a profile, send them away
+        // 1. Security: If user_internal is not logged in or already has a profile, send them away
         if (!$user) {
             return $this->redirectToRoute('app_login');
         }
@@ -42,7 +42,7 @@ final class ProfileController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Link the profile to the user
+            // Link the profile to the user_internal
             $profile->setWebUser($user); // Ensure this setter exists in ExternalProfile
             $user->setExternalProfile($profile);
 

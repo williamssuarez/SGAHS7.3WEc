@@ -13,7 +13,8 @@ parameters:
                 -   title: Sistema
                     icon: 'bi bi-tools'
                     children: # <-- This triggers the recursion
-                        - { title: Usuarios, route: app_user_index, icon: 'bi bi-person-lines-fill' }
+                        - { title: Usuarios Internos, route: app_user_internal_index, icon: 'bi bi-person-lines-fill' }
+                        - { title: Usuarios Externos, route: app_user_external_index, icon: 'bi bi-person-lines-fill' }
                         - { title: Ciudades, route: app_ciudad_index, icon: 'bi bi-journal-check' }
                 -   title: Alergias
                     icon: 'bi bi-virus'

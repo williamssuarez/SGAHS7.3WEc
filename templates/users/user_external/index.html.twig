@@ -1,0 +1,95 @@
+{% extends '../../base.html.twig' %}
+
+{% block title %}Gestion de Usuarios Internos{% endblock %}
+
+{% block titlewrap %}
+    Usuarios
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active" aria-current="page">Usuarios</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <h3 class="card-title">Usuarios Registrados</h3>
+    </div>
+
+    <div class="card-body">
+        <table class="table dtHere">
+            <thead>
+            <tr>
+                <th>Email</th>
+                <th>Tipo</th>
+                <th>Nombre</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr class="align-middle">
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% set badge = user.badgeConfig %}
+                        <span class="badge rounded-pill {{ badge.class }}">
+                            {{ badge.label }}
+                        </span>
+                    </td>
+                    <td>{{ user.displayNameorNothing }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-shield-fill-exclamation"></i> Acciones
+                            </button>
+                            <ul class="dropdown-menu" style="">
+                                <li>
+                                    <a class="dropdown-item" href="{{ path('app_user_show', {'id': user.id}) }}">
+                                        <i class="bi bi-search"></i> Ver Detalles
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ path('app_user_edit', {'id': user.id}) }}">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="bi bi-person-fill-lock"></i>
+                                        Desactivar Cuenta
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="bi bi-unlock-fill"></i>
+                                        Reiniciar Clave
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <br>
+
+    <div class="card-footer clearfix">
+        <a href="{{ path('app_user_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+    </div>
+</div>
+{% endblock %}

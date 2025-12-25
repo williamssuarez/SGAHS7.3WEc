@@ -289,7 +289,7 @@ $(document).ready(function () {
             return;
         }
 
-        // If the flag is FALSE, this was a manual user click (or external, unwanted event).
+        // If the flag is FALSE, this was a manual user_internal click (or external, unwanted event).
         e.preventDefault();
         //console.log('Free tab toggle attempted and blocked finely');
     });

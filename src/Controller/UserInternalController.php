@@ -15,18 +15,18 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/user')]
-final class UserController extends AbstractController
+#[Route('/user_internal')]
+final class UserInternalController extends AbstractController
 {
-    #[Route(name: 'app_user_index', methods: ['GET'])]
+    #[Route(name: 'app_user_internal_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
-        return $this->render('user/index.html.twig', [
-            'users' => $userRepository->getActivesforTable(),
+        return $this->render('users/user_internal/index.html.twig', [
+            'users' => $userRepository->getActivesInternalsforTable(),
         ]);
     }
 
-    #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_user_internal_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
@@ -38,29 +38,29 @@ final class UserController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Registro Agregado.');
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_user_internal_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('user/new.html.twig', [
-            'user' => $user,
+        return $this->render('users/user_internal/new.html.twig', [
+            'user_internal' => $user,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_user_internal_show', methods: ['GET'])]
     public function show(User $user, StatusRecordRepository $recordRepository): Response
     {
         if ($user->getStatus() != $recordRepository->getActive()){
             $this->addFlash('error', 'No se pudo encontrar el registro.');
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_user_internal_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('user/show.html.twig', [
-            'user' => $user,
+        return $this->render('users/user_internal/show.html.twig', [
+            'user_internal' => $user,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_user_internal_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager, StatusRecordRepository $recordRepository): Response
     {
         if ($user->getStatus() != $recordRepository->getActive()){
@@ -74,16 +74,16 @@ final class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_user_internal_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('user/edit.html.twig', [
-            'user' => $user,
+        return $this->render('users/user_internal/edit.html.twig', [
+            'user_internal' => $user,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_user_internal_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager, StatusRecordRepository $recordRepository): Response
     {
         $submittedToken = $request->request->get('_token');

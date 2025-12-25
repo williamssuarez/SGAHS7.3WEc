@@ -7,7 +7,7 @@
         {# 0. SECURITY CHECK (New Addition)                                #}
         {# ---------------------------------------------------------------- #}
         {# If 'roles' is not defined, we assume it's public/shared.         #}
-        {# If 'roles' IS defined, we check against the user's permissions.  #}
+        {# If 'roles' IS defined, we check against the user_internal's permissions.  #}
         {# ---------------------------------------------------------------- #}
 
         {% if item.roles is not defined or is_granted(item.roles) %}

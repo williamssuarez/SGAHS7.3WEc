@@ -26,7 +26,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     /**
-     * @var list<string> The user roles
+     * @var list<string> The user_internal roles
      */
     #[ORM\Column]
     private array $roles = [];
@@ -146,7 +146,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * A visual identifier that represents this user.
+     * A visual identifier that represents this user_internal.
      *
      * @see UserInterface
      */
@@ -161,7 +161,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
+        // guarantee every user_internal at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);

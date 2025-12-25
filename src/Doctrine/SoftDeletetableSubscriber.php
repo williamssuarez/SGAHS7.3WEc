@@ -19,7 +19,7 @@ use App\Entity\User; // Your User entity class
 #[AsDoctrineListener(event: Events::preUpdate)]
 final readonly class SoftDeletetableSubscriber
 {
-    // Inject the Security service to get the current user
+    // Inject the Security service to get the current user_internal
     public function __construct(private Security $security, private EntityManagerInterface $entityManager){}
 
     public function prePersist(PrePersistEventArgs $args): void
