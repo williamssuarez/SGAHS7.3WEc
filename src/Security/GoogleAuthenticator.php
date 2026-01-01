@@ -88,6 +88,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationFailure(Request $request, \Symfony\Component\Security\Core\Exception\AuthenticationException $exception): ?Response
     {
-        return new Response('Authentication failed!', Response::HTTP_FORBIDDEN);
+        /*return new Response('Authentication failed!', Response::HTTP_FORBIDDEN);*/
+        return new RedirectResponse($this->router->generate('app_login'));
     }
 }

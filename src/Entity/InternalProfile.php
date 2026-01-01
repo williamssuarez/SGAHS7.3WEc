@@ -7,7 +7,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InternalProfileRepository::class)]
-#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_NRODOCUMENTO_INTERNAL', fields: ['nroDocumento'])]
 class InternalProfile
 {
     #[ORM\Id]

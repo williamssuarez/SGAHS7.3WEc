@@ -7,9 +7,13 @@
         {% endif %}
 
         {% if app.user %}
-            <div class="mb-3 alert alert-danger">
-                Tienes sesion iniciada como {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Cerrar Sesion</a>
-            </div>
+            {% if app.user.internalProfile %}
+                <div class="mb-3 alert alert-danger">
+                    Tienes sesion iniciada como {{ app.user.internalProfile.nombre }} {{ app.user.internalProfile.apellido }}, <a href="{{ path('app_logout') }}">Cerrar Sesion</a>
+                </div>
+            {% elseif app.user.externalProfile %}
+                Tienes sesion iniciada como {{ app.user.externalProfile.nombre }} {{ app.user.externalProfile.apellido }}, <a href="{{ path('app_logout') }}">Cerrar Sesion</a>
+            {% endif %}
         {% endif %}
         <div class="input-group mb-3">
             <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>

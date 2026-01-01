@@ -20,12 +20,6 @@ readonly class PatientProcessor
      */
     public function processFormSubmission(Paciente $paciente, ?UploadedFile $fotoFile): void
     {
-        // ----------------------------------------------------
-        // A. Business Logic Check 1: Example Custom Validation
-        // ----------------------------------------------------
-        if (strtoupper($paciente->getNombre()) === 'TEST') {
-            throw new BusinessRuleException('El nombre "TEST" está reservado y no puede ser usado.');
-        }
 
         // ----------------------------------------------------
         // B. Business Logic Check 2: Verificar Cedula

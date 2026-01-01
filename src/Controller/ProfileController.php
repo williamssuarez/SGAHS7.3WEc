@@ -4,9 +4,12 @@ namespace App\Controller;
 
 use App\Entity\ExternalProfile;
 use App\Entity\User;
+use App\Exception\BusinessRuleException;
 use App\Form\ExternalProfileType;
+use App\Service\ExternalProfileProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +25,7 @@ final class ProfileController extends AbstractController
     }
 
     #[Route('/profile/complete', name: 'app_profile_complete')]
-    public function complete(Request $request, EntityManagerInterface $entityManager): Response
+    public function complete(Request $request, EntityManagerInterface $entityManager, ExternalProfileProcessor $externalProfileProcessor): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -43,14 +46,18 @@ final class ProfileController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Link the profile to the user_internal
-            $profile->setWebUser($user); // Ensure this setter exists in ExternalProfile
-            $user->setExternalProfile($profile);
+            try  {
+                $profile->setWebUser($user); // Ensure this setter exists in ExternalProfile
+                $user->setExternalProfile($profile);
 
-            $entityManager->persist($profile);
-            $entityManager->flush();
+                $externalProfileProcessor->processFormSubmission($profile);
 
-            $this->addFlash('success', '¡Perfil completado con éxito!');
-            return $this->redirectToRoute('app_dashboard');
+                $this->addFlash('success', '¡Perfil completado con éxito!');
+                return $this->redirectToRoute('app_dashboard', [], Response::HTTP_SEE_OTHER);
+            } catch (BusinessRuleException $e) {
+                //Obtener el mensaje especifico y mostrar el error
+                $form->addError(new FormError($e->getMessage()));
+            }
         }
 
         return $this->render('profile/complete.html.twig', [

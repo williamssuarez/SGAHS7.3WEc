@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ExternalProfile;
+use App\Entity\StatusRecord;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,30 @@ class ExternalProfileRepository extends ServiceEntityRepository
         parent::__construct($registry, ExternalProfile::class);
     }
 
-//    /**
-//     * @return ExternalProfile[] Returns an array of ExternalProfile objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('e.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getUserByValueforCheck($field, $value, $id = null, $extraField = null, $extraValue = null)
+    {
+        $qb = $this->createQueryBuilder('u');
+        $whereField = 'u.' . $field . ' = :value';
 
-//    public function findOneBySomeField($value): ?ExternalProfile
-//    {
-//        return $this->createQueryBuilder('e')
-//            ->andWhere('e.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $query = $qb
+            ->select('u')
+
+            ->where($whereField);
+
+        if ($extraField) {
+            $extra = 'u.' . $extraField . ' = :extra';
+            $qb->andWhere($extra)
+                ->setParameter('extra', $extraValue);
+        }
+
+        if ($id){
+            $qb->andWhere('u.id != :profileId')
+                ->setParameter('profileId', $id);
+        }
+
+        $qb->setParameter('value', $value)
+        ;
+
+        return $query->getQuery()->getOneOrNullResult();
+    }
 }
