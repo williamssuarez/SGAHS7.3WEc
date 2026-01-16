@@ -52,6 +52,8 @@ security:
 
         - { path: ^/dashboard, roles: ROLE_USER }
         - { path: ^/empleado, roles: ROLE_ADMIN }
+        - { path: ^/user_internal, roles: ROLE_ADMIN }
+        - { path: ^/user_external, roles: ROLE_ADMIN }
         - { path: ^/ciudad, roles: ROLE_ADMIN }
         - { path: ^/enfermedades, roles: ROLE_ADMIN }
         - { path: ^/alergenos, roles: ROLE_ADMIN }
