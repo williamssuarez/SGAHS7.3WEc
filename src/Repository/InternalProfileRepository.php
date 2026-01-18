@@ -16,28 +16,30 @@ class InternalProfileRepository extends ServiceEntityRepository
         parent::__construct($registry, InternalProfile::class);
     }
 
-//    /**
-//     * @return InternalProfile[] Returns an array of InternalProfile objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('i')
-//            ->andWhere('i.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('i.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getUserByValueforCheck($field, $value, $id = null, $extraField = null, $extraValue = null)
+    {
+        $qb = $this->createQueryBuilder('u');
+        $whereField = 'u.' . $field . ' = :value';
 
-//    public function findOneBySomeField($value): ?InternalProfile
-//    {
-//        return $this->createQueryBuilder('i')
-//            ->andWhere('i.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $query = $qb
+            ->select('u')
+
+            ->where($whereField);
+
+        if ($extraField) {
+            $extra = 'u.' . $extraField . ' = :extra';
+            $qb->andWhere($extra)
+                ->setParameter('extra', $extraValue);
+        }
+
+        if ($id){
+            $qb->andWhere('u.id != :profileId')
+                ->setParameter('profileId', $id);
+        }
+
+        $qb->setParameter('value', $value)
+        ;
+
+        return $query->getQuery()->getOneOrNullResult();
+    }
 }

@@ -2,14 +2,14 @@
 
 namespace App\Service;
 
-use App\Entity\ExternalProfile;
+use App\Entity\InternalProfile;
 use App\Entity\Paciente;
 use App\Entity\StatusRecord;
 use App\Exception\BusinessRuleException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-readonly class ExternalProfileProcessor
+readonly class InternalProfileProcessor
 {
     public function __construct(private EntityManagerInterface $entityManager, private FileUploader $fileUploader
     )
@@ -21,12 +21,11 @@ readonly class ExternalProfileProcessor
      *
      * @throws BusinessRuleException If any custom business validation fails.
      */
-    public function processFormSubmission(ExternalProfile $profile): void
+    public function processFormSubmission(InternalProfile $profile): void
     {
-
         //Verificar Cedula
         $ident = $profile->getId() ?: null;
-        $profileCheck = $this->entityManager->getRepository(ExternalProfile::class)->getUserByValueforCheck(
+        $profileCheck = $this->entityManager->getRepository(InternalProfile::class)->getUserByValueforCheck(
             'nroDocumento',
             $profile->getNroDocumento(),
             $ident,
@@ -39,7 +38,7 @@ readonly class ExternalProfileProcessor
 
         //Verificar el telefono
         $ident = $profile->getId() ?: null;
-        $profileCheck = $this->entityManager->getRepository(ExternalProfile::class)->getUserByValueforCheck(
+        $profileCheck = $this->entityManager->getRepository(InternalProfile::class)->getUserByValueforCheck(
             'telefono',
             $profile->getTelefono(),
             $ident

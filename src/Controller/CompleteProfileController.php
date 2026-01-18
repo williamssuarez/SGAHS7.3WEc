@@ -14,13 +14,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-final class ProfileController extends AbstractController
+final class CompleteProfileController extends AbstractController
 {
     #[Route('/profile', name: 'app_profile')]
     public function index(): Response
     {
         return $this->render('profile/index.html.twig', [
-            'controller_name' => 'ProfileController',
+            'controller_name' => 'CompleteProfileController',
         ]);
     }
 

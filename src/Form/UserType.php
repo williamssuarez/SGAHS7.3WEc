@@ -68,7 +68,7 @@ class UserType extends AbstractType
                         extensionsMessage: 'Por Favor suba un archivo valido. Los tipos de archivos validos son .jpg .png',
                     )
                 ],
-            1])
+            ])
             ->add('internalProfile', InternalProfileType::class, [
                 'label' => false,
                 'required' => true,

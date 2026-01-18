@@ -1,4 +1,147 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ include('base/_form_error_messages.html.twig') }}
+<div class="card-body">
+    <ul class="nav nav-tabs" id="formTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab1" data-bs-toggle="tab" data-bs-target="#tab1-pane" type="button" role="tab" aria-controls="tab1-pane" aria-selected="true">
+                Credenciales de la Cuenta
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab2" data-bs-toggle="tab" data-bs-target="#tab2-pane" type="button" role="tab" aria-controls="tab2-pane" aria-selected="false">
+                Datos del Usuario
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab3" data-bs-toggle="tab" data-bs-target="#tab3-pane" type="button" role="tab" aria-controls="tab3-pane" aria-selected="false">
+                Contactos y Direcciones
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="formTabContent">
+        <div class="tab-pane fade show active" id="tab1-pane" role="tabpanel" aria-labelledby="tab1" tabindex="0">
+            <h3>Credenciales de la Cuenta</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.email ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.email ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.roles ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.roles ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        {{form_widget( form.avatarUrl ) }}
+                        {{form_label( form.avatarUrl ) }}
+                    </div>
+                    <small>Archivos <strong>JPG y PNG</strong>, tamaño máximo <strong>2mb</strong></small> <p class="text-justify" style="font-size: 10pt; font-style: italic;">Tomele una foto al paciente y subala para guardarla (opcional)</p>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="tab2-pane" role="tabpanel" aria-labelledby="tab2" tabindex="0">
+            <h3>Datos del Usuario</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.internalProfile.nombre ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.internalProfile.nombre ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.internalProfile.apellido ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.internalProfile.apellido ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.internalProfile.nroDocumento ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        <div class="row">
+                            <div class="col-md-3">
+                                {{form_widget( form.internalProfile.tipoDocumento ) }}
+                            </div>
+                            <div class="col-md-9">
+                                {{form_widget( form.internalProfile.nroDocumento ) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="tab3-pane" role="tabpanel" aria-labelledby="tab3" tabindex="0">
+            <h3>Contactos y Direcciones</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.internalProfile.direccion ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.internalProfile.direccion ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.internalProfile.telefono ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        <div class="row">
+                            <div class="col-md-3">
+                                {{form_widget( form.internalProfile.telefono.prefix ) }}
+                            </div>
+                            <div class="col-md-9">
+                                {{form_widget( form.internalProfile.telefono.number ) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card-footer">
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="progress mb-2" role="progressbar" aria-label="Form progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div id="form-progress-bar" class="progress-bar progress-bar-striped bg-success" style="width: 0%; border-radius: 0.375rem"></div>
+            </div>
+
+            <div class="d-flex justify-content-between" id="btnToolbar">
+                <button id="prev-tab" class="btn btn-secondary btn-lg" type="button" disabled="disabled">
+                    <i class="bi bi-caret-left-fill"></i> Anterior
+                </button>
+
+                <div class="d-flex">
+                    <button id="next-tab" class="btn btn-primary me-2 btn-lg" type="button">
+                        Siguiente <i class="bi bi-caret-right-fill"></i>
+                    </button>
+
+                    {# Ensure the submit button has a margin on the left if not using me-2 on next-tab #}
+                    <button id="submit-form" class="btn btn-success btn-lg" style="display:none;">
+                        {{ button_label|default('Guardar') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {{ form_end(form) }}

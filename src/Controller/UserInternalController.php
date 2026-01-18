@@ -5,11 +5,14 @@ namespace App\Controller;
 use App\Entity\Enfermedades;
 use App\Entity\StatusRecord;
 use App\Entity\User;
+use App\Exception\BusinessRuleException;
 use App\Form\UserType;
 use App\Repository\StatusRecordRepository;
 use App\Repository\UserRepository;
+use App\Service\InternalProfileProcessor;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,18 +30,24 @@ final class UserInternalController extends AbstractController
     }
 
     #[Route('/new', name: 'app_user_internal_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, InternalProfileProcessor $internalProfileProcessor): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($user);
-            $entityManager->flush();
+            try {
+                // dejar que el servicio procese el form
+                $internalProfileProcessor->processFormSubmission($user->getInternalProfile(), $form->get('avatarUrl')->getData());
 
-            $this->addFlash('success', 'Registro Agregado.');
-            return $this->redirectToRoute('app_user_internal_index', [], Response::HTTP_SEE_OTHER);
+                $this->addFlash('success', 'Registro Agregado.');
+                return $this->redirectToRoute('app_user_internal_index', [], Response::HTTP_SEE_OTHER);
+
+            } catch (BusinessRuleException $e) {
+                //Obtener el mensaje especifico y mostrar el error
+                $form->addError(new FormError($e->getMessage()));
+            }
         }
 
         return $this->render('users/user_internal/new.html.twig', [

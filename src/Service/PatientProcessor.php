@@ -21,9 +21,7 @@ readonly class PatientProcessor
     public function processFormSubmission(Paciente $paciente, ?UploadedFile $fotoFile): void
     {
 
-        // ----------------------------------------------------
-        // B. Business Logic Check 2: Verificar Cedula
-        // ----------------------------------------------------
+        //Verificar Cedula
         $ident = $paciente->getId() ? $paciente->getId() : null;
         $pacienteCheck = $this->entityManager->getRepository(Paciente::class)->getPatientbyValueforCheck(
             'cedula',
@@ -36,9 +34,7 @@ readonly class PatientProcessor
             throw new BusinessRuleException('Ya existe un paciente registrado con ese documento, por favor verifique.');
         }
 
-        // ----------------------------------------------------
-        // C. Business Logic Check 3: Verificar el telefono
-        // ----------------------------------------------------
+        //Verificar el telefono
         $ident = $paciente->getId() ? $paciente->getId() : null;
         $pacienteCheck = $this->entityManager->getRepository(Paciente::class)->getPatientbyValueforCheck(
             'telefono',
@@ -49,9 +45,7 @@ readonly class PatientProcessor
             throw new BusinessRuleException('Ya existe un paciente registrado con ese telefono, por favor verifique.');
         }
 
-        // ----------------------------------------------------
-        // E. Business Logic Check 5: Subida de archivo (checkear antes si paciente ya tiene foto)
-        // ----------------------------------------------------
+        //Subida de archivo (checkear antes si paciente ya tiene foto)
         if ($fotoFile) {
             //search previos picture
             $prevFoto = $paciente->getFoto();

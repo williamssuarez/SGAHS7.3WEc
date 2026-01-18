@@ -1,11 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New User{% endblock %}
+{% block title %}Nuevo Usuario Interno{% endblock %}
+
+{% block titlewrap %}
+    Nuevo Usuario Interno
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_user_internal_index') }}">Usuarios Internos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nuevo Usuario Interno</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Create new User</h1>
-
-    {{ include('users/user_internal/_form.html.twig') }}
-
-    <a href="{{ path('app_user_index') }}">back to list</a>
+    <div class="col-md-12">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('users/user_internal/_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}
