@@ -141,7 +141,7 @@ class AppExtension extends AbstractExtension
                 'status' => $this->entityManager->getRepository(StatusRecord::class)->getActive()
             ]);
 
-            $name = sprintf('usuario %s %s', $user->getFirstName(), $user->getLastName());
+            $name = sprintf('usuario %s %s', $user->getInternalProfile()->getNombre(), $user->getInternalProfile()->getApellido());
         }
 
         // Return the final formatted string

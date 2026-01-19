@@ -70,20 +70,28 @@ final class UserInternalController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_internal_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager, StatusRecordRepository $recordRepository): Response
+    public function edit(Request $request, User $user, StatusRecordRepository $recordRepository, InternalProfileProcessor $internalProfileProcessor): Response
     {
         if ($user->getStatus() != $recordRepository->getActive()){
             $this->addFlash('error', 'No se pudo encontrar el registro.');
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_user_internal_index', [], Response::HTTP_SEE_OTHER);
         }
 
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            try {
+                // dejar que el servicio procese el form
+                $internalProfileProcessor->processFormSubmission($user->getInternalProfile(), $form->get('avatarUrl')->getData());
 
-            return $this->redirectToRoute('app_user_internal_index', [], Response::HTTP_SEE_OTHER);
+                $this->addFlash('success', 'Registro Editado.');
+                return $this->redirectToRoute('app_user_internal_index', [], Response::HTTP_SEE_OTHER);
+
+            } catch (BusinessRuleException $e) {
+                //Obtener el mensaje especifico y mostrar el error
+                $form->addError(new FormError($e->getMessage()));
+            }
         }
 
         return $this->render('users/user_internal/edit.html.twig', [
