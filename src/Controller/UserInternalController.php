@@ -65,7 +65,7 @@ final class UserInternalController extends AbstractController
         }
 
         return $this->render('users/user_internal/show.html.twig', [
-            'user_internal' => $user,
+            'user' => $user,
         ]);
     }
 

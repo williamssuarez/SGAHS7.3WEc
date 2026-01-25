@@ -42,6 +42,7 @@ class RegistrationController extends AbstractController
             $user->setUidCreate(-1);
             $user->setCreated(new \DateTime('now'));
             $user->setStatus($entityManager->getRepository(StatusRecord::class)->getActive());
+            $user->setRoles(['ROLE_USER', 'ROLE_EXTERNAL']);
 
             $entityManager->persist($user);
             $entityManager->flush();
@@ -63,6 +64,12 @@ class RegistrationController extends AbstractController
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form,
         ]);
+    }
+
+    #[Route('/verify/check-email', name: 'app_check_inbox')]
+    public function checkInbox(): Response
+    {
+        return $this->render('registration/check_email.html.twig');
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]

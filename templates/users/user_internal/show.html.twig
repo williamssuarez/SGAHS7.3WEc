@@ -1,66 +1,190 @@
-{% extends '../../base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}User{% endblock %}
+{% block title %}Detalles de Usuario Interno{% endblock %}
+
+{% block titlewrap %}
+    Detalles de Usuario Interno
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_user_internal_index') }}">Usuarios Internos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Detalles de Usuario Interno</li>
+{% endblock %}
 
 {% block body %}
-    <h1>User</h1>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-primary card-outline">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="photo-container">
+                                {% if user.avatarUrl %}
+                                    {# 1. Determine the source logic #}
+                                    {% if user.avatarUrl starts with 'http' %}
+                                        {# It is a Google/External URL #}
+                                        {% set final_src = user.avatarUrl %}
+                                        {# Google doesn't support the 'original' filter logic easily, so use the same URL or a larger variant if available #}
+                                        {% set original_src = user.avatarUrl %}
+                                    {% else %}
+                                        {# It is a Local File #}
+                                        {% set full_photo_path = paciente_photo_path ~ user.avatarUrl %}
+                                        {% set final_src = asset(full_photo_path) | imagine_filter('patient_profile') %}
+                                        {% set original_src = asset(full_photo_path) | imagine_filter('patient_viewer_full') %}
+                                    {% endif %}
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ user.id }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ user.email }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ user.password }}</td>
-            </tr>
-            <tr>
-                <th>IsVerified</th>
-                <td>{{ user.isVerified ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>FirstName</th>
-                <td>{{ user.firstName }}</td>
-            </tr>
-            <tr>
-                <th>LastName</th>
-                <td>{{ user.lastName }}</td>
-            </tr>
-            <tr>
-                <th>AvatarUrl</th>
-                <td>{{ user.avatarUrl }}</td>
-            </tr>
-            <tr>
-                <th>UidCreate</th>
-                <td>{{ user.uidCreate }}</td>
-            </tr>
-            <tr>
-                <th>UidUpdate</th>
-                <td>{{ user.uidUpdate }}</td>
-            </tr>
-            <tr>
-                <th>Created</th>
-                <td>{{ user.created ? user.created|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Updated</th>
-                <td>{{ user.updated ? user.updated|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+                                    {# 2. Render the Single Image Tag #}
+                                    <img
+                                        src="{{ final_src }}"
+                                        alt="{{ user.email }} Profile Photo"
+                                        class="img-fluid"
+                                        style="cursor: pointer; height: auto; border-radius: 0%; width: 100%; object-fit: cover;"
+                                        data-original="{{ original_src }}"
+                                    >
+                                {% else %}
+                                    <p>No hay foto de perfil cargada.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="col-md-12">
+                                <h2>
+                                    {{ user.internalProfile.nombre }} {{ user.internalProfile.apellido }}
+                                    {% if user.isVerified %}
+                                        <i class="bi bi-check-circle-fill" style="color: #138b00"></i>
+                                    {% else %}
+                                        <i class="bi bi-x-circle-fill" style="color: #8b0000"></i>
+                                    {% endif %}
+                                </h2>
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
+                                <h4>
+                                    <span class="badge rounded-pill text-bg-secondary">{{ user.internalProfile.tipoDocumento|title }} - {{ user.internalProfile.nroDocumento|number_format(0, '', '.') }}</span>
+                                </h4>
+                            </div>
+                            <div class="accordion" id="accordionExample">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContact" aria-expanded="false" aria-controls="collapseContact">
+                                            <i class="bi bi-telephone" style="color: crimson"></i> &nbsp;Información de Contacto
+                                        </button>
+                                    </h2>
+                                    <div id="collapseContact" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+                                        <div class="accordion-body">
+                                            <h4>
+                                                <i class="bi bi-telephone" style="color: crimson"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ user.internalProfile.telefono }}
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
 
-    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDirect" aria-expanded="false" aria-controls="collapseDirect">
+                                            <i class="bi bi-building-fill" style="color: forestgreen"></i> &nbsp;Dirección
+                                        </button>
+                                    </h2>
+                                    <div id="collapseDirect" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+                                        <div class="accordion-body">
+                                            {{ user.internalProfile.direccion }}
+                                        </div>
+                                    </div>
+                                </div>
 
-    {{ include('user_internal/_delete_form.html.twig') }}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
+                                            <i class="bi bi-three-dots-vertical"></i> &nbsp; Mas Información
+                                        </button>
+                                    </h2>
+                                    <div id="collapseMoreInfo" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+                                        <div class="accordion-body">
+                                            Registrado el <strong>{{ user.created|date('d-m-Y') }}</strong> <i>({{ user.created|time_ago }})</i> por <strong>{{ user.uidCreate|public_username|title }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRoles" aria-expanded="false" aria-controls="collapseRoles">
+                                            <i class="bi bi-lock-fill"></i> &nbsp; Roles
+                                        </button>
+                                    </h2>
+                                    <div id="collapseRoles" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+                                        <div class="accordion-body">
+                                            <table class="table table-bordered" role="table">
+                                                <thead>
+                                                <tr>
+                                                    <th style="width: 10px" scope="col">#</th>
+                                                    <th scope="col">Rol</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for rw in user.roles %}
+                                                    <tr class="align-middle">
+                                                        <td>{{ loop.index }}.</td>
+                                                        <td>{{ rw }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="d-flex justify-content-between">
+                                <a class="btn btn-primary" href="{{ path('app_user_internal_index') }}">
+                                    <i class="bi bi-arrow-left"></i> Volver
+                                </a>
+
+                                <div class="d-flex">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-shield-fill-exclamation"></i> Acciones
+                                        </button>
+                                        <ul class="dropdown-menu" style="">
+                                            <li>
+                                                <a class="dropdown-item" href="{{ path('app_user_internal_edit', {'id': user.id}) }}">
+                                                    <i class="bi bi-pencil-square"></i> Editar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#">
+                                                    <i class="bi bi-person-fill-lock"></i>
+                                                    Desactivar Cuenta
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="#">
+                                                    <i class="bi bi-unlock-fill"></i>
+                                                    Reiniciar Clave
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

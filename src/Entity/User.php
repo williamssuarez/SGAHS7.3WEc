@@ -88,22 +88,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function getDisplayNameorNothing(): string
+    public function getInternalNameorNothing(): string
     {
-        $profile = $this->getActiveProfile();
+        $profile = $this->internalProfile;
 
-        // Assuming both InternalProfile and ExternalProfile have 'nombre' and 'apellido'
-        if ($profile && method_exists($profile, 'getNombre')) {
-            return ucfirst($profile->getNombre()) . ' ' . ucfirst($profile->getApellido());
-        }
-
-        // Fallback if profile is incomplete
-        return 'Sin Datos registrados.';
+        return ucfirst($profile->getNombre()) . ' ' . ucfirst($profile->getApellido());
     }
 
     public function getDisplayRoleLabel(): string
     {
-        if (in_array('ROLE_INTERNAL', $this->getRoles())) {
+        if (in_array('ROLE_ADMIN', $this->getRoles()) || in_array('ROLE_INTERNAL', $this->getRoles())) {
             return 'Personal Médico'; // or 'Staff'
         }
         return 'Paciente';
