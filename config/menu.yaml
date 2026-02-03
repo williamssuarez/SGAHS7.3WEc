@@ -3,31 +3,32 @@ parameters:
     app_menu.sidebar:
         -
             title: Dashboard
-            icon: 'bi bi-house-door-fill'
+            icon: 'bi bi-house-door-fill text-primary'
             route: app_dashboard
         -
             title: Configuraciones
-            icon: 'bi bi-gear'
+            icon: 'bi bi-gear text-warning'
             roles: 'ROLE_ADMIN'
             children:
                 -   title: Sistema
-                    icon: 'bi bi-tools'
+                    icon: 'bi bi-tools text-info'
                     children: # <-- This triggers the recursion
-                        - { title: Usuarios Internos, route: app_user_internal_index, icon: 'bi bi-person-lines-fill' }
-                        - { title: Usuarios Externos, route: app_user_external_index, icon: 'bi bi-person-lines-fill' }
-                        - { title: Ciudades, route: app_ciudad_index, icon: 'bi bi-journal-check' }
+                        - { title: Usuarios Internos, route: app_user_internal_index, icon: 'bi bi-person-lines-fill text-info' }
+                        - { title: Usuarios Externos, route: app_user_external_index, icon: 'bi bi-person-lines-fill text-info' }
+                        - { title: Ciudades, route: app_ciudad_index, icon: 'bi bi-journal-check text-info' }
                 -   title: Alergias
-                    icon: 'bi bi-virus'
+                    icon: 'bi bi-virus text-success'
                     children: # <-- This triggers the recursion
-                        - { title: Alergenos, route: app_alergenos_index, icon: 'bi bi-virus2' }
-                        - { title: Reacciones, route: app_reacciones_index, icon: 'bi bi-virus2' }
-                - { title: Discapacidades, route: app_discapacidades_index }
-                - { title: Tratamientos, route: app_tratamientos_index }
-                - { title: Enfermedades, route: app_enfermedades_index }
-                - { title: Medicamentos, route: app_medicamentos_index }
+                        - { title: Alergenos, route: app_alergenos_index, icon: 'bi bi-virus2 text-success' }
+                        - { title: Reacciones, route: app_reacciones_index, icon: 'bi bi-virus2 text-success' }
+                - { title: Discapacidades, route: app_discapacidades_index, icon: 'bi bi-person-wheelchair text-warning' }
+                - { title: Condiciones, route: app_condiciones_index, icon: 'fa-solid fa-person-cane text-warning' }
+                - { title: Tratamientos, route: app_tratamientos_index, icon: 'fa-solid fa-syringe text-warning' }
+                - { title: Enfermedades, route: app_enfermedades_index, icon: 'fa-solid fa-head-side-cough text-warning' }
+                - { title: Medicamentos, route: app_medicamentos_index, icon: 'bi bi-capsule-pill text-warning' }
         -
             title: Pacientes
-            icon: 'bi bi-people'
+            icon: 'bi bi-people text-info'
             roles: 'ROLE_INTERNAL'
             children:
-                - { title: Pacientes Registrados, route: app_paciente_index, icon: 'bi bi-person-badge-fill' }
+                - { title: Pacientes Registrados, route: app_paciente_index, icon: 'bi bi-person-badge-fill text-info' }
