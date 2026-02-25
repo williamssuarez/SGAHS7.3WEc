@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Consultas{% endblock %}
+
+{% block titlewrap %}
+    Consultas
+{% endblock %}
+
+{% block breadcrumb %}
+    {#<li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Home</a></li>#}
+    <li class="breadcrumb-item active" aria-current="page">Consultas</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="card card-primary card-outline mb-4">
+        <div class="card-header">
+            <h3 class="card-title">Consultas Registradas</h3>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-striped dtHere">
+                <thead>
+                <tr>
+                    <th>Paciente</th>
+                    <th>Tipo de Consulta</th>
+                    <th>Estado</th>
+                    <th>Inicio</th>
+                    <th>Final</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entity in entities %}
+                    <tr class="align-middle">
+                        <td>{{ entity.paciente.nombre }} {{ entity.paciente.apellido }}</td>
+                        <td>
+                            {% set badge = entity.consultaTiposBadgeConfig %}
+                            <span class="badge rounded-pill {{ badge.class }}">
+                                {{ badge.label }}
+                            </span>
+                        </td>
+                        <td>
+                            {% set badge = entity.consultaEstadosBadgeConfig %}
+                            <span class="badge rounded-pill {{ badge.class }}">
+                                {{ badge.label }}
+                            </span>
+                        </td>
+                        <td>{{ entity.fechaInicio|date('d/m/Y H:i') }}</td>
+                        <td>{{ entity.fechaFin ? entity.fechaFin|date('d/m/Y H:i') : '' }}</td>
+                        <td>
+                            <a class="btn btn-secondary" href="{{ path('app_consulta_show', {'id': entity.id}) }}">
+                                <i class="bi bi-search"></i> Detalles
+                            </a>
+                            <a class="btn btn-danger" href="{{ path('app_consulta_cancel', {'id': entity.id}) }}">
+                                <i class="fa-regular fa-circle-xmark"></i> Cancelar
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer clearfix">
+            <div class="btn-group">
+                <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-plus-circle-fill"></i> Nueva Consulta
+                </button>
+                <ul class="dropdown-menu" style="">
+                    <li>
+                        <a class="dropdown-item" href="{{ path('app_consulta_new_active') }}">
+                            <i class="fa-solid fa-plus-circle"></i> Nueva Consulta Activa
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{ path('app_consulta_new_pending') }}">
+                            <i class="fa-solid fa-exclamation-circle"></i> Nueva Consulta Pendiente
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

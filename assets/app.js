@@ -164,6 +164,31 @@ $(document).ready(function () {
         responsive: true,
     });
 
+    //Select 2 with ajax search
+    $('.ajaxSrchSelect').select2({
+        theme: "bootstrap-5", // Use the installed Bootstrap 5 theme
+        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+        placeholder: $(this).data('placeholder'),
+        language: "es",
+        ajax: {
+            url: '/paciente/autocomplete-paciente', // Match the route name/path
+            dataType: 'json',
+            delay: 250, // Wait 250ms after typing stops before sending request
+            data: function (params) {
+                return {
+                    q: params.term // search term
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.results
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 3, // Only search after 3 characters
+    });
+
     //Select 2 with search
     $('.srchSelect').select2({
         theme: "bootstrap-5", // Use the installed Bootstrap 5 theme

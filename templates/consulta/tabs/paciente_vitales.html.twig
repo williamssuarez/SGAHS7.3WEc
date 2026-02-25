@@ -1,0 +1,41 @@
+<h4>
+    Vitales Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_alergias_new', {'id': paciente.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+</h4>
+<table class="table table-striped dtHere">
+    <thead>
+    <tr>
+        <th>Temperatura</th>
+        <th>Presion Arterial</th>
+        <th>Frecuencia Cardiaca</th>
+        <th>Frecuencia Cardiaca</th>
+        <th>Observaciones</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for entity in paciente.alergias %}
+        <tr class="align-middle">
+            <td>{{ entity.alergeno.nombre }}</td>
+            <td>{{ entity.severidad|filter_severity }}</td>
+            <td>
+                <ul>
+                    {% for reaccion in entity.reacciones %}
+                        <li>{{ reaccion.nombre }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td>
+                {{ entity.observaciones ? entity.observaciones : '--' }}
+            </td>
+            <td>
+                <a class="btn btn-secondary" href="{{ path('app_alergias_show', {'id': entity.id}) }}">
+                    <i class="bi bi-search"></i> Detalles
+                </a>
+                <a class="btn btn-success" href="{{ path('app_alergias_edit', {'id': entity.id}) }}">
+                    <i class="bi bi-pencil-square"></i> Editar
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

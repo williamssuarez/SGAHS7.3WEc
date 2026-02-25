@@ -26,7 +26,7 @@ class Paciente
     private ?string $apellido = null;
 
     #[ORM\Column]
-    private ?int $cedula = null;
+    private ?string $cedula = null;
 
     #[ORM\Column(length: 255)]
     private ?string $telefono = null;
@@ -91,6 +91,12 @@ class Paciente
     #[ORM\OneToMany(targetEntity: Alergias::class, mappedBy: 'paciente')]
     private Collection $alergias;
 
+    /**
+     * @var Collection<int, Consulta>
+     */
+    #[ORM\OneToMany(targetEntity: Consulta::class, mappedBy: 'paciente')]
+    private Collection $consultas;
+
     public function __construct()
     {
         $this->enfermedades = new ArrayCollection();
@@ -99,6 +105,18 @@ class Paciente
         $this->historiaPacientes = new ArrayCollection();
         $this->attachments = new ArrayCollection();
         $this->alergias = new ArrayCollection();
+        $this->consultas = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return sprintf(
+            '%s %s (%s-%s)',
+            $this->getNombre(),
+            $this->getApellido(),
+            $this->getTipoDocumento(),
+            number_format($this->getCedula(), 0, ',', '.')
+        );
     }
 
     public function getId(): ?int
@@ -130,12 +148,12 @@ class Paciente
         return $this;
     }
 
-    public function getCedula(): ?int
+    public function getCedula(): ?string
     {
         return $this->cedula;
     }
 
-    public function setCedula(int $cedula): static
+    public function setCedula(string $cedula): static
     {
         $this->cedula = $cedula;
 
@@ -406,6 +424,36 @@ class Paciente
             // set the owning side to null (unless already changed)
             if ($alergia->getPaciente() === $this) {
                 $alergia->setPaciente(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Consulta>
+     */
+    public function getConsultas(): Collection
+    {
+        return $this->consultas;
+    }
+
+    public function addConsulta(Consulta $consulta): static
+    {
+        if (!$this->consultas->contains($consulta)) {
+            $this->consultas->add($consulta);
+            $consulta->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsulta(Consulta $consulta): static
+    {
+        if ($this->consultas->removeElement($consulta)) {
+            // set the owning side to null (unless already changed)
+            if ($consulta->getPaciente() === $this) {
+                $consulta->setPaciente(null);
             }
         }
 

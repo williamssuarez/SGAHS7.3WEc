@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ consultaLabel }}{% endblock %}
+
+{% block titlewrap %}
+    {{ consultaLabel }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_consulta_index') }}">Consultas</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ consultaLabel }}</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('consulta/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

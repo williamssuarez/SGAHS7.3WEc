@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cancelar Consulta{% endblock %}
+
+{% block titlewrap %}
+    Cancelar Consulta
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_consulta_index') }}">Consultas</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Cancelar Consulta</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            {{ form_start(form) }}
+            {{ include('base/_form_error_messages.html.twig') }}
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Tipo de Consulta</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        {% set badge = entity.consultaTiposBadgeConfig %}
+                        <input type="text" class="form-control" value="{{ badge.label }}" readonly>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Fecha de Inicio</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="text" class="form-control" value="{{ entity.fechaInicio|date('d/m/Y H:i') }}" readonly>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Paciente</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="text" class="form-control" value="{{ entity.paciente }}" readonly>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{form_label( form.observacion ) }}
+                    {{form_widget( form.observacion ) }}
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-primary" href="{{ path('app_consulta_index') }}">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+
+                            <div class="d-flex">
+                                <button class="btn btn-success">
+                                    {{ button_label|default('Cancelar Consulta') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

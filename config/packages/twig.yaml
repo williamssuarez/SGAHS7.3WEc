@@ -1,4 +1,6 @@
 twig:
+    date:
+        timezone: America/Caracas
     file_name_pattern: '*.twig'
     globals:
         sidebar_menu: '%app_menu.sidebar%'

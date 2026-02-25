@@ -1,0 +1,48 @@
+<h4>
+    Archivos Subidos <a class="btn btn-primary btn-sm" href="{{ path('app_attachment_paciente_upload', {'id': paciente.id}) }}"><i class="bi bi-plus-circle"></i> Subir</a>
+</h4>
+<table class="table table-striped dtHere">
+    <thead>
+    <tr>
+        <th>Nombre</th>
+        <th>Tipo de Archivo</th>
+        <th>Subido</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for entity in paciente.attachments %}
+        <tr class="align-middle">
+            <td>{{ entity.fileName }}</td>
+            <td>
+                {% if entity.fileType == 'image/jpeg' or entity.fileType == 'image/png' %}
+                    <h4>
+                                    <span class="badge rounded-pill text-bg-success">
+                                        <i class="bi bi-card-image"></i>
+                                    </span>
+                    </h4>
+                {% elseif entity.fileType == 'application/pdf' %}
+                    <h4>
+                                    <span class="badge rounded-pill text-bg-danger">
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                    </span>
+                    </h4>
+                {% endif %}
+            </td>
+            <td>{{ entity.dateUploaded|date('d/m/Y') }}</td>
+            <td>
+                <a class="btn btn-success" href="{{ asset(paciente_photo_path ~ entity.fileHash) }}" target="_blank">
+                    <i class="bi bi-download"></i>
+                </a>
+                <button class="btn btn-danger"
+                        onclick="deleteFile(
+                            '{{ path('app_attachment_delete', {'id': entity.id}) }}',
+                            '{{ csrf_token('delete' ~ entity.id) }}'
+                            )">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

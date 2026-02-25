@@ -32,3 +32,4 @@ parameters:
             roles: 'ROLE_INTERNAL'
             children:
                 - { title: Pacientes Registrados, route: app_paciente_index, icon: 'bi bi-person-badge-fill text-info' }
+                - { title: Consultas, route: app_consulta_index, icon: 'bi bi-person-badge-fill text-info' }

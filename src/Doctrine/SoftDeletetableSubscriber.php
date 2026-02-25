@@ -31,7 +31,7 @@ final readonly class SoftDeletetableSubscriber
             return;
         }
 
-        $now = new \DateTimeImmutable();
+        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $user = $this->security->getUser();
 
         /** @var SoftDeletetableTrait|object $entity */
@@ -57,7 +57,7 @@ final readonly class SoftDeletetableSubscriber
             return;
         }
 
-        $now = new \DateTimeImmutable();
+        $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $user = $this->security->getUser();
 
         /** @var SoftDeletetableTrait|object $entity */

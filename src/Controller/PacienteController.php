@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -22,6 +23,23 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/paciente')]
 final class PacienteController extends AbstractController
 {
+    #[Route('/autocomplete-paciente', name: 'app_paciente_autocomplete', methods: ['GET'])]
+    public function search(Request $request, PacienteRepository $repository): JsonResponse
+    {
+        $query = $request->query->get('q'); // Select2 sends the search term as 'q'
+        $pacientes = $repository->findByNombreLike($query);
+
+        $results = [];
+        foreach ($pacientes as $p) {
+            $results[] = [
+                'id' => $p->getId(),
+                'text' => sprintf('%s %s (%s-%s)', $p->getNombre(), $p->getApellido(), $p->getTipoDocumento(), number_format($p->getCedula(), 0, ',', '.'))
+            ];
+        }
+
+        return new JsonResponse(['results' => $results]);
+    }
+
     #[Route(name: 'app_paciente_index', methods: ['GET'])]
     public function index(PacienteRepository $pacienteRepository): Response
     {
@@ -66,7 +84,7 @@ final class PacienteController extends AbstractController
             return $this->redirectToRoute('app_paciente_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        $historias = $historiaPacienteRepository->findByPacienteOrderedByDate($paciente->getId());
+        /*$historias = $historiaPacienteRepository->findByPacienteOrderedByDate($paciente->getId());
 
         $groupedHistorias = [];
         foreach ($historias as $historia) {
@@ -81,11 +99,11 @@ final class PacienteController extends AbstractController
 
             // Add the history record to the group
             $groupedHistorias[$dateString][] = $historia;
-        }
+        }*/
 
         return $this->render('paciente/show.html.twig', [
             'paciente' => $paciente,
-            'grouped_historias' => $groupedHistorias
+            //'grouped_historias' => $groupedHistorias
         ]);
     }
 

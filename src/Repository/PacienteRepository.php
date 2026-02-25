@@ -74,4 +74,43 @@ class PacienteRepository extends ServiceEntityRepository
 
         return $query->getQuery()->getOneOrNullResult();
     }
+
+    public function findByNombreLike(string $search, int $maxResults = 15): array
+    {
+        $qb = $this->createQueryBuilder('p'); // 'p' for Paciente
+
+        return $qb
+            ->where(
+                $qb->expr()->orX(
+                    'p.nombre LIKE :search',
+                    'p.apellido LIKE :search',
+                    'p.cedula LIKE :search'
+                )
+            )
+            ->andWhere('p.status = :sts')
+            ->setParameter('search', '%' . $search . '%')
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+
+            ->orderBy('p.nombre', 'ASC')
+            ->setMaxResults($maxResults)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByCedulaLike(string $search)
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb
+            ->select('u')
+
+            ->where('u.cedula = :search')
+            ->andWhere('u.status = :sts')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('search', '%' . $search . '%')
+        ;
+
+        return $query->getQuery()->getResult();
+    }
 }

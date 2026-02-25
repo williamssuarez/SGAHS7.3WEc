@@ -1,0 +1,62 @@
+<div class="card-body">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tabVitales" data-bs-toggle="tab" data-bs-target="#tabVitales-pane" type="button" role="tab" aria-controls="tabVitales-pane" aria-selected="true">
+                <i class="bi bi-heart-pulse-fill"></i> Vitales y biométricos
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabMedicaciones" data-bs-toggle="tab" data-bs-target="#tabMedicaciones-pane" type="button" role="tab" aria-controls="tabMedicaciones-pane" aria-selected="false">
+                <i class="bi bi-capsule-pill"></i> Medicaciones
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabAlergias" data-bs-toggle="tab" data-bs-target="#tabAlergias-pane" type="button" role="tab" aria-controls="tabAlergias-pane" aria-selected="false">
+                <i class="bi bi-virus"></i> Alergias
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabEnfermedades" data-bs-toggle="tab" data-bs-target="#tabEnfermedades-pane" type="button" role="tab" aria-controls="tabEnfermedades-pane" aria-selected="false">
+                <i class="fa-solid fa-head-side-cough"></i> Enfermedades
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabDiscapacidades" data-bs-toggle="tab" data-bs-target="#tabDiscapacidades-pane" type="button" role="tab" aria-controls="tabDiscapacidades-pane" aria-selected="false">
+                <i class="bi bi-person-wheelchair"></i> Discapacidades
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabTratamientos" data-bs-toggle="tab" data-bs-target="#tabTratamientos-pane" type="button" role="tab" aria-controls="tabTratamientos-pane" aria-selected="false">
+                <i class="fa-solid fa-syringe"></i> Tratamientos
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabArchivos" data-bs-toggle="tab" data-bs-target="#tabArchivos-pane" type="button" role="tab" aria-controls="tabArchivos-pane" aria-selected="false">
+                <i class="bi bi-folder-fill"></i> Archivos
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content" id="formTabContent">
+        <div class="tab-pane fade show active" id="tabVitales-pane" role="tabpanel" aria-labelledby="tabVitales" tabindex="0">
+            {{ include('consulta/tabs/paciente_vitales.html.twig') }}
+        </div>
+        <div class="tab-pane fade show active" id="tabMedicaciones-pane" role="tabpanel" aria-labelledby="tabMedicaciones" tabindex="0">
+
+        </div>
+        <div class="tab-pane fade" id="tabAlergias-pane" role="tabpanel" aria-labelledby="tabAlergias" tabindex="0">
+            {{ include('consulta/tabs/paciente_alergias.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabEnfermedades-pane" role="tabpanel" aria-labelledby="tabEnfermedades" tabindex="0">
+            {{ include('consulta/tabs/paciente_enfermedades.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabDiscapacidades-pane" role="tabpanel" aria-labelledby="tabDiscapacidades" tabindex="0">
+            {{ include('consulta/tabs/paciente_discapacidades.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabTratamientos-pane" role="tabpanel" aria-labelledby="tabTratamientos" tabindex="0">
+            {{ include('consulta/tabs/paciente_tratamientos.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabArchivos-pane" role="tabpanel" aria-labelledby="tabArchivos" tabindex="0">
+            {{ include('consulta/tabs/paciente_archivos.html.twig') }}
+        </div>
+    </div>
+</div>
