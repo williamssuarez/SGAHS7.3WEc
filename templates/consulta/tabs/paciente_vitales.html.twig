@@ -8,33 +8,25 @@
         <th>Presion Arterial</th>
         <th>Frecuencia Cardiaca</th>
         <th>Frecuencia Cardiaca</th>
-        <th>Observaciones</th>
-        <th>Acciones</th>
+        <th>SpO2</th>
+        <th>Peso</th>
+        <th>Altura</th>
+        <th>CMB</th>
+        <th>IMC</th>
     </tr>
     </thead>
     <tbody>
-    {% for entity in paciente.alergias %}
+    {% for entity in consultum.vitales %}
         <tr class="align-middle">
-            <td>{{ entity.alergeno.nombre }}</td>
-            <td>{{ entity.severidad|filter_severity }}</td>
-            <td>
-                <ul>
-                    {% for reaccion in entity.reacciones %}
-                        <li>{{ reaccion.nombre }}</li>
-                    {% endfor %}
-                </ul>
-            </td>
-            <td>
-                {{ entity.observaciones ? entity.observaciones : '--' }}
-            </td>
-            <td>
-                <a class="btn btn-secondary" href="{{ path('app_alergias_show', {'id': entity.id}) }}">
-                    <i class="bi bi-search"></i> Detalles
-                </a>
-                <a class="btn btn-success" href="{{ path('app_alergias_edit', {'id': entity.id}) }}">
-                    <i class="bi bi-pencil-square"></i> Editar
-                </a>
-            </td>
+            <td>{{ entity.temperatura|number_format(2, '.', ',') }}</td>
+            <td>{{ entity.paSistolica }}/{{ entity.paDiastolica }}</td>
+            <td>{{ entity.frecuenciaCardiaca }} lpm</td>
+            <td>{{ entity.frecuenciaRespiratoria }}</td>
+            <td>{{ entity.spo2 }}</td>
+            <td>{{ entity.peso }} kg</td>
+            <td>{{ entity.altura }} cm</td>
+            <td>{{ entity.cmb }}</td>
+            <td>{{ entity.imc }}</td>
         </tr>
     {% endfor %}
     </tbody>

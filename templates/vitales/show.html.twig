@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vitales{% endblock %}
+
+{% block body %}
+    <h1>Vitales</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ vitale.id }}</td>
+            </tr>
+            <tr>
+                <th>Temperatura</th>
+                <td>{{ vitale.temperatura }}</td>
+            </tr>
+            <tr>
+                <th>PaSistolica</th>
+                <td>{{ vitale.paSistolica }}</td>
+            </tr>
+            <tr>
+                <th>PaDiastolica</th>
+                <td>{{ vitale.paDiastolica }}</td>
+            </tr>
+            <tr>
+                <th>FrecuenciaCardiaca</th>
+                <td>{{ vitale.frecuenciaCardiaca }}</td>
+            </tr>
+            <tr>
+                <th>FrecuenciaRespiratoria</th>
+                <td>{{ vitale.frecuenciaRespiratoria }}</td>
+            </tr>
+            <tr>
+                <th>Spo2</th>
+                <td>{{ vitale.spo2 }}</td>
+            </tr>
+            <tr>
+                <th>Peso</th>
+                <td>{{ vitale.peso }}</td>
+            </tr>
+            <tr>
+                <th>Altura</th>
+                <td>{{ vitale.altura }}</td>
+            </tr>
+            <tr>
+                <th>Cmb</th>
+                <td>{{ vitale.cmb }}</td>
+            </tr>
+            <tr>
+                <th>Imc</th>
+                <td>{{ vitale.imc }}</td>
+            </tr>
+            <tr>
+                <th>UidCreate</th>
+                <td>{{ vitale.uidCreate }}</td>
+            </tr>
+            <tr>
+                <th>UidUpdate</th>
+                <td>{{ vitale.uidUpdate }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ vitale.created ? vitale.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Updated</th>
+                <td>{{ vitale.updated ? vitale.updated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_vitales_index') }}">back to list</a>
+
+    <a href="{{ path('app_vitales_edit', {'id': vitale.id}) }}">edit</a>
+
+    {{ include('vitales/_delete_form.html.twig') }}
+{% endblock %}

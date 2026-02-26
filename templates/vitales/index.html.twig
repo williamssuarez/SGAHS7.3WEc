@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vitales index{% endblock %}
+
+{% block body %}
+    <h1>Vitales index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Temperatura</th>
+                <th>PaSistolica</th>
+                <th>PaDiastolica</th>
+                <th>FrecuenciaCardiaca</th>
+                <th>FrecuenciaRespiratoria</th>
+                <th>Spo2</th>
+                <th>Peso</th>
+                <th>Altura</th>
+                <th>Cmb</th>
+                <th>Imc</th>
+                <th>UidCreate</th>
+                <th>UidUpdate</th>
+                <th>Created</th>
+                <th>Updated</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for vitale in vitales %}
+            <tr>
+                <td>{{ vitale.id }}</td>
+                <td>{{ vitale.temperatura }}</td>
+                <td>{{ vitale.paSistolica }}</td>
+                <td>{{ vitale.paDiastolica }}</td>
+                <td>{{ vitale.frecuenciaCardiaca }}</td>
+                <td>{{ vitale.frecuenciaRespiratoria }}</td>
+                <td>{{ vitale.spo2 }}</td>
+                <td>{{ vitale.peso }}</td>
+                <td>{{ vitale.altura }}</td>
+                <td>{{ vitale.cmb }}</td>
+                <td>{{ vitale.imc }}</td>
+                <td>{{ vitale.uidCreate }}</td>
+                <td>{{ vitale.uidUpdate }}</td>
+                <td>{{ vitale.created ? vitale.created|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ vitale.updated ? vitale.updated|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_vitales_show', {'id': vitale.id}) }}">show</a>
+                    <a href="{{ path('app_vitales_edit', {'id': vitale.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="16">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_vitales_new') }}">Create new</a>
+{% endblock %}
