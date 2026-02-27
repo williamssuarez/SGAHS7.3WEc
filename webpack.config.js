@@ -40,6 +40,7 @@ Encore
 
     // Displays build status system notifications to the user_internal
     // .enableBuildNotifications()
+    .enableStimulusBridge('./assets/controllers.json') // Point it to your actual file
 
     .enableSourceMaps(!Encore.isProduction())
     // enables hashed filenames (e.g. app.abc123.css)
