@@ -4,7 +4,7 @@ export default class extends Controller {
     static targets = [ "peso", "altura", "result" ]
 
     connect() {
-        // Run calculation once on load in case there's already data (like in an Edit form)
+        // Calcular al cargar la pagina (en caso de que ya haya data precargada como en un edit)
         this.calculate();
     }
 
@@ -17,7 +17,7 @@ export default class extends Controller {
             const alturaMeters = altura / 100;
             const imc = peso / (alturaMeters * alturaMeters);
 
-            // Limit to 2 decimal places
+            // Limite de 2 decimales
             this.resultTarget.value = imc.toFixed(2);
 
             // Bonus: trigger a custom event if you want other parts of the UI to react
