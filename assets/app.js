@@ -21,6 +21,7 @@ import 'admin-lte/dist/css/adminlte.css';
 import 'viewerjs/dist/viewer.css';
 
 // js goes here
+import './stimulus_bootstrap'
 import $ from 'jquery';
 import {OverlayScrollbars} from 'overlayscrollbars';
 import * as bootstrap from 'bootstrap';

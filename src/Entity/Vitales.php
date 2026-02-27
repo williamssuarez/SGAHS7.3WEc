@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: VitalesRepository::class)]
 #[Assert\Callback(callback: 'validateBloodPressure')]
+#[ORM\HasLifecycleCallbacks] // Vital: Tells Doctrine to watch for events
 class Vitales
 {
     use SoftDeletetableTrait;
@@ -187,6 +188,18 @@ class Vitales
                     ->atPath('paDiastolica')
                     ->addViolation();
             }
+        }
+    }
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function calculateImcValue(): void
+    {
+        if ($this->peso > 0 && $this->altura > 0) {
+            $altMetros = $this->altura / 100;
+            $this->imc = round($this->peso / ($altMetros ** 2), 2);
+        } else {
+            $this->imc = null;
         }
     }
 

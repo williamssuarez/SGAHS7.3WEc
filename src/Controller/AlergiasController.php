@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Alergias;
+use App\Entity\Consulta;
 use App\Entity\Paciente;
 use App\Entity\StatusRecord;
 use App\Form\AlergiasType;
@@ -24,8 +25,8 @@ final class AlergiasController extends AbstractController
         ]);
     }
 
-    #[Route('/new/paciente/{id}', name: 'app_alergias_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, Paciente $paciente, EntityManagerInterface $entityManager): Response
+    #[Route('/new/paciente/{id}', name: 'app_alergias_new_paciente', methods: ['GET', 'POST'])]
+    public function newPaciente(Request $request, Paciente $paciente, EntityManagerInterface $entityManager): Response
     {
         if ($paciente->getStatus() != $entityManager->getRepository(StatusRecord::class)->getActive()){
             $this->addFlash('error', 'No se pudo encontrar la informacion');
@@ -45,9 +46,33 @@ final class AlergiasController extends AbstractController
             return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('alergias/new.html.twig', [
+        return $this->render('alergias/newPaciente.html.twig', [
             'alergia' => $alergia,
             'paciente' => $paciente,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/new/consulta/{id}', name: 'app_alergias_new_consulta', methods: ['GET', 'POST'])]
+    public function newConsulta(Request $request, Consulta $consulta, EntityManagerInterface $entityManager): Response
+    {
+
+        $alergia = new Alergias();
+        $form = $this->createForm(AlergiasType::class, $alergia);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $alergia->setPaciente($consulta->getPaciente());
+            $entityManager->persist($alergia);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Alergia registrada');
+            return $this->redirectToRoute('app_consulta_show', ['id' => $consulta->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('alergias/newConsulta.html.twig', [
+            'alergia' => $alergia,
+            'consultum' => $consulta,
             'form' => $form,
         ]);
     }

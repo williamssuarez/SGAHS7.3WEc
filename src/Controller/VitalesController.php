@@ -32,14 +32,16 @@ final class VitalesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $vitale->setConsulta($consulta);
             $entityManager->persist($vitale);
             $entityManager->flush();
 
             return $this->redirectToRoute('app_consulta_show', ['id' => $consulta->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('vitales/new.html.twig', [
+        return $this->render('vitales/newConsulta.html.twig', [
             'vitale' => $vitale,
+            'consultum' => $consulta,
             'form' => $form,
         ]);
     }

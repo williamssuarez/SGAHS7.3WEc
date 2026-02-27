@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nuevos Vitales para {{ consultum.paciente.nombre|title }}{% endblock %}
+
+{% block titlewrap %}
+    Nuevos Vitales para {{ consultum.paciente.nombre|title }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_consulta_index') }}">Consultas</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_consulta_show', {'id': consultum.id}) }}">Detalles</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nuevos Vitales</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('vitales/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,4 +1,161 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+<div class="card-body">
+    <h5>Informacion de Signos Vitales:</h5>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{form_label( form.temperatura ) }}
+                <div class="input-group">
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <i class="fa-solid fa-thermometer"></i>
+                    </span>
+                    {{form_widget( form.temperatura ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>°C</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.paSistolica ) }}
+                <div class="input-group">
+                    {{form_widget( form.paSistolica ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>mm Hg.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.paDiastolica ) }}
+                <div class="input-group">
+                    {{form_widget( form.paDiastolica ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>mm Hg.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{form_label( form.frecuenciaCardiaca ) }}
+                <div class="input-group">
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <i class="bi bi-heart-pulse-fill"></i>
+                    </span>
+                    {{form_widget( form.frecuenciaCardiaca ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>lpm.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{form_label( form.frecuenciaRespiratoria ) }}
+                <div class="input-group">
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <i class="bi bi-lungs-fill"></i>
+                    </span>
+                    {{form_widget( form.frecuenciaRespiratoria ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>rpm.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{form_label( form.spo2 ) }}
+                <div class="input-group">
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <i class="bi bi-lungs-fill"></i>
+                    </span>
+                    {{form_widget( form.spo2 ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>%</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <h5>Informacion Biometrica:</h5>
+    <div class="row" data-controller="imc">
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.cmb ) }}
+                <div class="input-group">
+                    {{form_widget( form.cmb ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>cm.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.peso ) }}
+                <div class="input-group">
+                    {{form_widget( form.peso ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>kg.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.altura ) }}
+                <div class="input-group">
+                    {{form_widget( form.altura ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>cm.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.imc ) }}
+                <div class="input-group">
+                    {{form_widget( form.imc ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>imc.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-footer">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between">
+                <a class="btn btn-primary" href="{{ path('app_consulta_show', {'id': consultum.id}) }}">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+
+                <div class="d-flex">
+                    <button class="btn btn-success">
+                        {{ button_label|default('Guardar') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {{ form_end(form) }}
