@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\StatusRecord;
 use App\Entity\Vitales;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +17,25 @@ class VitalesRepository extends ServiceEntityRepository
         parent::__construct($registry, Vitales::class);
     }
 
-//    /**
-//     * @return Vitales[] Returns an array of Vitales objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('v')
-//            ->andWhere('v.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('v.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getActivesforTable($id)
+    {
+        $qb = $this->createQueryBuilder('u');
 
-//    public function findOneBySomeField($value): ?Vitales
-//    {
-//        return $this->createQueryBuilder('v')
-//            ->andWhere('v.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        $query = $qb
+            ->select('u,c,p')
+
+            ->innerJoin('u.consulta', 'c')
+            ->innerJoin('c.paciente', 'p')
+
+            ->where('u.status = :sts')
+            ->andWhere('p.status = :sts')
+            ->andWhere('p.id = :id')
+            ->addOrderBy('u.id', 'DESC')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('id', $id)
+        ;
+
+        return $query->getQuery()->getResult();
+    }
 }

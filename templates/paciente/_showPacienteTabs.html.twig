@@ -16,6 +16,11 @@
             </button>
         </li>
         <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabCondiciones" data-bs-toggle="tab" data-bs-target="#tabCondiciones-pane" type="button" role="tab" aria-controls="tabCondiciones-pane" aria-selected="false">
+                <i class="fa fa-person-cane"></i> Condiciones
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
             <button class="nav-link" id="tabEnfermedades" data-bs-toggle="tab" data-bs-target="#tabEnfermedades-pane" type="button" role="tab" aria-controls="tabEnfermedades-pane" aria-selected="false">
                 <i class="fa-solid fa-head-side-cough"></i> Enfermedades
             </button>
@@ -38,13 +43,16 @@
     </ul>
     <div class="tab-content" id="formTabContent">
         <div class="tab-pane fade show active" id="tabVitales-pane" role="tabpanel" aria-labelledby="tabVitales" tabindex="0">
-
+            {{ include('paciente/tabs/paciente_vitales.html.twig') }}
         </div>
         <div class="tab-pane fade show active" id="tabMedicaciones-pane" role="tabpanel" aria-labelledby="tabMedicaciones" tabindex="0">
 
         </div>
         <div class="tab-pane fade" id="tabAlergias-pane" role="tabpanel" aria-labelledby="tabAlergias" tabindex="0">
             {{ include('paciente/tabs/paciente_alergias.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabCondiciones-pane" role="tabpanel" aria-labelledby="tabCondiciones" tabindex="0">
+            {{ include('paciente/tabs/paciente_condiciones.html.twig') }}
         </div>
         <div class="tab-pane fade" id="tabEnfermedades-pane" role="tabpanel" aria-labelledby="tabEnfermedades" tabindex="0">
             {{ include('paciente/tabs/paciente_enfermedades.html.twig') }}

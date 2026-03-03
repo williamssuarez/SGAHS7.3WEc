@@ -1,0 +1,34 @@
+<h4>
+    Condiciones Registradas
+</h4>
+<table class="table table-striped dtHere">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Condicion</th>
+        <th>Fecha Aparición</th>
+        <th>Fecha Finalizada</th>
+        <th>Estado</th>
+        <th>Observaciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for entity in paciente.pacienteCondiciones %}
+        <tr class="align-middle">
+            <td>{{ loop.index }}</td>
+            <td>{{ entity.condicion.nombre }}</td>
+            <td>{{ entity.fechaAparicion|date('d/m/Y') }}</td>
+            <td>{{ entity.fechaFinalizada ? entity.fechaFinalizada|date('d/m/Y') : ' ' }}</td>
+            <td>
+                {% set badge = entity.pacienteCondicionesEstadosBadgeConfig %}
+                <span class="badge rounded-pill {{ badge.class }}">
+                    {{ badge.label }}
+                </span>
+            </td>
+            <td>
+                {{ entity.observaciones ? entity.observaciones : '--' }}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

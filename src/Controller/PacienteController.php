@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Consulta;
+use App\Entity\HistoriaPaciente;
 use App\Entity\Paciente;
+use App\Entity\Vitales;
 use App\Exception\BusinessRuleException;
 use App\Form\PacienteType;
 use App\Repository\HistoriaPacienteRepository;
@@ -77,7 +80,7 @@ final class PacienteController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_paciente_show', methods: ['GET'])]
-    public function show(Paciente $paciente, HistoriaPacienteRepository $historiaPacienteRepository, StatusRecordRepository $statusRecordRepository): Response
+    public function show(Paciente $paciente, HistoriaPacienteRepository $historiaPacienteRepository, StatusRecordRepository $statusRecordRepository, EntityManagerInterface $entityManager): Response
     {
         if ($paciente->getStatus() == $statusRecordRepository->getRemove()){
             $this->addFlash('danger', 'Registro no encontrado.');
@@ -101,8 +104,11 @@ final class PacienteController extends AbstractController
             $groupedHistorias[$dateString][] = $historia;
         }*/
 
+        $vitales = $entityManager->getRepository(Vitales::class)->getActivesforTable($paciente->getId());
+
         return $this->render('paciente/show.html.twig', [
             'paciente' => $paciente,
+            'vitales' => $vitales,
             //'grouped_historias' => $groupedHistorias
         ]);
     }
