@@ -85,8 +85,8 @@ final class AlergiasController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_alergias_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Alergias $alergia, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/edit/paciente', name: 'app_alergias_edit_paciente', methods: ['GET', 'POST'])]
+    public function editPaciente(Request $request, Alergias $alergia, EntityManagerInterface $entityManager, Paciente $paciente): Response
     {
         $form = $this->createForm(AlergiasType::class, $alergia);
         $form->handleRequest($request);
@@ -94,12 +94,33 @@ final class AlergiasController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_alergias_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Alergia Editada');
+            return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('alergias/edit.html.twig', [
+        return $this->render('alergias/editPaciente.html.twig', [
             'alergia' => $alergia,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/edit/consulta', name: 'app_alergias_edit_consulta', methods: ['GET', 'POST'])]
+    public function editConsulta(Request $request, Alergias $alergia, EntityManagerInterface $entityManager, Consulta $consulta): Response
+    {
+        $form = $this->createForm(AlergiasType::class, $alergia);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Alergia Editada');
+            return $this->redirectToRoute('app_consulta_show', ['id' => $consulta->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('alergias/editConsulta.html.twig', [
+            'alergia' => $alergia,
+            'form' => $form,
+            'consultum' => $consulta,
         ]);
     }
 

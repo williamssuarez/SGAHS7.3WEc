@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Traits\SoftDeletetableTrait;
+use App\Enum\DiscapacidadesTipos;
 use App\Repository\DiscapacidadesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,15 +25,18 @@ class Discapacidades
     #[ORM\Column(length: 255)]
     private ?string $descripcion = null;
 
+    #[ORM\Column(nullable: true, enumType: DiscapacidadesTipos::class)]
+    private ?DiscapacidadesTipos $tipo = null;
+
     /**
-     * @var Collection<int, Paciente>
+     * @var Collection<int, PacienteDiscapacidades>
      */
-    #[ORM\ManyToMany(targetEntity: Paciente::class, mappedBy: 'discapacidades')]
-    private Collection $pacientes;
+    #[ORM\OneToMany(targetEntity: PacienteDiscapacidades::class, mappedBy: 'discapacidad')]
+    private Collection $pacienteDiscapacidade;
 
     public function __construct()
     {
-        $this->pacientes = new ArrayCollection();
+        $this->pacienteDiscapacidade = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -64,28 +68,79 @@ class Discapacidades
         return $this;
     }
 
-    /**
-     * @return Collection<int, Paciente>
-     */
-    public function getPacientes(): Collection
+    public function getTipo(): ?DiscapacidadesTipos
     {
-        return $this->pacientes;
+        return $this->tipo;
     }
 
-    public function addPaciente(Paciente $paciente): static
+    public function setTipo(?DiscapacidadesTipos $tipo): static
     {
-        if (!$this->pacientes->contains($paciente)) {
-            $this->pacientes->add($paciente);
-            $paciente->addDiscapacidade($this);
+        $this->tipo = $tipo;
+
+        return $this;
+    }
+
+    public function getDiscapacidadesTiposBadgeConfig(): array
+    {
+        switch ($this->getTipo()) {
+            case DiscapacidadesTipos::D_PHYSICAL:
+                return [
+                    'class' => 'text-bg-warning',
+                    'label' => DiscapacidadesTipos::D_PHYSICAL->getReadableText()
+                ];
+            case DiscapacidadesTipos::D_SENSORY:
+                return [
+                    'class' => 'text-bg-primary',
+                    'label' => DiscapacidadesTipos::D_SENSORY->getReadableText()
+                ];
+            case DiscapacidadesTipos::D_INTELLECTUAL:
+                return [
+                    'class' => 'text-bg-secondary',
+                    'label' => DiscapacidadesTipos::D_INTELLECTUAL->getReadableText()
+                ];
+            case DiscapacidadesTipos::D_ORGANIC:
+                return [
+                    'class' => 'text-bg-danger',
+                    'label' => DiscapacidadesTipos::D_ORGANIC->getReadableText()
+                ];
+            case DiscapacidadesTipos::D_PSYCHOSOCIAL:
+                return [
+                    'class' => 'text-bg-dark',
+                    'label' => DiscapacidadesTipos::D_PSYCHOSOCIAL->getReadableText()
+                ];
+        }
+
+        return [
+            'class' => 'text-bg-danger',
+            'label' => 'Error'
+        ];
+    }
+
+    /**
+     * @return Collection<int, PacienteDiscapacidades>
+     */
+    public function getPacienteDiscapacidade(): Collection
+    {
+        return $this->pacienteDiscapacidade;
+    }
+
+    public function addPacienteDiscapacidade(PacienteDiscapacidades $pacienteDiscapacidade): static
+    {
+        if (!$this->pacienteDiscapacidade->contains($pacienteDiscapacidade)) {
+            $this->pacienteDiscapacidade->add($pacienteDiscapacidade);
+            $pacienteDiscapacidade->setDiscapacidad($this);
         }
 
         return $this;
     }
 
-    public function removePaciente(Paciente $paciente): static
+    public function removePacienteDiscapacidade(PacienteDiscapacidades $pacienteDiscapacidade): static
     {
-        if ($this->pacientes->removeElement($paciente)) {
-            $paciente->removeDiscapacidade($this);
+        if ($this->pacienteDiscapacidade->removeElement($pacienteDiscapacidade)) {
+            // set the owning side to null (unless already changed)
+            if ($pacienteDiscapacidade->getDiscapacidad() === $this) {
+                $pacienteDiscapacidade->setDiscapacidad(null);
+            }
         }
 
         return $this;

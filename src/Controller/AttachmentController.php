@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Attachments;
+use App\Entity\Consulta;
 use App\Entity\Paciente;
 use App\Exception\BusinessRuleException;
 use App\Form\AttachmentType;
@@ -20,7 +21,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/attachment')]
 final class AttachmentController extends AbstractController
 {
-    #[Route('pacientes/{id}/upload', name: 'app_attachment_paciente_upload', methods: ['GET', 'POST'])]
+    #[Route('/pacientes/{id}/upload', name: 'app_attachment_paciente_upload', methods: ['GET', 'POST'])]
     public function pacienteUpload(Request $request, Paciente $paciente, FileUploader $fileUploader, EntityManagerInterface $entityManager): Response
     {
         $attachment = new Attachments();
@@ -65,6 +66,55 @@ final class AttachmentController extends AbstractController
 
         return $this->render('attachment/paciente_upload.html.twig', [
             'paciente' => $paciente,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/consulta/{id}/upload', name: 'app_attachment_consulta_upload', methods: ['GET', 'POST'])]
+    public function consultaUpload(Request $request, Consulta $consulta, FileUploader $fileUploader, EntityManagerInterface $entityManager): Response
+    {
+        $attachment = new Attachments();
+        $form = $this->createForm(AttachmentType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $file = $form->get('file')->getData();
+            $name = $form->get('nombre')->getData();
+
+            //process and upload the file
+            try {
+
+                if (!$file) {
+                    throw new BusinessRuleException('Debe subir un archivo.');
+                }
+
+                if ($name){
+                    $attachment->setFilename($name);
+                } else {
+                    $attachment->setFilename($file->getClientOriginalName());
+                }
+
+                $attachment->setPaciente($consulta->getPaciente());
+                $attachment->setFiletype($file->getMimeType());
+                $attachment->setDateUploaded(new \DateTime('now'));
+
+                $fileHash = $fileUploader->upload($file);
+                $attachment->setFilehash($fileHash);
+
+                $entityManager->persist($attachment);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Archivo Subido.');
+                return $this->redirectToRoute('app_consulta_show', ['id' => $consulta->getId()], Response::HTTP_SEE_OTHER);
+
+            } catch (BusinessRuleException $e) {
+                //Obtener el mensaje especifico y mostrar el error
+                $form->addError(new FormError($e->getMessage()));
+            }
+        }
+
+        return $this->render('attachment/consulta_upload.html.twig', [
+            'consultum' => $consulta,
             'form' => $form,
         ]);
     }

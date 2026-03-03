@@ -29,6 +29,7 @@
                 <thead>
                 <tr>
                     <th>Nombre</th>
+                    <th>Tipo</th>
                     <th>Descripcion</th>
                     <th>Acciones</th>
                 </tr>
@@ -37,6 +38,12 @@
                 {% for entity in entities %}
                     <tr class="align-middle">
                         <td>{{ entity.nombre }}</td>
+                        <td>
+                            {% set badge = entity.discapacidadesTiposBadgeConfig %}
+                            <span class="badge rounded-pill {{ badge.class }}">
+                                {{ badge.label }}
+                            </span>
+                        </td>
                         <td>{{ entity.descripcion }}</td>
                         <td>
                             <a class="btn btn-secondary" href="{{ path('app_discapacidades_show', {'id': entity.id}) }}">

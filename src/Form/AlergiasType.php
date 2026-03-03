@@ -6,6 +6,7 @@ use App\Entity\Alergenos;
 use App\Entity\Alergias;
 use App\Entity\Paciente;
 use App\Entity\Reacciones;
+use App\Repository\AlergenosRepository;
 use App\Repository\ReaccionesRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -30,6 +31,9 @@ class AlergiasType extends AbstractType
                     'class' => 'srchSelect'
                 ],
                 'required' => true,
+                'query_builder' => function (AlergenosRepository $er) {
+                    return $er->getActivesforSelect();
+                }
             ])
             ->add('reacciones', EntityType::class, [
                 'class' => Reacciones::class,

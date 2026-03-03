@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Consulta;
+use App\Entity\StatusRecord;
+use App\Entity\Vitales;
 use App\Enum\ConsultaEstados;
 use App\Exception\BusinessRuleException;
 use App\Form\ConsultaActiveType;
@@ -85,11 +87,17 @@ final class ConsultaController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_consulta_show', methods: ['GET'])]
-    public function show(Consulta $consultum): Response
+    public function show(Consulta $consultum, EntityManagerInterface $entityManager): Response
     {
+        $currentVitals = $entityManager->getRepository(Vitales::class)->findOneBy([
+            'consulta' => $consultum,
+            'status' => $entityManager->getRepository(StatusRecord::class)->getActive()
+        ], ['id' => 'DESC']);
+
         return $this->render('consulta/show.html.twig', [
             'consultum' => $consultum,
             'paciente' => $consultum->getPaciente(),
+            'currentVitals' => $currentVitals,
         ]);
     }
 

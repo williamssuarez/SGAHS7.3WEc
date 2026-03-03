@@ -1,9 +1,10 @@
 <h4>
-    Archivos Subidos <a class="btn btn-primary btn-sm" href="{{ path('app_attachment_paciente_upload', {'id': paciente.id}) }}"><i class="bi bi-plus-circle"></i> Subir</a>
+    Archivos Subidos <a class="btn btn-primary btn-sm" href="{{ path('app_attachment_consulta_upload', {'id': paciente.id}) }}"><i class="bi bi-plus-circle"></i> Subir</a>
 </h4>
 <table class="table table-striped dtHere">
     <thead>
     <tr>
+        <th>#</th>
         <th>Nombre</th>
         <th>Tipo de Archivo</th>
         <th>Subido</th>
@@ -13,6 +14,7 @@
     <tbody>
     {% for entity in paciente.attachments %}
         <tr class="align-middle">
+            <td>{{ loop.index }}</td>
             <td>{{ entity.fileName }}</td>
             <td>
                 {% if entity.fileType == 'image/jpeg' or entity.fileType == 'image/png' %}

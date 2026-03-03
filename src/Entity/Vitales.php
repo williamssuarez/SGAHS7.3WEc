@@ -21,38 +21,48 @@ class Vitales
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\Range(notInRangeMessage: "Temperatura fuera de rango fisiológico (34°C - 42°C)", min: 34, max: 42)]
     private ?float $temperatura = null;
 
     #[ORM\Column]
-    #[Assert\Range(notInRangeMessage: "Presion sistolica no es fisicamente posible.", min: 70, max: 250)]
+    #[Assert\Range(notInRangeMessage: "Presion sistolica no es fisicamente posible (70 - 250).", min: 70, max: 250)]
     private ?int $paSistolica = null;
 
     #[ORM\Column]
-    #[Assert\Range(notInRangeMessage: "Presion diastolica no es fisicamente posible.", min: 40, max: 150)]
+    #[Assert\Range(notInRangeMessage: "Presion diastolica no es fisicamente posible (40 - 150).", min: 40, max: 150)]
     private ?int $paDiastolica = null;
 
     #[ORM\Column]
+    #[Assert\Range(notInRangeMessage: "Frecuencia cardíaca no plausible (30 - 250 lpm)", min: 30, max: 250)]
     private ?int $frecuenciaCardiaca = null;
 
     #[ORM\Column]
+    #[Assert\Range(notInRangeMessage: "Frecuencia respiratoria no plausible (8 - 80 rpm)", min: 8, max: 80)]
     private ?int $frecuenciaRespiratoria = null;
 
     #[ORM\Column]
+    #[Assert\Range(notInRangeMessage: "El SpO2 debe estar entre 50% y 100%", min: 50, max: 100)]
     private ?float $spo2 = null;
 
     #[ORM\Column]
+    #[Assert\Positive(message: "El peso debe ser mayor a 0")]
+    #[Assert\Range(notInRangeMessage: "Peso excede el límite permitido", max: 700)]
     private ?float $peso = null;
 
     #[ORM\Column]
+    #[Assert\Positive(message: "La altura debe ser mayor a 0")]
+    #[Assert\Range(notInRangeMessage: "Altura fuera de rango (10cm - 250cm)", min: 10, max: 280)]
     private ?float $altura = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Positive(message: "El CMB debe ser mayor a 0")]
+    #[Assert\Range(notInRangeMessage: "CMB no plausible", min: 5, max: 60)]
     private ?float $cmb = null;
 
     #[ORM\Column]
     private ?float $imc = null;
 
-    #[ORM\OneToOne(mappedBy: 'vitales', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'vitales')]
     private ?Consulta $consulta = null;
 
     public function getId(): ?int
@@ -180,6 +190,7 @@ class Vitales
         return $this;
     }
 
+    #[Assert\Callback]
     public function validateBloodPressure(ExecutionContextInterface $context, $payload): void
     {
         if ($this->paSistolica !== null && $this->paDiastolica !== null) {
@@ -210,18 +221,32 @@ class Vitales
 
     public function setConsulta(?Consulta $consulta): static
     {
-        // unset the owning side of the relation if necessary
-        if ($consulta === null && $this->consulta !== null) {
-            $this->consulta->setVitales(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($consulta !== null && $consulta->getVitales() !== $this) {
-            $consulta->setVitales($this);
-        }
-
         $this->consulta = $consulta;
 
         return $this;
+    }
+
+    public function getStatusColor(string $type): string
+    {
+        return match($type) {
+            'temp' => ($this->temperatura >= 38.0 || $this->temperatura < 36.0) ? 'table-danger' : '',
+            'fc'   => ($this->frecuenciaCardiaca > 100 || $this->frecuenciaCardiaca < 60) ? 'table-warning' : '',
+            'fr'   => ($this->frecuenciaRespiratoria > 20 || $this->frecuenciaRespiratoria < 12) ? 'table-warning' : '',
+            'spo2' => ($this->spo2 < 94) ? 'table-danger' : '',
+            'imc'  => ($this->imc >= 30 || $this->imc < 18.5) ? 'table-danger' : ($this->imc >= 25 ? 'table-warning' : ''),
+            default => '',
+        };
+    }
+
+    public function getStatusColorCard(string $type): string
+    {
+        return match($type) {
+            'temp' => ($this->temperatura >= 38.0 || $this->temperatura < 36.0) ? 'danger' : 'secondary',
+            'fc'   => ($this->frecuenciaCardiaca > 100 || $this->frecuenciaCardiaca < 60) ? 'warning' : 'secondary',
+            'fr'   => ($this->frecuenciaRespiratoria > 20 || $this->frecuenciaRespiratoria < 12) ? 'warning' : 'secondary',
+            'spo2' => ($this->spo2 < 94) ? 'danger' : 'secondary',
+            'imc'  => ($this->imc >= 30 || $this->imc < 18.5) ? 'table-danger' : ($this->imc >= 25 ? 'warning' : 'secondary'),
+            default => 'secondary',
+        };
     }
 }

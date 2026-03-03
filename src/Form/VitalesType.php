@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Consulta;
 use App\Entity\StatusRecord;
 use App\Entity\Vitales;
+use SebastianBergmann\CodeCoverage\Report\Text;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -24,7 +25,9 @@ class VitalesType extends AbstractType
                     'class' => 'form-label'
                 ],
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'data-controller' => 'mask',
+                    'data-mask-type-value' => 'decimal', // If you want 170.00
                 ],
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar la temperatura.'),
@@ -36,7 +39,8 @@ class VitalesType extends AbstractType
                     'class' => 'form-label'
                 ],
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control number-only',
+                    'maxLength' => 3,
                 ],
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar la presion sistolica.'),
@@ -48,7 +52,8 @@ class VitalesType extends AbstractType
                     'class' => 'form-label'
                 ],
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control number-only',
+                    'maxLength' => 3,
                 ],
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar la presion diastolica.'),
@@ -57,10 +62,11 @@ class VitalesType extends AbstractType
             ->add('frecuenciaCardiaca', NumberType::class, [
                 'label' => 'Frecuencia Cardiaca',
                 'label_attr' => [
-                    'class' => 'form-label'
+                    'class' => 'form-label number-only'
                 ],
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control number-only',
+                    'maxLength' => 3,
                 ],
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar la frecuencia cardiaca.'),
@@ -72,7 +78,8 @@ class VitalesType extends AbstractType
                     'class' => 'form-label'
                 ],
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control number-only',
+                    'maxLength' => 3,
                 ],
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar la frecuencia respiratoria.'),
@@ -84,19 +91,22 @@ class VitalesType extends AbstractType
                     'class' => 'form-label'
                 ],
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control number-only',
+                    'maxLength' => 3,
                 ],
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar la saturacion de oxigeno.'),
                 ]
             ])
-            ->add('peso', NumberType::class, [
+            ->add('peso', TextType::class, [
                 'label' => 'Peso',
                 'label_attr' => [
                     'class' => 'form-label'
                 ],
                 'attr' => [
                     'class' => 'form-control',
+                    'data-controller' => 'mask',
+                    'data-mask-type-value' => 'decimal',
                     'data-imc-target' => 'peso',
                     'data-action' => 'input->imc#calculate', // Trigger on every keystroke
                     'step' => '0.1'
@@ -105,13 +115,15 @@ class VitalesType extends AbstractType
                     new NotBlank(message: 'Debe ingresar el peso.'),
                 ]
             ])
-            ->add('altura', NumberType::class, [
+            ->add('altura', TextType::class, [
                 'label' => 'Altura',
                 'label_attr' => [
                     'class' => 'form-label'
                 ],
                 'attr' => [
                     'class' => 'form-control',
+                    'data-controller' => 'mask',
+                    'data-mask-type-value' => 'decimal', // If you want 170.00
                     'data-imc-target' => 'altura',
                     'data-action' => 'input->imc#calculate',
                     'step' => '1'
@@ -138,7 +150,9 @@ class VitalesType extends AbstractType
                     'class' => 'form-label'
                 ],
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'data-controller' => 'mask',
+                    'data-mask-type-value' => 'decimal', // If you want 170.00
                 ],
                 'required' => false,
             ])

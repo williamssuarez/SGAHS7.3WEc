@@ -6,6 +6,8 @@ use App\Entity\Traits\SoftDeletetableTrait;
 use App\Enum\ConsultaEstados;
 use App\Enum\ConsultaTipos;
 use App\Repository\ConsultaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -34,11 +36,19 @@ class Consulta
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE, nullable: true)]
     private ?\DateTime $fechaFin = null;
 
-    #[ORM\OneToOne(inversedBy: 'consulta', cascade: ['persist', 'remove'])]
-    private ?Vitales $vitales = null;
-
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $observacion = null;
+
+    /**
+     * @var Collection<int, Vitales>
+     */
+    #[ORM\OneToMany(targetEntity: Vitales::class, mappedBy: 'consulta')]
+    private Collection $vitales;
+
+    public function __construct()
+    {
+        $this->vitales = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -101,18 +111,6 @@ class Consulta
     public function setFechaFin(?\DateTime $fechaFin): static
     {
         $this->fechaFin = $fechaFin;
-
-        return $this;
-    }
-
-    public function getVitales(): ?Vitales
-    {
-        return $this->vitales;
-    }
-
-    public function setVitales(?Vitales $vitales): static
-    {
-        $this->vitales = $vitales;
 
         return $this;
     }
@@ -182,6 +180,36 @@ class Consulta
     public function setObservacion(?string $observacion): static
     {
         $this->observacion = $observacion;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Vitales>
+     */
+    public function getVitales(): Collection
+    {
+        return $this->vitales;
+    }
+
+    public function addVitale(Vitales $vitale): static
+    {
+        if (!$this->vitales->contains($vitale)) {
+            $this->vitales->add($vitale);
+            $vitale->setConsulta($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVitale(Vitales $vitale): static
+    {
+        if ($this->vitales->removeElement($vitale)) {
+            // set the owning side to null (unless already changed)
+            if ($vitale->getConsulta() === $this) {
+                $vitale->setConsulta(null);
+            }
+        }
 
         return $this;
     }

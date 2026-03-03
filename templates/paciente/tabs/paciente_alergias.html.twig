@@ -27,10 +27,7 @@
                 {{ entity.observaciones ? entity.observaciones : '--' }}
             </td>
             <td>
-                <a class="btn btn-secondary" href="{{ path('app_alergias_show', {'id': entity.id}) }}">
-                    <i class="bi bi-search"></i> Detalles
-                </a>
-                <a class="btn btn-success" href="{{ path('app_alergias_edit', {'id': entity.id}) }}">
+                <a class="btn btn-success" href="{{ path('app_alergias_edit_paciente', {'id': entity.id}) }}">
                     <i class="bi bi-pencil-square"></i> Editar
                 </a>
             </td>

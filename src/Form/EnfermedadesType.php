@@ -3,7 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Enfermedades;
+use App\Enum\EnfermedadesCategorias;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -26,6 +28,19 @@ class EnfermedadesType extends AbstractType
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar un nombre'),
                 ]
+            ])
+            ->add('categoria', EnumType::class, [
+                'class' => EnfermedadesCategorias::class,
+                'label' => 'Categoria',
+                'label_attr' => [
+                    'class' => 'form-label'
+                ],
+                'attr' => [
+                    'class' => 'noSrchSelect'
+                ],
+                'expanded' => false,
+                'required' => true,
+                'choice_label' => fn (EnfermedadesCategorias $choice) => $choice->getReadableText(),
             ])
             ->add('descripcion', TextareaType::class, [
                 'label' => 'Descripcion de la Enfermedad',

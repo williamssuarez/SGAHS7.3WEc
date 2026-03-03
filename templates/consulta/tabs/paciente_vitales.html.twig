@@ -1,32 +1,163 @@
 <h4>
     Vitales Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_vitales_new_consulta', {'id': consultum    .id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
 </h4>
+{% if currentVitals %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3 col-6">
+                <!-- small box -->
+                <div class="small-box text-bg-{{ currentVitals.statusColorCard('temp') }}">
+                    <div class="inner">
+                        <h3>
+                            {{ currentVitals.temperatura|number_format(1) }} °C
+                        </h3>
+
+                        <p>Temperatura</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-3 col-6">
+                <!-- small box -->
+                <div class="small-box text-bg-{{ (currentVitals.paSistolica >= 140 or currentVitals.paDiastolica >= 90) ? 'danger' : 'secondary' }}">
+                    <div class="inner">
+                        <h3>
+                            {{ currentVitals.paSistolica }}/{{ currentVitals.paDiastolica }}
+                        </h3>
+
+                        <p>P. Arterial</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-3 col-6">
+                <!-- small box -->
+                <div class="small-box text-bg-{{ currentVitals.statusColorCard('fc') }}">
+                    <div class="inner">
+                        <h3>
+                            {{ currentVitals.frecuenciaCardiaca }} lpm
+                        </h3>
+
+                        <p>F. Cardíaca</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-3 col-6">
+                <!-- small box -->
+                <div class="small-box text-bg-{{ currentVitals.statusColorCard('fr') }}">
+                    <div class="inner">
+                        <h3>
+                            {{ currentVitals.frecuenciaRespiratoria }} rpm
+                        </h3>
+
+                        <p>F. Respiratoria</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <!-- small box -->
+                <div class="small-box text-bg-{{ currentVitals.statusColorCard('spo2') }}">
+                    <div class="inner">
+                        <h3>
+                            {{ currentVitals.spo2 }} %
+                        </h3>
+
+                        <p>SpO2</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <!-- small box -->
+                <div class="small-box text-bg-secondary">
+                    <div class="inner">
+                        <h3>
+                            {{ currentVitals.peso }}kg/{{ currentVitals.altura }}cm
+                        </h3>
+
+                        <p>Peso/Altura</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <!-- small box -->
+                <div class="small-box text-bg-secondary">
+                    <div class="inner">
+                        <h3>
+                            {{ currentVitals.cmb }}cm
+                        </h3>
+
+                        <p>CMB</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <!-- small box -->
+                <div class="small-box text-bg-{{ currentVitals.statusColorCard('imc') }}">
+                    <div class="inner">
+                        <h3>
+                            {{ currentVitals.frecuenciaRespiratoria }}
+                        </h3>
+
+                        <p>IMC</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
 <table class="table table-striped dtHere">
     <thead>
     <tr>
+        <th>#</th>
         <th>Temperatura</th>
-        <th>Presion Arterial</th>
-        <th>Frecuencia Cardiaca</th>
-        <th>Frecuencia Cardiaca</th>
+        <th>P. Arterial</th>
+        <th>F. Cardíaca</th>
+        <th>F. Respiratoria</th>
         <th>SpO2</th>
-        <th>Peso</th>
-        <th>Altura</th>
+        <th>Peso / Altura</th>
         <th>CMB</th>
         <th>IMC</th>
+        <th>Fecha</th>
     </tr>
     </thead>
     <tbody>
     {% for entity in consultum.vitales %}
-        <tr class="align-middle">
-            <td>{{ entity.temperatura|number_format(2, '.', ',') }}</td>
-            <td>{{ entity.paSistolica }}/{{ entity.paDiastolica }}</td>
-            <td>{{ entity.frecuenciaCardiaca }} lpm</td>
-            <td>{{ entity.frecuenciaRespiratoria }}</td>
-            <td>{{ entity.spo2 }}</td>
-            <td>{{ entity.peso }} kg</td>
-            <td>{{ entity.altura }} cm</td>
-            <td>{{ entity.cmb }}</td>
-            <td>{{ entity.imc }}</td>
+        <tr>
+            <td>
+                {{ loop.index }}
+            </td>
+            <td class="{{ entity.statusColor('temp') }}">
+                {{ entity.temperatura|number_format(1) }} °C
+            </td>
+            <td class="{{ (entity.paSistolica >= 140 or entity.paDiastolica >= 90) ? 'table-danger' : '' }}">
+                {{ entity.paSistolica }}/{{ entity.paDiastolica }}
+            </td>
+            <td class="{{ entity.statusColor('fc') }}">
+                {{ entity.frecuenciaCardiaca }} <small>lpm</small>
+            </td>
+            <td class="{{ entity.statusColor('fr') }}">
+                {{ entity.frecuenciaRespiratoria }} <small>rpm</small>
+            </td>
+            <td class="{{ entity.statusColor('spo2') }}">
+                {{ entity.spo2 }}%
+            </td>
+            <td>
+                {{ entity.peso }}kg / {{ entity.altura }}cm
+            </td>
+            <td>
+                {{ entity.cmb ? entity.cmb ~ 'cm' : ' ' }}
+            </td>
+            <td class="{{ entity.statusColor('imc') }}">
+                <strong>{{ entity.imc }}</strong>
+            </td>
+            <td>
+                {{ entity.created|date('d/m/Y H:i') }} <i>({{ entity.created|time_ago }})</i>
+            </td>
         </tr>
     {% endfor %}
     </tbody>

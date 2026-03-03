@@ -59,6 +59,20 @@
                                 <h4>
                                     <span class="badge rounded-pill text-bg-secondary">{{ paciente.tipoDocumento|title }} - {{ paciente.cedula|number_format(0, '', '.') }}</span>
                                 </h4>
+
+                                <h4>
+                                    {% set badge = consultum.consultaTiposBadgeConfig %}
+                                    <span class="badge rounded-pill {{ badge.class }}">
+                                        {{ badge.label }}
+                                    </span>
+                                </h4>
+
+                                <h4>
+                                    {% set badge = consultum.consultaEstadosBadgeConfig %}
+                                    <span class="badge rounded-pill {{ badge.class }}">
+                                        {{ badge.label }}
+                                    </span>
+                                </h4>
                             </div>
                             <div class="accordion" id="accordionExample">
                                 <div class="accordion-item">

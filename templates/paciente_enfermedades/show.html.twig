@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PacienteEnfermedades{% endblock %}
+
+{% block body %}
+    <h1>PacienteEnfermedades</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ paciente_enfermedade.id }}</td>
+            </tr>
+            <tr>
+                <th>FechaDiagnostico</th>
+                <td>{{ paciente_enfermedade.fechaDiagnostico ? paciente_enfermedade.fechaDiagnostico|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Cronica</th>
+                <td>{{ paciente_enfermedade.cronica ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Tipo</th>
+                <td>{{ paciente_enfermedade.tipo }}</td>
+            </tr>
+            <tr>
+                <th>Notas</th>
+                <td>{{ paciente_enfermedade.notas }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_paciente_enfermedades_index') }}">back to list</a>
+
+    <a href="{{ path('app_paciente_enfermedades_edit', {'id': paciente_enfermedade.id}) }}">edit</a>
+
+    {{ include('paciente_enfermedades/_delete_form.html.twig') }}
+{% endblock %}

@@ -1,0 +1,40 @@
+<h4>
+    Condiciones Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_paciente_condiciones_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+</h4>
+<table class="table table-striped dtHere">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Condicion</th>
+        <th>Fecha Aparición</th>
+        <th>Fecha Finalizada</th>
+        <th>Estado</th>
+        <th>Observaciones</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for entity in paciente.pacienteCondiciones %}
+        <tr class="align-middle">
+            <td>{{ loop.index }}</td>
+            <td>{{ entity.condicion.nombre }}</td>
+            <td>{{ entity.fechaAparicion|date('d/m/Y') }}</td>
+            <td>{{ entity.fechaFinalizada ? entity.fechaFinalizada|date('d/m/Y') : ' ' }}</td>
+            <td>
+                {% set badge = entity.pacienteCondicionesEstadosBadgeConfig %}
+                <span class="badge rounded-pill {{ badge.class }}">
+                    {{ badge.label }}
+                </span>
+            </td>
+            <td>
+                {{ entity.observaciones ? entity.observaciones : '--' }}
+            </td>
+            <td>
+                <a class="btn btn-success" href="{{ path('app_paciente_condiciones_edit_consulta', {'id': entity.id}) }}">
+                    <i class="bi bi-pencil-square"></i> Editar
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

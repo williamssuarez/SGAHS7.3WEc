@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PacienteDiscapacidades{% endblock %}
+
+{% block body %}
+    <h1>PacienteDiscapacidades</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ paciente_discapacidade.id }}</td>
+            </tr>
+            <tr>
+                <th>Porcentaje</th>
+                <td>{{ paciente_discapacidade.porcentaje }}</td>
+            </tr>
+            <tr>
+                <th>Congenita</th>
+                <td>{{ paciente_discapacidade.congenita ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>AyudaTecnica</th>
+                <td>{{ paciente_discapacidade.ayudaTecnica }}</td>
+            </tr>
+            <tr>
+                <th>LimitacionesFuncionales</th>
+                <td>{{ paciente_discapacidade.limitacionesFuncionales }}</td>
+            </tr>
+            <tr>
+                <th>NumeroCertificado</th>
+                <td>{{ paciente_discapacidade.numeroCertificado }}</td>
+            </tr>
+            <tr>
+                <th>Observaciones</th>
+                <td>{{ paciente_discapacidade.observaciones }}</td>
+            </tr>
+            <tr>
+                <th>UidCreate</th>
+                <td>{{ paciente_discapacidade.uidCreate }}</td>
+            </tr>
+            <tr>
+                <th>UidUpdate</th>
+                <td>{{ paciente_discapacidade.uidUpdate }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ paciente_discapacidade.created ? paciente_discapacidade.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Updated</th>
+                <td>{{ paciente_discapacidade.updated ? paciente_discapacidade.updated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_paciente_discapacidades_index') }}">back to list</a>
+
+    <a href="{{ path('app_paciente_discapacidades_edit', {'id': paciente_discapacidade.id}) }}">edit</a>
+
+    {{ include('paciente_discapacidades/_delete_form.html.twig') }}
+{% endblock %}

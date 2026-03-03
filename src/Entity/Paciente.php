@@ -38,18 +38,6 @@ class Paciente
     private ?string $direccion = null;
 
     /**
-     * @var Collection<int, Enfermedades>
-     */
-    #[ORM\ManyToMany(targetEntity: Enfermedades::class, inversedBy: 'pacientes')]
-    private Collection $enfermedades;
-
-    /**
-     * @var Collection<int, Discapacidades>
-     */
-    #[ORM\ManyToMany(targetEntity: Discapacidades::class, inversedBy: 'pacientes')]
-    private Collection $discapacidades;
-
-    /**
      * @var Collection<int, Tratamientos>
      */
     #[ORM\ManyToMany(targetEntity: Tratamientos::class, inversedBy: 'pacientes')]
@@ -97,15 +85,34 @@ class Paciente
     #[ORM\OneToMany(targetEntity: Consulta::class, mappedBy: 'paciente')]
     private Collection $consultas;
 
+    /**
+     * @var Collection<int, PacienteCondiciones>
+     */
+    #[ORM\OneToMany(targetEntity: PacienteCondiciones::class, mappedBy: 'paciente')]
+    private Collection $pacienteCondiciones;
+
+    /**
+     * @var Collection<int, PacienteEnfermedades>
+     */
+    #[ORM\OneToMany(targetEntity: PacienteEnfermedades::class, mappedBy: 'paciente')]
+    private Collection $pacienteEnfermedades;
+
+    /**
+     * @var Collection<int, PacienteDiscapacidades>
+     */
+    #[ORM\OneToMany(targetEntity: PacienteDiscapacidades::class, mappedBy: 'paciente')]
+    private Collection $pacienteDiscapacidades;
+
     public function __construct()
     {
-        $this->enfermedades = new ArrayCollection();
-        $this->discapacidades = new ArrayCollection();
         $this->tratamientos = new ArrayCollection();
         $this->historiaPacientes = new ArrayCollection();
         $this->attachments = new ArrayCollection();
         $this->alergias = new ArrayCollection();
         $this->consultas = new ArrayCollection();
+        $this->pacienteCondiciones = new ArrayCollection();
+        $this->pacienteEnfermedades = new ArrayCollection();
+        $this->pacienteDiscapacidades = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -192,54 +199,6 @@ class Paciente
     public function setDireccion(string $direccion): static
     {
         $this->direccion = $direccion;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Enfermedades>
-     */
-    public function getEnfermedades(): Collection
-    {
-        return $this->enfermedades;
-    }
-
-    public function addEnfermedade(Enfermedades $enfermedade): static
-    {
-        if (!$this->enfermedades->contains($enfermedade)) {
-            $this->enfermedades->add($enfermedade);
-        }
-
-        return $this;
-    }
-
-    public function removeEnfermedade(Enfermedades $enfermedade): static
-    {
-        $this->enfermedades->removeElement($enfermedade);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Discapacidades>
-     */
-    public function getDiscapacidades(): Collection
-    {
-        return $this->discapacidades;
-    }
-
-    public function addDiscapacidade(Discapacidades $discapacidade): static
-    {
-        if (!$this->discapacidades->contains($discapacidade)) {
-            $this->discapacidades->add($discapacidade);
-        }
-
-        return $this;
-    }
-
-    public function removeDiscapacidade(Discapacidades $discapacidade): static
-    {
-        $this->discapacidades->removeElement($discapacidade);
 
         return $this;
     }
@@ -454,6 +413,96 @@ class Paciente
             // set the owning side to null (unless already changed)
             if ($consulta->getPaciente() === $this) {
                 $consulta->setPaciente(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PacienteCondiciones>
+     */
+    public function getPacienteCondiciones(): Collection
+    {
+        return $this->pacienteCondiciones;
+    }
+
+    public function addPacienteCondicione(PacienteCondiciones $pacienteCondicione): static
+    {
+        if (!$this->pacienteCondiciones->contains($pacienteCondicione)) {
+            $this->pacienteCondiciones->add($pacienteCondicione);
+            $pacienteCondicione->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removePacienteCondicione(PacienteCondiciones $pacienteCondicione): static
+    {
+        if ($this->pacienteCondiciones->removeElement($pacienteCondicione)) {
+            // set the owning side to null (unless already changed)
+            if ($pacienteCondicione->getPaciente() === $this) {
+                $pacienteCondicione->setPaciente(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PacienteEnfermedades>
+     */
+    public function getPacienteEnfermedades(): Collection
+    {
+        return $this->pacienteEnfermedades;
+    }
+
+    public function addPacienteEnfermedade(PacienteEnfermedades $pacienteEnfermedade): static
+    {
+        if (!$this->pacienteEnfermedades->contains($pacienteEnfermedade)) {
+            $this->pacienteEnfermedades->add($pacienteEnfermedade);
+            $pacienteEnfermedade->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removePacienteEnfermedade(PacienteEnfermedades $pacienteEnfermedade): static
+    {
+        if ($this->pacienteEnfermedades->removeElement($pacienteEnfermedade)) {
+            // set the owning side to null (unless already changed)
+            if ($pacienteEnfermedade->getPaciente() === $this) {
+                $pacienteEnfermedade->setPaciente(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PacienteDiscapacidades>
+     */
+    public function getPacienteDiscapacidades(): Collection
+    {
+        return $this->pacienteDiscapacidades;
+    }
+
+    public function addPacienteDiscapacidade(PacienteDiscapacidades $pacienteDiscapacidade): static
+    {
+        if (!$this->pacienteDiscapacidades->contains($pacienteDiscapacidade)) {
+            $this->pacienteDiscapacidades->add($pacienteDiscapacidade);
+            $pacienteDiscapacidade->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removePacienteDiscapacidade(PacienteDiscapacidades $pacienteDiscapacidade): static
+    {
+        if ($this->pacienteDiscapacidades->removeElement($pacienteDiscapacidade)) {
+            // set the owning side to null (unless already changed)
+            if ($pacienteDiscapacidade->getPaciente() === $this) {
+                $pacienteDiscapacidade->setPaciente(null);
             }
         }
 

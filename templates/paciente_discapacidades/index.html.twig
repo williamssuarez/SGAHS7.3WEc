@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PacienteDiscapacidades index{% endblock %}
+
+{% block body %}
+    <h1>PacienteDiscapacidades index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Porcentaje</th>
+                <th>Congenita</th>
+                <th>AyudaTecnica</th>
+                <th>LimitacionesFuncionales</th>
+                <th>NumeroCertificado</th>
+                <th>Observaciones</th>
+                <th>UidCreate</th>
+                <th>UidUpdate</th>
+                <th>Created</th>
+                <th>Updated</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for paciente_discapacidade in paciente_discapacidades %}
+            <tr>
+                <td>{{ paciente_discapacidade.id }}</td>
+                <td>{{ paciente_discapacidade.porcentaje }}</td>
+                <td>{{ paciente_discapacidade.congenita ? 'Yes' : 'No' }}</td>
+                <td>{{ paciente_discapacidade.ayudaTecnica }}</td>
+                <td>{{ paciente_discapacidade.limitacionesFuncionales }}</td>
+                <td>{{ paciente_discapacidade.numeroCertificado }}</td>
+                <td>{{ paciente_discapacidade.observaciones }}</td>
+                <td>{{ paciente_discapacidade.uidCreate }}</td>
+                <td>{{ paciente_discapacidade.uidUpdate }}</td>
+                <td>{{ paciente_discapacidade.created ? paciente_discapacidade.created|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ paciente_discapacidade.updated ? paciente_discapacidade.updated|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_paciente_discapacidades_show', {'id': paciente_discapacidade.id}) }}">show</a>
+                    <a href="{{ path('app_paciente_discapacidades_edit', {'id': paciente_discapacidade.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="12">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_paciente_discapacidades_new') }}">Create new</a>
+{% endblock %}

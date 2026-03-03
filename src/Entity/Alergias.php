@@ -117,4 +117,30 @@ class Alergias
 
         return $this;
     }
+
+    public function getAlergiaSeveridadBadgeConfig(): array
+    {
+        switch ($this->getSeveridad()){
+            case 'min':
+                return [
+                    'class' => 'text-bg-secondary',
+                    'label' => 'Minima'
+                ];
+            case 'mod':
+                return [
+                    'class' => 'text-bg-warning',
+                    'label' => 'Moderada'
+                ];
+            case 'sev':
+                return [
+                    'class' => 'text-bg-danger',
+                    'label' => 'Severa'
+                ];
+        }
+
+        return [
+            'class' => 'text-bg-danger',
+            'label' => 'Error'
+        ];
+    }
 }

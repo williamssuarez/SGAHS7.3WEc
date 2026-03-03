@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PacienteEnfermedades index{% endblock %}
+
+{% block body %}
+    <h1>PacienteEnfermedades index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>FechaDiagnostico</th>
+                <th>Cronica</th>
+                <th>Tipo</th>
+                <th>Notas</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for paciente_enfermedade in paciente_enfermedades %}
+            <tr>
+                <td>{{ paciente_enfermedade.id }}</td>
+                <td>{{ paciente_enfermedade.fechaDiagnostico ? paciente_enfermedade.fechaDiagnostico|date('Y-m-d') : '' }}</td>
+                <td>{{ paciente_enfermedade.cronica ? 'Yes' : 'No' }}</td>
+                <td>{{ paciente_enfermedade.tipo }}</td>
+                <td>{{ paciente_enfermedade.notas }}</td>
+                <td>
+                    <a href="{{ path('app_paciente_enfermedades_show', {'id': paciente_enfermedade.id}) }}">show</a>
+                    <a href="{{ path('app_paciente_enfermedades_edit', {'id': paciente_enfermedade.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_paciente_enfermedades_new') }}">Create new</a>
+{% endblock %}
