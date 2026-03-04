@@ -30,9 +30,16 @@ class Reacciones
     #[ORM\ManyToMany(targetEntity: Alergias::class, mappedBy: 'reacciones')]
     private Collection $alergias;
 
+    /**
+     * @var Collection<int, PacienteInmunizaciones>
+     */
+    #[ORM\ManyToMany(targetEntity: PacienteInmunizaciones::class, mappedBy: 'reacciones')]
+    private Collection $pacienteInmunizaciones;
+
     public function __construct()
     {
         $this->alergias = new ArrayCollection();
+        $this->pacienteInmunizaciones = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -86,6 +93,33 @@ class Reacciones
     {
         if ($this->alergias->removeElement($alergia)) {
             $alergia->removeReaccione($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PacienteInmunizaciones>
+     */
+    public function getPacienteInmunizaciones(): Collection
+    {
+        return $this->pacienteInmunizaciones;
+    }
+
+    public function addPacienteInmunizacione(PacienteInmunizaciones $pacienteInmunizacione): static
+    {
+        if (!$this->pacienteInmunizaciones->contains($pacienteInmunizacione)) {
+            $this->pacienteInmunizaciones->add($pacienteInmunizacione);
+            $pacienteInmunizacione->addReaccione($this);
+        }
+
+        return $this;
+    }
+
+    public function removePacienteInmunizacione(PacienteInmunizaciones $pacienteInmunizacione): static
+    {
+        if ($this->pacienteInmunizaciones->removeElement($pacienteInmunizacione)) {
+            $pacienteInmunizacione->removeReaccione($this);
         }
 
         return $this;

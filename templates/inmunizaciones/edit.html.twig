@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Inmunizacion{% endblock %}
+
+{% block titlewrap %}
+    Editar Inmunizacion
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_inmunizaciones_index') }}">Inmunizaciones</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Inmunizacion</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+
+            {{ include('inmunizaciones/_form.html.twig', {'button_label': 'Actualizar'}) }}
+        </div>
+    </div>
+{% endblock %}

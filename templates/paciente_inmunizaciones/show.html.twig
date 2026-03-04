@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PacienteInmunizaciones{% endblock %}
+
+{% block body %}
+    <h1>PacienteInmunizaciones</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ paciente_inmunizacione.id }}</td>
+            </tr>
+            <tr>
+                <th>FechaAplicacion</th>
+                <td>{{ paciente_inmunizacione.fechaAplicacion ? paciente_inmunizacione.fechaAplicacion|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>SitioAplicacion</th>
+                <td>{{ paciente_inmunizacione.sitioAplicacion }}</td>
+            </tr>
+            <tr>
+                <th>Fabricante</th>
+                <td>{{ paciente_inmunizacione.fabricante }}</td>
+            </tr>
+            <tr>
+                <th>Dosis</th>
+                <td>{{ paciente_inmunizacione.dosis }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_paciente_inmunizaciones_index') }}">back to list</a>
+
+    <a href="{{ path('app_paciente_inmunizaciones_edit', {'id': paciente_inmunizacione.id}) }}">edit</a>
+
+    {{ include('paciente_inmunizaciones/_delete_form.html.twig') }}
+{% endblock %}

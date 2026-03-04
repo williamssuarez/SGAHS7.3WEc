@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Consulta;
 use App\Entity\PacienteDiscapacidades;
 use App\Form\PacienteDiscapacidadesType;
 use App\Repository\PacienteDiscapacidadesRepository;
@@ -22,23 +23,26 @@ final class PacienteDiscapacidadesController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_paciente_discapacidades_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/new-consulta', name: 'app_paciente_discapacidades_new_consulta', methods: ['GET', 'POST'])]
+    public function newConsulta(Request $request, EntityManagerInterface $entityManager, Consulta $consulta): Response
     {
         $pacienteDiscapacidade = new PacienteDiscapacidades();
         $form = $this->createForm(PacienteDiscapacidadesType::class, $pacienteDiscapacidade);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $pacienteDiscapacidade->setPaciente($consulta->getPaciente());
             $entityManager->persist($pacienteDiscapacidade);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_paciente_discapacidades_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Discapacidad Agregada');
+            return $this->redirectToRoute('app_consulta_show', ['id' => $consulta->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('paciente_discapacidades/new.html.twig', [
+        return $this->render('paciente_discapacidades/newConsulta.html.twig', [
             'paciente_discapacidade' => $pacienteDiscapacidade,
             'form' => $form,
+            'consultum' => $consulta
         ]);
     }
 
@@ -50,8 +54,8 @@ final class PacienteDiscapacidadesController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_paciente_discapacidades_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, PacienteDiscapacidades $pacienteDiscapacidade, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/edit', name: 'app_paciente_discapacidades_edit_consulta', methods: ['GET', 'POST'])]
+    public function editConsulta(Request $request, PacienteDiscapacidades $pacienteDiscapacidade, EntityManagerInterface $entityManager, Consulta $consulta): Response
     {
         $form = $this->createForm(PacienteDiscapacidadesType::class, $pacienteDiscapacidade);
         $form->handleRequest($request);
@@ -59,12 +63,14 @@ final class PacienteDiscapacidadesController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_paciente_discapacidades_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Discapacidad Editada');
+            return $this->redirectToRoute('app_consulta_show', ['id' => $consulta->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('paciente_discapacidades/edit.html.twig', [
+        return $this->render('paciente_discapacidades/editConsulta.html.twig', [
             'paciente_discapacidade' => $pacienteDiscapacidade,
             'form' => $form,
+            'consultum' => $consulta
         ]);
     }
 

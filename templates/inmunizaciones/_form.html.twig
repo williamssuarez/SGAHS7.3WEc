@@ -5,6 +5,18 @@
         {{form_widget( form.nombre ) }}
     </div>
     <div class="mb-3">
+        {{form_label( form.tipo ) }}
+        {{form_widget( form.tipo ) }}
+    </div>
+    <div class="mb-3">
+        {{form_label( form.administracion ) }}
+        {{form_widget( form.administracion ) }}
+    </div>
+    <div class="mb-3">
+        {{form_label( form.frecuenciaSugerida ) }}
+        {{form_widget( form.frecuenciaSugerida ) }}
+    </div>
+    <div class="mb-3">
         {{form_label( form.descripcion ) }}
         {{form_widget( form.descripcion ) }}
     </div>
@@ -14,7 +26,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="d-flex justify-content-between">
-                <a class="btn btn-primary" href="{{ path('app_tratamientos_index') }}">
+                <a class="btn btn-primary" href="{{ path('app_inmunizaciones_index') }}">
                     <i class="bi bi-arrow-left"></i> Volver
                 </a>
 

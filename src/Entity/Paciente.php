@@ -37,12 +37,6 @@ class Paciente
     #[ORM\Column(type: Types::TEXT)]
     private ?string $direccion = null;
 
-    /**
-     * @var Collection<int, Tratamientos>
-     */
-    #[ORM\ManyToMany(targetEntity: Tratamientos::class, inversedBy: 'pacientes')]
-    private Collection $tratamientos;
-
     #[ORM\Column]
     private ?bool $hasMarcaPaso = null;
 
@@ -103,9 +97,14 @@ class Paciente
     #[ORM\OneToMany(targetEntity: PacienteDiscapacidades::class, mappedBy: 'paciente')]
     private Collection $pacienteDiscapacidades;
 
+    /**
+     * @var Collection<int, PacienteInmunizaciones>
+     */
+    #[ORM\OneToMany(targetEntity: PacienteInmunizaciones::class, mappedBy: 'paciente')]
+    private Collection $pacienteInmunizaciones;
+
     public function __construct()
     {
-        $this->tratamientos = new ArrayCollection();
         $this->historiaPacientes = new ArrayCollection();
         $this->attachments = new ArrayCollection();
         $this->alergias = new ArrayCollection();
@@ -113,6 +112,7 @@ class Paciente
         $this->pacienteCondiciones = new ArrayCollection();
         $this->pacienteEnfermedades = new ArrayCollection();
         $this->pacienteDiscapacidades = new ArrayCollection();
+        $this->pacienteInmunizaciones = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -199,30 +199,6 @@ class Paciente
     public function setDireccion(string $direccion): static
     {
         $this->direccion = $direccion;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Tratamientos>
-     */
-    public function getTratamientos(): Collection
-    {
-        return $this->tratamientos;
-    }
-
-    public function addTratamiento(Tratamientos $tratamiento): static
-    {
-        if (!$this->tratamientos->contains($tratamiento)) {
-            $this->tratamientos->add($tratamiento);
-        }
-
-        return $this;
-    }
-
-    public function removeTratamiento(Tratamientos $tratamiento): static
-    {
-        $this->tratamientos->removeElement($tratamiento);
 
         return $this;
     }
@@ -503,6 +479,36 @@ class Paciente
             // set the owning side to null (unless already changed)
             if ($pacienteDiscapacidade->getPaciente() === $this) {
                 $pacienteDiscapacidade->setPaciente(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PacienteInmunizaciones>
+     */
+    public function getPacienteInmunizaciones(): Collection
+    {
+        return $this->pacienteInmunizaciones;
+    }
+
+    public function addPacienteInmunizacione(PacienteInmunizaciones $pacienteInmunizacione): static
+    {
+        if (!$this->pacienteInmunizaciones->contains($pacienteInmunizacione)) {
+            $this->pacienteInmunizaciones->add($pacienteInmunizacione);
+            $pacienteInmunizacione->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removePacienteInmunizacione(PacienteInmunizaciones $pacienteInmunizacione): static
+    {
+        if ($this->pacienteInmunizaciones->removeElement($pacienteInmunizacione)) {
+            // set the owning side to null (unless already changed)
+            if ($pacienteInmunizacione->getPaciente() === $this) {
+                $pacienteInmunizacione->setPaciente(null);
             }
         }
 

@@ -23,7 +23,7 @@ parameters:
                         - { title: Reacciones, route: app_reacciones_index, icon: 'bi bi-virus2 text-success' }
                 - { title: Discapacidades, route: app_discapacidades_index, icon: 'bi bi-person-wheelchair text-warning' }
                 - { title: Condiciones, route: app_condiciones_index, icon: 'fa-solid fa-person-cane text-warning' }
-                - { title: Tratamientos, route: app_tratamientos_index, icon: 'fa-solid fa-syringe text-warning' }
+                - { title: Inmunizaciones, route: app_inmunizaciones_index, icon: 'fa-solid fa-syringe text-warning' }
                 - { title: Enfermedades, route: app_enfermedades_index, icon: 'fa-solid fa-head-side-cough text-warning' }
                 - { title: Medicamentos, route: app_medicamentos_index, icon: 'bi bi-capsule-pill text-warning' }
         -
@@ -32,4 +32,9 @@ parameters:
             roles: 'ROLE_INTERNAL'
             children:
                 - { title: Pacientes Registrados, route: app_paciente_index, icon: 'bi bi-person-badge-fill text-info' }
-                - { title: Consultas, route: app_consulta_index, icon: 'bi bi-person-badge-fill text-info' }
+        -
+            title: Consultas
+            icon: 'bi bi-hospital text-success'
+            roles: 'ROLE_INTERNAL'
+            children:
+                - { title: Consultas, route: app_consulta_index, icon: 'bi bi-hospital text-success' }

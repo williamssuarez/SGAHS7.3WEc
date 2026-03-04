@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PacienteInmunizaciones index{% endblock %}
+
+{% block body %}
+    <h1>PacienteInmunizaciones index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>FechaAplicacion</th>
+                <th>SitioAplicacion</th>
+                <th>Fabricante</th>
+                <th>Dosis</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for paciente_inmunizacione in paciente_inmunizaciones %}
+            <tr>
+                <td>{{ paciente_inmunizacione.id }}</td>
+                <td>{{ paciente_inmunizacione.fechaAplicacion ? paciente_inmunizacione.fechaAplicacion|date('Y-m-d') : '' }}</td>
+                <td>{{ paciente_inmunizacione.sitioAplicacion }}</td>
+                <td>{{ paciente_inmunizacione.fabricante }}</td>
+                <td>{{ paciente_inmunizacione.dosis }}</td>
+                <td>
+                    <a href="{{ path('app_paciente_inmunizaciones_show', {'id': paciente_inmunizacione.id}) }}">show</a>
+                    <a href="{{ path('app_paciente_inmunizaciones_edit', {'id': paciente_inmunizacione.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_paciente_inmunizaciones_new') }}">Create new</a>
+{% endblock %}

@@ -6,6 +6,7 @@ use App\Entity\Traits\SoftDeletetableTrait;
 use App\Repository\PacienteDiscapacidadesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PacienteDiscapacidadesRepository::class)]
 class PacienteDiscapacidades
@@ -25,6 +26,7 @@ class PacienteDiscapacidades
     private ?Discapacidades $discapacidad = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Range(notInRangeMessage: "Discapacidad fuera de rango (1 - 100)", min: 1, max: 100)]
     private ?int $porcentaje = null;
 
     #[ORM\Column]

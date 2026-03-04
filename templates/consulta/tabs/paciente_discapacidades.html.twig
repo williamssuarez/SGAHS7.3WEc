@@ -1,22 +1,41 @@
 <h4>
-    Discapacidades Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_paciente_condiciones_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+    Discapacidades Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_paciente_discapacidades_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
 </h4>
 <table class="table table-striped dtHere">
     <thead>
     <tr>
-        <th>Nombre</th>
-        <th>Descripcion</th>
+        <th>Discapacidad</th>
+        <th>Porcentaje</th>
+        <th>Nro. Certificado</th>
+        <th>Congenita</th>
+        <th>Ayuda Tecnica</th>
+        <th>Limitaciones Funcionales</th>
+        <th>Observaciones</th>
         <th>Acciones</th>
     </tr>
     </thead>
     <tbody>
     {% for entity in paciente.pacienteDiscapacidades %}
         <tr class="align-middle">
-            <td>{{ entity.nombre }}</td>
-            <td>{{ entity.descripcion }}</td>
+            <td>{{ entity.discapacidad.nombre }}</td>
             <td>
-                <a class="btn btn-success" href="{{ path('app_discapacidades_edit', {'id': entity.id}) }}">
-                    <i class="bi bi-pencil-square"></i> Editar
+                {% if entity.porcentaje <= 30 %}
+                    <span class="badge rounded-pill text-bg-success">{{ entity.porcentaje }}%</span>
+                {% elseif entity.porcentaje <= 60 %}
+                    <span class="badge rounded-pill text-bg-warning">{{ entity.porcentaje }}%</span>
+                {% else %}
+                    <span class="badge rounded-pill text-bg-danger">{{ entity.porcentaje }}%</span>
+                {% endif %}
+
+            </td>
+            <td>{{ entity.numeroCertificado }}</td>
+            <td>{{ entity.congenita ? 'Si':'No' }}</td>
+            <td>{{ entity.ayudaTecnica }}</td>
+            <td>{{ entity.limitacionesFuncionales }}</td>
+            <td>{{ entity.observaciones }}</td>
+            <td>
+                <a class="btn btn-success" href="{{ path('app_paciente_discapacidades_edit_consulta', {'id': entity.id}) }}">
+                    <i class="bi bi-pencil-square"></i>
                 </a>
             </td>
         </tr>

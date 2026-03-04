@@ -6,13 +6,13 @@ use App\Entity\Alergenos;
 use App\Entity\Discapacidades;
 use App\Entity\Enfermedades;
 use App\Entity\Paciente;
-use App\Entity\Tratamientos;
+use App\Entity\Inmunizaciones;
 use App\Form\DataTransformer\PhoneNumberTransformer;
 use App\Form\Type\PhoneType;
 use App\Repository\AlergenosRepository;
 use App\Repository\DiscapacidadesRepository;
 use App\Repository\EnfermedadesRepository;
-use App\Repository\TratamientosRepository;
+use App\Repository\InmunizacionesRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -150,7 +150,7 @@ class PacienteType extends AbstractType
                 ],
                 'required' => true,
             ])
-            ->add('enfermedades', EntityType::class, [
+            /*->add('enfermedades', EntityType::class, [
                 'class' => Enfermedades::class,
                 'choice_label' => 'nombre',
                 'multiple' => true,
@@ -161,7 +161,7 @@ class PacienteType extends AbstractType
                 'query_builder' => function (EnfermedadesRepository $er) {
                     return $er->getActivesforSelect();
                 }
-            ])
+            ])*/
             /*->add('alergenos', EntityType::class, [
                 'class' => Alergenos::class,
                 'choice_label' => 'nombre',
@@ -174,7 +174,7 @@ class PacienteType extends AbstractType
                     return $er->getActivesforSelect();
                 }
             ])*/
-            ->add('discapacidades', EntityType::class, [
+            /*->add('discapacidades', EntityType::class, [
                 'class' => Discapacidades::class,
                 'choice_label' => 'nombre',
                 'multiple' => true,
@@ -186,18 +186,18 @@ class PacienteType extends AbstractType
                     return $er->getActivesforSelect();
                 }
             ])
-            ->add('tratamientos', EntityType::class, [
-                'class' => Tratamientos::class,
+            ->add('inmunizaciones', EntityType::class, [
+                'class' => Inmunizaciones::class,
                 'choice_label' => 'nombre',
                 'multiple' => true,
                 'attr' => [
                     'class' => 'srchSelect'
                 ],
                 'required' => false,
-                'query_builder' => function (TratamientosRepository $er) {
+                'query_builder' => function (InmunizacionesRepository $er) {
                     return $er->getActivesforSelect();
                 }
-            ])
+            ])*/
             ->add('hasMarcaPaso', CheckboxType::class, [
                 'label' => '¿Tiene marca pasos el paciente?',
                 'label_attr' => [

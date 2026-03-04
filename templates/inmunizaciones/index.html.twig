@@ -1,14 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tratamientos{% endblock %}
+{% block title %}Inmunizaciones{% endblock %}
 
 {% block titlewrap %}
-    Tratamientos
+    Inmunizaciones
 {% endblock %}
 
 {% block breadcrumb %}
     {#<li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Home</a></li>#}
-    <li class="breadcrumb-item active" aria-current="page">Tratamientos</li>
+    <li class="breadcrumb-item active" aria-current="page">Inmunizaciones</li>
 {% endblock %}
 
 {% block body %}
@@ -22,7 +22,7 @@
     {% endfor %}
     <div class="card card-primary card-outline mb-4">
         <div class="card-header">
-            <h3 class="card-title">Tratamientos Registrados</h3>
+            <h3 class="card-title">Inmunizaciones Registrados</h3>
         </div>
 
         <div class="card-body">
@@ -30,6 +30,9 @@
                 <thead>
                 <tr>
                     <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Administracion</th>
+                    <th>Frecuencia Sugerida</th>
                     <th>Descripcion</th>
                     <th>Acciones</th>
                 </tr>
@@ -38,17 +41,30 @@
                 {% for entity in entities %}
                     <tr class="align-middle">
                         <td>{{ entity.nombre }}</td>
+                        <td>
+                            {% set badge = entity.inmunizacionesTiposBadgeConfig %}
+                            <span class="badge rounded-pill {{ badge.class }}">
+                                {{ badge.label }}
+                            </span>
+                        </td>
+                        <td>
+                            {% set badge = entity.inmunizacionesAdministracionesBadgeConfig %}
+                            <span class="badge rounded-pill {{ badge.class }}">
+                                {{ badge.label }}
+                            </span>
+                        </td>
+                        <td>{{ entity.frecuenciaSugerida }}</td>
                         <td>{{ entity.descripcion }}</td>
                         <td>
-                            <a class="btn btn-secondary" href="{{ path('app_tratamientos_show', {'id': entity.id}) }}">
+                            <a class="btn btn-secondary" href="{{ path('app_inmunizaciones_show', {'id': entity.id}) }}">
                                 <i class="bi bi-search"></i> Detalles
                             </a>
-                            <a class="btn btn-success" href="{{ path('app_tratamientos_edit', {'id': entity.id}) }}">
+                            <a class="btn btn-success" href="{{ path('app_inmunizaciones_edit', {'id': entity.id}) }}">
                                 <i class="bi bi-pencil-square"></i> Editar
                             </a>
                             <button class="btn btn-danger"
                                     onclick="softDeleteRecord(
-                                        '{{ path('app_tratamientos_delete', {'id': entity.id}) }}',
+                                        '{{ path('app_inmunizaciones_delete', {'id': entity.id}) }}',
                                         '{{ csrf_token('delete' ~ entity.id) }}'
                                         )">
                                 <i class="bi bi-trash"></i> Eliminar
@@ -61,7 +77,7 @@
         </div>
 
         <div class="card-footer clearfix">
-            <a href="{{ path('app_tratamientos_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+            <a href="{{ path('app_inmunizaciones_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
         </div>
     </div>
 {% endblock %}

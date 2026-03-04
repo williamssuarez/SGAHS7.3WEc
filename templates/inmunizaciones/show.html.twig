@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_tratamientos_index') }}">Tratamientos</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_inmunizaciones_index') }}">Inmunizaciones</a></li>
     <li class="breadcrumb-item active" aria-current="page">Detalles</li>
 {% endblock %}
 
@@ -27,18 +27,18 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between">
-                            <a class="btn btn-primary" href="{{ path('app_tratamientos_index') }}">
+                            <a class="btn btn-primary" href="{{ path('app_inmunizaciones_index') }}">
                                 <i class="bi bi-arrow-left"></i> Volver
                             </a>
 
-                            <a class="btn btn-success" href="{{ path('app_tratamientos_edit', {'id': entity.id}) }}">
+                            <a class="btn btn-success" href="{{ path('app_inmunizaciones_edit', {'id': entity.id}) }}">
                                 <i class="bi bi-pencil-square"></i> Editar
                             </a>
 
                             <div class="d-flex">
                                 <button class="btn btn-danger"
                                         onclick="softDeleteRecord(
-                                            '{{ path('app_tratamientos_delete', {'id': entity.id}) }}',
+                                            '{{ path('app_inmunizaciones_delete', {'id': entity.id}) }}',
                                             '{{ csrf_token('delete' ~ entity.id) }}'
                                             )">
                                     <i class="bi bi-trash"></i> Eliminar

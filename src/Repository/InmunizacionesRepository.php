@@ -3,18 +3,18 @@
 namespace App\Repository;
 
 use App\Entity\StatusRecord;
-use App\Entity\Tratamientos;
+use App\Entity\Inmunizaciones;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Tratamientos>
+ * @extends ServiceEntityRepository<Inmunizaciones>
  */
-class TratamientosRepository extends ServiceEntityRepository
+class InmunizacionesRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Tratamientos::class);
+        parent::__construct($registry, Inmunizaciones::class);
     }
 
     public function getActivesforSelect()
@@ -49,29 +49,4 @@ class TratamientosRepository extends ServiceEntityRepository
 
         return $query->getQuery()->getResult();
     }
-
-//    /**
-//     * @return Tratamientos[] Returns an array of Tratamientos objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('t.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?Tratamientos
-//    {
-//        return $this->createQueryBuilder('t')
-//            ->andWhere('t.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

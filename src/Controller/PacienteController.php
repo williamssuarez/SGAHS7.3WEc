@@ -65,7 +65,7 @@ final class PacienteController extends AbstractController
                 $patientProcessor->processFormSubmission($paciente, $form->get('foto')->getData());
 
                 $this->addFlash('success', 'Registro Agregado.');
-                return $this->redirectToRoute('app_paciente_index', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()], Response::HTTP_SEE_OTHER);
 
             } catch (BusinessRuleException $e) {
                 //Obtener el mensaje especifico y mostrar el error
@@ -131,7 +131,7 @@ final class PacienteController extends AbstractController
                 $patientProcessor->processFormSubmission($paciente, $form->get('foto')->getData());
 
                 $this->addFlash('success', 'Registro Editado.');
-                return $this->redirectToRoute('app_paciente_index', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()], Response::HTTP_SEE_OTHER);
 
             } catch (BusinessRuleException $e) {
                 //Obtener el mensaje especifico y mostrar el error

@@ -1,29 +1,32 @@
 <h4>
-    Alergias Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_alergias_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+    Inmunizaciones Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_paciente_inmunizaciones_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
 </h4>
 <table class="table table-striped dtHere">
     <thead>
     <tr>
         <th>#</th>
-        <th>Alergeno</th>
-        <th>Severidad</th>
+        <th>Inmunizacion</th>
+        <th>Dosis</th>
+        <th>Sitio</th>
+        <th>Fabricante</th>
         <th>Reacciones</th>
-        <th>Observaciones</th>
-        <th>Fecha</th>
+        <th>Aplicacion</th>
         <th>Acciones</th>
     </tr>
     </thead>
     <tbody>
-    {% for entity in paciente.alergias %}
+    {% for entity in paciente.pacienteInmunizaciones %}
         <tr class="align-middle">
             <td>{{ loop.index }}</td>
-            <td>{{ entity.alergeno.nombre }}</td>
+            <td>{{ entity.inmunizacion.nombre }}</td>
             <td>
-                {% set badge = entity.alergiaSeveridadBadgeConfig %}
+                {% set badge = entity.pacienteInmunizacionesDosisBadgeConfig %}
                 <span class="badge rounded-pill {{ badge.class }}">
                     {{ badge.label }}
                 </span>
             </td>
+            <td>{{ entity.sitioAplicacion }}</td>
+            <td>{{ entity.fabricante }}</td>
             <td>
                 <ul>
                     {% for reaccion in entity.reacciones %}
@@ -31,14 +34,9 @@
                     {% endfor %}
                 </ul>
             </td>
+            <td>{{ entity.fechaAplicacion|date('d/m/Y') }}</td>
             <td>
-                {{ entity.observaciones ? entity.observaciones : '--' }}
-            </td>
-            <td>
-                {{ entity.created|date('d/m/Y H:i') }} <i>{{ entity.created|time_ago }}</i>
-            </td>
-            <td>
-                <a class="btn btn-success" href="{{ path('app_alergias_edit_consulta', {'id': entity.id}) }}">
+                <a class="btn btn-success" href="{{ path('app_paciente_inmunizaciones_edit_consulta', {'id': entity.id}) }}">
                     <i class="bi bi-pencil-square"></i>
                 </a>
             </td>

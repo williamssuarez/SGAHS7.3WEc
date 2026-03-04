@@ -58,7 +58,7 @@ security:
         - { path: ^/enfermedades, roles: ROLE_ADMIN }
         - { path: ^/alergenos, roles: ROLE_ADMIN }
         - { path: ^/medicamentos, roles: ROLE_ADMIN }
-        - { path: ^/tratamientos, roles: ROLE_ADMIN }
+        - { path: ^/inmunizaciones, roles: ROLE_ADMIN }
         - { path: ^/discapacidades, roles: ROLE_ADMIN }
         - { path: ^/paciente, roles: ROLE_INTERNAL }
         - { path: ^/historia/paciente, roles: ROLE_INTERNAL }
