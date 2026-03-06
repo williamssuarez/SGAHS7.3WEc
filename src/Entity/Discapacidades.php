@@ -8,8 +8,11 @@ use App\Repository\DiscapacidadesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use App\Entity\LogEntry;
 
 #[ORM\Entity(repositoryClass: DiscapacidadesRepository::class)]
+#[Gedmo\Loggable(logEntryClass: LogEntry::class)]
 class Discapacidades
 {
     use SoftDeletetableTrait;
@@ -20,12 +23,15 @@ class Discapacidades
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Gedmo\Versioned]
     private ?string $nombre = null;
 
     #[ORM\Column(length: 255)]
+    #[Gedmo\Versioned]
     private ?string $descripcion = null;
 
     #[ORM\Column(nullable: true, enumType: DiscapacidadesTipos::class)]
+    #[Gedmo\Versioned]
     private ?DiscapacidadesTipos $tipo = null;
 
     /**

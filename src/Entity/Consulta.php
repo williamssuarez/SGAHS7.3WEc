@@ -10,8 +10,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use App\Entity\LogEntry;
 
 #[ORM\Entity(repositoryClass: ConsultaRepository::class)]
+#[Gedmo\Loggable(logEntryClass: LogEntry::class)]
 class Consulta
 {
     use SoftDeletetableTrait;
@@ -22,21 +25,27 @@ class Consulta
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'consultas')]
+    #[Gedmo\Versioned]
     private ?Paciente $paciente = null;
 
     #[ORM\Column(enumType: ConsultaTipos::class)]
+    #[Gedmo\Versioned]
     private ?ConsultaTipos $tipoConsulta = null;
 
     #[ORM\Column(enumType: ConsultaEstados::class)]
+    #[Gedmo\Versioned]
     private ?ConsultaEstados $estadoConsulta = null;
 
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE)]
+    #[Gedmo\Versioned]
     private ?\DateTime $fechaInicio = null;
 
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE, nullable: true)]
+    #[Gedmo\Versioned]
     private ?\DateTime $fechaFin = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Gedmo\Versioned]
     private ?string $observacion = null;
 
     /**

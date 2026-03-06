@@ -10,8 +10,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use App\Entity\LogEntry;
 
 #[ORM\Entity(repositoryClass: PacienteInmunizacionesRepository::class)]
+#[Gedmo\Loggable(logEntryClass: LogEntry::class)]
 class PacienteInmunizaciones
 {
     use SoftDeletetableTrait;
@@ -24,18 +27,23 @@ class PacienteInmunizaciones
     private ?Paciente $paciente = null;
 
     #[ORM\ManyToOne(inversedBy: 'pacienteInmunizaciones')]
+    #[Gedmo\Versioned]
     private ?Inmunizaciones $inmunizacion = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Gedmo\Versioned]
     private ?\DateTime $fechaAplicacion = null;
 
     #[ORM\Column(length: 255)]
+    #[Gedmo\Versioned]
     private ?string $sitioAplicacion = null;
 
     #[ORM\Column(length: 255)]
+    #[Gedmo\Versioned]
     private ?string $fabricante = null;
 
     #[ORM\Column(enumType: PacienteInmunizacionesDosis::class)]
+    #[Gedmo\Versioned]
     private ?PacienteInmunizacionesDosis $dosis = null;
 
     /**

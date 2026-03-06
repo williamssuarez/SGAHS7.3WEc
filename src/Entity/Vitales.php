@@ -6,11 +6,14 @@ use App\Entity\Traits\SoftDeletetableTrait;
 use App\Repository\VitalesRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
+use App\Entity\LogEntry;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: VitalesRepository::class)]
 #[Assert\Callback(callback: 'validateBloodPressure')]
-#[ORM\HasLifecycleCallbacks] // Vital: Tells Doctrine to watch for events
+#[ORM\HasLifecycleCallbacks]
+#[Gedmo\Loggable(logEntryClass: LogEntry::class)]
 class Vitales
 {
     use SoftDeletetableTrait;
@@ -22,44 +25,54 @@ class Vitales
 
     #[ORM\Column]
     #[Assert\Range(notInRangeMessage: "Temperatura fuera de rango fisiológico (34°C - 42°C)", min: 34, max: 42)]
+    #[Gedmo\Versioned]
     private ?float $temperatura = null;
 
     #[ORM\Column]
     #[Assert\Range(notInRangeMessage: "Presion sistolica no es fisicamente posible (70 - 250).", min: 70, max: 250)]
+    #[Gedmo\Versioned]
     private ?int $paSistolica = null;
 
     #[ORM\Column]
     #[Assert\Range(notInRangeMessage: "Presion diastolica no es fisicamente posible (40 - 150).", min: 40, max: 150)]
+    #[Gedmo\Versioned]
     private ?int $paDiastolica = null;
 
     #[ORM\Column]
     #[Assert\Range(notInRangeMessage: "Frecuencia cardíaca no plausible (30 - 250 lpm)", min: 30, max: 250)]
+    #[Gedmo\Versioned]
     private ?int $frecuenciaCardiaca = null;
 
     #[ORM\Column]
     #[Assert\Range(notInRangeMessage: "Frecuencia respiratoria no plausible (8 - 80 rpm)", min: 8, max: 80)]
+    #[Gedmo\Versioned]
     private ?int $frecuenciaRespiratoria = null;
 
     #[ORM\Column]
     #[Assert\Range(notInRangeMessage: "El SpO2 debe estar entre 50% y 100%", min: 50, max: 100)]
+    #[Gedmo\Versioned]
     private ?float $spo2 = null;
 
     #[ORM\Column]
     #[Assert\Positive(message: "El peso debe ser mayor a 0")]
     #[Assert\Range(notInRangeMessage: "Peso excede el límite permitido", max: 700)]
+    #[Gedmo\Versioned]
     private ?float $peso = null;
 
     #[ORM\Column]
     #[Assert\Positive(message: "La altura debe ser mayor a 0")]
     #[Assert\Range(notInRangeMessage: "Altura fuera de rango (10cm - 250cm)", min: 10, max: 280)]
+    #[Gedmo\Versioned]
     private ?float $altura = null;
 
     #[ORM\Column(nullable: true)]
     #[Assert\Positive(message: "El CMB debe ser mayor a 0")]
     #[Assert\Range(notInRangeMessage: "CMB no plausible", min: 5, max: 60)]
+    #[Gedmo\Versioned]
     private ?float $cmb = null;
 
     #[ORM\Column]
+    #[Gedmo\Versioned]
     private ?float $imc = null;
 
     #[ORM\ManyToOne(inversedBy: 'vitales')]

@@ -8,12 +8,15 @@ use App\Enum\PacienteCondicionesEstados;
 use App\Repository\PacienteCondicionesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use App\Entity\LogEntry;
 
 #[ORM\Entity(repositoryClass: PacienteCondicionesRepository::class)]
 #[Assert\Callback(callback: 'validateDates')]
 #[ORM\HasLifecycleCallbacks] // Vital: Tells Doctrine to watch for events
+#[Gedmo\Loggable(logEntryClass: LogEntry::class)]
 class PacienteCondiciones
 {
     use SoftDeletetableTrait;
@@ -29,15 +32,19 @@ class PacienteCondiciones
     private ?Condiciones $condicion = null;
 
     #[ORM\Column]
+    #[Gedmo\Versioned]
     private ?\DateTime $fechaAparicion = null;
 
     #[ORM\Column(nullable: true)]
+    #[Gedmo\Versioned]
     private ?\DateTime $fechaFinalizada = null;
 
     #[ORM\Column(enumType: PacienteCondicionesEstados::class)]
+    #[Gedmo\Versioned]
     private ?PacienteCondicionesEstados $estado = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Gedmo\Versioned]
     private ?string $observaciones = null;
 
     public function getId(): ?int

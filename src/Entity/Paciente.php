@@ -8,8 +8,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use App\Entity\LogEntry;
 
 #[ORM\Entity(repositoryClass: PacienteRepository::class)]
+#[Gedmo\Loggable(logEntryClass: LogEntry::class)]
 class Paciente
 {
     use SoftDeletetableTrait;
@@ -20,24 +23,31 @@ class Paciente
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Gedmo\Versioned]
     private ?string $nombre = null;
 
     #[ORM\Column(length: 255)]
+    #[Gedmo\Versioned]
     private ?string $apellido = null;
 
     #[ORM\Column]
+    #[Gedmo\Versioned]
     private ?string $cedula = null;
 
     #[ORM\Column(length: 255)]
+    #[Gedmo\Versioned]
     private ?string $telefono = null;
 
     #[ORM\Column(length: 255)]
+    #[Gedmo\Versioned]
     private ?string $correo = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Gedmo\Versioned]
     private ?string $direccion = null;
 
     #[ORM\Column]
+    #[Gedmo\Versioned]
     private ?bool $hasMarcaPaso = null;
 
     /**
@@ -47,18 +57,23 @@ class Paciente
     private Collection $historiaPacientes;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Gedmo\Versioned]
     private ?\DateTime $fechaNacimiento = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Gedmo\Versioned]
     private ?string $foto = null;
 
     #[ORM\Column(length: 255, nullable: false)]
+    #[Gedmo\Versioned]
     private ?string $sexo;
 
     #[ORM\Column]
+    #[Gedmo\Versioned]
     private ?bool $fallecido = null;
 
     #[ORM\Column(length: 255)]
+    #[Gedmo\Versioned]
     private ?string $tipoDocumento = null;
 
     /**

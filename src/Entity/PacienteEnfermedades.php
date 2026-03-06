@@ -7,8 +7,11 @@ use App\Enum\PacienteEnfermedadesTipos;
 use App\Repository\PacienteEnfermedadesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use App\Entity\LogEntry;
 
 #[ORM\Entity(repositoryClass: PacienteEnfermedadesRepository::class)]
+#[Gedmo\Loggable(logEntryClass: LogEntry::class)]
 class PacienteEnfermedades
 {
     use SoftDeletetableTrait;
@@ -23,18 +26,23 @@ class PacienteEnfermedades
 
     #[ORM\ManyToOne(inversedBy: 'pacienteEnfermedades')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Gedmo\Versioned]
     private ?Enfermedades $enfermedad = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Gedmo\Versioned]
     private ?\DateTime $fechaDiagnostico = null;
 
     #[ORM\Column]
+    #[Gedmo\Versioned]
     private ?bool $cronica = null;
 
     #[ORM\Column(enumType: PacienteEnfermedadesTipos::class)]
+    #[Gedmo\Versioned]
     private ?PacienteEnfermedadesTipos $tipo = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Gedmo\Versioned]
     private ?string $notas = null;
 
     public function getId(): ?int
