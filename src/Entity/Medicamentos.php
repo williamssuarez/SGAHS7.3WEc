@@ -25,6 +25,9 @@ class Medicamentos
     #[ORM\Column]
     private ?float $miligramos = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $nombreGenerico = null;
+
     public function __toString(): string
     {
         return $this->getNombre() . '('.$this->getMiligramos().'mg)';
@@ -67,6 +70,18 @@ class Medicamentos
     public function setMiligramos(float $miligramos): static
     {
         $this->miligramos = $miligramos;
+
+        return $this;
+    }
+
+    public function getNombreGenerico(): ?string
+    {
+        return $this->nombreGenerico;
+    }
+
+    public function setNombreGenerico(string $nombreGenerico): static
+    {
+        $this->nombreGenerico = $nombreGenerico;
 
         return $this;
     }

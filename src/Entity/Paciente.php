@@ -118,6 +118,12 @@ class Paciente
     #[ORM\OneToMany(targetEntity: PacienteInmunizaciones::class, mappedBy: 'paciente')]
     private Collection $pacienteInmunizaciones;
 
+    /**
+     * @var Collection<int, Audit>
+     */
+    #[ORM\OneToMany(targetEntity: Audit::class, mappedBy: 'paciente')]
+    private Collection $audits;
+
     public function __construct()
     {
         $this->historiaPacientes = new ArrayCollection();
@@ -128,6 +134,7 @@ class Paciente
         $this->pacienteEnfermedades = new ArrayCollection();
         $this->pacienteDiscapacidades = new ArrayCollection();
         $this->pacienteInmunizaciones = new ArrayCollection();
+        $this->audits = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -524,6 +531,36 @@ class Paciente
             // set the owning side to null (unless already changed)
             if ($pacienteInmunizacione->getPaciente() === $this) {
                 $pacienteInmunizacione->setPaciente(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Audit>
+     */
+    public function getAudits(): Collection
+    {
+        return $this->audits;
+    }
+
+    public function addAudit(Audit $audit): static
+    {
+        if (!$this->audits->contains($audit)) {
+            $this->audits->add($audit);
+            $audit->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAudit(Audit $audit): static
+    {
+        if ($this->audits->removeElement($audit)) {
+            // set the owning side to null (unless already changed)
+            if ($audit->getPaciente() === $this) {
+                $audit->setPaciente(null);
             }
         }
 
