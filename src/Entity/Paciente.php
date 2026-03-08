@@ -124,6 +124,12 @@ class Paciente
     #[ORM\OneToMany(targetEntity: Audit::class, mappedBy: 'paciente')]
     private Collection $audits;
 
+    /**
+     * @var Collection<int, Prescripciones>
+     */
+    #[ORM\OneToMany(targetEntity: Prescripciones::class, mappedBy: 'paciente')]
+    private Collection $prescripciones;
+
     public function __construct()
     {
         $this->historiaPacientes = new ArrayCollection();
@@ -135,6 +141,7 @@ class Paciente
         $this->pacienteDiscapacidades = new ArrayCollection();
         $this->pacienteInmunizaciones = new ArrayCollection();
         $this->audits = new ArrayCollection();
+        $this->prescripciones = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -561,6 +568,36 @@ class Paciente
             // set the owning side to null (unless already changed)
             if ($audit->getPaciente() === $this) {
                 $audit->setPaciente(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Prescripciones>
+     */
+    public function getPrescripciones(): Collection
+    {
+        return $this->prescripciones;
+    }
+
+    public function addPrescripcione(Prescripciones $prescripcione): static
+    {
+        if (!$this->prescripciones->contains($prescripcione)) {
+            $this->prescripciones->add($prescripcione);
+            $prescripcione->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removePrescripcione(Prescripciones $prescripcione): static
+    {
+        if ($this->prescripciones->removeElement($prescripcione)) {
+            // set the owning side to null (unless already changed)
+            if ($prescripcione->getPaciente() === $this) {
+                $prescripcione->setPaciente(null);
             }
         }
 

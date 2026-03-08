@@ -3,7 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Medicamentos;
+use App\Enum\MedicamentosDosisTipos;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -16,15 +18,42 @@ class MedicamentosType extends AbstractType
     {
         $builder
             ->add('nombre', TextType::class, [
-                'label' => 'Nombre de Medicamento',
+                'label' => 'Nombre Comercial de Medicamento',
                 'label_attr' => [
                     'class' => 'form-label'
                 ],
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'placeholder' => 'Ej: Nurofen',
                 ],
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar un nombre'),
+                ]
+            ])
+            ->add('nombreGenerico', TextType::class, [
+                'label' => 'Nombre Generico de Medicamento',
+                'label_attr' => [
+                    'class' => 'form-label'
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Ej: Ibuprofeno'
+                ],
+                'constraints' => [
+                    new NotBlank(message: 'Debe ingresar un nombre'),
+                ]
+            ])
+            ->add('concentracion', TextType::class, [
+                'label' => 'dosis',
+                'label_attr' => [
+                    'class' => 'form-label'
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Ej: 200mg',
+                ],
+                'constraints' => [
+                    new NotBlank(message: 'Debe ingresar una cantidad'),
                 ]
             ])
             ->add('descripcion', TextareaType::class, [
@@ -35,19 +64,7 @@ class MedicamentosType extends AbstractType
                 'attr' => [
                     'class' => 'form-control'
                 ],
-                'required' => true,
-            ])
-            ->add('miligramos', TextType::class, [
-                'label' => 'Miligramos de medicamento',
-                'label_attr' => [
-                    'class' => 'form-label'
-                ],
-                'attr' => [
-                    'class' => 'form-control number-only'
-                ],
-                'constraints' => [
-                    new NotBlank(message: 'Debe ingresar una cantidad'),
-                ]
+                'required' => false,
             ])
         ;
     }

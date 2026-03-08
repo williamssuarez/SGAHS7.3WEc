@@ -29,9 +29,10 @@
             <table class="table table-striped dtHere">
                 <thead>
                 <tr>
-                    <th>Nombre</th>
+                    <th>Nombre Comercial</th>
+                    <th>Nombre Generico</th>
+                    <th>Concentracion</th>
                     <th>Descripcion</th>
-                    <th>Miligramos</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -39,8 +40,9 @@
                 {% for entity in entities %}
                     <tr class="align-middle">
                         <td>{{ entity.nombre }}</td>
+                        <td>{{ entity.nombreGenerico }}</td>
+                        <td>{{ entity.concentracion }}</td>
                         <td>{{ entity.descripcion }}</td>
-                        <td>{{ entity.miligramos }}</td>
                         <td>
                             <a class="btn btn-secondary" href="{{ path('app_medicamentos_show', {'id': entity.id}) }}">
                                 <i class="bi bi-search"></i> Detalles

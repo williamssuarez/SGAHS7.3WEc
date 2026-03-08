@@ -1,16 +1,21 @@
 {{ form_start(form) }}
+{{ include('base/_form_error_messages.html.twig') }}
 <div class="card-body">
     <div class="mb-3">
         {{form_label( form.nombre ) }}
         {{form_widget( form.nombre ) }}
     </div>
     <div class="mb-3">
-        {{form_label( form.descripcion ) }}
-        {{form_widget( form.descripcion ) }}
+        {{form_label( form.nombreGenerico ) }}
+        {{form_widget( form.nombreGenerico ) }}
     </div>
     <div class="mb-3">
-        {{form_label( form.miligramos ) }}
-        {{form_widget( form.miligramos ) }}
+        {{form_label( form.concentracion ) }}
+        {{form_widget( form.concentracion ) }}
+    </div>
+    <div class="mb-3">
+        {{form_label( form.descripcion ) }}
+        {{form_widget( form.descripcion ) }}
     </div>
 </div>
 
