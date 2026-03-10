@@ -1,0 +1,111 @@
+{{ form_start(form) }}
+{{ include('base/_form_error_messages.html.twig') }}
+<div class="card-body">
+    <h5>Informacion de Prescripcion:</h5>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{form_label( form.medicamento ) }}
+                {{form_widget( form.medicamento ) }}
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.dosis ) }}
+                {{form_widget( form.dosis ) }}
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.frecuencia ) }}
+                {{form_widget( form.frecuencia ) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mb-3">
+                {{form_label( form.detallesFrecuencia ) }}
+                {{form_widget( form.detallesFrecuencia ) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mb-3">
+                {{form_label( form.fechaInicio ) }}
+                {{form_widget( form.fechaInicio ) }}
+            </div>
+            {# Wrap the entire section in the controller #}
+            <div data-controller="toggle-date" data-toggle-date-hidden-value-value="active">
+                <div class="mb-3">
+                    {{ form_label(form.estado) }}
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="d-flex flex-wrap">
+                                {% for child in form.estado %}
+                                    <div class="form-check form-check-inline me-3">
+                                        {{ form_widget(child) }}
+                                        {{ form_label(child) }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3" data-toggle-date-target="endDateContainer" class="d-none">
+                    {{ form_label(form.fechaFin) }}
+                    {{ form_widget(form.fechaFin) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h5>Informacion de Dispensacion:</h5>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{form_label( form.cantidadDispensar ) }}
+                {{form_widget( form.cantidadDispensar ) }}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{form_label( form.tipoDispensa ) }}
+                {{form_widget( form.tipoDispensa ) }}
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{form_label( form.recarga ) }}
+                {{form_widget( form.recarga ) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-footer">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between">
+                {#<a class="btn btn-primary" href="{{ path('app_paciente_show', {'id': paciente.id}) }}">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>#}
+
+                <div class="d-flex">
+                    <button class="btn btn-success">
+                        {{ button_label|default('Guardar') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}

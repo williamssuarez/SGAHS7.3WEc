@@ -8,6 +8,7 @@ use App\Repository\PrescripcionesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\LogEntry;
 
 #[ORM\Entity(repositoryClass: PrescripcionesRepository::class)]
@@ -56,6 +57,17 @@ class Prescripciones
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Gedmo\Versioned]
     private ?string $observaciones = null;
+
+    #[ORM\Column]
+    #[Assert\Range(notInRangeMessage: "Cantidad a dispensar fuera de rango (A partir de 1)", min: 1)]
+    private ?int $cantidadDispensar = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $tipoDispensa = null;
+
+    #[ORM\Column]
+    #[Assert\Range(notInRangeMessage: "Cantidad de recargas fuera de rango (A partir de 0)", min: 0)]
+    private ?int $recarga = null;
 
     public function getId(): ?int
     {
@@ -168,5 +180,67 @@ class Prescripciones
         $this->observaciones = $observaciones;
 
         return $this;
+    }
+
+    public function getCantidadDispensar(): ?int
+    {
+        return $this->cantidadDispensar;
+    }
+
+    public function setCantidadDispensar(int $cantidadDispensar): static
+    {
+        $this->cantidadDispensar = $cantidadDispensar;
+
+        return $this;
+    }
+
+    public function getTipoDispensa(): ?string
+    {
+        return $this->tipoDispensa;
+    }
+
+    public function setTipoDispensa(string $tipoDispensa): static
+    {
+        $this->tipoDispensa = $tipoDispensa;
+
+        return $this;
+    }
+
+    public function getRecarga(): ?int
+    {
+        return $this->recarga;
+    }
+
+    public function setRecarga(int $recarga): static
+    {
+        $this->recarga = $recarga;
+
+        return $this;
+    }
+
+    public function getPrescripcionesEstadosBadgeConfig(): array
+    {
+        switch ($this->getEstado()){
+            case PrescripcionesEstados::ACTIVE:
+                return [
+                    'class' => 'text-bg-primary',
+                    'label' => PrescripcionesEstados::ACTIVE->getReadableText()
+                ];
+            case PrescripcionesEstados::SUSPENDED:
+                return [
+                    'class' => 'text-bg-secondary',
+                    'label' => PrescripcionesEstados::SUSPENDED->getReadableText()
+                ];
+            case PrescripcionesEstados::FINISHED:
+                return [
+                    'class' => 'text-bg-success',
+                    'label' => PrescripcionesEstados::FINISHED->getReadableText()
+                ];
+        }
+
+        return [
+            'class' => 'text-bg-danger',
+            'label' => 'Error'
+        ];
     }
 }

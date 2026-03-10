@@ -1,16 +1,20 @@
+// assets/controllers/toggle_date_controller.js
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
     static targets = ["state", "endDateContainer"]
+    static values = {
+        hiddenValue: { type: String, default: "active" }
+    }
 
     connect() {
-        console.log("Targets found:", this.stateTargets.length); // Should be 3 (active, resolved, chronic)
         this.toggle();
     }
 
     toggle() {
         let currentValue = "";
 
+        // Support for both Select and Radio inputs
         if (this.stateTarget.tagName === 'SELECT') {
             currentValue = this.stateTarget.value;
         } else {
@@ -18,7 +22,9 @@ export default class extends Controller {
             currentValue = checkedRadio ? checkedRadio.value : "";
         }
 
-        if (currentValue === 'resolved') {
+        // LOGIC: If the value is NOT the 'hiddenValue', show the container
+        // Also ensure we don't show it if nothing is selected (currentValue === "")
+        if (currentValue !== this.hiddenValueValue && currentValue !== "") {
             this.endDateContainerTarget.classList.remove('d-none');
         } else {
             this.endDateContainerTarget.classList.add('d-none');

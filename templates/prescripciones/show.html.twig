@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prescripciones{% endblock %}
+
+{% block body %}
+    <h1>Prescripciones</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ prescripcione.id }}</td>
+            </tr>
+            <tr>
+                <th>Dosis</th>
+                <td>{{ prescripcione.dosis }}</td>
+            </tr>
+            <tr>
+                <th>Frecuencia</th>
+                <td>{{ prescripcione.frecuencia }}</td>
+            </tr>
+            <tr>
+                <th>DetallesFrecuencia</th>
+                <td>{{ prescripcione.detallesFrecuencia }}</td>
+            </tr>
+            <tr>
+                <th>FechaInicio</th>
+                <td>{{ prescripcione.fechaInicio ? prescripcione.fechaInicio|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>FechaFin</th>
+                <td>{{ prescripcione.fechaFin ? prescripcione.fechaFin|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Estado</th>
+                <td>{{ prescripcione.estado }}</td>
+            </tr>
+            <tr>
+                <th>Observaciones</th>
+                <td>{{ prescripcione.observaciones }}</td>
+            </tr>
+            <tr>
+                <th>CantidadDispensar</th>
+                <td>{{ prescripcione.cantidadDispensar }}</td>
+            </tr>
+            <tr>
+                <th>TipoDispensa</th>
+                <td>{{ prescripcione.tipoDispensa }}</td>
+            </tr>
+            <tr>
+                <th>Recarga</th>
+                <td>{{ prescripcione.recarga }}</td>
+            </tr>
+            <tr>
+                <th>UidCreate</th>
+                <td>{{ prescripcione.uidCreate }}</td>
+            </tr>
+            <tr>
+                <th>UidUpdate</th>
+                <td>{{ prescripcione.uidUpdate }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ prescripcione.created ? prescripcione.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Updated</th>
+                <td>{{ prescripcione.updated ? prescripcione.updated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_prescripciones_index') }}">back to list</a>
+
+    <a href="{{ path('app_prescripciones_edit', {'id': prescripcione.id}) }}">edit</a>
+
+    {{ include('prescripciones/_delete_form.html.twig') }}
+{% endblock %}
