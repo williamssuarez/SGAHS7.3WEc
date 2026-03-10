@@ -90,8 +90,8 @@ class PrescripcionesType extends AbstractType
                 'choice_attr' => function(PrescripcionesEstados $choice) {
                     return [
                         'class' => 'form-check-input',
-                        'data-toggle-date-target' => 'state',
-                        'data-action' => 'change->toggle-date#toggle'
+                        'data-medication-status-target' => 'state', // Correct controller name
+                        'data-action' => 'change->medication-status#toggle'
                     ];
                 },
             ])
@@ -168,6 +168,21 @@ class PrescripcionesType extends AbstractType
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar la cantidad de recargas permitidas.'),
                 ]
+            ])
+            ->add('observaciones', TextareaType::class, [
+                'label' => 'Razon de la suspension',
+                'label_attr' => [
+                    'class' => 'form-label'
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Ej: Suspendido por reaccion alergica...',
+                ],
+                'required' => false,
+                /*'row_attr' => [
+                    'data-medication-status-target' => 'reasonContainer',
+                    'class' => 'd-none mb-3' // Hidden by default
+                ],*/
             ])
         ;
     }

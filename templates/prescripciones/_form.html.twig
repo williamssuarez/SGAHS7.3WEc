@@ -34,14 +34,10 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="mb-3">
-                {{form_label( form.fechaInicio ) }}
-                {{form_widget( form.fechaInicio ) }}
-            </div>
-            {# Wrap the entire section in the controller #}
-            <div data-controller="toggle-date" data-toggle-date-hidden-value-value="active">
+    {# The data-controller starts here #}
+    <div data-controller="medication-status">
+        <div class="row">
+            <div class="col-md-4">
                 <div class="mb-3">
                     {{ form_label(form.estado) }}
                     <div class="row">
@@ -57,10 +53,25 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="mb-3" data-toggle-date-target="endDateContainer" class="d-none">
-                    {{ form_label(form.fechaFin) }}
-                    {{ form_widget(form.fechaFin) }}
+            </div>
+            <div class="col-md-4">
+                <div class="mb-3">
+                    {{form_label( form.fechaInicio ) }}
+                    {{form_widget( form.fechaInicio ) }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-3">
+                    {{form_label( form.fechaFin ) }}
+                    {{form_widget( form.fechaFin ) }}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div data-medication-status-target="reasonContainer" class="d-none mb-3">
+                    {{form_label( form.observaciones ) }}
+                    {{form_widget( form.observaciones ) }}
                 </div>
             </div>
         </div>
