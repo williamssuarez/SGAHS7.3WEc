@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nueva Solicitud de Cita{% endblock %}
+
+{% block titlewrap %}
+    Nueva Solicitud de Cita
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_citas_solicitudes_index') }}">Solicitudes de Cita</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nueva Solicitud de Cita</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('citas_solicitudes/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

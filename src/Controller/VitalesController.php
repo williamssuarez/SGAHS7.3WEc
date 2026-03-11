@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Consulta;
 use App\Entity\Vitales;
+use App\Enum\AuditTipos;
 use App\Form\VitalesType;
 use App\Repository\StatusRecordRepository;
 use App\Repository\VitalesRepository;
+use App\Service\AuditService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +27,7 @@ final class VitalesController extends AbstractController
     }
 
     #[Route('/{id}/new-consulta', name: 'app_vitales_new_consulta', methods: ['GET', 'POST'])]
-    public function newConsulta(Request $request, EntityManagerInterface $entityManager, Consulta $consulta, StatusRecordRepository $statusRecordRepository): Response
+    public function newConsulta(Request $request, EntityManagerInterface $entityManager, Consulta $consulta, AuditService $auditService): Response
     {
         $vitale = new Vitales();
         $form = $this->createForm(VitalesType::class, $vitale);
@@ -34,6 +36,15 @@ final class VitalesController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $vitale->setConsulta($consulta);
             $entityManager->persist($vitale);
+
+            $name = $consulta->getPaciente()->getNombre();
+            $auditService->persistAudit(
+                AuditTipos::CONSULT_VITALS,
+                "Nuevos vitales de $name con estado",
+                $consulta->getPaciente(),
+                $consulta,
+            );
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_consulta_show', ['id' => $consulta->getId()], Response::HTTP_SEE_OTHER);

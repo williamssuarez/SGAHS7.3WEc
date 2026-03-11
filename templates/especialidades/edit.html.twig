@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Especialidad{% endblock %}
+
+{% block titlewrap %}
+    Editar Especialidad
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_especialidades_index') }}">Especialidades</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Especialidad</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('especialidades/_form.html.twig', {'button_label': 'Actualizar'}) }}
+        </div>
+    </div>
+{% endblock %}

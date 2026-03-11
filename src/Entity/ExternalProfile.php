@@ -35,6 +35,9 @@ class ExternalProfile
     #[ORM\OneToOne(mappedBy: 'externalProfile', cascade: ['persist', 'remove'])]
     private ?User $webUser = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Paciente $paciente = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -130,6 +133,18 @@ class ExternalProfile
         }
 
         $this->webUser = $webUser;
+
+        return $this;
+    }
+
+    public function getPaciente(): ?Paciente
+    {
+        return $this->paciente;
+    }
+
+    public function setPaciente(?Paciente $paciente): static
+    {
+        $this->paciente = $paciente;
 
         return $this;
     }

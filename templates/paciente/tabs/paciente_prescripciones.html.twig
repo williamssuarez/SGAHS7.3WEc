@@ -1,0 +1,95 @@
+<h4>
+    Prescripciones Registradas
+</h4>
+
+<div class="card card-primary card-outline">
+    <div class="card-header">
+        <div class="card-title">Prescripciones Activas</div>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-striped dtHere">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Medicicamento</th>
+                <th>Dosis</th>
+                <th>Frecuencia</th>
+                <th>Estado</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Observaciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entity in prescripcionesActivas %}
+                <tr class="align-middle">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ entity.medicamento }}</td>
+                    <td>{{ entity.dosis }}</td>
+                    <td>{{ entity.frecuencia }}</td>
+                    <td>
+                        {% set badge = entity.prescripcionesEstadosBadgeConfig %}
+                            <span class="badge rounded-pill {{ badge.class }}">
+                                {{ badge.label }}
+                            </span>
+                    </td>
+                    {#no dejar que twig traduzca del utc#}
+                    <td>{{ entity.fechaInicio|date('d/m/Y', false) }}</td>
+                    <td>{{ entity.fechaFin ? entity.fechaFin|date('d/m/Y', false) : ' ' }}</td>
+                    <td>
+                        {{ entity.observaciones ? entity.observaciones : '--' }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<br>
+
+<div class="card card-success card-outline">
+    <div class="card-header">
+        <div class="card-title">Prescripciones Inactivas</div>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-striped dtHere">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Medicicamento</th>
+                <th>Dosis</th>
+                <th>Frecuencia</th>
+                <th>Estado</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Observaciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entity in prescripcionesInactivas %}
+                <tr class="align-middle">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ entity.medicamento }}</td>
+                    <td>{{ entity.dosis }}</td>
+                    <td>{{ entity.frecuencia }}</td>
+                    <td>
+                        {% set badge = entity.prescripcionesEstadosBadgeConfig %}
+                        <span class="badge rounded-pill {{ badge.class }}">
+                            {{ badge.label }}
+                        </span>
+                    </td>
+                    {#no dejar que twig traduzca del utc#}
+                    <td>{{ entity.fechaInicio|date('d/m/Y', false) }}</td>
+                    <td>{{ entity.fechaFin ? entity.fechaFin|date('d/m/Y', false) : ' ' }}</td>
+                    <td>
+                        {{ entity.observaciones ? entity.observaciones : '--' }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

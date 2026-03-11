@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Configuraciones de Citas{% endblock %}
+
+{% block titlewrap %}
+    Configuraciones de Citas
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active" aria-current="page">Configuraciones de Citas</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="card card-primary card-outline mb-4">
+        <div class="card-header">
+            <h3 class="card-title">Configuraciones de Citas Registradas</h3>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-striped dtHere">
+                <thead>
+                <tr>
+                    <th>Especialidad</th>
+                    <th>Consultorios</th>
+                    <th>Inicio-Fin</th>
+                    <th>Pacientes Maximos</th>
+                    <th>Prioridad de Edad</th>
+                    <th>Duracion Cita</th>
+                    <th>Receso</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entity in entities %}
+                    <tr class="align-middle">
+                        <td>{{ entity.especialidad.nombre }}</td>
+                        <td>
+                            <ul>
+                                {% for consultorios in entity.consultorio %}
+                                    <li>{{ consultorios.nombre }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>{{ entity.horaInicio|date('H:i', false) }} - {{ entity.horaFin|date('H:i', false) }}</td>
+                        <td>{{ entity.maxPacientesDia }}</td>
+                        <td>{{ entity.edadPrioridad ? entity.edadPrioridad ~ ' años': '--' }}</td>
+                        <td>{{ entity.duracionCita }} minutos</td>
+                        <td>{{ entity.tiempoReceso ? entity.tiempoReceso ~ ' minutos': '--' }}</td>
+                        <td>
+                            <a class="btn btn-secondary" href="{{ path('app_citas_configuraciones_show', {'id': entity.id}) }}">Detalles</a>
+                            <a class="btn btn-success" href="{{ path('app_citas_configuraciones_edit', {'id': entity.id}) }}">Editar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer clearfix">
+            <a href="{{ path('app_citas_configuraciones_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+        </div>
+    </div>
+{% endblock %}

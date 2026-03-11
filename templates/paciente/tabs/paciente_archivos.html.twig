@@ -4,6 +4,7 @@
 <table class="table table-striped dtHere">
     <thead>
     <tr>
+        <th>#</th>
         <th>Nombre</th>
         <th>Tipo de Archivo</th>
         <th>Subido</th>
@@ -13,6 +14,7 @@
     <tbody>
     {% for entity in paciente.attachments %}
         <tr class="align-middle">
+            <td>{{ loop.index }}</td>
             <td>{{ entity.fileName }}</td>
             <td>
                 {% if entity.fileType == 'image/jpeg' or entity.fileType == 'image/png' %}

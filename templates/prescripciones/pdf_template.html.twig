@@ -1,0 +1,87 @@
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; font-size: 12px; }
+        .header { text-align: center; border-bottom: 2px solid #333; margin-bottom: 20px; }
+        .patient-info { margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border-bottom: 1px solid #ddd; padding: 10px; text-align: left; }
+        .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 10px; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>SGAHS - Orden Médica</h1>
+    <p>Fecha: {{ "now"|date("d/m/Y") }}</p>
+</div>
+
+<div class="patient-info">
+    <strong>Paciente:</strong> {{ consulta.paciente.nombre }} {{ consulta.paciente.apellido }}<br>
+    <strong>Cédula:</strong> {{ consulta.paciente.cedula }} <br>
+    <strong>Telefono:</strong> {{ consulta.paciente.telefono }}
+</div>
+
+<div class="header">
+    <h3>Detalles de Prescripcion</h3>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Medicamento</th>
+            <th>Dosis / Frecuencia</th>
+            <th>Instrucciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ prescripcion.medicamento }}</td>
+            <td>{{ prescripcion.dosis }} - {{ prescripcion.frecuencia }}</td>
+            <td>{{ prescripcion.detallesFrecuencia ?: 'Sin observaciones adicionales' }}</td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<br>
+<table>
+    <thead>
+        <tr class="align-content-center">
+            <th>Desde</th>
+            <th>Hasta</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="align-content-center">
+            <td>{{ prescripcion.fechaInicio|date('d/m/Y', false) }}</td>
+            <td>{{ prescripcion.fechaFin ? prescripcion.fechaFin|date('d/m/Y', false) : 'Indefinido' }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<br>
+<br>
+<div class="header">
+    <h3>Instrucciones de Dispensacion</h3>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th>Tipo de Dispensa</th>
+        <th>Cantidad a Dispensar</th>
+        <th>Recargas</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>{{ prescripcion.tipoDispensa }}</td>
+        <td>{{ prescripcion.cantidadDispensar }}</td>
+        <td>{{ prescripcion.recarga }}</td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="footer">
+    Documento generado digitalmente por SGAHS.
+</div>
+</body>
+</html>

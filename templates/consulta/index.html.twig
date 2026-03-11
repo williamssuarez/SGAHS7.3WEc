@@ -59,9 +59,11 @@
                             <a class="btn btn-secondary" href="{{ path('app_consulta_show', {'id': entity.id}) }}">
                                 <i class="bi bi-search"></i> Detalles
                             </a>
-                            <a class="btn btn-danger" href="{{ path('app_consulta_cancel', {'id': entity.id}) }}">
-                                <i class="fa-regular fa-circle-xmark"></i> Cancelar
-                            </a>
+                            {% if entity.estadoConsulta.value == 'pending' %}
+                                <a class="btn btn-danger" href="{{ path('app_consulta_cancel', {'id': entity.id}) }}">
+                                    <i class="fa-regular fa-circle-xmark"></i> Cancelar
+                                </a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

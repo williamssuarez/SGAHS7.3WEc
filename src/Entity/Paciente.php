@@ -130,6 +130,18 @@ class Paciente
     #[ORM\OneToMany(targetEntity: Prescripciones::class, mappedBy: 'paciente')]
     private Collection $prescripciones;
 
+    /**
+     * @var Collection<int, CitasSolicitudes>
+     */
+    #[ORM\OneToMany(targetEntity: CitasSolicitudes::class, mappedBy: 'paciente')]
+    private Collection $citasSolicitudes;
+
+    /**
+     * @var Collection<int, Citas>
+     */
+    #[ORM\OneToMany(targetEntity: Citas::class, mappedBy: 'paciente')]
+    private Collection $citas;
+
     public function __construct()
     {
         $this->historiaPacientes = new ArrayCollection();
@@ -142,6 +154,8 @@ class Paciente
         $this->pacienteInmunizaciones = new ArrayCollection();
         $this->audits = new ArrayCollection();
         $this->prescripciones = new ArrayCollection();
+        $this->citasSolicitudes = new ArrayCollection();
+        $this->citas = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -598,6 +612,66 @@ class Paciente
             // set the owning side to null (unless already changed)
             if ($prescripcione->getPaciente() === $this) {
                 $prescripcione->setPaciente(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CitasSolicitudes>
+     */
+    public function getCitasSolicitudes(): Collection
+    {
+        return $this->citasSolicitudes;
+    }
+
+    public function addCitasSolicitude(CitasSolicitudes $citasSolicitude): static
+    {
+        if (!$this->citasSolicitudes->contains($citasSolicitude)) {
+            $this->citasSolicitudes->add($citasSolicitude);
+            $citasSolicitude->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCitasSolicitude(CitasSolicitudes $citasSolicitude): static
+    {
+        if ($this->citasSolicitudes->removeElement($citasSolicitude)) {
+            // set the owning side to null (unless already changed)
+            if ($citasSolicitude->getPaciente() === $this) {
+                $citasSolicitude->setPaciente(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Citas>
+     */
+    public function getCitas(): Collection
+    {
+        return $this->citas;
+    }
+
+    public function addCita(Citas $cita): static
+    {
+        if (!$this->citas->contains($cita)) {
+            $this->citas->add($cita);
+            $cita->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCita(Citas $cita): static
+    {
+        if ($this->citas->removeElement($cita)) {
+            // set the owning side to null (unless already changed)
+            if ($cita->getPaciente() === $this) {
+                $cita->setPaciente(null);
             }
         }
 

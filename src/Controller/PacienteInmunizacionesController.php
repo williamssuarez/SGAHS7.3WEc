@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Consulta;
 use App\Entity\PacienteInmunizaciones;
+use App\Enum\AuditTipos;
 use App\Form\PacienteInmunizacionesType;
 use App\Repository\PacienteInmunizacionesRepository;
+use App\Service\AuditService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +26,7 @@ final class PacienteInmunizacionesController extends AbstractController
     }
 
     #[Route('/{id}/new-consulta', name: 'app_paciente_inmunizaciones_new_consulta', methods: ['GET', 'POST'])]
-    public function newConsulta(Request $request, EntityManagerInterface $entityManager, Consulta $consulta): Response
+    public function newConsulta(Request $request, EntityManagerInterface $entityManager, Consulta $consulta, AuditService $auditService): Response
     {
         $pacienteInmunizacione = new PacienteInmunizaciones();
         $form = $this->createForm(PacienteInmunizacionesType::class, $pacienteInmunizacione);
@@ -33,6 +35,18 @@ final class PacienteInmunizacionesController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $pacienteInmunizacione->setPaciente($consulta->getPaciente());
             $entityManager->persist($pacienteInmunizacione);
+
+            $name = $consulta->getPaciente()->getNombre();
+            $immunizationName = $pacienteInmunizacione->getInmunizacion()->fullName();
+            $dosis = $pacienteInmunizacione->getDosis()->getReadableText();
+
+            $auditService->persistAudit(
+                AuditTipos::CONSULT_IMMUNIZATION_NEW,
+                "Nueva Inmunizacion: $immunizationName ($dosis) para $name",
+                $consulta->getPaciente(),
+                $consulta
+            );
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Inmunizacion Agregada');
@@ -54,13 +68,20 @@ final class PacienteInmunizacionesController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_paciente_inmunizaciones_edit_consulta', methods: ['GET', 'POST'])]
-    public function editConsulta(Request $request, PacienteInmunizaciones $pacienteInmunizacione, EntityManagerInterface $entityManager, Consulta $consulta): Response
+    #[Route('/{id}/edit/{consulta}', name: 'app_paciente_inmunizaciones_edit_consulta', methods: ['GET', 'POST'])]
+    public function editConsulta(Request $request, PacienteInmunizaciones $pacienteInmunizacione, EntityManagerInterface $entityManager, Consulta $consulta, AuditService $auditService): Response
     {
         $form = $this->createForm(PacienteInmunizacionesType::class, $pacienteInmunizacione);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $auditService->persistEditionAudit(
+                $pacienteInmunizacione,
+                AuditTipos::CONSULT_IMMUNIZATION_EDIT,
+                $consulta->getPaciente(),
+                $consulta
+            );
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Inmunizacion Agregada');

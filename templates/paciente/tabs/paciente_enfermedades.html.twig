@@ -1,4 +1,6 @@
-<h4>Enfermedades Registradas</h4>
+<h4>
+    Enfermedades Registradas
+</h4>
 <table class="table table-striped dtHere">
     <thead>
     <tr>
@@ -10,10 +12,10 @@
     </tr>
     </thead>
     <tbody>
-    {% for entity in paciente.pacienteEnfermedades %}
+    {% for entity in enfermedades %}
         <tr class="align-middle">
             <td>{{ entity.enfermedad.nombre }}</td>
-            <td>{{ entity.fechaDiagnostico|date('d/m/Y') }}</td>
+            <td>{{ entity.fechaDiagnostico|date('d/m/Y', false) }}</td>
             <td>
                 {% set badge = entity.pacienteEnfermedadesTiposBadgeConfig %}
                 <span class="badge rounded-pill {{ badge.class }}">

@@ -14,7 +14,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for entity in paciente.alergias %}
+    {% for entity in alergias %}
         <tr class="align-middle">
             <td>{{ loop.index }}</td>
             <td>{{ entity.alergeno.nombre }}</td>
@@ -39,7 +39,7 @@
             </td>
             <td>
                 <a class="btn btn-success" href="{{ path('app_alergias_edit_paciente', {'id': entity.id}) }}">
-                    <i class="bi bi-pencil-square"></i> Editar
+                    <i class="bi bi-pencil-square"></i>
                 </a>
             </td>
         </tr>

@@ -1,0 +1,40 @@
+<h4>
+    Inmunizaciones Registradas
+</h4>
+<table class="table table-striped dtHere">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Inmunizacion</th>
+        <th>Dosis</th>
+        <th>Sitio</th>
+        <th>Fabricante</th>
+        <th>Reacciones</th>
+        <th>Aplicacion</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for entity in inmunizaciones %}
+        <tr class="align-middle">
+            <td>{{ loop.index }}</td>
+            <td>{{ entity.inmunizacion }}</td>
+            <td>
+                {% set badge = entity.pacienteInmunizacionesDosisBadgeConfig %}
+                <span class="badge rounded-pill {{ badge.class }}">
+                    {{ badge.label }}
+                </span>
+            </td>
+            <td>{{ entity.sitioAplicacion }}</td>
+            <td>{{ entity.fabricante }}</td>
+            <td>
+                <ul>
+                    {% for reaccion in entity.reacciones %}
+                        <li>{{ reaccion.nombre }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+            <td>{{ entity.fechaAplicacion|date('d/m/Y', false) }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

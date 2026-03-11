@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CitasConfiguraciones{% endblock %}
+
+{% block body %}
+    <h1>CitasConfiguraciones</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ citas_configuracione.id }}</td>
+            </tr>
+            <tr>
+                <th>HoraInicio</th>
+                <td>{{ citas_configuracione.horaInicio ? citas_configuracione.horaInicio|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>HoraFin</th>
+                <td>{{ citas_configuracione.horaFin ? citas_configuracione.horaFin|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>MaxPacientesDia</th>
+                <td>{{ citas_configuracione.maxPacientesDia }}</td>
+            </tr>
+            <tr>
+                <th>TieneEdadPrioridad</th>
+                <td>{{ citas_configuracione.tieneEdadPrioridad ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>EdadPrioridad</th>
+                <td>{{ citas_configuracione.edadPrioridad }}</td>
+            </tr>
+            <tr>
+                <th>DuracionCita</th>
+                <td>{{ citas_configuracione.duracionCita }}</td>
+            </tr>
+            <tr>
+                <th>UidCreate</th>
+                <td>{{ citas_configuracione.uidCreate }}</td>
+            </tr>
+            <tr>
+                <th>UidUpdate</th>
+                <td>{{ citas_configuracione.uidUpdate }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ citas_configuracione.created ? citas_configuracione.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Updated</th>
+                <td>{{ citas_configuracione.updated ? citas_configuracione.updated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_citas_configuraciones_index') }}">back to list</a>
+
+    <a href="{{ path('app_citas_configuraciones_edit', {'id': citas_configuracione.id}) }}">edit</a>
+
+    {{ include('citas_configuraciones/_delete_form.html.twig') }}
+{% endblock %}

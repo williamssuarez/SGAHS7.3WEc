@@ -1,4 +1,9 @@
-{{ form_start(form) }}
+{{ form_start(form, {
+    'attr': {
+        'data-controller': 'submit-once toggle-date',
+        'data-action': 'submit->submit-once#disable'
+    }
+}) }}
 {{ include('base/_form_error_messages.html.twig') }}
 <div class="card-body">
     <div class="mb-3">
@@ -10,27 +15,25 @@
         {{form_widget( form.fechaAparicion ) }}
     </div>
     {# Wrap the entire section in the controller #}
-    <div data-controller="toggle-date">
-        <div class="mb-3">
-            {{ form_label(form.estado) }}
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="d-flex flex-wrap">
-                        {% for child in form.estado %}
-                            <div class="form-check form-check-inline me-3">
-                                {{ form_widget(child) }}
-                                {{ form_label(child) }}
-                            </div>
-                        {% endfor %}
-                    </div>
+    <div class="mb-3">
+        {{ form_label(form.estado) }}
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="d-flex flex-wrap">
+                    {% for child in form.estado %}
+                        <div class="form-check form-check-inline me-3">
+                            {{ form_widget(child) }}
+                            {{ form_label(child) }}
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="mb-3" data-toggle-date-target="endDateContainer">
-            {{ form_label(form.fechaFinalizada) }}
-            {{ form_widget(form.fechaFinalizada) }}
-        </div>
+    <div class="mb-3" data-toggle-date-target="endDateContainer">
+        {{ form_label(form.fechaFinalizada) }}
+        {{ form_widget(form.fechaFinalizada) }}
     </div>
     <div class="mb-3">
         {{form_label( form.observaciones ) }}
@@ -47,7 +50,7 @@
                 </a>#}
 
                 <div class="d-flex">
-                    <button class="btn btn-success">
+                    <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
                         {{ button_label|default('Guardar') }}
                     </button>
                 </div>

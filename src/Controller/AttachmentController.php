@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\Attachments;
 use App\Entity\Consulta;
 use App\Entity\Paciente;
+use App\Enum\AuditTipos;
 use App\Exception\BusinessRuleException;
 use App\Form\AttachmentType;
+use App\Service\AuditService;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,7 +24,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AttachmentController extends AbstractController
 {
     #[Route('/pacientes/{id}/upload', name: 'app_attachment_paciente_upload', methods: ['GET', 'POST'])]
-    public function pacienteUpload(Request $request, Paciente $paciente, FileUploader $fileUploader, EntityManagerInterface $entityManager): Response
+    public function pacienteUpload(Request $request, Paciente $paciente, FileUploader $fileUploader, EntityManagerInterface $entityManager, AuditService $auditService): Response
     {
         $attachment = new Attachments();
         $form = $this->createForm(AttachmentType::class);
@@ -53,6 +55,18 @@ final class AttachmentController extends AbstractController
                 $attachment->setFilehash($fileHash);
 
                 $entityManager->persist($attachment);
+
+                $name = $paciente->getNombre();
+                $attName = $attachment->getFilename();
+                $fileType = $attachment->getFiletype();
+
+                $auditService->persistAudit(
+                    AuditTipos::PATIENT_FILE_NEW,
+                    "Nuevo archivo $attName para $name de tipo: $fileType",
+                    $paciente,
+                    null
+                );
+
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Archivo Subido.');
@@ -71,7 +85,7 @@ final class AttachmentController extends AbstractController
     }
 
     #[Route('/consulta/{id}/upload', name: 'app_attachment_consulta_upload', methods: ['GET', 'POST'])]
-    public function consultaUpload(Request $request, Consulta $consulta, FileUploader $fileUploader, EntityManagerInterface $entityManager): Response
+    public function consultaUpload(Request $request, Consulta $consulta, FileUploader $fileUploader, EntityManagerInterface $entityManager, AuditService $auditService): Response
     {
         $attachment = new Attachments();
         $form = $this->createForm(AttachmentType::class);
@@ -102,6 +116,18 @@ final class AttachmentController extends AbstractController
                 $attachment->setFilehash($fileHash);
 
                 $entityManager->persist($attachment);
+
+                $name = $consulta->getPaciente()->getNombre();
+                $attName = $attachment->getFilename();
+                $fileType = $attachment->getFiletype();
+
+                $auditService->persistAudit(
+                    AuditTipos::CONSULT_FILE_NEW,
+                    "Nuevo archivo $attName para $name de tipo: $fileType",
+                    $consulta->getPaciente(),
+                    $consulta
+                );
+
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Archivo Subido.');
@@ -120,11 +146,21 @@ final class AttachmentController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_attachment_delete', methods: ['POST'])]
-    public function delete(Request $request, Attachments $attachments, EntityManagerInterface $entityManager, FileUploader $fileUploader): Response
+    public function delete(Request $request, Attachments $attachments, EntityManagerInterface $entityManager, FileUploader $fileUploader, AuditService $auditService): Response
     {
         $submittedToken = $request->request->get('_token');
 
         if ($this->isCsrfTokenValid('delete' . $attachments->getId(), $submittedToken)) {
+            $name = $attachments->getPaciente()->getNombre();
+            $attName = $attachments->getFilename();
+            $fileType = $attachments->getFiletype();
+
+            $auditService->persistAudit(
+                AuditTipos::PATIENT_FILE_DELETE,
+                "Eliminacion de archivo $attName para $name de tipo: $fileType",
+                $attachments->getPaciente(),
+                null
+            );
             $fileUploader->delete($attachments->getFilehash());
             $entityManager->remove($attachments);
             $entityManager->flush();

@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Enum;
+
+/**
+ * Enum que representa los estados de las solicitudes de citas.
+ */
+enum CitasEstados: string
+{
+    case EXPECTED = 'expected';
+    case CHECKED_IN = 'checked_in';
+    case COMPLETED = 'completed';
+    case CANCELLED = 'cancelled';
+
+    /**
+     * Retorna un texto amigable para el usuario final.
+     */
+    public function getReadableText(): string
+    {
+        return match($this) {
+            self::EXPECTED => 'Esperado',
+            self::CHECKED_IN => 'Atendido',
+            self::COMPLETED => 'Completado',
+            self::CANCELLED => 'Cancelado',
+        };
+    }
+
+    /**
+     * Retorna todos los posibles valores como array.
+     */
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
+}

@@ -40,6 +40,11 @@
                 <i class="bi bi-folder-fill"></i> Archivos
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabHistorial" data-bs-toggle="tab" data-bs-target="#tabHistorial-pane" type="button" role="tab" aria-controls="tabHistorial-pane" aria-selected="false">
+                <i class="bi bi-clock-history"></i> Historial
+            </button>
+        </li>
     </ul>
     <div class="tab-content" id="formTabContent">
         <div class="tab-pane fade show active" id="tabVitales-pane" role="tabpanel" aria-labelledby="tabVitales" tabindex="0">
@@ -65,6 +70,9 @@
         </div>
         <div class="tab-pane fade" id="tabArchivos-pane" role="tabpanel" aria-labelledby="tabArchivos" tabindex="0">
             {{ include('consulta/tabs/paciente_archivos.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabHistorial-pane" role="tabpanel" aria-labelledby="tabHistorial" tabindex="0">
+            {{ include('consulta/tabs/paciente_historial.html.twig') }}
         </div>
     </div>
 </div>

@@ -1,5 +1,8 @@
 <h4>
-    Alergias Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_alergias_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+    Alergias Registradas
+    {% if consultum.estadoConsulta.value == 'active' %}
+        <a class="btn btn-primary btn-sm" href="{{ path('app_alergias_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+    {% endif %}
 </h4>
 <table class="table table-striped dtHere">
     <thead>
@@ -10,11 +13,13 @@
         <th>Reacciones</th>
         <th>Observaciones</th>
         <th>Fecha</th>
-        <th>Acciones</th>
+        {% if consultum.estadoConsulta.value == 'active' %}
+            <th>Acciones</th>
+        {% endif %}
     </tr>
     </thead>
     <tbody>
-    {% for entity in paciente.alergias %}
+    {% for entity in alergias %}
         <tr class="align-middle">
             <td>{{ loop.index }}</td>
             <td>{{ entity.alergeno.nombre }}</td>
@@ -37,11 +42,13 @@
             <td>
                 {{ entity.created|date('d/m/Y H:i') }} <i>{{ entity.created|time_ago }}</i>
             </td>
-            <td>
-                <a class="btn btn-success" href="{{ path('app_alergias_edit_consulta', {'id': entity.id}) }}">
-                    <i class="bi bi-pencil-square"></i>
-                </a>
-            </td>
+            {% if consultum.estadoConsulta.value == 'active' %}
+                <td>
+                    <a class="btn btn-success" href="{{ path('app_alergias_edit_consulta', {'id': entity.id, 'consulta': consultum.id}) }}">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </td>
+            {% endif %}
         </tr>
     {% endfor %}
     </tbody>

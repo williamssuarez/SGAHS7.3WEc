@@ -1,4 +1,3 @@
-// assets/controllers/medication_status_controller.js
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
@@ -15,8 +14,8 @@ export default class extends Controller {
         const checkedRadio = this.stateTargets.find(radio => radio.checked);
         currentValue = checkedRadio ? checkedRadio.value : "";
 
-        // Show only if 'suspendida'
-        if (currentValue === 'suspendida') {
+        // Show only if 'suspended'
+        if (currentValue === 'suspended') {
             this.reasonContainerTarget.classList.remove('d-none');
         } else {
             this.reasonContainerTarget.classList.add('d-none');

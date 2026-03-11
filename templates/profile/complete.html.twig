@@ -1,7 +1,12 @@
 {% extends 'completeBase.html.twig' %}
 
 {% block body %}
-    {{ form_start(form) }}
+    {{ form_start(form, {
+        'attr': {
+            'data-controller': 'submit-once medication-status',
+            'data-action': 'submit->submit-once#disable'
+        }
+    }) }}
     {{ include('base/_form_error_messages.html.twig') }}
 
 
@@ -96,7 +101,7 @@
             </div>
         </div>#}
         <div class="col-md-12">
-            <button type="submit" class="btn btn-success btn-lg form-control">
+            <button type="submit" class="btn btn-success btn-lg form-control" data-submit-once-target="submitButton">
                 <i class="bi bi-check2-circle"></i> Finalizar Registro
             </button>
         </div>

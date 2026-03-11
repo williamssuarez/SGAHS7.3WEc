@@ -1,5 +1,8 @@
 <h4>
-    Condiciones Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_paciente_condiciones_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+    Condiciones Registradas
+    {% if consultum.estadoConsulta.value == 'active' %}
+        <a class="btn btn-primary btn-sm" href="{{ path('app_paciente_condiciones_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+    {% endif %}
 </h4>
 <table class="table table-striped dtHere">
     <thead>
@@ -10,16 +13,18 @@
         <th>Fecha Finalizada</th>
         <th>Estado</th>
         <th>Observaciones</th>
-        <th>Acciones</th>
+        {% if consultum.estadoConsulta.value == 'active' %}
+            <th>Acciones</th>
+        {% endif %}
     </tr>
     </thead>
     <tbody>
-    {% for entity in paciente.pacienteCondiciones %}
+    {% for entity in condiciones %}
         <tr class="align-middle">
             <td>{{ loop.index }}</td>
             <td>{{ entity.condicion.nombre }}</td>
-            <td>{{ entity.fechaAparicion|date('d/m/Y') }}</td>
-            <td>{{ entity.fechaFinalizada ? entity.fechaFinalizada|date('d/m/Y') : ' ' }}</td>
+            <td>{{ entity.fechaAparicion|date('d/m/Y', false) }}</td>
+            <td>{{ entity.fechaFinalizada ? entity.fechaFinalizada|date('d/m/Y', false) : ' ' }}</td>
             <td>
                 {% set badge = entity.pacienteCondicionesEstadosBadgeConfig %}
                 <span class="badge rounded-pill {{ badge.class }}">
@@ -29,11 +34,13 @@
             <td>
                 {{ entity.observaciones ? entity.observaciones : '--' }}
             </td>
-            <td>
-                <a class="btn btn-success" href="{{ path('app_paciente_condiciones_edit_consulta', {'id': entity.id}) }}">
-                    <i class="bi bi-pencil-square"></i>
-                </a>
-            </td>
+            {% if consultum.estadoConsulta.value == 'active' %}
+                <td>
+                    <a class="btn btn-success" href="{{ path('app_paciente_condiciones_edit_consulta', {'id': entity.id, 'consulta': consultum.id}) }}">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </td>
+            {% endif %}
         </tr>
     {% endfor %}
     </tbody>

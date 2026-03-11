@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Consulta;
 use App\Entity\PacienteCondiciones;
+use App\Enum\AuditTipos;
 use App\Form\PacienteCondicionesType;
 use App\Repository\PacienteCondicionesRepository;
+use App\Service\AuditService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +26,7 @@ final class PacienteCondicionesController extends AbstractController
     }
 
     #[Route('/{id}/new/consulta', name: 'app_paciente_condiciones_new_consulta', methods: ['GET', 'POST'])]
-    public function newConsulta(Request $request, EntityManagerInterface $entityManager, Consulta $consulta): Response
+    public function newConsulta(Request $request, EntityManagerInterface $entityManager, Consulta $consulta, AuditService $auditService): Response
     {
         $pacienteCondicione = new PacienteCondiciones();
         $form = $this->createForm(PacienteCondicionesType::class, $pacienteCondicione);
@@ -33,6 +35,17 @@ final class PacienteCondicionesController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $pacienteCondicione->setPaciente($consulta->getPaciente());
             $entityManager->persist($pacienteCondicione);
+
+            $name = $consulta->getPaciente()->getNombre();
+            $conditionName = $pacienteCondicione->getCondicion()->getNombre();
+
+            $auditService->persistAudit(
+                AuditTipos::CONSULT_CONDITION_NEW,
+                "Nueva condicion $conditionName para $name",
+                $consulta->getPaciente(),
+                $consulta
+            );
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Condicion registrada');
@@ -54,13 +67,20 @@ final class PacienteCondicionesController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit/consulta', name: 'app_paciente_condiciones_edit_consulta', methods: ['GET', 'POST'])]
-    public function editConsulta(Request $request, PacienteCondiciones $pacienteCondicione, EntityManagerInterface $entityManager, Consulta $consulta): Response
+    #[Route('/{id}/edit/{consulta}', name: 'app_paciente_condiciones_edit_consulta', methods: ['GET', 'POST'])]
+    public function editConsulta(Request $request, PacienteCondiciones $pacienteCondicione, EntityManagerInterface $entityManager, Consulta $consulta, AuditService $auditService): Response
     {
         $form = $this->createForm(PacienteCondicionesType::class, $pacienteCondicione);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $auditService->persistEditionAudit(
+                $pacienteCondicione,
+                AuditTipos::CONSULT_CONDITION_EDIT,
+                $consulta->getPaciente(),
+                $consulta
+            );
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Condicion editada');

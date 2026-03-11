@@ -30,6 +30,9 @@ class Audit
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $direccionIp = null;
 
+    #[ORM\ManyToOne(inversedBy: 'audits')]
+    private ?Consulta $consulta = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -79,6 +82,18 @@ class Audit
     public function setDireccionIp(?string $direccionIp): static
     {
         $this->direccionIp = $direccionIp;
+
+        return $this;
+    }
+
+    public function getConsulta(): ?Consulta
+    {
+        return $this->consulta;
+    }
+
+    public function setConsulta(?Consulta $consulta): static
+    {
+        $this->consulta = $consulta;
 
         return $this;
     }

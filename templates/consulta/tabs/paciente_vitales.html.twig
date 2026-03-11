@@ -1,5 +1,8 @@
 <h4>
-    Vitales Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_vitales_new_consulta', {'id': consultum    .id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+    Vitales Registradas
+    {% if consultum.estadoConsulta.value == 'active' %}
+        <a class="btn btn-primary btn-sm" href="{{ path('app_vitales_new_consulta', {'id': consultum    .id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+    {% endif %}
 </h4>
 {% if currentVitals %}
     <div class="container-fluid">
@@ -126,7 +129,7 @@
     </tr>
     </thead>
     <tbody>
-    {% for entity in consultum.vitales %}
+    {% for entity in vitales %}
         <tr>
             <td>
                 {{ loop.index }}

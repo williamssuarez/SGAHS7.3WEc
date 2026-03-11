@@ -2,15 +2,26 @@
 
 namespace App\Controller;
 
+use App\Entity\Alergias;
+use App\Entity\Audit;
 use App\Entity\Consulta;
 use App\Entity\HistoriaPaciente;
 use App\Entity\Paciente;
+use App\Entity\PacienteCondiciones;
+use App\Entity\PacienteDiscapacidades;
+use App\Entity\PacienteEnfermedades;
+use App\Entity\PacienteInmunizaciones;
+use App\Entity\Prescripciones;
+use App\Entity\StatusRecord;
 use App\Entity\Vitales;
+use App\Enum\AuditTipos;
+use App\Enum\PrescripcionesEstados;
 use App\Exception\BusinessRuleException;
 use App\Form\PacienteType;
 use App\Repository\HistoriaPacienteRepository;
 use App\Repository\PacienteRepository;
 use App\Repository\StatusRecordRepository;
+use App\Service\AuditService;
 use App\Service\FileUploader;
 use App\Service\PatientProcessor;
 use Doctrine\ORM\EntityManager;
@@ -52,7 +63,7 @@ final class PacienteController extends AbstractController
     }
 
     #[Route('/new', name: 'app_paciente_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, PatientProcessor $patientProcessor): Response
+    public function new(Request $request, PatientProcessor $patientProcessor, AuditService $auditService): Response
     {
         $paciente = new Paciente();
         $form = $this->createForm(PacienteType::class, $paciente);
@@ -63,6 +74,14 @@ final class PacienteController extends AbstractController
                 // dejar que el servicio procese el form
                 $paciente->setFallecido(0);
                 $patientProcessor->processFormSubmission($paciente, $form->get('foto')->getData());
+
+                $name = $paciente->getNombre();
+                $auditService->persistAndFlushAudit(
+                    AuditTipos::PATIENT_NEW,
+                    "Nueva registro de paciente: $name",
+                    $paciente,
+                    null
+                );
 
                 $this->addFlash('success', 'Registro Agregado.');
                 return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()], Response::HTTP_SEE_OTHER);
@@ -87,34 +106,50 @@ final class PacienteController extends AbstractController
             return $this->redirectToRoute('app_paciente_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        /*$historias = $historiaPacienteRepository->findByPacienteOrderedByDate($paciente->getId());
-
-        $groupedHistorias = [];
-        foreach ($historias as $historia) {
-            // Get the date and format it as a string for grouping (e.g., "10 Feb. 2023")
-            // Use IntlDateFormatter or a simple format string, like below:
-            $dateString = $historia->getFechaAtendido()->format('j M. Y');
-
-            // Initialize the array for this date if it doesn't exist
-            if (!isset($groupedHistorias[$dateString])) {
-                $groupedHistorias[$dateString] = [];
-            }
-
-            // Add the history record to the group
-            $groupedHistorias[$dateString][] = $historia;
-        }*/
-
+        //vitales
         $vitales = $entityManager->getRepository(Vitales::class)->getActivesforTable($paciente->getId());
+
+        //prescripciones
+        $prescripcionesActivas = $entityManager->getRepository(Prescripciones::class)->getActivesforTableByState($paciente->getId(), PrescripcionesEstados::ACTIVE);
+        $prescripcionesInactivas = $entityManager->getRepository(Prescripciones::class)->getActivesforTableByNotState($paciente->getId(), PrescripcionesEstados::ACTIVE);
+
+        //alergias
+        $alergias = $entityManager->getRepository(Alergias::class)->getActivesforTable($paciente->getId());
+
+        //condiciones
+        $condiciones = $entityManager->getRepository(PacienteCondiciones::class)->getActivesforTable($paciente->getId());
+
+        //enfermedades
+        $enfermedades = $entityManager->getRepository(PacienteEnfermedades::class)->getActivesforTable($paciente->getId());
+
+        //discapacidades
+        $discapacidades = $entityManager->getRepository(PacienteDiscapacidades::class)->getActivesforTable($paciente->getId());
+
+        //inmunizaciones
+        $inmunizaciones = $entityManager->getRepository(PacienteInmunizaciones::class)->getActivesforTable($paciente->getId());
+
+        //historial completo
+        $allHistory = $entityManager->getRepository(Audit::class)->findBy([
+            'paciente' => $paciente->getId(),
+            'status' => $entityManager->getRepository(StatusRecord::class)->getActive()
+        ], ['id' => 'DESC']);
 
         return $this->render('paciente/show.html.twig', [
             'paciente' => $paciente,
             'vitales' => $vitales,
-            //'grouped_historias' => $groupedHistorias
+            'prescripcionesActivas' => $prescripcionesActivas,
+            'prescripcionesInactivas' => $prescripcionesInactivas,
+            'alergias' => $alergias,
+            'condiciones' => $condiciones,
+            'enfermedades' => $enfermedades,
+            'discapacidades' => $discapacidades,
+            'inmunizaciones' => $inmunizaciones,
+            'allHistory' => $allHistory,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_paciente_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Paciente $paciente, EntityManagerInterface $entityManager, PatientProcessor $patientProcessor, StatusRecordRepository $statusRecordRepository): Response
+    public function edit(Request $request, Paciente $paciente, AuditService $auditService, PatientProcessor $patientProcessor, StatusRecordRepository $statusRecordRepository): Response
     {
         if ($paciente->getStatus() == $statusRecordRepository->getRemove()){
             $this->addFlash('danger', 'Registro no encontrado.');
@@ -129,6 +164,13 @@ final class PacienteController extends AbstractController
                 // dejar que el servicio procese el form
 
                 $patientProcessor->processFormSubmission($paciente, $form->get('foto')->getData());
+
+                $auditService->persistEditionAndFlushAudit(
+                    $paciente,
+                    AuditTipos::PATIENT_EDIT,
+                    $paciente,
+                    null
+                );
 
                 $this->addFlash('success', 'Registro Editado.');
                 return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()], Response::HTTP_SEE_OTHER);

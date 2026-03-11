@@ -15,7 +15,6 @@ parameters:
                     children: # <-- This triggers the recursion
                         - { title: Usuarios Internos, route: app_user_internal_index, icon: 'bi bi-person-lines-fill text-info' }
                         - { title: Usuarios Externos, route: app_user_external_index, icon: 'bi bi-person-lines-fill text-info' }
-                        - { title: Ciudades, route: app_ciudad_index, icon: 'bi bi-journal-check text-info' }
                 -   title: Alergias
                     icon: 'bi bi-virus text-success'
                     children: # <-- This triggers the recursion
@@ -33,8 +32,29 @@ parameters:
             children:
                 - { title: Pacientes Registrados, route: app_paciente_index, icon: 'bi bi-person-badge-fill text-info' }
         -
+            title: Citas
+            icon: 'bi bi-calendar-plus-fill text-primary'
+            roles: 'ROLE_INTERNAL'
+            children:
+                -   title: Configuraciones
+                    icon: 'bi bi-gear text-warning'
+                    children:
+                        - { title: Especialidades, route: app_especialidades_index, icon: 'bi bi-gear text-warning' }
+                        - { title: Consultorios, route: app_consultorios_index, icon: 'bi bi-gear text-warning' }
+        -
+            title: Mis Citas
+            icon: 'bi bi-calendar-plus-fill text-primary'
+            roles: 'ROLE_EXTERNAL'
+            children:
+                -   title: Citas Medicas
+                    icon: 'bi bi-calendar-plus-fill text-primary'
+                    children:
+                        - { title: Solicitudes, route: app_citas_solicitudes_index, icon: 'bi bi-calendar-plus-fill text-primary' }
+        -
             title: Consultas
             icon: 'bi bi-hospital text-success'
             roles: 'ROLE_INTERNAL'
             children:
-                - { title: Consultas, route: app_consulta_index, icon: 'bi bi-hospital text-success' }
+                - { title: Consultas Pendientes, route: app_consulta_pendientes_index, icon: 'bi bi-hospital text-warning' }
+                - { title: Consultas Activas, route: app_consulta_activas_index, icon: 'bi bi-hospital text-primary' }
+                - { title: Todas las Consultas, route: app_consulta_index, icon: 'bi bi-hospital text-success' }

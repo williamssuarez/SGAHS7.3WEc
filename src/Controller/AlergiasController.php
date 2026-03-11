@@ -6,8 +6,10 @@ use App\Entity\Alergias;
 use App\Entity\Consulta;
 use App\Entity\Paciente;
 use App\Entity\StatusRecord;
+use App\Enum\AuditTipos;
 use App\Form\AlergiasType;
 use App\Repository\AlergiasRepository;
+use App\Service\AuditService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +28,7 @@ final class AlergiasController extends AbstractController
     }
 
     #[Route('/new/paciente/{id}', name: 'app_alergias_new_paciente', methods: ['GET', 'POST'])]
-    public function newPaciente(Request $request, Paciente $paciente, EntityManagerInterface $entityManager): Response
+    public function newPaciente(Request $request, Paciente $paciente, EntityManagerInterface $entityManager, AuditService $auditService): Response
     {
         if ($paciente->getStatus() != $entityManager->getRepository(StatusRecord::class)->getActive()){
             $this->addFlash('error', 'No se pudo encontrar la informacion');
@@ -40,6 +42,15 @@ final class AlergiasController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $alergia->setPaciente($paciente);
             $entityManager->persist($alergia);
+
+            $name = $paciente->getNombre();
+            $allergyName = $alergia->getAlergeno()->getNombre();
+
+            $auditService->persistAudit(
+                AuditTipos::PATIENT_ALLERGY_NEW,
+                "Nueva alergia $allergyName para $name",
+                $paciente,
+            );
             $entityManager->flush();
 
             $this->addFlash('success', 'Alergia registrada');
@@ -54,7 +65,7 @@ final class AlergiasController extends AbstractController
     }
 
     #[Route('/new/consulta/{id}', name: 'app_alergias_new_consulta', methods: ['GET', 'POST'])]
-    public function newConsulta(Request $request, Consulta $consulta, EntityManagerInterface $entityManager): Response
+    public function newConsulta(Request $request, Consulta $consulta, EntityManagerInterface $entityManager, AuditService $auditService): Response
     {
 
         $alergia = new Alergias();
@@ -64,6 +75,17 @@ final class AlergiasController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $alergia->setPaciente($consulta->getPaciente());
             $entityManager->persist($alergia);
+
+            $name = $consulta->getPaciente()->getNombre();
+            $allergyName = $alergia->getAlergeno()->getNombre();
+
+            $auditService->persistAudit(
+                AuditTipos::CONSULT_ALLERGY_NEW,
+                "Nueva alergia $allergyName para $name",
+                $consulta->getPaciente(),
+                $consulta
+            );
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Alergia registrada');
@@ -86,12 +108,20 @@ final class AlergiasController extends AbstractController
     }
 
     #[Route('/{id}/edit/paciente', name: 'app_alergias_edit_paciente', methods: ['GET', 'POST'])]
-    public function editPaciente(Request $request, Alergias $alergia, EntityManagerInterface $entityManager, Paciente $paciente): Response
+    public function editPaciente(Request $request, Alergias $alergia, EntityManagerInterface $entityManager, Paciente $paciente, AuditService $auditService): Response
     {
         $form = $this->createForm(AlergiasType::class, $alergia);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $auditService->persistEditionAudit(
+                $alergia,
+                AuditTipos::PATIENT_ALLERGY_EDIT,
+                $paciente,
+                null
+            );
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Alergia Editada');
@@ -104,13 +134,20 @@ final class AlergiasController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit/consulta', name: 'app_alergias_edit_consulta', methods: ['GET', 'POST'])]
-    public function editConsulta(Request $request, Alergias $alergia, EntityManagerInterface $entityManager, Consulta $consulta): Response
+    #[Route('/{id}/edit/consulta/{consulta}', name: 'app_alergias_edit_consulta', methods: ['GET', 'POST'])]
+    public function editConsulta(Request $request, Alergias $alergia, EntityManagerInterface $entityManager, Consulta $consulta, AuditService $auditService): Response
     {
         $form = $this->createForm(AlergiasType::class, $alergia);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $auditService->persistEditionAudit(
+                $alergia,
+                AuditTipos::CONSULT_ALLERGY_EDIT,
+                $consulta->getPaciente(),
+                $consulta
+            );
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Alergia Editada');

@@ -31,4 +31,21 @@ class ConsultaRepository extends ServiceEntityRepository
 
         return $query->getQuery()->getResult();
     }
+
+    public function getActivesforTableByState($state)
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb
+            ->select('u')
+
+            ->where('u.status = :sts')
+            ->andWhere('u.estadoConsulta = :state')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('state', $state)
+        ;
+
+        return $query->getQuery()->getResult();
+    }
 }

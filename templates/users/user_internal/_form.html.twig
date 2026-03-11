@@ -1,4 +1,9 @@
-{{ form_start(form) }}
+{{ form_start(form, {
+    'attr': {
+        'data-controller': 'submit-once medication-status',
+        'data-action': 'submit->submit-once#disable'
+    }
+}) }}
 {{ include('base/_form_error_messages.html.twig') }}
 <div class="card-body">
     <ul class="nav nav-tabs" id="formTab" role="tablist">
@@ -136,7 +141,7 @@
                     </button>
 
                     {# Ensure the submit button has a margin on the left if not using me-2 on next-tab #}
-                    <button id="submit-form" class="btn btn-success btn-lg" style="display:none;">
+                    <button id="submit-form" type="submit" class="btn btn-success btn-lg" data-submit-once-target="submitButton" style="display:none;">
                         {{ button_label|default('Guardar') }}
                     </button>
                 </div>

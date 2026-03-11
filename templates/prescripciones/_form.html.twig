@@ -1,4 +1,9 @@
-{{ form_start(form) }}
+{{ form_start(form, {
+    'attr': {
+        'data-controller': 'submit-once medication-status',
+        'data-action': 'submit->submit-once#disable'
+    }
+}) }}
 {{ include('base/_form_error_messages.html.twig') }}
 <div class="card-body">
     <h5>Informacion de Prescripcion:</h5>
@@ -34,45 +39,42 @@
         </div>
     </div>
 
-    {# The data-controller starts here #}
-    <div data-controller="medication-status">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="mb-3">
-                    {{ form_label(form.estado) }}
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="d-flex flex-wrap">
-                                {% for child in form.estado %}
-                                    <div class="form-check form-check-inline me-3">
-                                        {{ form_widget(child) }}
-                                        {{ form_label(child) }}
-                                    </div>
-                                {% endfor %}
-                            </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{ form_label(form.estado) }}
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="d-flex flex-wrap">
+                            {% for child in form.estado %}
+                                <div class="form-check form-check-inline me-3">
+                                    {{ form_widget(child) }}
+                                    {{ form_label(child) }}
+                                </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="mb-3">
-                    {{form_label( form.fechaInicio ) }}
-                    {{form_widget( form.fechaInicio ) }}
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="mb-3">
-                    {{form_label( form.fechaFin ) }}
-                    {{form_widget( form.fechaFin ) }}
-                </div>
+        </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{form_label( form.fechaInicio ) }}
+                {{form_widget( form.fechaInicio ) }}
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div data-medication-status-target="reasonContainer" class="d-none mb-3">
-                    {{form_label( form.observaciones ) }}
-                    {{form_widget( form.observaciones ) }}
-                </div>
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{form_label( form.fechaFin ) }}
+                {{form_widget( form.fechaFin ) }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div data-medication-status-target="reasonContainer" class="d-none mb-3">
+                {{form_label( form.observaciones ) }}
+                {{form_widget( form.observaciones ) }}
             </div>
         </div>
     </div>
@@ -111,7 +113,7 @@
                 </a>#}
 
                 <div class="d-flex">
-                    <button class="btn btn-success">
+                    <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
                         {{ button_label|default('Guardar') }}
                     </button>
                 </div>

@@ -1,4 +1,9 @@
-{{ form_start(form) }}
+{{ form_start(form, {
+    'attr': {
+        'data-controller': 'submit-once',
+        'data-action': 'submit->submit-once#disable'
+    }
+}) }}
 {{ include('base/_form_error_messages.html.twig') }}
 <div class="card-body">
     <ul class="nav nav-tabs" id="formTab" role="tablist">
@@ -132,30 +137,6 @@
         </div>
         <div class="tab-pane fade" id="tab4-pane" role="tabpanel" aria-labelledby="tab4" tabindex="0">
             <h3>Condiciones</h3>
-            {#<div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.enfermedades ) }}
-                        {{form_widget( form.enfermedades ) }}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.discapacidades ) }}
-                        {{form_widget( form.discapacidades ) }}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.tratamientos ) }}
-                        {{form_widget( form.tratamientos ) }}
-                    </div>
-                </div>
-            </div>#}
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -187,7 +168,7 @@
                     </button>
 
                     {# Ensure the submit button has a margin on the left if not using me-2 on next-tab #}
-                    <button id="submit-form" class="btn btn-success btn-lg" style="display:none;">
+                    <button id="submit-form" type="submit" class="btn btn-success btn-lg" data-submit-once-target="submitButton" style="display:none;">
                         {{ button_label|default('Guardar') }}
                     </button>
                 </div>

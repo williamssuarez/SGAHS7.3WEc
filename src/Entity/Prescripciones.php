@@ -10,10 +10,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\LogEntry;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: PrescripcionesRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[Gedmo\Loggable(logEntryClass: LogEntry::class)]
+#[Assert\Callback(callback: 'validateDates')]
 class Prescripciones
 {
     use SoftDeletetableTrait;
@@ -216,6 +218,18 @@ class Prescripciones
         $this->recarga = $recarga;
 
         return $this;
+    }
+
+    #[Assert\Callback]
+    public function validateDates(ExecutionContextInterface $context): void
+    {
+        if ($this->fechaFin !== null && $this->fechaInicio !== null) {
+            if ($this->fechaFin < $this->fechaInicio) {
+                $context->buildViolation('La fecha de finalización no puede ser anterior al inicio.')
+                    ->atPath('fechaFin')
+                    ->addViolation();
+            }
+        }
     }
 
     public function getPrescripcionesEstadosBadgeConfig(): array

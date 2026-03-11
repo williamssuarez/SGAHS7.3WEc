@@ -28,8 +28,10 @@ class VitalesRepository extends ServiceEntityRepository
             ->innerJoin('c.paciente', 'p')
 
             ->where('u.status = :sts')
+            ->andWhere('c.status = :sts')
             ->andWhere('p.status = :sts')
             ->andWhere('p.id = :id')
+
             ->addOrderBy('u.id', 'DESC')
 
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
@@ -37,5 +39,30 @@ class VitalesRepository extends ServiceEntityRepository
         ;
 
         return $query->getQuery()->getResult();
+    }
+
+    public function getCurrentActiveVitalsforTable($id)
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb
+            ->select('u,c,p')
+
+            ->innerJoin('u.consulta', 'c')
+            ->innerJoin('c.paciente', 'p')
+
+            ->where('u.status = :sts')
+            ->andWhere('c.status = :sts')
+            ->andWhere('p.status = :sts')
+            ->andWhere('p.id = :id')
+
+            ->addOrderBy('u.id', 'DESC')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('id', $id)
+            ->setMaxResults(1)
+        ;
+
+        return $query->getQuery()->getOneOrNullResult();
     }
 }

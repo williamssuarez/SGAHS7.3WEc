@@ -6,6 +6,7 @@ use App\Entity\Paciente;
 use App\Entity\StatusRecord;
 use App\Exception\BusinessRuleException;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 readonly class PatientProcessor
@@ -69,6 +70,5 @@ readonly class PatientProcessor
 
         //no errors
         $this->entityManager->persist($paciente);
-        $this->entityManager->flush();
     }
 }

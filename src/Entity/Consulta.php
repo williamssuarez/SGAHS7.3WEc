@@ -54,9 +54,16 @@ class Consulta
     #[ORM\OneToMany(targetEntity: Vitales::class, mappedBy: 'consulta')]
     private Collection $vitales;
 
+    /**
+     * @var Collection<int, Audit>
+     */
+    #[ORM\OneToMany(targetEntity: Audit::class, mappedBy: 'consulta')]
+    private Collection $audits;
+
     public function __construct()
     {
         $this->vitales = new ArrayCollection();
+        $this->audits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -217,6 +224,36 @@ class Consulta
             // set the owning side to null (unless already changed)
             if ($vitale->getConsulta() === $this) {
                 $vitale->setConsulta(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Audit>
+     */
+    public function getAudits(): Collection
+    {
+        return $this->audits;
+    }
+
+    public function addAudit(Audit $audit): static
+    {
+        if (!$this->audits->contains($audit)) {
+            $this->audits->add($audit);
+            $audit->setConsulta($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAudit(Audit $audit): static
+    {
+        if ($this->audits->removeElement($audit)) {
+            // set the owning side to null (unless already changed)
+            if ($audit->getConsulta() === $this) {
+                $audit->setConsulta(null);
             }
         }
 

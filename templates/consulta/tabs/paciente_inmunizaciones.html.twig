@@ -1,5 +1,8 @@
 <h4>
-    Inmunizaciones Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_paciente_inmunizaciones_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+    Inmunizaciones Registradas
+    {% if consultum.estadoConsulta.value == 'active' %}
+        <a class="btn btn-primary btn-sm" href="{{ path('app_paciente_inmunizaciones_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+    {% endif %}
 </h4>
 <table class="table table-striped dtHere">
     <thead>
@@ -11,14 +14,16 @@
         <th>Fabricante</th>
         <th>Reacciones</th>
         <th>Aplicacion</th>
-        <th>Acciones</th>
+        {% if consultum.estadoConsulta.value == 'active' %}
+            <th>Acciones</th>
+        {% endif %}
     </tr>
     </thead>
     <tbody>
-    {% for entity in paciente.pacienteInmunizaciones %}
+    {% for entity in inmunizaciones %}
         <tr class="align-middle">
             <td>{{ loop.index }}</td>
-            <td>{{ entity.inmunizacion.nombre }}</td>
+            <td>{{ entity.inmunizacion }}</td>
             <td>
                 {% set badge = entity.pacienteInmunizacionesDosisBadgeConfig %}
                 <span class="badge rounded-pill {{ badge.class }}">
@@ -34,12 +39,14 @@
                     {% endfor %}
                 </ul>
             </td>
-            <td>{{ entity.fechaAplicacion|date('d/m/Y') }}</td>
-            <td>
-                <a class="btn btn-success" href="{{ path('app_paciente_inmunizaciones_edit_consulta', {'id': entity.id}) }}">
-                    <i class="bi bi-pencil-square"></i>
-                </a>
-            </td>
+            <td>{{ entity.fechaAplicacion|date('d/m/Y', false) }}</td>
+            {% if consultum.estadoConsulta.value == 'active' %}
+                <td>
+                    <a class="btn btn-success" href="{{ path('app_paciente_inmunizaciones_edit_consulta', {'id': entity.id, 'consulta': consultum.id}) }}">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </td>
+            {% endif %}
         </tr>
     {% endfor %}
     </tbody>

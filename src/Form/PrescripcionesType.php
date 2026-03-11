@@ -90,10 +90,21 @@ class PrescripcionesType extends AbstractType
                 'choice_attr' => function(PrescripcionesEstados $choice) {
                     return [
                         'class' => 'form-check-input',
-                        'data-medication-status-target' => 'state', // Correct controller name
+                        'data-medication-status-target' => 'state',
                         'data-action' => 'change->medication-status#toggle'
                     ];
                 },
+            ])
+            ->add('observaciones', TextareaType::class, [
+                'label' => 'Razon de la suspension',
+                'label_attr' => [
+                    'class' => 'form-label'
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Ej: Suspendido por reaccion alergica...',
+                ],
+                'required' => false,
             ])
             ->add('fechaInicio', DateType::class, [
                 'widget' => 'single_text',
@@ -101,14 +112,13 @@ class PrescripcionesType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-label mask'
                 ],
-                'model_timezone' => 'UTC',              // Como se guarda en la db
-                'view_timezone' => 'America/Caracas',   // Como la escribe el doctor
+                //'model_timezone' => 'UTC',
+                //'view_timezone' => 'America/Caracas',
                 'attr' => [
                     'class' => 'mask form-control',
                     'data-inputmask' => " 'alias': 'datetime', 'clearIncomplete': true, 'inputFormat': 'dd/mm/yyyy' "
                 ],
                 'required' => true,
-                //'data' => new \DateTime('now', new \DateTimeZone('America/Caracas')),
             ])
             ->add('fechaFin', DateType::class, [
                 'widget' => 'single_text',
@@ -116,15 +126,11 @@ class PrescripcionesType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-label mask'
                 ],
-                'model_timezone' => 'UTC',
-                'view_timezone' => 'America/Caracas',
+                //'model_timezone' => 'UTC',
+                //'view_timezone' => 'America/Caracas',
                 'attr' => [
                     'class' => 'mask form-control',
                     'data-inputmask' => " 'alias': 'datetime', 'clearIncomplete': true, 'inputFormat': 'dd/mm/yyyy' "
-                ],
-                'row_attr' => [
-                    'data-toggle-date-target' => 'endDateContainer',
-                    'class' => 'd-none'
                 ],
                 'required' => false,
             ])
@@ -168,21 +174,6 @@ class PrescripcionesType extends AbstractType
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar la cantidad de recargas permitidas.'),
                 ]
-            ])
-            ->add('observaciones', TextareaType::class, [
-                'label' => 'Razon de la suspension',
-                'label_attr' => [
-                    'class' => 'form-label'
-                ],
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'Ej: Suspendido por reaccion alergica...',
-                ],
-                'required' => false,
-                /*'row_attr' => [
-                    'data-medication-status-target' => 'reasonContainer',
-                    'class' => 'd-none mb-3' // Hidden by default
-                ],*/
             ])
         ;
     }

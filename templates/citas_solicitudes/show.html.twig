@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Detalles{% endblock %}
+
+{% block titlewrap %}
+    Detalles
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_citas_solicitudes_index') }}">Solicitudes</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Detalles</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            <div class="card-body">
+                <div class="mb-3">
+                    <h3>Especialidad Solicitada</h3>
+                    <h4>{{ entity.especialidad.nombre }}</h4>
+                </div>
+                <div class="mb-3">
+                    <h3>Especialidad Solicitada</h3>
+                    <h4>{{ entity.motivoConsulta }}</h4>
+                </div>
+                <div class="mb-3">
+                    <h3>Estado de Solicitud</h3>
+                    <h4>
+                        {% set badge = entity.citasSolicitudesEstadosBadgeConfig %}
+                        <span class="badge rounded-pill {{ badge.class }}">
+                            {{ badge.label }}
+                        </span>
+                    </h4>
+                </div>
+                <div class="mb-3">
+                    <h3>Fecha de Solicitud</h3>
+                    <h4>
+                        {{ entity.created|date('d/m/Y') }} <i>{{ entity.created|time_ago }}</i>
+                    </h4>
+                </div>
+
+                {% if cita %}
+                    <div class="mb-3">
+                        <h3>Cita Asignada para</h3>
+                        <h4>
+                            {{ cita.fecha|date('d/m/Y') }} desde las {{ cita.horaInicio|date('H:i', false) }} hasta las {{ cita.horaFin|date('H:i', false) }}
+                        </h4>
+                    </div>
+                    <div class="mb-3">
+                        <h3>Consultorio</h3>
+                        <h4>
+                            {{ cita.consultorio.nombre }} ({{ cita.consultorio.ubicacion }})
+                        </h4>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-primary" href="{{ path('app_citas_solicitudes_index') }}">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+
+                            <div class="d-flex">
+                                <a class="btn btn-success" href="{{ path('app_citas_solicitudes_edit', {'id': entity.id}) }}">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

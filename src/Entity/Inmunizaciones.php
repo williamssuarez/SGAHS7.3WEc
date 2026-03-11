@@ -47,6 +47,26 @@ class Inmunizaciones
         $this->pacienteInmunizaciones = new ArrayCollection();
     }
 
+    public function __toString(): string
+    {
+        return sprintf(
+            '%s - %s (%s)',
+            $this->getNombre(),
+            $this->getTipo()->getReadableText(),
+            $this->getAdministracion()->getReadableText(),
+        );
+    }
+
+    public function fullName(): string
+    {
+        return sprintf(
+            '%s - %s (%s)',
+            $this->getNombre(),
+            $this->getTipo()->getReadableText(),
+            $this->getAdministracion()->getReadableText(),
+        );
+    }
+
     public function getId(): ?int
     {
         return $this->id;

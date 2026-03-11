@@ -31,7 +31,7 @@
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tabTratamientos" data-bs-toggle="tab" data-bs-target="#tabTratamientos-pane" type="button" role="tab" aria-controls="tabTratamientos-pane" aria-selected="false">
+            <button class="nav-link" id="tabInmunizaciones" data-bs-toggle="tab" data-bs-target="#tabInmunizaciones-pane" type="button" role="tab" aria-controls="tabInmunizaciones-pane" aria-selected="false">
                 <i class="fa-solid fa-syringe"></i> Inmunizaciones
             </button>
         </li>
@@ -40,13 +40,18 @@
                 <i class="bi bi-folder-fill"></i> Archivos
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabHistorial" data-bs-toggle="tab" data-bs-target="#tabHistorial-pane" type="button" role="tab" aria-controls="tabHistorial-pane" aria-selected="false">
+                <i class="bi bi-clock-history"></i> Historial
+            </button>
+        </li>
     </ul>
     <div class="tab-content" id="formTabContent">
         <div class="tab-pane fade show active" id="tabVitales-pane" role="tabpanel" aria-labelledby="tabVitales" tabindex="0">
             {{ include('paciente/tabs/paciente_vitales.html.twig') }}
         </div>
-        <div class="tab-pane fade show active" id="tabMedicaciones-pane" role="tabpanel" aria-labelledby="tabMedicaciones" tabindex="0">
-
+        <div class="tab-pane fade" id="tabMedicaciones-pane" role="tabpanel" aria-labelledby="tabMedicaciones" tabindex="0">
+            {{ include('paciente/tabs/paciente_prescripciones.html.twig') }}
         </div>
         <div class="tab-pane fade" id="tabAlergias-pane" role="tabpanel" aria-labelledby="tabAlergias" tabindex="0">
             {{ include('paciente/tabs/paciente_alergias.html.twig') }}
@@ -60,11 +65,14 @@
         <div class="tab-pane fade" id="tabDiscapacidades-pane" role="tabpanel" aria-labelledby="tabDiscapacidades" tabindex="0">
             {{ include('paciente/tabs/paciente_discapacidades.html.twig') }}
         </div>
-        <div class="tab-pane fade" id="tabTratamientos-pane" role="tabpanel" aria-labelledby="tabTratamientos" tabindex="0">
-            {{ include('paciente/tabs/paciente_tratamientos.html.twig') }}
+        <div class="tab-pane fade" id="tabInmunizaciones-pane" role="tabpanel" aria-labelledby="tabInmunizaciones" tabindex="0">
+            {{ include('paciente/tabs/paciente_inmunizaciones.html.twig') }}
         </div>
         <div class="tab-pane fade" id="tabArchivos-pane" role="tabpanel" aria-labelledby="tabArchivos" tabindex="0">
             {{ include('paciente/tabs/paciente_archivos.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabHistorial-pane" role="tabpanel" aria-labelledby="tabHistorial" tabindex="0">
+            {{ include('paciente/tabs/paciente_historial.html.twig') }}
         </div>
     </div>
 </div>

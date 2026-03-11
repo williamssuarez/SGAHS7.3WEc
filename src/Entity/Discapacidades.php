@@ -45,6 +45,25 @@ class Discapacidades
         $this->pacienteDiscapacidade = new ArrayCollection();
     }
 
+    public function __toString(): string
+    {
+        return sprintf(
+            '%s - %s (%s)',
+            $this->getNombre(),
+            $this->getTipo()->getReadableText(),
+            $this->getDescripcion(),
+        );
+    }
+
+    public function fullName(): string
+    {
+        return sprintf(
+            '%s - (%s)',
+            $this->getNombre(),
+            $this->getTipo()->getReadableText()
+        );
+    }
+
     public function getId(): ?int
     {
         return $this->id;

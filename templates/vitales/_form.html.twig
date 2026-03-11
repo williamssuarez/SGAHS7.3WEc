@@ -1,4 +1,9 @@
-{{ form_start(form) }}
+{{ form_start(form, {
+    'attr': {
+        'data-controller': 'submit-once medication-status',
+        'data-action': 'submit->submit-once#disable'
+    }
+}) }}
 {{ include('base/_form_error_messages.html.twig') }}
 <div class="card-body">
     <h5>Informacion de Signos Vitales:</h5>
@@ -151,7 +156,7 @@
                 </a>
 
                 <div class="d-flex">
-                    <button class="btn btn-success">
+                    <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
                         {{ button_label|default('Guardar') }}
                     </button>
                 </div>

@@ -28,7 +28,6 @@ class PacienteInmunizacionesType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-label'
                 ],
-                'choice_label' => 'nombre',
                 'attr' => [
                     'class' => 'srchSelect'
                 ],
@@ -56,8 +55,8 @@ class PacienteInmunizacionesType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-label mask'
                 ],
-                'model_timezone' => 'UTC',              // Como se guarda en la db
-                'view_timezone' => 'America/Caracas',   // Como la escribe el doctor
+                //'model_timezone' => 'UTC',              // Como se guarda en la db
+                //'view_timezone' => 'America/Caracas',   // Como la escribe el doctor
                 'attr' => [
                     'class' => 'mask form-control',
                     'data-inputmask' => " 'alias': 'datetime', 'clearIncomplete': true, 'inputFormat': 'dd/mm/yyyy' "
@@ -98,7 +97,7 @@ class PacienteInmunizacionesType extends AbstractType
                 'attr' => [
                     'class' => 'srchSelect'
                 ],
-                'required' => true,
+                'required' => false,
                 'query_builder' => function (ReaccionesRepository $er) {
                     return $er->getActivesforSelect();
                 }

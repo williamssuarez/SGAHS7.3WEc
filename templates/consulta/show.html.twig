@@ -119,6 +119,43 @@
                                     </div>
                                 </div>
                             </div>
+                            {% if consultum.estadoConsulta.value == 'active' %}
+                                <br>
+                                <br>
+                                <div class="col-md-12">
+                                    <form action="{{ path('app_consulta_finalizar', {'id': consultum.id}) }}"
+                                          method="POST"
+                                          data-controller="confirm-finalizar"
+                                          data-action="submit->confirm-finalizar#confirm"
+                                          data-confirm-finalizar-title-value="¿Desea cerrar y finalizar la Consulta?"
+                                          data-confirm-finalizar-text-value="Una vez cerrada, esta consulta será de solo lectura. Para nuevos cambios, deberá abrir una nueva consulta."
+                                          data-confirm-finalizar-confirm-button-text-value="Sí, cerrar consulta"
+                                          class="d-inline">
+
+                                        <button type="submit" class="btn btn-success form-control">
+                                            <i class="bi bi-check-circle-fill"></i> Cerrar y Finalizar Consulta
+                                        </button>
+                                    </form>
+                                </div>
+                            {% elseif consultum.estadoConsulta.value == 'pending' %}
+                                <br>
+                                <br>
+                                <div class="col-md-12">
+                                    <form action="{{ path('app_consulta_iniciar', {'id': consultum.id}) }}"
+                                          method="POST"
+                                          data-controller="confirm-finalizar"
+                                          data-action="submit->confirm-finalizar#confirm"
+                                          data-confirm-finalizar-title-value="¿Desea Iniciar la Consulta?"
+                                          data-confirm-finalizar-text-value="Una vez iniciada, no podra ser cancelada y debe ser terminada."
+                                          data-confirm-finalizar-confirm-button-text-value="Sí, iniciar consulta"
+                                          class="d-inline">
+
+                                        <button type="submit" class="btn btn-primary form-control">
+                                            <i class="bi bi-check-circle-fill"></i> Iniciar Consulta
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

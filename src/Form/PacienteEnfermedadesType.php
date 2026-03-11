@@ -43,8 +43,8 @@ class PacienteEnfermedadesType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-label mask'
                 ],
-                'model_timezone' => 'UTC',              // Como se guarda en la db
-                'view_timezone' => 'America/Caracas',   // Como la escribe el doctor
+                //'model_timezone' => 'UTC',              // Como se guarda en la db
+                //'view_timezone' => 'America/Caracas',   // Como la escribe el doctor
                 'attr' => [
                     'class' => 'mask form-control',
                     'data-inputmask' => " 'alias': 'datetime', 'clearIncomplete': true, 'inputFormat': 'dd/mm/yyyy' "

@@ -36,13 +36,15 @@
                 <a class="btn btn-success" href="{{ asset(paciente_photo_path ~ entity.fileHash) }}" target="_blank">
                     <i class="bi bi-download"></i>
                 </a>
-                <button class="btn btn-danger"
-                        onclick="deleteFile(
-                            '{{ path('app_attachment_delete', {'id': entity.id}) }}',
-                            '{{ csrf_token('delete' ~ entity.id) }}'
-                            )">
-                    <i class="bi bi-trash"></i>
-                </button>
+                {% if consultum.estadoConsulta.value == 'active' %}
+                    <button class="btn btn-danger"
+                            onclick="deleteFile(
+                                '{{ path('app_attachment_delete', {'id': entity.id}) }}',
+                                '{{ csrf_token('delete' ~ entity.id) }}'
+                                )">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                {% endif %}
             </td>
         </tr>
     {% endfor %}

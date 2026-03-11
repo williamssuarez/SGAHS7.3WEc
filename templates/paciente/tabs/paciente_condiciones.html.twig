@@ -13,12 +13,12 @@
     </tr>
     </thead>
     <tbody>
-    {% for entity in paciente.pacienteCondiciones %}
+    {% for entity in condiciones %}
         <tr class="align-middle">
             <td>{{ loop.index }}</td>
             <td>{{ entity.condicion.nombre }}</td>
-            <td>{{ entity.fechaAparicion|date('d/m/Y') }}</td>
-            <td>{{ entity.fechaFinalizada ? entity.fechaFinalizada|date('d/m/Y') : ' ' }}</td>
+            <td>{{ entity.fechaAparicion|date('d/m/Y', false) }}</td>
+            <td>{{ entity.fechaFinalizada ? entity.fechaFinalizada|date('d/m/Y', false) : ' ' }}</td>
             <td>
                 {% set badge = entity.pacienteCondicionesEstadosBadgeConfig %}
                 <span class="badge rounded-pill {{ badge.class }}">

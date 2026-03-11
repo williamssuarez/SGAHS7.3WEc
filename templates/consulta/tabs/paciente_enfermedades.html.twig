@@ -1,5 +1,8 @@
 <h4>
-    Enfermedades Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_paciente_enfermedades_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+    Enfermedades Registradas
+    {% if consultum.estadoConsulta.value == 'active' %}
+        <a class="btn btn-primary btn-sm" href="{{ path('app_paciente_enfermedades_new_consulta', {'id': consultum.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
+    {% endif %}
 </h4>
 <table class="table table-striped dtHere">
     <thead>
@@ -9,14 +12,16 @@
         <th>Tipo</th>
         <th>Cronica</th>
         <th>Notas</th>
-        <th>Acciones</th>
+        {% if consultum.estadoConsulta.value == 'active' %}
+            <th>Acciones</th>
+        {% endif %}
     </tr>
     </thead>
     <tbody>
-    {% for entity in paciente.pacienteEnfermedades %}
+    {% for entity in enfermedades %}
         <tr class="align-middle">
             <td>{{ entity.enfermedad.nombre }}</td>
-            <td>{{ entity.fechaDiagnostico|date('d/m/Y') }}</td>
+            <td>{{ entity.fechaDiagnostico|date('d/m/Y', false) }}</td>
             <td>
                 {% set badge = entity.pacienteEnfermedadesTiposBadgeConfig %}
                 <span class="badge rounded-pill {{ badge.class }}">
@@ -25,11 +30,13 @@
             </td>
             <td>{{ entity.cronica ? 'Si':'No' }}</td>
             <td>{{ entity.notas }}</td>
-            <td>
-                <a class="btn btn-success" href="{{ path('app_paciente_enfermedades_edit_consulta', {'id': entity.id}) }}">
-                    <i class="bi bi-pencil-square"></i>
-                </a>
-            </td>
+            {% if consultum.estadoConsulta.value == 'active' %}
+                <td>
+                    <a class="btn btn-success" href="{{ path('app_paciente_enfermedades_edit_consulta', {'id': entity.id, 'consulta': consultum.id}) }}">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </td>
+            {% endif %}
         </tr>
     {% endfor %}
     </tbody>

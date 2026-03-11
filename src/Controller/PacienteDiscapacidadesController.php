@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Consulta;
 use App\Entity\PacienteDiscapacidades;
+use App\Enum\AuditTipos;
 use App\Form\PacienteDiscapacidadesType;
 use App\Repository\PacienteDiscapacidadesRepository;
+use App\Service\AuditService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +26,7 @@ final class PacienteDiscapacidadesController extends AbstractController
     }
 
     #[Route('/{id}/new-consulta', name: 'app_paciente_discapacidades_new_consulta', methods: ['GET', 'POST'])]
-    public function newConsulta(Request $request, EntityManagerInterface $entityManager, Consulta $consulta): Response
+    public function newConsulta(Request $request, EntityManagerInterface $entityManager, Consulta $consulta, AuditService $auditService): Response
     {
         $pacienteDiscapacidade = new PacienteDiscapacidades();
         $form = $this->createForm(PacienteDiscapacidadesType::class, $pacienteDiscapacidade);
@@ -33,6 +35,18 @@ final class PacienteDiscapacidadesController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $pacienteDiscapacidade->setPaciente($consulta->getPaciente());
             $entityManager->persist($pacienteDiscapacidade);
+
+            $name = $consulta->getPaciente()->getNombre();
+            $disabilityName = $pacienteDiscapacidade->getDiscapacidad()->fullName();
+            $porcentaje = $pacienteDiscapacidade->getPorcentaje(). '%';
+
+            $auditService->persistAudit(
+                AuditTipos::CONSULT_DISABILITY_NEW,
+                "Nueva discapacidad: $porcentaje de $disabilityName para $name",
+                $consulta->getPaciente(),
+                $consulta
+            );
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Discapacidad Agregada');
@@ -54,13 +68,20 @@ final class PacienteDiscapacidadesController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_paciente_discapacidades_edit_consulta', methods: ['GET', 'POST'])]
-    public function editConsulta(Request $request, PacienteDiscapacidades $pacienteDiscapacidade, EntityManagerInterface $entityManager, Consulta $consulta): Response
+    #[Route('/{id}/edit/{consulta}', name: 'app_paciente_discapacidades_edit_consulta', methods: ['GET', 'POST'])]
+    public function editConsulta(Request $request, PacienteDiscapacidades $pacienteDiscapacidade, EntityManagerInterface $entityManager, Consulta $consulta, AuditService $auditService): Response
     {
         $form = $this->createForm(PacienteDiscapacidadesType::class, $pacienteDiscapacidade);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $auditService->persistEditionAudit(
+                $pacienteDiscapacidade,
+                AuditTipos::CONSULT_DISABILITY_EDIT,
+                $consulta->getPaciente(),
+                $consulta
+            );
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Discapacidad Editada');

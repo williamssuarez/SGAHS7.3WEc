@@ -15,7 +15,7 @@ use App\Entity\LogEntry;
 
 #[ORM\Entity(repositoryClass: PacienteCondicionesRepository::class)]
 #[Assert\Callback(callback: 'validateDates')]
-#[ORM\HasLifecycleCallbacks] // Vital: Tells Doctrine to watch for events
+#[ORM\HasLifecycleCallbacks]
 #[Gedmo\Loggable(logEntryClass: LogEntry::class)]
 class PacienteCondiciones
 {

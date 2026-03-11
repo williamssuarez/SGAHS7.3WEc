@@ -29,7 +29,6 @@ class PacienteDiscapacidadesType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-label'
                 ],
-                'choice_label' => 'nombre',
                 'attr' => [
                     'class' => 'srchSelect'
                 ],

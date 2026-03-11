@@ -8,7 +8,7 @@ namespace App\Enum;
 enum PrescripcionesEstados: string
 {
     case ACTIVE = 'active';
-    case SUSPENDED = 'suspendida';
+    case SUSPENDED = 'suspended';
     case FINISHED = 'finished';
 
     /**
