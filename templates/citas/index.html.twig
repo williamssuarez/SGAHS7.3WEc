@@ -1,47 +1,73 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Citas index{% endblock %}
+{% block title %}Administracion de Citas{% endblock %}
+
+{% block titlewrap %}
+    Administracion de Citas
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active" aria-current="page">Administracion de Citas</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Citas index</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Fecha</th>
-                <th>HoraInicio</th>
-                <th>HoraFin</th>
-                <th>UidCreate</th>
-                <th>UidUpdate</th>
-                <th>Created</th>
-                <th>Updated</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for cita in citas %}
-            <tr>
-                <td>{{ cita.id }}</td>
-                <td>{{ cita.fecha ? cita.fecha|date('Y-m-d') : '' }}</td>
-                <td>{{ cita.horaInicio ? cita.horaInicio|date('H:i:s') : '' }}</td>
-                <td>{{ cita.horaFin ? cita.horaFin|date('H:i:s') : '' }}</td>
-                <td>{{ cita.uidCreate }}</td>
-                <td>{{ cita.uidUpdate }}</td>
-                <td>{{ cita.created ? cita.created|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ cita.updated ? cita.updated|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_citas_show', {'id': cita.id}) }}">show</a>
-                    <a href="{{ path('app_citas_edit', {'id': cita.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="9">no records found</td>
-            </tr>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endfor %}
-        </tbody>
-    </table>
+    {% endfor %}
+    <div class="card card-primary card-outline mb-4">
+        <div class="card-header">
+            <h3 class="card-title">Administracion de Citas</h3>
+        </div>
 
-    <a href="{{ path('app_citas_new') }}">Create new</a>
+        <div class="card-body">
+            <table class="table table-striped dtHere">
+                <thead>
+                <tr>
+                    <th>Especialidad</th>
+                    <th>Consultorios</th>
+                    <th>Fecha</th>
+                    <th>Inicio-Fin</th>
+                    <th>Pacientes Maximos</th>
+                    <th>Prioridad de Edad</th>
+                    <th>Duracion Cita</th>
+                    <th>Receso</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entity in entities %}
+                    <tr class="align-middle">
+                        <td>{{ entity.especialidad.nombre }}</td>
+                        <td>
+                            <ul>
+                                {% for consultorios in entity.consultorio %}
+                                    <li>{{ consultorios.nombre }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>{{ entity.fecha|date('H:i', false) }}</td>
+                        <td>{{ entity.horaInicio|date('H:i', false) }} - {{ entity.horaFin|date('H:i', false) }}</td>
+                        <td>{{ entity.maxPacientesDia }}</td>
+                        <td>{{ entity.edadPrioridad ? entity.edadPrioridad ~ ' años': '--' }}</td>
+                        <td>{{ entity.duracionCita }} minutos</td>
+                        <td>{{ entity.tiempoReceso ? entity.tiempoReceso ~ ' minutos': '--' }}</td>
+                        <td>
+                            <a class="btn btn-secondary" href="{{ path('app_citas_configuraciones_show', {'id': entity.id}) }}">Detalles</a>
+                            <a class="btn btn-success" href="{{ path('app_citas_configuraciones_edit', {'id': entity.id}) }}">Editar</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer clearfix">
+            <a href="{{ path('app_citas_configuraciones_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+        </div>
+    </div>
 {% endblock %}

@@ -76,7 +76,7 @@ readonly class AppointmentScheduler
         while ($currentTime < $endTime) {
             $slotEnd = (clone $currentTime)->modify("+$duration minutes");
 
-            // Don't schedule if the appointment runs past closing time
+            // No programar si ya no queda tiempo en el dia
             if ($slotEnd > $endTime) break;
 
             foreach ($config->getConsultorio() as $office) {

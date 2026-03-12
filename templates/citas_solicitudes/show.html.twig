@@ -63,11 +63,13 @@
                                 <i class="bi bi-arrow-left"></i> Volver
                             </a>
 
-                            <div class="d-flex">
-                                <a class="btn btn-success" href="{{ path('app_citas_solicitudes_edit', {'id': entity.id}) }}">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </a>
-                            </div>
+                            {% if entity.estadoSolicitud.value == 'pending' %}
+                                <div class="d-flex">
+                                    <a class="btn btn-success" href="{{ path('app_citas_solicitudes_edit', {'id': entity.id}) }}">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

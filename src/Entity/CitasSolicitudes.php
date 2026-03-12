@@ -121,6 +121,11 @@ class CitasSolicitudes
                     'class' => 'text-bg-danger',
                     'label' => CitasSolicitudesEstados::REJECTED->getReadableText()
                 ];
+            case CitasSolicitudesEstados::CANCELED:
+                return [
+                    'class' => 'text-bg-danger',
+                    'label' => CitasSolicitudesEstados::CANCELED->getReadableText()
+                ];
         }
 
         return [

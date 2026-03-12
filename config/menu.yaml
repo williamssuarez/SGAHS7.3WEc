@@ -41,6 +41,13 @@ parameters:
                     children:
                         - { title: Especialidades, route: app_especialidades_index, icon: 'bi bi-gear text-warning' }
                         - { title: Consultorios, route: app_consultorios_index, icon: 'bi bi-gear text-warning' }
+                -   title: Todas las Citas
+                    icon: 'bi bi-calendar-plus text-info'
+                    children:
+                        - { title: Pendientes, route: app_citas_index_expected, icon: 'bi bi-calendar-plus text-warning' }
+                        - { title: En Espera, route: app_citas_index_checkin, icon: 'bi bi-calendar-plus text-info' }
+                        - { title: Finalizadas, route: app_citas_index_complete, icon: 'bi bi-calendar-plus text-success' }
+                        - { title: Canceladas, route: app_citas_index_canceled, icon: 'bi bi-calendar-plus text-danger' }
         -
             title: Mis Citas
             icon: 'bi bi-calendar-plus-fill text-primary'

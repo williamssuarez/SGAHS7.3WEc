@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Citas;
+use App\Entity\StatusRecord;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,23 @@ class CitasRepository extends ServiceEntityRepository
         parent::__construct($registry, Citas::class);
     }
 
-    //    /**
-    //     * @return Citas[] Returns an array of Citas objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function getActivesforTableByState($state, $from, $to)
+    {
+        $qb = $this->createQueryBuilder('u');
 
-    //    public function findOneBySomeField($value): ?Citas
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $query = $qb
+            ->select('u')
+
+            ->where('u.status = :sts')
+            ->andWhere('u.estadoCita = :state')
+            ->andWhere('u.fecha between :from AND :to')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('state', $state)
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+        ;
+
+        return $query->getQuery()->getResult();
+    }
 }

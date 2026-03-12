@@ -20,11 +20,39 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/citas')]
 final class CitasController extends AbstractController
 {
-    #[Route(name: 'app_citas_index', methods: ['GET'])]
-    public function index(CitasRepository $citasRepository): Response
+    #[Route('/expected', name: 'app_citas_index_expected', methods: ['GET'])]
+    public function indexExpected(CitasRepository $citasRepository): Response
+    {
+        $now = new \DateTime('now');
+        $from = clone $now->setTime(0, 0, 0);
+        $to = clone $now->setTime(23, 59, 59);
+
+        return $this->render('citas/index.html.twig', [
+            'citas' => $citasRepository->getActivesforTableByState(CitasEstados::EXPECTED, $from, $to),
+        ]);
+    }
+
+    #[Route('/check-in', name: 'app_citas_index_checkin', methods: ['GET'])]
+    public function indexCheckIn(CitasRepository $citasRepository): Response
     {
         return $this->render('citas/index.html.twig', [
-            'citas' => $citasRepository->findAll(),
+            'citas' => $citasRepository->getActivesforTableByState(CitasEstados::CHECKED_IN),
+        ]);
+    }
+
+    #[Route('/complete', name: 'app_citas_index_complete', methods: ['GET'])]
+    public function indexCompleted(CitasRepository $citasRepository): Response
+    {
+        return $this->render('citas/index.html.twig', [
+            'citas' => $citasRepository->getActivesforTableByState(CitasEstados::EXPECTED),
+        ]);
+    }
+
+    #[Route('/canceled', name: 'app_citas_index_canceled', methods: ['GET'])]
+    public function indexCanceled(CitasRepository $citasRepository): Response
+    {
+        return $this->render('citas/index.html.twig', [
+            'citas' => $citasRepository->getActivesforTableByState(CitasEstados::CANCELLED),
         ]);
     }
 
@@ -48,7 +76,7 @@ final class CitasController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_citas_show', methods: ['GET'])]
+    #[Route('/{id}/show', name: 'app_citas_show', methods: ['GET'])]
     public function show(Citas $cita): Response
     {
         return $this->render('citas/show.html.twig', [

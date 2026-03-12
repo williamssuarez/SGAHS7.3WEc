@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Configuraciones de Citas{% endblock %}
+{% block title %}Solicitudes de Citas{% endblock %}
 
 {% block titlewrap %}
-    Configuraciones de Citas
+    Solicitudes de Citas
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item active" aria-current="page">Configuraciones de Citas</li>
+    <li class="breadcrumb-item active" aria-current="page">Solicitudes de Citas</li>
 {% endblock %}
 
 {% block body %}
@@ -21,7 +21,7 @@
     {% endfor %}
     <div class="card card-primary card-outline mb-4">
         <div class="card-header">
-            <h3 class="card-title">Configuraciones de Citas Registradas</h3>
+            <h3 class="card-title">Solicitudes de Citas Registradas</h3>
         </div>
 
         <div class="card-body">
@@ -51,6 +51,19 @@
                                 <a class="btn btn-secondary" href="{{ path('app_citas_solicitudes_show', {'id': entity.id}) }}">Detalles</a>
                                 {% if entity.estadoSolicitud.value == 'pending' %}
                                     <a class="btn btn-success" href="{{ path('app_citas_solicitudes_edit', {'id': entity.id}) }}">Editar</a>
+                                    <form action="{{ path('app_citas_solicitudes_cancelar', {'id': entity.id}) }}"
+                                          method="POST"
+                                          data-controller="confirm-finalizar"
+                                          data-action="submit->confirm-finalizar#confirm"
+                                          data-confirm-finalizar-title-value="¿Desea cancelar la Consulta?"
+                                          data-confirm-finalizar-text-value="Una vez cancelada, no podrá ser asignado una cita y deberá hacer la solicitud de nuevo."
+                                          data-confirm-finalizar-confirm-button-text-value="Sí, cancelar cita"
+                                          class="d-inline">
+
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-calendar-x"></i> Cancelar Cita
+                                        </button>
+                                    </form>
                                 {% endif %}
                             </td>
                         </tr>

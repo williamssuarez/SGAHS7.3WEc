@@ -23,9 +23,17 @@ export default class extends Controller {
             cancelButtonColor: '#d33',
             confirmButtonText: this.confirmButtonTextValue || 'Sí, finalizar',
             cancelButtonText: this.cancelButtonTextValue || 'Cancelar',
-            reverseButtons: true
+            reverseButtons: false
         }).then((result) => {
             if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Cargando...',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen() {
+                        Swal.showLoading();
+                    }
+                })
                 // If confirmed, submit the form manually
                 this.element.submit();
             }

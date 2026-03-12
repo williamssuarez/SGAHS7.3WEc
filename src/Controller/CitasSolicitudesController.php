@@ -21,10 +21,14 @@ use App\Entity\Citas;
 final class CitasSolicitudesController extends AbstractController
 {
     #[Route(name: 'app_citas_solicitudes_index', methods: ['GET'])]
-    public function index(CitasSolicitudesRepository $citasSolicitudesRepository): Response
+    public function index(CitasSolicitudesRepository $citasSolicitudesRepository, EntityManagerInterface $entityManager): Response
     {
+        $userEmail = $this->getUser()->getUserIdentifier();
+        $userObj = $entityManager->getRepository(User::class)->findOneBy(['email' => $userEmail, 'status' => $entityManager->getRepository(StatusRecord::class)->getActive()]);
+        $paciente = $userObj->getExternalProfile()->getPaciente();
+
         return $this->render('citas_solicitudes/index.html.twig', [
-            'entities' => $citasSolicitudesRepository->getActivesforTableByPaciente($this->getUser()),
+            'entities' => $citasSolicitudesRepository->getActivesforTableByPaciente($paciente->getId()),
         ]);
     }
 
@@ -44,6 +48,7 @@ final class CitasSolicitudesController extends AbstractController
             $entityManager->persist($citasSolicitude);
             $entityManager->flush();
 
+            $this->addFlash('success', 'La solicitud de cita ha sido ingresada. Espere mientras es asignado una fecha.');
             return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -103,13 +108,26 @@ final class CitasSolicitudesController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
+            $this->addFlash('success', 'La solicitud de cita ha sido editada. Espere mientras es asignado una fecha.');
             return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('citas_solicitudes/edit.html.twig', [
-            'citas_solicitude' => $citasSolicitude,
+            'entity' => $citasSolicitude,
             'form' => $form,
         ]);
+    }
+
+    #[Route('/{id}/cancel', name: 'app_citas_solicitudes_cancelar', methods: ['POST'])]
+    public function cancel(CitasSolicitudes $citasSolicitudes, EntityManagerInterface $em): Response
+    {
+        $citasSolicitudes->setEstadoSolicitud(CitasSolicitudesEstados::CANCELED);
+        $em->persist($citasSolicitudes);
+
+        $em->flush();
+
+        $this->addFlash('success', 'La solicitud de cita ha sido cancelada.');
+        return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}', name: 'app_citas_solicitudes_delete', methods: ['POST'])]

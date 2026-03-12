@@ -10,7 +10,8 @@ enum CitasSolicitudesEstados: string
     case PENDING = 'pending';
     case PROCESSING = 'processing';
     case SCHEDULED = 'finished';
-    case REJECTED = 'canceled';
+    case REJECTED = 'rejected';
+    case CANCELED = 'canceled';
 
     /**
      * Retorna un texto amigable para el usuario final.
@@ -22,6 +23,7 @@ enum CitasSolicitudesEstados: string
             self::PROCESSING => 'Procesando',
             self::SCHEDULED => 'Programada',
             self::REJECTED => 'Rechazada',
+            self::CANCELED => 'Cancelada',
         };
     }
 
