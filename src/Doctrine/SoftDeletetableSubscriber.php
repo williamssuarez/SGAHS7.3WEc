@@ -34,6 +34,8 @@ final readonly class SoftDeletetableSubscriber
         $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $user = $this->security->getUser();
 
+        $userId = ($user instanceof User) ? $user->getId() : 1;//dame el usuario actual o en su defecto el admin
+
         /** @var SoftDeletetableTrait|object $entity */
 
         // 2. Set 'created' and 'updated' timestamps
@@ -41,10 +43,8 @@ final readonly class SoftDeletetableSubscriber
         $entity->setUpdated($now); // Initial creation updates both
 
         // 3. Set 'uidCreate' and 'uidUpdate'
-        if ($user instanceof User) {
-            $entity->setUidCreate($user->getId());
-            $entity->setUidUpdate($user->getId());
-        }
+        $entity->setUidCreate($userId);
+        $entity->setUidUpdate($userId);
 
         $entity->setStatus($this->entityManager->getRepository(StatusRecord::class)->getActive());
     }
@@ -60,15 +60,15 @@ final readonly class SoftDeletetableSubscriber
         $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
         $user = $this->security->getUser();
 
+        $userId = ($user instanceof User) ? $user->getId() : 1;//dame el usuario actual o en su defecto el admin
+
         /** @var SoftDeletetableTrait|object $entity */
 
         // 4. Set only the 'updated' timestamp
         $entity->setUpdated($now);
 
         // 5. Set only 'uidUpdate'
-        if ($user instanceof User) {
-            $entity->setUidUpdate($user->getId());
-        }
+        $entity->setUidUpdate($userId);
 
         // 6. Force Doctrine to recognize the change on a lifecycle event
         $args->getObjectManager()->getUnitOfWork()->recomputeSingleEntityChangeSet(

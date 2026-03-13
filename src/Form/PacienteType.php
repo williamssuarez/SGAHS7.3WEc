@@ -66,7 +66,7 @@ class PacienteType extends AbstractType
                 ],
                 'attr' => [
                     'class' => 'form-control number-only',
-                    'maxlength' => '9'
+                    'maxlength' => '8'
                 ],
                 'required' => true,
             ])

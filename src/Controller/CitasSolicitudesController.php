@@ -58,31 +58,6 @@ final class CitasSolicitudesController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/citas/test-engine', name: 'app_admin_citas_test_engine', methods: ['POST'])]
-    public function testEngine(EntityManagerInterface $em, AppointmentScheduler $scheduler): Response {
-        // Find all configurations
-        $configs = $em->getRepository(CitasConfiguraciones::class)->findAll();
-
-        // Let's test scheduling for tomorrow
-        $targetDate = new \DateTime('+1 day');
-        $totalAssigned = 0;
-
-        foreach ($configs as $config) {
-            // Process the queue for each active specialty configuration
-            $assigned = $scheduler->processQueue($config, $targetDate);
-            $totalAssigned += $assigned;
-        }
-
-        if ($totalAssigned > 0) {
-            $this->addFlash('success', "¡Motor ejecutado con éxito! Se asignaron $totalAssigned citas para el " . $targetDate->format('d/m/Y') . ".");
-        } else {
-            $this->addFlash('info', 'El motor se ejecutó, pero no había solicitudes pendientes o no hay cupos disponibles.');
-        }
-
-        // Redirect back to wherever your admin dashboard or config index is
-        return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_SEE_OTHER);
-    }
-
     #[Route('/{id}', name: 'app_citas_solicitudes_show', methods: ['GET'])]
     public function show(CitasSolicitudes $citasSolicitude, EntityManagerInterface $entityManager): Response
     {

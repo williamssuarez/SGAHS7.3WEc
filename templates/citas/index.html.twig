@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administracion de Citas{% endblock %}
+{% block title %}Administracion de Citas - {{ stateType }}{% endblock %}
 
 {% block titlewrap %}
-    Administracion de Citas
+    Administracion de Citas - {{ stateType }}
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item active" aria-current="page">Administracion de Citas</li>
+    <li class="breadcrumb-item active" aria-current="page">Administracion de Citas - {{ stateType }}</li>
 {% endblock %}
 
 {% block body %}
@@ -21,7 +21,7 @@
     {% endfor %}
     <div class="card card-primary card-outline mb-4">
         <div class="card-header">
-            <h3 class="card-title">Administracion de Citas</h3>
+            <h3 class="card-title">Citas {{ stateType }}</h3>
         </div>
 
         <div class="card-body">
@@ -29,13 +29,11 @@
                 <thead>
                 <tr>
                     <th>Especialidad</th>
-                    <th>Consultorios</th>
+                    <th>Consultorio</th>
+                    <th>Paciente</th>
                     <th>Fecha</th>
                     <th>Inicio-Fin</th>
-                    <th>Pacientes Maximos</th>
-                    <th>Prioridad de Edad</th>
-                    <th>Duracion Cita</th>
-                    <th>Receso</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -43,22 +41,50 @@
                 {% for entity in entities %}
                     <tr class="align-middle">
                         <td>{{ entity.especialidad.nombre }}</td>
-                        <td>
-                            <ul>
-                                {% for consultorios in entity.consultorio %}
-                                    <li>{{ consultorios.nombre }}</li>
-                                {% endfor %}
-                            </ul>
-                        </td>
-                        <td>{{ entity.fecha|date('H:i', false) }}</td>
+                        <td>{{ entity.consultorio.nombre }}</td>
+                        <td>{{ entity.paciente.nombre }} {{ entity.paciente.apellido }}</td>
+                        <td>{{ entity.fecha|date('d/m/Y', false) }}</td>
                         <td>{{ entity.horaInicio|date('H:i', false) }} - {{ entity.horaFin|date('H:i', false) }}</td>
-                        <td>{{ entity.maxPacientesDia }}</td>
-                        <td>{{ entity.edadPrioridad ? entity.edadPrioridad ~ ' años': '--' }}</td>
-                        <td>{{ entity.duracionCita }} minutos</td>
-                        <td>{{ entity.tiempoReceso ? entity.tiempoReceso ~ ' minutos': '--' }}</td>
                         <td>
-                            <a class="btn btn-secondary" href="{{ path('app_citas_configuraciones_show', {'id': entity.id}) }}">Detalles</a>
-                            <a class="btn btn-success" href="{{ path('app_citas_configuraciones_edit', {'id': entity.id}) }}">Editar</a>
+                            {% if entity.estadoCita.value == 'expected' %}
+                                <span class="badge rounded-pill bg-warning">Esperado</span>
+                            {% elseif entity.estadoCita.value == 'checked_in' %}
+                                {% set badge = entity.consulta.consultaEstadosBadgeConfig %}
+                                    <span class="badge rounded-pill {{ badge.class }}">{{ badge.label }}</span>
+                            {% elseif entity.estadoCita.value == 'completed' %}
+                                <span class="badge rounded-pill bg-success">Completada</span>
+                            {% elseif entity.estadoCita.value == 'canceled' %}
+                                <span class="badge rounded-pill bg-danger">Cancelada</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a class="btn btn-secondary" href="{{ path('app_citas_show', {'id': entity.id}) }}">Detalles</a>
+                            {% if entity.estadoCita.value == 'expected' %}
+                                <form action="{{ path('app_citas_checkin', {'id': entity.id}) }}"
+                                      method="POST"
+                                      data-controller="confirm-finalizar"
+                                      data-action="submit->confirm-finalizar#confirm"
+                                      data-confirm-finalizar-title-value="¿Confirmar Llegada?"
+                                      data-confirm-finalizar-text-value="¿El paciente {{ entity.paciente.nombre }} ya se encuentra en las instalaciones? Esto creará una consulta en la lista de espera del médico."
+                                      data-confirm-finalizar-confirm-button-text-value="Sí, Ingresar"
+                                      class="d-inline">
+
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-person-check-fill"></i> Anunciar Llegada
+                                    </button>
+                                </form>
+                                <form action="{{ path('app_citas_canceled', {'id': entity.id}) }}"
+                                      method="POST"
+                                      data-controller="cancel-appointment"
+                                      data-action="submit->cancel-appointment#confirm"
+                                      data-cancel-appointment-patient-name-value="{{ entity.paciente.nombre }} {{ entity.paciente.apellido }}"
+                                      class="d-inline">
+
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-person-x-fill"></i> Cancelar Cita
+                                    </button>
+                                </form>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -67,7 +93,7 @@
         </div>
 
         <div class="card-footer clearfix">
-            <a href="{{ path('app_citas_configuraciones_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+            {#<a href="{{ path('app_citas_configuraciones_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>#}
         </div>
     </div>
 {% endblock %}

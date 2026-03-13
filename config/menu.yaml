@@ -41,6 +41,7 @@ parameters:
                     children:
                         - { title: Especialidades, route: app_especialidades_index, icon: 'bi bi-gear text-warning' }
                         - { title: Consultorios, route: app_consultorios_index, icon: 'bi bi-gear text-warning' }
+                        - { title: Configurar Citas, route: app_citas_configuraciones_index, icon: 'bi bi-gear text-warning' }
                 -   title: Todas las Citas
                     icon: 'bi bi-calendar-plus text-info'
                     children:

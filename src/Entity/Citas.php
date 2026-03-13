@@ -45,6 +45,9 @@ class Citas
     #[ORM\Column(enumType: CitasEstados::class)]
     private ?CitasEstados $estadoCita = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $observaciones = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -154,6 +157,18 @@ class Citas
     public function setEstadoCita(CitasEstados $estadoCita): static
     {
         $this->estadoCita = $estadoCita;
+
+        return $this;
+    }
+
+    public function getObservaciones(): ?string
+    {
+        return $this->observaciones;
+    }
+
+    public function setObservaciones(?string $observaciones): static
+    {
+        $this->observaciones = $observaciones;
 
         return $this;
     }

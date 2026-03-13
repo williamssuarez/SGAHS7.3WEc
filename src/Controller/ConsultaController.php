@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Alergias;
 use App\Entity\Audit;
+use App\Entity\Citas;
 use App\Entity\Consulta;
 use App\Entity\PacienteCondiciones;
 use App\Entity\PacienteDiscapacidades;
@@ -13,6 +14,7 @@ use App\Entity\Prescripciones;
 use App\Entity\StatusRecord;
 use App\Entity\Vitales;
 use App\Enum\AuditTipos;
+use App\Enum\CitasEstados;
 use App\Enum\ConsultaEstados;
 use App\Enum\PrescripcionesEstados;
 use App\Exception\BusinessRuleException;
@@ -239,6 +241,16 @@ final class ConsultaController extends AbstractController
         $consulta->setEstadoConsulta(ConsultaEstados::FINISHED);
         $consulta->setFechaFin(new \DateTime('now'));
         $em->persist($consulta);
+
+        $cita = $em->getRepository(Citas::class)->findOneBy([
+            'consulta' => $consulta->getId(),
+            'status' => $em->getRepository(StatusRecord::class)->getActive()
+        ]);
+
+        if ($cita) {
+            $cita->setEstadoCita(CitasEstados::COMPLETED);
+            $em->persist($cita);
+        }
 
         // 2. Audit the event
         $auditService->persistAudit(

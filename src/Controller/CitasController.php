@@ -23,56 +23,52 @@ final class CitasController extends AbstractController
     #[Route('/expected', name: 'app_citas_index_expected', methods: ['GET'])]
     public function indexExpected(CitasRepository $citasRepository): Response
     {
-        $now = new \DateTime('now');
+        $now = new \DateTime('+1 day');
         $from = clone $now->setTime(0, 0, 0);
         $to = clone $now->setTime(23, 59, 59);
 
         return $this->render('citas/index.html.twig', [
-            'citas' => $citasRepository->getActivesforTableByState(CitasEstados::EXPECTED, $from, $to),
+            'entities' => $citasRepository->getActivesforTableByState(CitasEstados::EXPECTED, $from, $to),
+            'stateType' => 'Pendientes'
         ]);
     }
 
     #[Route('/check-in', name: 'app_citas_index_checkin', methods: ['GET'])]
     public function indexCheckIn(CitasRepository $citasRepository): Response
     {
+        $now = new \DateTime('+1 day');
+        $from = clone $now->setTime(0, 0, 0);
+        $to = clone $now->setTime(23, 59, 59);
+
         return $this->render('citas/index.html.twig', [
-            'citas' => $citasRepository->getActivesforTableByState(CitasEstados::CHECKED_IN),
+            'entities' => $citasRepository->getActivesforTableByState(CitasEstados::CHECKED_IN, $from, $to),
+            'stateType' => 'En Espera'
         ]);
     }
 
     #[Route('/complete', name: 'app_citas_index_complete', methods: ['GET'])]
     public function indexCompleted(CitasRepository $citasRepository): Response
     {
+        $now = new \DateTime('+1 day');
+        $from = clone $now->setTime(0, 0, 0);
+        $to = clone $now->setTime(23, 59, 59);
+
         return $this->render('citas/index.html.twig', [
-            'citas' => $citasRepository->getActivesforTableByState(CitasEstados::EXPECTED),
+            'entities' => $citasRepository->getActivesforTableByState(CitasEstados::COMPLETED, $from, $to),
+            'stateType' => 'Finalizadas'
         ]);
     }
 
     #[Route('/canceled', name: 'app_citas_index_canceled', methods: ['GET'])]
     public function indexCanceled(CitasRepository $citasRepository): Response
     {
+        $now = new \DateTime('+1 day');
+        $from = clone $now->setTime(0, 0, 0);
+        $to = clone $now->setTime(23, 59, 59);
+
         return $this->render('citas/index.html.twig', [
-            'citas' => $citasRepository->getActivesforTableByState(CitasEstados::CANCELLED),
-        ]);
-    }
-
-    #[Route('/new', name: 'app_citas_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $cita = new Citas();
-        $form = $this->createForm(CitasType::class, $cita);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($cita);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_citas_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('citas/new.html.twig', [
-            'cita' => $cita,
-            'form' => $form,
+            'entities' => $citasRepository->getActivesforTableByState(CitasEstados::CANCELED, $from, $to),
+            'stateType' => 'Canceladas'
         ]);
     }
 
@@ -84,30 +80,12 @@ final class CitasController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_citas_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Citas $cita, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(CitasType::class, $cita);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_citas_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('citas/edit.html.twig', [
-            'cita' => $cita,
-            'form' => $form,
-        ]);
-    }
-
     #[Route('/{id}/check-in', name: 'app_citas_checkin', methods: ['POST'])]
     public function checkIn(Citas $cita, EntityManagerInterface $em, AuditService $auditService): Response {
         // 1. Prevent double check-ins
         if ($cita->getConsulta() !== null) {
             $this->addFlash('warning', 'Este paciente ya fue ingresado a la sala de espera.');
-            return $this->redirectToRoute('app_citas_index');
+            return $this->redirectToRoute('app_citas_index_expected');
         }
 
         // 2. Change the Appointment Status
@@ -136,6 +114,37 @@ final class CitasController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', 'Paciente ingresado a la sala de espera exitosamente.');
-        return $this->redirectToRoute('app_citas_index');
+        return $this->redirectToRoute('app_citas_index_expected');
+    }
+
+    #[Route('/{id}/canceled', name: 'app_citas_canceled', methods: ['POST'])]
+    public function cancel(Request $request, Citas $cita, EntityManagerInterface $em, AuditService $auditService): Response
+    {
+        // 1. Retrieve the reason sent by the Stimulus controller
+        $motivo = $request->request->get('motivo_cancelacion');
+
+        if (!$motivo) {
+            $this->addFlash('error', 'El motivo de cancelación es obligatorio.');
+            return $this->redirectToRoute('app_citas_index_expected');
+        }
+
+        // 2. Update the Cita entity
+        $cita->setEstadoCita(CitasEstados::CANCELED); // Using your state naming
+        $cita->setObservaciones($motivo);
+
+        // Optional but highly recommended: Add an Audit log here!
+        $message = 'Cita cancelada por motivo: ' . $motivo;
+        $auditService->persistAudit(
+            AuditTipos::RECEPTION_CANCELED,
+            $message,
+            $cita->getPaciente(),
+            $cita->getConsulta()
+        );
+
+        $em->flush();
+        $this->addFlash('success', 'La cita ha sido cancelada exitosamente.');
+
+        // Redirect back to the pending list
+        return $this->redirectToRoute('app_citas_index_expected');
     }
 }

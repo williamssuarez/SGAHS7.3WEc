@@ -94,7 +94,7 @@ class CitasConfiguracionesType extends AbstractType
                 'label' => '¿Tiene Prioridad de edad?',
                 'label_attr' => ['class' => 'form-check-label'],
                 'attr' => [
-                    'class' => 'form-check-input',
+                    'class' => 'form-check-input bigCheckbox',
                     'data-conditional-field-target' => 'trigger',
                     'data-action' => 'change->conditional-field#toggle'
                 ],
@@ -149,7 +149,7 @@ class CitasConfiguracionesType extends AbstractType
                 'label' => '¿Incluir tiempo de receso entre citas?',
                 'label_attr' => ['class' => 'form-check-label'],
                 'attr' => [
-                    'class' => 'form-check-input',
+                    'class' => 'form-check-input bigCheckbox',
                     'data-conditional-field-target' => 'trigger',
                     'data-action' => 'change->conditional-field#toggle'
                 ],

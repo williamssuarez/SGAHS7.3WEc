@@ -33,7 +33,7 @@ export default class extends Controller {
                     didOpen() {
                         Swal.showLoading();
                     }
-                })
+                });
                 // If confirmed, submit the form manually
                 this.element.submit();
             }

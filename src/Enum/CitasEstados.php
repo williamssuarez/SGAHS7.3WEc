@@ -10,7 +10,7 @@ enum CitasEstados: string
     case EXPECTED = 'expected';
     case CHECKED_IN = 'checked_in';
     case COMPLETED = 'completed';
-    case CANCELLED = 'cancelled';
+    case CANCELED = 'canceled';
 
     /**
      * Retorna un texto amigable para el usuario final.
@@ -21,7 +21,7 @@ enum CitasEstados: string
             self::EXPECTED => 'Esperado',
             self::CHECKED_IN => 'Atendido',
             self::COMPLETED => 'Completado',
-            self::CANCELLED => 'Cancelado',
+            self::CANCELED => 'Cancelado',
         };
     }
 

@@ -9,7 +9,7 @@ enum CitasSolicitudesEstados: string
 {
     case PENDING = 'pending';
     case PROCESSING = 'processing';
-    case SCHEDULED = 'finished';
+    case SCHEDULED = 'scheduled';
     case REJECTED = 'rejected';
     case CANCELED = 'canceled';
 
