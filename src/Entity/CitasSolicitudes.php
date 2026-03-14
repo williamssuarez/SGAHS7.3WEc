@@ -7,6 +7,7 @@ use App\Enum\CitasSolicitudesEstados;
 use App\Repository\CitasSolicitudesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: CitasSolicitudesRepository::class)]
 class CitasSolicitudes
@@ -32,6 +33,19 @@ class CitasSolicitudes
 
     #[ORM\Column(nullable: true)]
     private ?int $scorePrioridad = null;
+
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private ?Uuid $uuid = null;
+
+    public function __construct()
+    {
+        $this->uuid = Uuid::v4();
+    }
+
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
 
     public function getId(): ?int
     {

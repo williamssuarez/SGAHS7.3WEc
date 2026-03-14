@@ -16,8 +16,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Entity\Citas;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Entity\Citas;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -62,9 +63,14 @@ final class CitasSolicitudesController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_citas_solicitudes_show', methods: ['GET'])]
-    public function show(CitasSolicitudes $citasSolicitude, EntityManagerInterface $entityManager): Response
+    #[Route('/{uuid}', name: 'app_citas_solicitudes_show', methods: ['GET'])]
+    public function show(#[MapEntity(mapping: ['uuid' => 'uuid'])] CitasSolicitudes $citasSolicitude, EntityManagerInterface $entityManager): Response
     {
+        if ($citasSolicitude->getStatus() != $entityManager->getRepository(StatusRecord::class)->getActive()){
+            $this->addFlash('error', 'Informacion no encontrada.');
+            return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_NOT_FOUND);
+        }
+
         $cita = null;
         if ($citasSolicitude->getEstadoSolicitud() == CitasSolicitudesEstados::SCHEDULED){
             $cita = $entityManager->getRepository(Citas::class)->findOneBy([
@@ -78,10 +84,15 @@ final class CitasSolicitudesController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_citas_solicitudes_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, CitasSolicitudes $citasSolicitude, EntityManagerInterface $entityManager): Response
+    #[Route('/{uuid}/edit', name: 'app_citas_solicitudes_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, #[MapEntity(mapping: ['uuid' => 'uuid'])] CitasSolicitudes $citasSolicitudes, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(CitasSolicitudesType::class, $citasSolicitude);
+        if ($citasSolicitudes->getStatus() != $entityManager->getRepository(StatusRecord::class)->getActive()){
+            $this->addFlash('error', 'Informacion no encontrada.');
+            return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_NOT_FOUND);
+        }
+
+        $form = $this->createForm(CitasSolicitudesType::class, $citasSolicitudes);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -92,14 +103,19 @@ final class CitasSolicitudesController extends AbstractController
         }
 
         return $this->render('citas_solicitudes/edit.html.twig', [
-            'entity' => $citasSolicitude,
+            'entity' => $citasSolicitudes,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}/cancel', name: 'app_citas_solicitudes_cancelar', methods: ['POST'])]
-    public function cancel(CitasSolicitudes $citasSolicitudes, EntityManagerInterface $em): Response
+    #[Route('/{uuid}/cancel', name: 'app_citas_solicitudes_cancelar', methods: ['POST'])]
+    public function cancel(#[MapEntity(mapping: ['uuid' => 'uuid'])] CitasSolicitudes $citasSolicitudes, EntityManagerInterface $em): Response
     {
+        if ($citasSolicitudes->getStatus() != $em->getRepository(StatusRecord::class)->getActive()){
+            $this->addFlash('error', 'Informacion no encontrada.');
+            return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_NOT_FOUND);
+        }
+
         $citasSolicitudes->setEstadoSolicitud(CitasSolicitudesEstados::CANCELED);
         $em->persist($citasSolicitudes);
 
@@ -109,9 +125,14 @@ final class CitasSolicitudesController extends AbstractController
         return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/voucher', name: 'app_citas_solicitudes_voucher', methods: ['GET'])]
-    public function downloadVoucher(CitasSolicitudes $citasSolicitudes, UrlGeneratorInterface $router, EntityManagerInterface $entityManager): Response
+    #[Route('/{uuid}/voucher', name: 'app_citas_solicitudes_voucher', methods: ['GET'])]
+    public function downloadVoucher(#[MapEntity(mapping: ['uuid' => 'uuid'])] CitasSolicitudes $citasSolicitudes, UrlGeneratorInterface $router, EntityManagerInterface $entityManager): Response
     {
+        if ($citasSolicitudes->getStatus() != $entityManager->getRepository(StatusRecord::class)->getActive()){
+            $this->addFlash('error', 'Informacion no encontrada.');
+            return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_NOT_FOUND);
+        }
+
         if ($citasSolicitudes->getEstadoSolicitud() != CitasSolicitudesEstados::SCHEDULED){
             $this->addFlash('error', 'La solicitud de cita ya no esta programada.');
             return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_FORBIDDEN);
@@ -155,16 +176,5 @@ final class CitasSolicitudesController extends AbstractController
             Response::HTTP_OK,
             ['Content-Type' => 'application/pdf']
         );
-    }
-
-    #[Route('/{id}', name: 'app_citas_solicitudes_delete', methods: ['POST'])]
-    public function delete(Request $request, CitasSolicitudes $citasSolicitude, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$citasSolicitude->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($citasSolicitude);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_SEE_OTHER);
     }
 }

@@ -343,6 +343,8 @@ $(document).ready(function () {
     // ---End of Event Listeners for tabs ---
 
     // ---Start of Viewer.js definition ---
+    /* Overlayscrollbars config start */
+    const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
     const container = document.getElementById('photo-container');
     if (container) {
         // 1. Declare the variable that will hold the Viewer instance
@@ -391,6 +393,18 @@ $(document).ready(function () {
         });
     }
     // ---End of Viewer.js definition ---
+
+    //OverlayScrollbars
+    const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
+    if (sidebarWrapper) {//check
+        OverlayScrollbars(sidebarWrapper, {
+            scrollbars: {
+                theme: 'os-theme-light',
+                autoHide: 'leave',
+                clickScroll: true,
+            },
+        });
+    }
 });
 
 new Sortable(document.querySelector('.connectedSortable'), {
@@ -403,23 +417,9 @@ cardHeaders.forEach((cardHeader) => {
     cardHeader.style.cursor = 'move';
 });
 
-/* Overlayscrollbars config start */
-const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
-
 //ALL DOMCONTENTLOADED EVENTS GO HERE
 document.addEventListener('DOMContentLoaded', function () {
     console.log('IT LOADS CORRECTLY SO IDK WHATS WRONG');
-    //OverlayScrollbars
-    const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
-    if (sidebarWrapper) {//check
-        OverlayScrollbars(sidebarWrapper, {
-            scrollbars: {
-                theme: 'os-theme-light',
-                autoHide: 'leave',
-                clickScroll: true,
-            },
-        });
-    }
 
     //fullcalendar
     var calendarEl = document.getElementById('calendar');

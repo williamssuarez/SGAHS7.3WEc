@@ -4,7 +4,7 @@ security:
         ROLE_EXTERNAL: ROLE_USER
 
         # ROLE_INTERNAL is for staff. They inherit everything from EXTERNAL
-        ROLE_INTERNAL: [ROLE_EXTERNAL]
+        ROLE_INTERNAL: ROLE_USER
 
         # ROLE_ADMIN is for the boss. They inherit everything from INTERNAL
         ROLE_ADMIN: [ROLE_INTERNAL]

@@ -23,7 +23,7 @@ final class CitasController extends AbstractController
     #[Route('/expected', name: 'app_citas_index_expected', methods: ['GET'])]
     public function indexExpected(CitasRepository $citasRepository): Response
     {
-        $now = new \DateTime('+1 day');
+        $now = new \DateTime('now');
         $from = clone $now->setTime(0, 0, 0);
         $to = clone $now->setTime(23, 59, 59);
 
@@ -69,6 +69,36 @@ final class CitasController extends AbstractController
         return $this->render('citas/index.html.twig', [
             'entities' => $citasRepository->getActivesforTableByState(CitasEstados::CANCELED, $from, $to),
             'stateType' => 'Canceladas'
+        ]);
+    }
+
+    #[Route('/listado', name: 'app_citas_index_list', methods: ['GET'])]
+    public function index(Request $request, CitasRepository $citasRepository): Response
+    {
+        // Default values: today and 'expected' state
+        $today = new \DateTime('now');
+
+        $startDate = $request->query->get('startDate')
+            ? new \DateTime($request->query->get('startDate'))
+            : clone $today->setTime(0, 0, 0);
+
+        $endDate = $request->query->get('endDate')
+            ? new \DateTime($request->query->get('endDate'))
+            : clone $today->setTime(23, 59, 59);
+
+        $state = $request->query->get('state', CitasEstados::EXPECTED->value);
+
+        if ($state == 'all'){
+            $entities = $citasRepository->getActivesforTableByDateOnly($startDate, $endDate);
+        } else {
+            $entities = $citasRepository->getActivesforTableByState($state, $startDate, $endDate);
+        }
+
+        return $this->render('citas/index.html.twig', [
+            'entities' => $entities,
+            'currentState' => $state,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d'),
         ]);
     }
 
@@ -145,6 +175,6 @@ final class CitasController extends AbstractController
         $this->addFlash('success', 'La cita ha sido cancelada exitosamente.');
 
         // Redirect back to the pending list
-        return $this->redirectToRoute('app_citas_index_expected');
+        return $this->redirectToRoute('app_citas_index_list');
     }
 }

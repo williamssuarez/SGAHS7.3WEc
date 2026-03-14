@@ -7,7 +7,7 @@ parameters:
             route: app_dashboard
         -
             title: Configuraciones
-            icon: 'bi bi-gear text-warning'
+            icon: 'bi bi-gear-fill text-warning'
             roles: 'ROLE_ADMIN'
             children:
                 -   title: Sistema
@@ -27,7 +27,7 @@ parameters:
                 - { title: Medicamentos, route: app_medicamentos_index, icon: 'bi bi-capsule-pill text-warning' }
         -
             title: Pacientes
-            icon: 'bi bi-people text-info'
+            icon: 'bi bi-people-fill text-info'
             roles: 'ROLE_INTERNAL'
             children:
                 - { title: Pacientes Registrados, route: app_paciente_index, icon: 'bi bi-person-badge-fill text-info' }
@@ -45,10 +45,11 @@ parameters:
                 -   title: Todas las Citas
                     icon: 'bi bi-calendar-plus text-info'
                     children:
-                        - { title: Pendientes, route: app_citas_index_expected, icon: 'bi bi-calendar-plus text-warning' }
-                        - { title: En Espera, route: app_citas_index_checkin, icon: 'bi bi-calendar-plus text-info' }
-                        - { title: Finalizadas, route: app_citas_index_complete, icon: 'bi bi-calendar-plus text-success' }
-                        - { title: Canceladas, route: app_citas_index_canceled, icon: 'bi bi-calendar-plus text-danger' }
+                        - { title: Filtrar Citas, route: app_citas_index_list, icon: 'bi bi-calendar-plus text-info' }
+                -   title: Estadísticas
+                    icon: 'bi bi-pie-chart-fill text-success'
+                    children:
+                        - { title: Citas, route: app_citas_estadisticas_list, icon: 'bi bi-graph-down text-success' }
         -
             title: Mis Citas
             icon: 'bi bi-calendar-plus-fill text-primary'
@@ -60,7 +61,7 @@ parameters:
                         - { title: Solicitudes, route: app_citas_solicitudes_index, icon: 'bi bi-calendar-plus-fill text-primary' }
         -
             title: Consultas
-            icon: 'bi bi-hospital text-success'
+            icon: 'bi bi-hospital-fill text-success'
             roles: 'ROLE_INTERNAL'
             children:
                 - { title: Consultas Pendientes, route: app_consulta_pendientes_index, icon: 'bi bi-hospital text-warning' }

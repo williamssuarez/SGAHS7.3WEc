@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Citas;
 use App\Entity\StatusRecord;
+use App\Enum\CitasEstados;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,7 +18,7 @@ class CitasRepository extends ServiceEntityRepository
         parent::__construct($registry, Citas::class);
     }
 
-    public function getActivesforTableByState($state, $from, $to)
+    public function getActivesforTableByState($state, \DateTime $from, \DateTime $to)
     {
         $qb = $this->createQueryBuilder('u');
 
@@ -35,5 +36,77 @@ class CitasRepository extends ServiceEntityRepository
         ;
 
         return $query->getQuery()->getResult();
+    }
+
+    public function getActivesforTableByDateOnly(\DateTime $from, \DateTime $to)
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb
+            ->select('u')
+
+            ->where('u.status = :sts')
+            ->andWhere('u.fecha between :from AND :to')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+        ;
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getSummaryCountsByState(\DateTime $start, \DateTime $end): array
+    {
+        $results = $this->createQueryBuilder('c')
+            ->select('c.estadoCita, COUNT(c.id) as total')
+            ->where('c.fecha BETWEEN :start AND :end')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->groupBy('c.estadoCita')
+            ->getQuery()
+            ->getResult();
+
+        // Transform results into a clean array: ['expected' => 5, 'finalized' => 10, ...]
+        $summary = [
+            'expected' => 0,
+            'checked_in' => 0,
+            'completed' => 0,
+            'canceled' => 0,
+        ];
+
+        foreach ($results as $row) {
+            // Assuming your CitasEstados is an Enumbacked by string
+            $stateKey = $row['estadoCita'] instanceof \BackedEnum ? $row['estadoCita']->value : $row['estadoCita'];
+            $summary[$stateKey] = (int)$row['total'];
+        }
+
+        return $summary;
+    }
+
+    public function countAppointmentsByDay(\DateTime $start, \DateTime $end): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.fecha, COUNT(c.id) as total')
+            ->where('c.fecha BETWEEN :start AND :end')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->groupBy('c.fecha')
+            ->orderBy('c.fecha', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countAppointmentsByDayAndState(\DateTime $start, \DateTime $end): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('c.fecha, c.estadoCita, COUNT(c.id) as total')
+            ->where('c.fecha BETWEEN :start AND :end')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->groupBy('c.fecha, c.estadoCita')
+            ->orderBy('c.fecha', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

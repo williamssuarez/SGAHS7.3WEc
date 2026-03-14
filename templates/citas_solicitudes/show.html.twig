@@ -20,8 +20,14 @@
                     <h4>{{ entity.especialidad.nombre }}</h4>
                 </div>
                 <div class="mb-3">
-                    <h3>Especialidad Solicitada</h3>
+                    <h3>Motivo de Solicitud</h3>
                     <h4>{{ entity.motivoConsulta }}</h4>
+                </div>
+                <div class="mb-3">
+                    <h3>Fecha de Solicitud</h3>
+                    <h4>
+                        {{ entity.created|date('d/m/Y') }} <i>{{ entity.created|time_ago }}</i>
+                    </h4>
                 </div>
                 <div class="mb-3">
                     <h3>Estado de Solicitud</h3>
@@ -30,12 +36,6 @@
                         <span class="badge rounded-pill {{ badge.class }}">
                             {{ badge.label }}
                         </span>
-                    </h4>
-                </div>
-                <div class="mb-3">
-                    <h3>Fecha de Solicitud</h3>
-                    <h4>
-                        {{ entity.created|date('d/m/Y') }} <i>{{ entity.created|time_ago }}</i>
                     </h4>
                 </div>
 
@@ -65,13 +65,13 @@
 
                             {% if entity.estadoSolicitud.value == 'pending' %}
                                 <div class="d-flex">
-                                    <a class="btn btn-success" href="{{ path('app_citas_solicitudes_edit', {'id': entity.id}) }}">
+                                    <a class="btn btn-success" href="{{ path('app_citas_solicitudes_edit', {'uuid': entity.uuid}) }}">
                                         <i class="bi bi-pencil-square"></i> Editar
                                     </a>
                                 </div>
                             {% elseif entity.estadoSolicitud.value == 'scheduled' %}
                                 <div class="d-flex">
-                                    <a class="btn btn-danger" target="_blank" href="{{ path('app_citas_solicitudes_voucher', {'id': entity.id}) }}">
+                                    <a class="btn btn-danger" target="_blank" href="{{ path('app_citas_solicitudes_voucher', {'uuid': entity.uuid}) }}">
                                         <i class="bi bi-file-pdf"></i> Generar Comprobante
                                     </a>
                                 </div>

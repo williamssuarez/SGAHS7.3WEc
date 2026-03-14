@@ -48,14 +48,14 @@
                             </td>
                             <td>{{ entity.created|date('d/m/Y') }} <i>{{ entity.created|time_ago }}</i></td>
                             <td>
-                                <a class="btn btn-secondary" href="{{ path('app_citas_solicitudes_show', {'id': entity.id}) }}">Detalles</a>
+                                <a class="btn btn-secondary" href="{{ path('app_citas_solicitudes_show', {'uuid': entity.uuid}) }}">Detalles</a>
                                 {% if entity.estadoSolicitud.value == 'pending' %}
-                                    <a class="btn btn-success" href="{{ path('app_citas_solicitudes_edit', {'id': entity.id}) }}">Editar</a>
-                                    <form action="{{ path('app_citas_solicitudes_cancelar', {'id': entity.id}) }}"
+                                    <a class="btn btn-success" href="{{ path('app_citas_solicitudes_edit', {'uuid': entity.uuid}) }}">Editar</a>
+                                    <form action="{{ path('app_citas_solicitudes_cancelar', {'uuid': entity.uuid}) }}"
                                           method="POST"
                                           data-controller="confirm-finalizar"
                                           data-action="submit->confirm-finalizar#confirm"
-                                          data-confirm-finalizar-title-value="¿Desea cancelar la Consulta?"
+                                          data-confirm-finalizar-title-value="¿Desea cancelar la Solicitud?"
                                           data-confirm-finalizar-text-value="Una vez cancelada, no podrá ser asignado una cita y deberá hacer la solicitud de nuevo."
                                           data-confirm-finalizar-confirm-button-text-value="Sí, cancelar cita"
                                           class="d-inline">
@@ -65,7 +65,7 @@
                                         </button>
                                     </form>
                                 {% elseif entity.estadoSolicitud.value == 'scheduled' %}
-                                    <a class="btn btn-danger" target="_blank" href="{{ path('app_citas_solicitudes_voucher', {'id': entity.id}) }}">
+                                    <a class="btn btn-danger" target="_blank" href="{{ path('app_citas_solicitudes_voucher', {'uuid': entity.uuid}) }}">
                                         <i class="bi bi-file-pdf"></i> Generar Comprobante
                                     </a>
                                 {% endif %}

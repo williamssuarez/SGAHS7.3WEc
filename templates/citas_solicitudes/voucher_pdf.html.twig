@@ -20,8 +20,8 @@
 <div class="details">
     <p><strong>Paciente:</strong> {{ cita.paciente.nombre }} {{ cita.paciente.apellido }}</p>
     <p><strong>Especialidad:</strong> {{ cita.especialidad.nombre }}</p>
-    <p><strong>Fecha:</strong> {{ cita.fecha|date('d/m/Y') }}</p>
-    <p><strong>Hora:</strong> {{ cita.horaInicio|date('H:i') }} - {{ cita.horaFin|date('H:i') }}</p>
+    <p><strong>Fecha:</strong> {{ cita.fecha|date('d/m/Y', false) }}</p>
+    <p><strong>Hora:</strong> {{ cita.horaInicio|date('H:i', false) }} - {{ cita.horaFin|date('H:i', false) }}</p>
     <p><strong>Consultorio:</strong> {{ cita.consultorio.nombre }}</p>
 </div>
 

@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administracion de Citas{% endblock %}
+{% block title %}Estadísticas de Citas{% endblock %}
 
 {% block titlewrap %}
-    Administracion de Citas
+    Estadísticas de Citas
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item active" aria-current="page">Administracion de Citas</li>
+    <li class="breadcrumb-item active" aria-current="page">Estadísticas de Citas</li>
 {% endblock %}
 
 {% block body %}
@@ -21,7 +21,7 @@
     {% endfor %}
     <div class="card card-primary card-outline mb-4">
         <div class="card-body">
-            <form method="get" action="{{ path('app_citas_index_list') }}" class="row g-3 mb-4">
+            <form method="get" action="{{ path('app_citas_estadisticas_list') }}" class="row g-3 mb-4">
                 <div class="row">
                     <div class="col-md-3">
                         <label>Desde</label>
@@ -49,6 +49,88 @@
             </form>
         </div>
     </div>
+
+    {% if chartData %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon text-bg-warning shadow-sm">
+                            <i class="bi bi-person-fill-exclamation"></i>
+                        </span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Citas Pendientes</span>
+                            <span class="info-box-number">
+                                    {{ cardData['expected'] }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon text-bg-primary shadow-sm">
+                            <i class="bi bi-person-fill-down"></i>
+                        </span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Citas En Espera</span>
+                            <span class="info-box-number">
+                                {{ cardData['checked_in'] }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon text-bg-success shadow-sm">
+                            <i class="bi bi-person-fill-check"></i>
+                        </span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Citas Finalizadas</span>
+                            <span class="info-box-number">
+                                {{ cardData['completed'] }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon text-bg-danger shadow-sm">
+                            <i class="bi bi-person-fill-x"></i>
+                        </span>
+
+                        <div class="info-box-content">
+                            <span class="info-box-text">Citas Canceladas</span>
+                            <span class="info-box-number">
+                                {{ cardData['canceled'] }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Row-->
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div
+                    style="position: relative; height: 300px;"
+                    data-controller="citagroupdaychart"
+                    data-citagroupdaychart-labels-value="{{ chartData.labels|json_encode }}"
+                    data-citagroupdaychart-datasets-value="{{ chartData.datasets|json_encode }}"
+                >
+                    <canvas id="appointmentsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <br>
 
     <div class="card card-primary card-outline mb-4">
         <div class="card-header">
