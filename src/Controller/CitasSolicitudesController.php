@@ -6,6 +6,7 @@ use App\Entity\CitasConfiguraciones;
 use App\Entity\CitasSolicitudes;
 use App\Entity\StatusRecord;
 use App\Entity\User;
+use App\Enum\CitasEstados;
 use App\Enum\CitasSolicitudesEstados;
 use App\Form\CitasSolicitudesType;
 use App\Repository\CitasSolicitudesRepository;
@@ -16,6 +17,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Citas;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 #[Route('/citas/solicitudes')]
 final class CitasSolicitudesController extends AbstractController
@@ -103,6 +107,54 @@ final class CitasSolicitudesController extends AbstractController
 
         $this->addFlash('success', 'La solicitud de cita ha sido cancelada.');
         return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/voucher', name: 'app_citas_solicitudes_voucher', methods: ['GET'])]
+    public function downloadVoucher(CitasSolicitudes $citasSolicitudes, UrlGeneratorInterface $router, EntityManagerInterface $entityManager): Response
+    {
+        if ($citasSolicitudes->getEstadoSolicitud() != CitasSolicitudesEstados::SCHEDULED){
+            $this->addFlash('error', 'La solicitud de cita ya no esta programada.');
+            return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_FORBIDDEN);
+        }
+
+        $cita = $entityManager->getRepository(Citas::class)->findOneBy([
+            'solicitud' => $citasSolicitudes,
+            'status' => $entityManager->getRepository(StatusRecord::class)->getActive(),
+            'estadoCita' => CitasEstados::EXPECTED
+        ]);
+
+        if (!$cita){
+            $this->addFlash('error', 'La solicitud no pudo ser encontrada, intente mas tarde.');
+            return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_NOT_FOUND);
+        }
+
+        // 1. Generate the absolute URL for the verification page
+        $verificationUrl = $router->generate('app_public_verifications_verify_cita', [
+            'uuid' => $cita->getUuid()
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        // 2. Render the Twig template (which will include the QR code)
+        $html = $this->renderView('citas_solicitudes/voucher_pdf.html.twig', [
+            'cita' => $cita,
+            'verificationUrl' => $verificationUrl
+        ]);
+
+        // 3. Configure Dompdf
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->set('isRemoteEnabled', true); // Needed if loading external CSS/images
+
+        $dompdf = new Dompdf($pdfOptions);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A5', 'portrait'); // A5 is a nice size for a voucher
+        $dompdf->render();
+
+        // 4. Output the PDF
+        return new Response(
+            $dompdf->output(),
+            Response::HTTP_OK,
+            ['Content-Type' => 'application/pdf']
+        );
     }
 
     #[Route('/{id}', name: 'app_citas_solicitudes_delete', methods: ['POST'])]

@@ -1,0 +1,61 @@
+{% extends 'publicVerificationsBase.html.twig' %}
+
+{% block title %}Verificar Cita{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <h3>Especialidad Solicitada</h3>
+                <h4>
+                    <span class="badge rounded-pill text-bg-dark">
+                        {{ cita.solicitud.especialidad.nombre }}
+                    </span>
+                </h4>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <h3>Estado de Solicitud</h3>
+                <h4>
+                    {% set badge = cita.solicitud.citasSolicitudesEstadosBadgeConfig %}
+                    <span class="badge rounded-pill {{ badge.class }}">
+                        {{ badge.label }}
+                    </span>
+                </h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <h3>Fecha de Solicitud</h3>
+                <h4>
+                    <span class="badge rounded-pill text-bg-dark">
+                        {{ cita.solicitud.created|date('d/m/Y') }} <i>({{ cita.solicitud.created|time_ago }})</i>
+                    </span>
+                </h4>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <h3>Cita Asignada para</h3>
+                <h4>
+                    {{ cita.fecha|date('d/m/Y', false) }} desde las {{ cita.horaInicio|date('H:i', false) }} hasta las {{ cita.horaFin|date('H:i', false) }}
+                </h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mb-3">
+                <h3>Consultorio</h3>
+                <h4>
+                    {{ cita.consultorio.nombre }} ({{ cita.consultorio.ubicacion }})
+                </h4>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Comprobante de Cita</title>
+    <style>
+        /* Add your basic CSS here. Dompdf likes simple CSS. */
+        body { font-family: sans-serif; text-align: center; }
+        .header { background-color: #f8f9fa; padding: 20px; }
+        .details { margin: 20px 0; text-align: left; padding: 0 40px; }
+        .qr-container { margin-top: 30px; }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2>Clínica SGAHS</h2>
+    <p>Comprobante de Cita Médica</p>
+</div>
+
+<div class="details">
+    <p><strong>Paciente:</strong> {{ cita.paciente.nombre }} {{ cita.paciente.apellido }}</p>
+    <p><strong>Especialidad:</strong> {{ cita.especialidad.nombre }}</p>
+    <p><strong>Fecha:</strong> {{ cita.fecha|date('d/m/Y') }}</p>
+    <p><strong>Hora:</strong> {{ cita.horaInicio|date('H:i') }} - {{ cita.horaFin|date('H:i') }}</p>
+    <p><strong>Consultorio:</strong> {{ cita.consultorio.nombre }}</p>
+</div>
+
+<div class="qr-container">
+    <p>Escanee este código para verificar la validez de este comprobante:</p>
+    {# This magically generates the base64 image! #}
+    <img src="{{ qr_code_data_uri(verificationUrl) }}" alt="Código QR de verificación" width="150" height="150">
+</div>
+</body>
+</html>

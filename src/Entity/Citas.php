@@ -7,6 +7,7 @@ use App\Enum\CitasEstados;
 use App\Repository\CitasRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: CitasRepository::class)]
 class Citas
@@ -47,6 +48,19 @@ class Citas
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $observaciones = null;
+
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private ?Uuid $uuid = null;
+
+    public function __construct()
+    {
+        $this->uuid = Uuid::v4();
+    }
+
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
 
     public function getId(): ?int
     {

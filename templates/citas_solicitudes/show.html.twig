@@ -69,6 +69,12 @@
                                         <i class="bi bi-pencil-square"></i> Editar
                                     </a>
                                 </div>
+                            {% elseif entity.estadoSolicitud.value == 'scheduled' %}
+                                <div class="d-flex">
+                                    <a class="btn btn-danger" target="_blank" href="{{ path('app_citas_solicitudes_voucher', {'id': entity.id}) }}">
+                                        <i class="bi bi-file-pdf"></i> Generar Comprobante
+                                    </a>
+                                </div>
                             {% endif %}
                         </div>
                     </div>

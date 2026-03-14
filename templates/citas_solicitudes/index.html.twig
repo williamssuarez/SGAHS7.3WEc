@@ -64,6 +64,10 @@
                                             <i class="bi bi-calendar-x"></i> Cancelar Cita
                                         </button>
                                     </form>
+                                {% elseif entity.estadoSolicitud.value == 'scheduled' %}
+                                    <a class="btn btn-danger" target="_blank" href="{{ path('app_citas_solicitudes_voucher', {'id': entity.id}) }}">
+                                        <i class="bi bi-file-pdf"></i> Generar Comprobante
+                                    </a>
                                 {% endif %}
                             </td>
                         </tr>
