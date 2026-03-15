@@ -3,9 +3,9 @@
 namespace App\Enum;
 
 /**
- * Enum que representa los estados de las citas.
+ * Enum que representa los estados de las camas.
  */
-enum CitasEstados: string
+enum EmergenciasEstados: string
 {
     case EXPECTED = 'expected';
     case CHECKED_IN = 'checked_in';

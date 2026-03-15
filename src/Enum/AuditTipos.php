@@ -34,6 +34,7 @@ enum AuditTipos: string
     case CONSULT_CANCELED = 'consult_canceled';
     case RECEPTION_CHECKIN = 'reception_checkin';
     case RECEPTION_CANCELED = 'reception_canceled';
+    case SYSTEM_RECEPTION_AUTO_CANCELED = 'system_reception_auto_canceled';
 
     /**
      * Retorna un texto amigable para el usuario final.
@@ -68,6 +69,7 @@ enum AuditTipos: string
             self::CONSULT_CANCELED => 'Consulta Cancelada',
             self::RECEPTION_CHECKIN => 'Cita Atendida',
             self::RECEPTION_CANCELED => 'Cita Cancelada',
+            self::SYSTEM_RECEPTION_AUTO_CANCELED => 'Cancelación de cita automática',
         };
     }
 

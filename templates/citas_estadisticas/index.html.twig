@@ -147,7 +147,6 @@
                     <th>Fecha</th>
                     <th>Inicio-Fin</th>
                     <th>Estado</th>
-                    <th>Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -159,54 +158,15 @@
                         <td>{{ entity.fecha|date('d/m/Y', false) }}</td>
                         <td>{{ entity.horaInicio|date('H:i', false) }} - {{ entity.horaFin|date('H:i', false) }}</td>
                         <td>
-                            {% if entity.estadoCita.value == 'expected' %}
-                                <span class="badge rounded-pill bg-warning">Esperado</span>
-                            {% elseif entity.estadoCita.value == 'checked_in' %}
-                                {% set badge = entity.consulta.consultaEstadosBadgeConfig %}
-                                    <span class="badge rounded-pill {{ badge.class }}">{{ badge.label }}</span>
-                            {% elseif entity.estadoCita.value == 'completed' %}
-                                <span class="badge rounded-pill bg-success">Completada</span>
-                            {% elseif entity.estadoCita.value == 'canceled' %}
-                                <span class="badge rounded-pill bg-danger">Cancelada</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a class="btn btn-secondary" href="{{ path('app_citas_show', {'id': entity.id}) }}">Detalles</a>
-                            {% if entity.estadoCita.value == 'expected' %}
-                                <form action="{{ path('app_citas_checkin', {'id': entity.id}) }}"
-                                      method="POST"
-                                      data-controller="confirm-finalizar"
-                                      data-action="submit->confirm-finalizar#confirm"
-                                      data-confirm-finalizar-title-value="¿Confirmar Llegada?"
-                                      data-confirm-finalizar-text-value="¿El paciente {{ entity.paciente.nombre }} ya se encuentra en las instalaciones? Esto creará una consulta en la lista de espera del médico."
-                                      data-confirm-finalizar-confirm-button-text-value="Sí, Ingresar"
-                                      class="d-inline">
-
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="bi bi-person-check-fill"></i> Anunciar Llegada
-                                    </button>
-                                </form>
-                                <form action="{{ path('app_citas_canceled', {'id': entity.id}) }}"
-                                      method="POST"
-                                      data-controller="cancel-appointment"
-                                      data-action="submit->cancel-appointment#confirm"
-                                      data-cancel-appointment-patient-name-value="{{ entity.paciente.nombre }} {{ entity.paciente.apellido }}"
-                                      class="d-inline">
-
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-person-x-fill"></i> Cancelar Cita
-                                    </button>
-                                </form>
-                            {% endif %}
+                            {% set badge = entity.citasEstadosBadgeConfig %}
+                            <span class="badge rounded-pill {{ badge.class }}">
+                                    {{ badge.label }}
+                            </span>
                         </td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-        </div>
-
-        <div class="card-footer clearfix">
-            {#<a href="{{ path('app_citas_configuraciones_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>#}
         </div>
     </div>
 {% endblock %}

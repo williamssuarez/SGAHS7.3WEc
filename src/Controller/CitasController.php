@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Citas;
 use App\Entity\Consulta;
+use App\Entity\StatusRecord;
 use App\Enum\AuditTipos;
 use App\Enum\CitasEstados;
 use App\Enum\ConsultaEstados;
@@ -11,6 +12,7 @@ use App\Enum\ConsultaTipos;
 use App\Form\CitasType;
 use App\Repository\CitasRepository;
 use App\Service\AuditService;
+use Composer\XdebugHandler\Status;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -103,19 +105,33 @@ final class CitasController extends AbstractController
     }
 
     #[Route('/{id}/show', name: 'app_citas_show', methods: ['GET'])]
-    public function show(Citas $cita): Response
+    public function show(Citas $cita, EntityManagerInterface $entityManager): Response
     {
+        if ($cita->getStatus() != $entityManager->getRepository(StatusRecord::class)->getActive()){
+            $this->addFlash('error', 'No se pudo encontrar la inforamcion.');
+            return $this->redirectToRoute('app_citas_index_list');
+        }
+
         return $this->render('citas/show.html.twig', [
             'cita' => $cita,
+            'paciente' => $cita->getPaciente(),
         ]);
     }
 
     #[Route('/{id}/check-in', name: 'app_citas_checkin', methods: ['POST'])]
     public function checkIn(Citas $cita, EntityManagerInterface $em, AuditService $auditService): Response {
+
+        $now = new \DateTime('now');
+
+        if ($cita->getFecha()->format('Y-m-d') != $now->format('Y-m-d')) {
+            $this->addFlash('error', 'No puede anunciar la llegada debido a que este paciente no esta programado para hoy.');
+            return $this->redirectToRoute('app_citas_index_list');
+        }
+
         // 1. Prevent double check-ins
         if ($cita->getConsulta() !== null) {
             $this->addFlash('warning', 'Este paciente ya fue ingresado a la sala de espera.');
-            return $this->redirectToRoute('app_citas_index_expected');
+            return $this->redirectToRoute('app_citas_index_list');
         }
 
         // 2. Change the Appointment Status
@@ -144,7 +160,7 @@ final class CitasController extends AbstractController
         $em->flush();
 
         $this->addFlash('success', 'Paciente ingresado a la sala de espera exitosamente.');
-        return $this->redirectToRoute('app_citas_index_expected');
+        return $this->redirectToRoute('app_citas_index_list');
     }
 
     #[Route('/{id}/canceled', name: 'app_citas_canceled', methods: ['POST'])]
@@ -155,7 +171,7 @@ final class CitasController extends AbstractController
 
         if (!$motivo) {
             $this->addFlash('error', 'El motivo de cancelación es obligatorio.');
-            return $this->redirectToRoute('app_citas_index_expected');
+            return $this->redirectToRoute('app_citas_index_list');
         }
 
         // 2. Update the Cita entity

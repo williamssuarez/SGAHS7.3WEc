@@ -142,6 +142,12 @@ class Paciente
     #[ORM\OneToMany(targetEntity: Citas::class, mappedBy: 'paciente')]
     private Collection $citas;
 
+    /**
+     * @var Collection<int, Emergencia>
+     */
+    #[ORM\OneToMany(targetEntity: Emergencia::class, mappedBy: 'paciente')]
+    private Collection $emergencias;
+
     public function __construct()
     {
         $this->historiaPacientes = new ArrayCollection();
@@ -156,6 +162,7 @@ class Paciente
         $this->prescripciones = new ArrayCollection();
         $this->citasSolicitudes = new ArrayCollection();
         $this->citas = new ArrayCollection();
+        $this->emergencias = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -672,6 +679,36 @@ class Paciente
             // set the owning side to null (unless already changed)
             if ($cita->getPaciente() === $this) {
                 $cita->setPaciente(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Emergencia>
+     */
+    public function getEmergencias(): Collection
+    {
+        return $this->emergencias;
+    }
+
+    public function addEmergencia(Emergencia $emergencia): static
+    {
+        if (!$this->emergencias->contains($emergencia)) {
+            $this->emergencias->add($emergencia);
+            $emergencia->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEmergencia(Emergencia $emergencia): static
+    {
+        if ($this->emergencias->removeElement($emergencia)) {
+            // set the owning side to null (unless already changed)
+            if ($emergencia->getPaciente() === $this) {
+                $emergencia->setPaciente(null);
             }
         }
 

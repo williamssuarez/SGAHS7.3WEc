@@ -1,50 +1,196 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Citas{% endblock %}
+{% block title %}Detalles de cita{% endblock %}
+
+{% block titlewrap %}
+    Detalles de cita
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_citas_index_list') }}">Administracion de Citas</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Detalles de cita</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Citas</h1>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-primary card-outline">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="photo-container">
+                                {% if paciente.foto %}
+                                    {% set full_photo_path = paciente_photo_path ~ paciente.foto %}
+                                    <img
+                                        src="{{ asset(full_photo_path) | imagine_filter('patient_profile') }}"
+                                        alt="{{ paciente.nombre }} Profile Photo"
+                                        class="img-fluid"
+                                        style="cursor: pointer; height: auto; border-radius: 0%; width: 100%;"
+                                        data-original="{{ asset(full_photo_path) | imagine_filter('patient_viewer_full') }}"
+                                    >
+                                {% else %}
+                                    <p>No hay foto de perfil cargada.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="col-md-12">
+                                <h2>
+                                    {{ paciente.nombre }} {{ paciente.apellido }}
+                                    {% if paciente.sexo == 'M' %}
+                                        <i class="bi bi-gender-male" style="color: #2563EB"></i>
+                                    {% else %}
+                                        <i class="bi bi-gender-female" style="color: darkmagenta"></i>
+                                    {% endif %}
+                                </h2>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ cita.id }}</td>
-            </tr>
-            <tr>
-                <th>Fecha</th>
-                <td>{{ cita.fecha ? cita.fecha|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>HoraInicio</th>
-                <td>{{ cita.horaInicio ? cita.horaInicio|date('H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>HoraFin</th>
-                <td>{{ cita.horaFin ? cita.horaFin|date('H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>UidCreate</th>
-                <td>{{ cita.uidCreate }}</td>
-            </tr>
-            <tr>
-                <th>UidUpdate</th>
-                <td>{{ cita.uidUpdate }}</td>
-            </tr>
-            <tr>
-                <th>Created</th>
-                <td>{{ cita.created ? cita.created|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Updated</th>
-                <td>{{ cita.updated ? cita.updated|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+                                <h4>
+                                    {{ paciente.fechaNacimiento|calculate_age }} año(s) ( {{ paciente.fechaNacimiento|date('d-m-Y') }} )
+                                </h4>
 
-    <a href="{{ path('app_citas_index') }}">back to list</a>
+                                <h4>
+                                    <span class="badge rounded-pill text-bg-secondary">{{ paciente.tipoDocumento|title }} - {{ paciente.cedula|number_format(0, '', '.') }}</span>
+                                </h4>
+                            </div>
+                            <div class="accordion" id="accordionExample">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContact" aria-expanded="false" aria-controls="collapseContact">
+                                            <i class="bi bi-telephone" style="color: crimson"></i> &nbsp;Información de Contacto
+                                        </button>
+                                    </h2>
+                                    <div id="collapseContact" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+                                        <div class="accordion-body">
+                                            <h4>
+                                                <i class="bi bi-telephone" style="color: crimson"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ paciente.telefono }}
+                                            </h4>
+                                            <h4>
+                                                <i class="bi bi-envelope-at" style="color: dodgerblue"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ paciente.correo }}
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
 
-    <a href="{{ path('app_citas_edit', {'id': cita.id}) }}">edit</a>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDirect" aria-expanded="false" aria-controls="collapseDirect">
+                                            <i class="bi bi-building-fill" style="color: forestgreen"></i> &nbsp;Dirección
+                                        </button>
+                                    </h2>
+                                    <div id="collapseDirect" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+                                        <div class="accordion-body">
+                                            {{ paciente.direccion }}
+                                        </div>
+                                    </div>
+                                </div>
 
-    {{ include('citas/_delete_form.html.twig') }}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
+                                            <i class="bi bi-three-dots-vertical"></i> &nbsp; Mas Información
+                                        </button>
+                                    </h2>
+                                    <div id="collapseMoreInfo" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+                                        <div class="accordion-body">
+                                            Registrado el <strong>{{ paciente.created|date('d-m-Y') }}</strong> <i>({{ paciente.created|time_ago }})</i> por <strong>{{ paciente.uidCreate|public_username|title }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCitaDetails" aria-expanded="false" aria-controls="collapseCitaDetails">
+                                            <i class="bi bi-calendar-plus" style="color: blue"></i> &nbsp; Detalles de la Cita
+                                        </button>
+                                    </h2>
+                                    <div id="collapseCitaDetails" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+                                        <div class="accordion-body">
+                                            <h4>
+                                                Especialidad <i class="bi bi-arrow-right" style="color: grey"></i> {{ cita.solicitud.especialidad.nombre }}
+                                            </h4>
+                                            <h4>
+                                                Consultorio <i class="bi bi-arrow-right" style="color: grey"></i> {{ cita.consultorio.nombre }} ({{ cita.consultorio.ubicacion }})
+                                            </h4>
+                                            <h4>
+                                                Motivo <i class="bi bi-arrow-right" style="color: grey"></i> {{ cita.solicitud.motivoConsulta }}
+                                            </h4>
+                                            <h4>
+                                                Fecha de Solicitud <i class="bi bi-arrow-right" style="color: grey"></i> {{ cita.solicitud.created|date('d/m/Y') }} <i>{{ cita.solicitud.created|time_ago }}</i>
+                                            </h4>
+                                            <h4>
+                                                Estado de Solicitud
+                                                <i class="bi bi-arrow-right" style="color: grey"></i>
+                                                {% set badge = cita.solicitud.citasSolicitudesEstadosBadgeConfig %}
+                                                <span class="badge rounded-pill {{ badge.class }}">
+                                                        {{ badge.label }}
+                                                </span>
+                                            </h4>
+                                            <h4>
+                                                Estado de Cita
+                                                <i class="bi bi-arrow-right" style="color: grey"></i>
+                                                {% set badge = cita.citasEstadosBadgeConfig %}
+                                                <span class="badge rounded-pill {{ badge.class }}">
+                                                        {{ badge.label }}
+                                                </span>
+                                            </h4>
+
+                                            {{ cita.fecha|date('d/m/Y', false) }} desde las {{ cita.horaInicio|date('H:i', false) }} hasta las {{ cita.horaFin|date('H:i', false) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            <br>
+                            <div class="col-md-12">
+                                <div class="btn-group mb-2" role="group">
+                                    <a type="button" class="btn btn-primary" href="{{ path('app_citas_index_list') }}">
+                                        <i class="bi bi-arrow-left"></i> Volver
+                                    </a>
+                                    {% if cita.estadoCita.value == 'expected' %}
+                                        {# 1. CHECK-IN BUTTON: Only visible if the appointment is TODAY #}
+                                        {% if cita.fecha|date('Y-m-d') == 'now'|date('Y-m-d') %}
+                                            <form action="{{ path('app_citas_checkin', {'id': cita.id}) }}"
+                                                  method="POST"
+                                                  data-controller="confirm-finalizar"
+                                                  data-action="submit->confirm-finalizar#confirm"
+                                                  data-confirm-finalizar-title-value="¿Confirmar Llegada?"
+                                                  data-confirm-finalizar-text-value="¿El paciente {{ cita.paciente.nombre }} ya se encuentra en las instalaciones? Esto creará una consulta en la lista de espera del médico."
+                                                  data-confirm-finalizar-confirm-button-text-value="Sí, Ingresar"
+                                                  class="d-inline">
+
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="bi bi-person-check-fill"></i> Anunciar Llegada
+                                                </button>
+                                            </form>
+                                        {% endif %}
+
+                                        {# 2. CANCEL BUTTON: Visible for any 'expected' appointment, future or present #}
+                                        <form action="{{ path('app_citas_canceled', {'id': cita.id}) }}"
+                                              method="POST"
+                                              data-controller="cancel-appointment"
+                                              data-action="submit->cancel-appointment#confirm"
+                                              data-cancel-appointment-patient-name-value="{{ cita.paciente.nombre }} {{ cita.paciente.apellido }}"
+                                              class="d-inline">
+
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="bi bi-person-x-fill"></i> Cancelar Cita
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

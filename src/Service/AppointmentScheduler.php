@@ -1,6 +1,5 @@
 <?php
 
-// src/Service/AppointmentScheduler.php
 namespace App\Service;
 
 use App\Entity\CitasSolicitudes;
@@ -43,44 +42,73 @@ readonly class AppointmentScheduler
         // 3. Keep moving forward in time until all requests are scheduled
         while (!empty($requests) && $daysChecked < $daysLookaheadLimit) {
 
-            // PHP's 'N' format returns 1 (Monday) to 7 (Sunday), matching your array perfectly
             $currentDayOfWeek = (int) $currentDate->format('N');
 
-            // Check if the clinic attends this specialty on this day of the week
             if (in_array($currentDayOfWeek, $allowedDays)) {
 
+                // NEW: Fetch all existing appointments for this specific day from the DB
+                // This prevents double-booking from previous cron runs and checks other specialties
+                $existingCitas = $this->em->getRepository(Citas::class)->findBy([
+                    'fecha' => $currentDate,
+                    'estadoCita' => CitasEstados::EXPECTED // Only check against active appointments
+                ]);
+
                 $slots = $this->generateSlots($config);
+                $newCitasThisRun = []; // Keep track of what we schedule right now in memory
+
                 $dailyAssigned = 0;
                 $maxPerDay = $config->getMaxPacientesDia();
 
-                // 4. Fill up the slots for THIS specific day
-                while (!empty($slots) && $dailyAssigned < $maxPerDay && !empty($requests)) {
+                // Loop over requests using their array keys so we can unset them
+                foreach ($requests as $requestKey => $request) {
 
-                    // Pop the highest priority request and the next chronological slot
-                    $request = array_shift($requests);
-                    $slot = array_shift($slots);
+                    if ($dailyAssigned >= $maxPerDay) {
+                        break; // Daily limit reached, wait for next day
+                    }
 
-                    $cita = new Citas();
-                    $cita->setPaciente($request->getPaciente());
-                    $cita->setEspecialidad($config->getEspecialidad());
-                    $cita->setConsultorio($slot['office']);
+                    $assignedSlotKey = null;
 
-                    // Assign to the day the loop is currently on
-                    $cita->setFecha(clone $currentDate);
-                    $cita->setHoraInicio($slot['start']);
-                    $cita->setHoraFin($slot['end']);
-                    $cita->setSolicitud($request);
-                    $cita->setEstadoCita(CitasEstados::EXPECTED);
+                    // Find the first valid slot for this specific patient
+                    foreach ($slots as $slotKey => $slot) {
+                        if (!$this->hasConflict($slot, $request->getPaciente(), $existingCitas, $newCitasThisRun)) {
+                            $assignedSlotKey = $slotKey;
+                            break;
+                        }
+                    }
 
-                    $request->setEstadoSolicitud(CitasSolicitudesEstados::SCHEDULED);
+                    // If we found a valid slot, create the appointment
+                    if ($assignedSlotKey !== null) {
+                        $slot = $slots[$assignedSlotKey];
 
-                    $this->em->persist($cita);
-                    $assignedCount++;
-                    $dailyAssigned++;
+                        $cita = new Citas();
+                        $cita->setPaciente($request->getPaciente());
+                        $cita->setEspecialidad($config->getEspecialidad());
+                        $cita->setConsultorio($slot['office']);
+                        $cita->setFecha(clone $currentDate);
+                        $cita->setHoraInicio($slot['start']);
+                        $cita->setHoraFin($slot['end']);
+                        $cita->setSolicitud($request);
+                        $cita->setEstadoCita(CitasEstados::EXPECTED);
+
+                        $request->setEstadoSolicitud(CitasSolicitudesEstados::SCHEDULED);
+
+                        $this->em->persist($cita);
+
+                        // Track it so the next request in the loop knows about it
+                        $newCitasThisRun[] = $cita;
+
+                        // Remove the request from the pending queue
+                        unset($requests[$requestKey]);
+
+                        // Remove the slot so no one else takes it
+                        unset($slots[$assignedSlotKey]);
+
+                        $assignedCount++;
+                        $dailyAssigned++;
+                    }
                 }
             }
 
-            // If we still have requests left, advance to the next day and try again
             if (!empty($requests)) {
                 $currentDate->modify('+1 day');
             }
@@ -134,5 +162,37 @@ readonly class AppointmentScheduler
         $score += $hoursWaiting;
 
         return $score;
+    }
+
+    private function isTimeOverlap(\DateTimeInterface $start1, \DateTimeInterface $end1, \DateTimeInterface $start2, \DateTimeInterface $end2): bool
+    {
+        $s1 = $start1->format('H:i:s');
+        $e1 = $end1->format('H:i:s');
+        $s2 = $start2->format('H:i:s');
+        $e2 = $end2->format('H:i:s');
+
+        // Two periods overlap if (Start A < End B) and (End A > Start B)
+        return ($s1 < $e2) && ($e1 > $s2);
+    }
+
+    private function hasConflict(array $slot, $paciente, array $existingCitas, array $newCitasThisRun): bool
+    {
+        $allCitasForDay = array_merge($existingCitas, $newCitasThisRun);
+
+        foreach ($allCitasForDay as $cita) {
+            $overlap = $this->isTimeOverlap($slot['start'], $slot['end'], $cita->getHoraInicio(), $cita->getHoraFin());
+
+            if ($overlap) {
+                // 1. Check Office Conflict: Is the office already booked at this time?
+                if ($cita->getConsultorio() === $slot['office']) {
+                    return true;
+                }
+                // 2. Check Patient Conflict: Is the patient already booked elsewhere at this time?
+                if ($cita->getPaciente() === $paciente) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

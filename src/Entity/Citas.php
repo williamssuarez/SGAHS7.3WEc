@@ -186,4 +186,35 @@ class Citas
 
         return $this;
     }
+
+    public function getCitasEstadosBadgeConfig(): array
+    {
+        switch ($this->getEstadoCita()) {
+            case CitasEstados::EXPECTED:
+                return [
+                    'class' => 'text-bg-warning',
+                    'label' => CitasEstados::EXPECTED->getReadableText()
+                ];
+            case CitasEstados::CHECKED_IN:
+                return [
+                    'class' => 'text-bg-primary',
+                    'label' => CitasEstados::CHECKED_IN->getReadableText()
+                ];
+            case CitasEstados::COMPLETED:
+                return [
+                    'class' => 'text-bg-success',
+                    'label' => CitasEstados::COMPLETED->getReadableText()
+                ];
+            case CitasEstados::CANCELED:
+                return [
+                    'class' => 'text-bg-danger',
+                    'label' => CitasEstados::CANCELED->getReadableText()
+                ];
+        }
+
+        return [
+            'class' => 'text-bg-danger',
+            'label' => 'Error'
+        ];
+    }
 }
