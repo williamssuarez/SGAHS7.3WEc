@@ -67,3 +67,13 @@ parameters:
                 - { title: Consultas Pendientes, route: app_consulta_pendientes_index, icon: 'bi bi-hospital text-warning' }
                 - { title: Consultas Activas, route: app_consulta_activas_index, icon: 'bi bi-hospital text-primary' }
                 - { title: Todas las Consultas, route: app_consulta_index, icon: 'bi bi-hospital text-success' }
+        -
+            title: Emergencias
+            icon: 'fa-solid fa-kit-medical text-danger'
+            roles: 'ROLE_INTERNAL'
+            children:
+                -   title: Configuraciones
+                    icon: 'bi bi-gear text-warning'
+                    children:
+                        - { title: Zonas, route: app_zona_cama_index, icon: 'bi bi-gear text-warning' }
+                        - { title: Camas, route: app_cama_index, icon: 'bi bi-gear text-warning' }

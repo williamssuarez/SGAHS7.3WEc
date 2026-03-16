@@ -2,19 +2,19 @@
 
 namespace App\Repository;
 
-use App\Entity\Cama;
 use App\Entity\StatusRecord;
+use App\Entity\ZonaCama;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Cama>
+ * @extends ServiceEntityRepository<ZonaCama>
  */
-class CamaRepository extends ServiceEntityRepository
+class ZonaCamaRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Cama::class);
+        parent::__construct($registry, ZonaCama::class);
     }
 
     public function getActivesforSelect()
@@ -26,7 +26,7 @@ class CamaRepository extends ServiceEntityRepository
             ->select('u')
 
             ->where('u.status = :sts')
-            ->addOrderBy('u.codigo', 'ASC')
+            ->addOrderBy('u.nombre', 'ASC')
 
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
         ;
@@ -42,7 +42,7 @@ class CamaRepository extends ServiceEntityRepository
             ->select('u')
 
             ->where('u.status = :sts')
-            ->addOrderBy('u.codigo', 'ASC')
+            ->addOrderBy('u.nombre', 'ASC')
 
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
         ;

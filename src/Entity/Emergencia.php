@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\SoftDeletetableTrait;
 use App\Enum\EmergenciasEstados;
 use App\Repository\EmergenciaRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,6 +11,8 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: EmergenciaRepository::class)]
 class Emergencia
 {
+    use SoftDeletetableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

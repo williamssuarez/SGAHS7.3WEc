@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Camas{% endblock %}
+
+{% block titlewrap %}
+    Camas
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active" aria-current="page">Camas</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="card card-primary card-outline mb-4">
+        <div class="card-header">
+            <h3 class="card-title">Camas</h3>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-striped dtHere">
+                <thead>
+                <tr>
+                    <th>Codigo</th>
+                    <th>Zona</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entity in entities %}
+                    <tr class="align-middle">
+                        <td>{{ entity.codigo }}</td>
+                        <td>{{ entity.zona }}</td>
+                        <td>
+                            {% set badge = entity.estadosBadgeConfig %}
+                            <span class="badge rounded-pill {{ badge.class }}">
+                                    {{ badge.label }}
+                            </span>
+                        </td>
+                        <td>
+                            <a class="btn btn-secondary" href="{{ path('app_cama_show', {'id': entity.id}) }}">Detalles</a>
+                            <a class="btn btn-success" href="{{ path('app_cama_edit', {'id': entity.id}) }}">Editar</a>
+                            {% if entity.estado.value != 'ocupied' %}
+
+                                {% if entity.estado.value == '' %}
+
+                                <form action="{{ path('app_cama_maintenance', {'id': entity.id}) }}"
+                                      method="POST"
+                                      data-controller="confirm-finalizar"
+                                      data-action="submit->confirm-finalizar#confirm"
+                                      data-confirm-finalizar-title-value="¿Mandar a Mantenimiento?"
+                                      data-confirm-finalizar-text-value="¿Desea mandar la cama a mantenimiento? Esto no permitirá que sea elegible para emergencias."
+                                      data-confirm-finalizar-confirm-button-text-value="Sí, mandar a Mantenimiento"
+                                      class="d-inline">
+
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-x-circle"></i> Mandar a Mantenimiento
+                                    </button>
+                                </form>
+
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer clearfix">
+            <a href="{{ path('app_cama_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+        </div>
+    </div>
+{% endblock %}

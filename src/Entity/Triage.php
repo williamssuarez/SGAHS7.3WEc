@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Traits\CoreVitalesTrait;
+use App\Entity\Traits\SoftDeletetableTrait;
 use App\Repository\TriageRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,6 +16,7 @@ use App\Entity\LogEntry;
 class Triage
 {
     use CoreVitalesTrait;
+    use SoftDeletetableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Detalles{% endblock %}
+
+{% block titlewrap %}
+    Detalles
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_zona_cama_index') }}">Zonas</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Detalles</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            <div class="card-body">
+                <div class="mb-3">
+                    <h3>{{ entity.nombre }}</h3>
+                </div>
+                <div class="mb-3">
+                    <h3>{{ entity.capacidadMaxima }}</h3>
+                </div>
+                <div class="mb-3">
+                    <h3>{{ entity.descripcion }}</h3>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-primary" href="{{ path('app_zona_cama_index') }}">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+
+                            <a class="btn btn-success" href="{{ path('app_zona_cama_edit', {'id': entity.id}) }}">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+
+                            <div class="d-flex">
+                                <form action="{{ path('app_zona_cama_delete', {'id': entity.id}) }}"
+                                      method="POST"
+                                      data-controller="confirm-finalizar"
+                                      data-action="submit->confirm-finalizar#confirm"
+                                      data-confirm-finalizar-title-value="¿Desea eliminar la zona?"
+                                      data-confirm-finalizar-text-value="Asegurese que no hay camas asignadas a esta zona."
+                                      data-confirm-finalizar-confirm-button-text-value="Sí, eliminar zona"
+                                      class="d-inline">
+
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-calendar-x"></i> Eliminar Zona
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nueva Cama{% endblock %}
+
+{% block titlewrap %}
+    Nueva Cama
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_cama_index') }}">Camas</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nueva Cama</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('cama/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

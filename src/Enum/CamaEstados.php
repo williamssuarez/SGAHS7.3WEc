@@ -7,10 +7,10 @@ namespace App\Enum;
  */
 enum CamaEstados: string
 {
-    case EXPECTED = 'expected';
-    case CHECKED_IN = 'checked_in';
-    case COMPLETED = 'completed';
-    case CANCELED = 'canceled';
+    case AVAILABLE = 'available';
+    case OCUPIED = 'ocupied';
+    case CLEANING = 'cleaning';
+    case MAINTENANCE = 'maintenance';
 
     /**
      * Retorna un texto amigable para el usuario final.
@@ -18,10 +18,10 @@ enum CamaEstados: string
     public function getReadableText(): string
     {
         return match($this) {
-            self::EXPECTED => 'Esperado',
-            self::CHECKED_IN => 'Atendido',
-            self::COMPLETED => 'Completado',
-            self::CANCELED => 'Cancelado',
+            self::AVAILABLE => 'Disponible',
+            self::OCUPIED => 'Ocupada',
+            self::CLEANING => 'Limpieza',
+            self::MAINTENANCE => 'Mantenimiento',
         };
     }
 
