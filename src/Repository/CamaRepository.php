@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Cama;
 use App\Entity\StatusRecord;
+use App\Enum\CamaEstados;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -29,6 +30,28 @@ class CamaRepository extends ServiceEntityRepository
             ->addOrderBy('u.codigo', 'ASC')
 
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+        ;
+
+        return $query;
+    }
+
+    public function getAvailableActivesforSelect()
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb
+            ->distinct()
+            ->select('u')
+            ->join('c.zona', 'z')
+
+            ->where('u.status = :sts')
+            ->andWhere('c.estado = :state')
+
+            ->orderBy('z.nombre', 'ASC')
+            ->addOrderBy('c.nombre', 'ASC')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('state', CamaEstados::AVAILABLE->value)
         ;
 
         return $query;

@@ -128,6 +128,28 @@ final class CamaController extends AbstractController
         return $this->redirectToRoute('app_cama_index', [], Response::HTTP_SEE_OTHER);
     }
 
+    #[Route('/{id}/finish-cleaning', name: 'app_cama_finish_cleaning', methods: ['POST'])]
+    public function finishClening(Request $request, Cama $cama, EntityManagerInterface $entityManager): Response
+    {
+        if ($cama->getStatus() != $entityManager->getRepository(StatusRecord::class)->getActive()){
+            $this->addFlash('error', 'Informacion no encontrada.');
+            return $this->redirectToRoute('app_cama_index', [], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($cama->getEstado() != CamaEstados::CLEANING){
+            $this->addFlash('error', 'No se puede mandar la cama a limpiar porque esta ocupada.');
+            return $this->redirectToRoute('app_cama_index', [], Response::HTTP_NOT_FOUND);
+        }
+
+        $cama->setEstado(CamaEstados::AVAILABLE);
+        $entityManager->persist($cama);
+
+        $entityManager->flush();
+
+        $this->addFlash('success', 'La cama ya esta limpia y puede ser usada en emergencias.');
+        return $this->redirectToRoute('app_cama_index', [], Response::HTTP_SEE_OTHER);
+    }
+
     #[Route('/{id}/reactivate', name: 'app_cama_reactivate', methods: ['POST'])]
     public function reactivate(Request $request, Cama $cama, EntityManagerInterface $entityManager): Response
     {

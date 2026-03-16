@@ -1,0 +1,36 @@
+<div class="text-start">
+    <div class="mb-3">
+        <strong>Prioridad:</strong>
+        {% set badge = triage.triageNivelesPrioridadBadgeConfig %}
+        <span class="badge {{ badge.class }} fs-6">
+            {{ badge.label }}
+        </span>
+    </div>
+
+    <div class="mb-3">
+        <strong>Motivo de Consulta:</strong>
+        <p class="text-muted border p-2 rounded bg-light">{{ triage.motivoIngreso }}</p>
+    </div>
+
+    <h5 class="border-bottom pb-2">Signos Vitales</h5>
+    <div class="row g-2">
+        <div class="col-6">
+            <strong>Glasgow:</strong> {{ triage.escalaGlasgow ?: 'N/A' }}
+        </div>
+        <div class="col-6 {{ triage.statusColor('temp') }}">
+            <strong>Temperatura:</strong> {{ triage.temperatura ? triage.temperatura ~ ' °C' : 'N/A' }}
+        </div>
+        <div class="col-6 {{ triage.statusColor('presi') }}">
+            <strong>Presión:</strong> {{ triage.paSistolica ?: '--' }} / {{ triage.paDiastolica ?: '--' }} mmHg
+        </div>
+        <div class="col-6 {{ triage.statusColor('fc') }}">
+            <strong>Frec. Cardíaca:</strong> {{ triage.frecuenciaCardiaca ? triage.frecuenciaCardiaca ~ ' lpm' : 'N/A' }}
+        </div>
+        <div class="col-6 {{ triage.statusColor('fr') }}">
+            <strong>Frec. Respiratoria:</strong> {{ triage.frecuenciaRespiratoria ? triage.frecuenciaRespiratoria ~ ' rpm' : 'N/A' }}
+        </div>
+        <div class="col-6 {{ triage.statusColor('spo2') }}">
+            <strong>SpO2:</strong> {{ triage.spo2 ? triage.spo2 ~ ' %' : 'N/A' }}
+        </div>
+    </div>
+</div>

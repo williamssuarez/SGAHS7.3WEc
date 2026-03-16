@@ -3,14 +3,14 @@
 namespace App\Enum;
 
 /**
- * Enum que representa los estados de las camas.
+ * Enum que representa los estados de las emergencias.
  */
 enum EmergenciasEstados: string
 {
-    case EXPECTED = 'expected';
-    case CHECKED_IN = 'checked_in';
-    case COMPLETED = 'completed';
-    case CANCELED = 'canceled';
+    case WAITING_TRIAGE = 'waiting_triage';
+    case WAITING_BED = 'waiting_bed';
+    case IN_TREATMENT = 'in_treatment';
+    case DISCHARGED = 'discharged';
 
     /**
      * Retorna un texto amigable para el usuario final.
@@ -18,10 +18,10 @@ enum EmergenciasEstados: string
     public function getReadableText(): string
     {
         return match($this) {
-            self::EXPECTED => 'Esperado',
-            self::CHECKED_IN => 'Atendido',
-            self::COMPLETED => 'Completado',
-            self::CANCELED => 'Cancelado',
+            self::WAITING_TRIAGE => 'En espera de Triaje',
+            self::WAITING_BED => 'En espera de Cama',
+            self::IN_TREATMENT => 'En Cama',
+            self::DISCHARGED => 'Alta médica',
         };
     }
 

@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nuevo Triaje{% endblock %}
+
+{% block titlewrap %}
+    Nuevo Triaje
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_emergencia_index') }}">Emergencias</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nuevo Triaje</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('emergencia/forms/_triage_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

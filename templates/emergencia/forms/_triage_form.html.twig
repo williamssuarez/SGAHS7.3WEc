@@ -1,0 +1,150 @@
+{{ form_start(form, {
+    'attr': {
+        'data-controller': 'submit-once',
+        'data-action': 'submit->submit-once#disable'
+    }
+}) }}
+{{ include('base/_form_error_messages.html.twig') }}
+<div class="card-body">
+    <h5>Informacion de Signos Vitales:</h5>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{form_label( form.temperatura ) }}
+                <div class="input-group">
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <i class="fa-solid fa-thermometer"></i>
+                    </span>
+                    {{form_widget( form.temperatura ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>°C</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.paSistolica ) }}
+                <div class="input-group">
+                    {{form_widget( form.paSistolica ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>mm Hg.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.paDiastolica ) }}
+                <div class="input-group">
+                    {{form_widget( form.paDiastolica ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>mm Hg.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{form_label( form.frecuenciaCardiaca ) }}
+                <div class="input-group">
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <i class="bi bi-heart-pulse-fill"></i>
+                    </span>
+                    {{form_widget( form.frecuenciaCardiaca ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>lpm.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{form_label( form.frecuenciaRespiratoria ) }}
+                <div class="input-group">
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <i class="bi bi-lungs-fill"></i>
+                    </span>
+                    {{form_widget( form.frecuenciaRespiratoria ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>rpm.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="mb-3">
+                {{form_label( form.spo2 ) }}
+                <div class="input-group">
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <i class="bi bi-lungs-fill"></i>
+                    </span>
+                    {{form_widget( form.spo2 ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>%</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <h5>Detalles de Emergencia:</h5>
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{form_label( form.nivelPrioridad ) }}
+                <div class="input-group">
+                    {{form_widget( form.nivelPrioridad ) }}
+                    <span class="input-group-text" id="inputGroupPrepend">
+                        <strong>kg.</strong>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{form_label( form.escalaGlasgow ) }}
+                <div class="input-group">
+                    {{form_widget( form.escalaGlasgow ) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="mb-3">
+                {{form_label( form.motivoIngreso ) }}
+                <div class="input-group">
+                    {{form_widget( form.motivoIngreso ) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-footer">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between">
+                <a class="btn btn-primary" href="{{ path('app_emergencia_index') }}">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+
+                <div class="d-flex">
+                    <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
+                        {{ button_label|default('Guardar') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}

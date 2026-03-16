@@ -1,0 +1,37 @@
+<tr class="new-row" id="emergencia-{{ emergencia.id }}">
+    <td>{{ emergencia.fechaIngreso|date('d/m/Y H:i') }} ({{ emergencia.fechaIngreso|time_ago }})</td>
+    <td>
+        {% if emergencia.paciente %}
+            <strong>{{ emergencia.paciente.nombre }} {{ emergencia.paciente.apellido }}</strong>
+        {% else %}
+            <strong class="text-danger"><i class="bi bi-incognito"></i> {{ emergencia.pacienteTemporal }}</strong>
+        {% endif %}
+    </td>
+    <td>{{ emergencia.triage.fechaEvaluacion|date('d/m/Y H:i') }} ({{ emergencia.triage.fechaEvaluacion|time_ago }})</td>
+    <td>
+        {% set badge = emergencia.triage.triageNivelesPrioridadBadgeConfig %}
+        <span class="badge {{ badge.class }} fs-6">
+            {{ badge.label }}
+        </span>
+    </td>
+    <td>
+        <div class="btn-group" role="group">
+            <button type="button"
+                    class="btn btn-lg btn-info text-white"
+                    data-controller="triage-details"
+                    data-triage-details-url-value="{{ path('app_emergencia_triage_details', {id: emergencia.id}) }}"
+                    data-action="click->triage-details#fetchAndShow"
+                    title="Ver Triage">
+                <i class="bi bi-clipboard2-pulse"></i>
+            </button>
+
+            <button type="button"
+                    class="btn btn-lg btn-warning text-dark"
+                    data-controller="assign-bed"
+                    data-assign-bed-url-value="{{ path('app_emergencia_assign_bed', {id: emergencia.id}) }}"
+                    data-action="click->assign-bed#openModal">
+                Asignar Cama
+            </button>
+        </div>
+    </td>
+</tr>

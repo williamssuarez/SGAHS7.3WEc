@@ -1,0 +1,14 @@
+<table class="table table-striped dtHere" id="triageTable" data-order='[[ 0, "desc" ]]'>
+    <thead>
+    <tr>
+        <th>Ingreso</th>
+        <th>Paciente</th>
+        <th>Acción</th>
+    </tr>
+    </thead>
+    <tbody data-mercure-er-target="triageTableBody">
+    {% for emergencia in emergencias['WAITING_TRIAGE'] %}
+        {{ include('emergencia/tableRows/_new_er_table_row.html.twig') }}
+    {% endfor %}
+    </tbody>
+</table>

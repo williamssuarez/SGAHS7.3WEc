@@ -1,0 +1,44 @@
+<div class="card-header">
+    <h3 class="card-title"><a href="{{ path('app_emergencia_new') }}" class="btn btn-danger btn-lg"><i class="bi bi-plus-circle-fill"></i> Nueva Emergencia</a></h3>
+</div>
+<div class="card-body"
+     data-controller="mercure-er"
+     data-mercure-er-url-value="{{ mercure('emergencias')|escape('html_attr') }}">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tabWaitingTriage" data-bs-toggle="tab" data-bs-target="#tabWaitingTriage-pane" type="button" role="tab" aria-controls="tabWaitingTriage-pane" aria-selected="true">
+                En Espera de Triaje
+                <span class="badge bg-danger" data-mercure-er-target="countTriage">
+                    {{ emergencias['WAITING_TRIAGE']|length }}
+                </span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabWaitingBed" data-bs-toggle="tab" data-bs-target="#tabWaitingBed-pane" type="button" role="tab" aria-controls="tabWaitingBed-pane" aria-selected="false">
+                En Espera de Cama
+                <span class="badge bg-warning" data-mercure-er-target="countBed">
+                    {{ emergencias['WAITING_BED']|length }}
+                </span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabTreatment" data-bs-toggle="tab" data-bs-target="#tabTreatment-pane" type="button" role="tab" aria-controls="tabTreatment-pane" aria-selected="false">
+                En Atención
+                <span class="badge bg-success" data-mercure-er-target="countTreatment">
+                    {{ emergencias['IN_TREATMENT']|length }}
+                </span>
+            </button>
+        </li>
+    </ul>
+    <div class="tab-content" id="formTabContent">
+        <div class="tab-pane fade show active" id="tabWaitingTriage-pane" role="tabpanel" aria-labelledby="tabWaitingTriage" tabindex="0">
+            {{ include('emergencia/tabs/waiting_triage.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabWaitingBed-pane" role="tabpanel" aria-labelledby="tabWaitingBed" tabindex="0">
+            {{ include('emergencia/tabs/waiting_bed.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabTreatment-pane" role="tabpanel" aria-labelledby="tabTreatment" tabindex="0">
+            {{ include('emergencia/tabs/in_treatment.html.twig') }}
+        </div>
+    </div>
+</div>

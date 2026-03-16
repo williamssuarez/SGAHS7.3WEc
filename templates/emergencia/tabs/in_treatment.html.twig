@@ -1,0 +1,16 @@
+<table class="table table-striped dtHere" id="treatmentTable" data-order='[[ 0, "desc" ]]'>
+    <thead>
+    <tr>
+        <th>Ingreso</th>
+        <th>Paciente</th>
+        <th>Evaluado</th>
+        <th>Prioridad</th>
+        <th>Acción</th>
+    </tr>
+    </thead>
+    <tbody data-mercure-er-target="treatmentTableBody">
+    {% for emergencia in emergencias['IN_TREATMENT'] %}
+        {{ include('emergencia/tableRows/_new_treatment_table_row.html.twig') }}
+    {% endfor %}
+    </tbody>
+</table>

@@ -5,10 +5,16 @@ namespace App\Entity;
 use App\Entity\Traits\SoftDeletetableTrait;
 use App\Enum\EmergenciasEstados;
 use App\Repository\EmergenciaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: EmergenciaRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Emergencia
 {
     use SoftDeletetableTrait;
@@ -42,10 +48,17 @@ class Emergencia
     #[ORM\Column(enumType: EmergenciasEstados::class)]
     private ?EmergenciasEstados $estado = null;
 
+    /**
+     * @var Collection<int, EvolucionEmergencia>
+     */
+    #[ORM\OneToMany(targetEntity: EvolucionEmergencia::class, mappedBy: 'emergencia')]
+    private Collection $evolucionEmergencias;
+
     public function __construct()
     {
         $this->uuid = Uuid::v4();
         $this->fechaIngreso = new \DateTime();
+        $this->evolucionEmergencias = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -145,6 +158,50 @@ class Emergencia
     public function setEstado(EmergenciasEstados $estado): static
     {
         $this->estado = $estado;
+
+        return $this;
+    }
+
+    #[Assert\Callback]
+    public function validateIdentity(ExecutionContextInterface $context, $payload): void
+    {
+        $hasPaciente = $this->paciente !== null;
+        $hasTemporal = !empty(trim((string)$this->pacienteTemporal));
+
+        // Rule 1: Cannot have both empty
+        if (!$hasPaciente && !$hasTemporal) {
+            $context->buildViolation('Debe buscar un paciente registrado o ingresar un nombre temporal (Ej: "Hombre Desconocido 1").')
+                ->atPath('pacienteTemporal')
+                ->addViolation();
+        }
+    }
+
+    /**
+     * @return Collection<int, EvolucionEmergencia>
+     */
+    public function getEvolucionEmergencias(): Collection
+    {
+        return $this->evolucionEmergencias;
+    }
+
+    public function addEvolucionEmergencia(EvolucionEmergencia $evolucionEmergencia): static
+    {
+        if (!$this->evolucionEmergencias->contains($evolucionEmergencia)) {
+            $this->evolucionEmergencias->add($evolucionEmergencia);
+            $evolucionEmergencia->setEmergencia($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvolucionEmergencia(EvolucionEmergencia $evolucionEmergencia): static
+    {
+        if ($this->evolucionEmergencias->removeElement($evolucionEmergencia)) {
+            // set the owning side to null (unless already changed)
+            if ($evolucionEmergencia->getEmergencia() === $this) {
+                $evolucionEmergencia->setEmergencia(null);
+            }
+        }
 
         return $this;
     }
