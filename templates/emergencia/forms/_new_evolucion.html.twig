@@ -1,0 +1,62 @@
+{{ form_start(form, {
+    'attr': {
+        'data-controller': 'submit-once',
+        'data-action': 'submit->submit-once#disable'
+    }
+}) }}
+{{ include('base/_form_error_messages.html.twig') }}
+{# 1. The main clinical note (Always visible) #}
+<div class="mb-3">
+    {{ form_label(form.notaClinica, null, {'label_attr': {'class': 'fw-bold'}}) }}
+    {{ form_widget(form.notaClinica) }}
+    <div class="text-danger">{{ form_errors(form.notaClinica) }}</div>
+</div>
+
+{# 2. The Collapsible Vitals Button #}
+<div class="mb-3">
+    <button class="btn btn-sm btn-outline-secondary fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVitals" aria-expanded="false" aria-controls="collapseVitals">
+        <i class="bi bi-activity"></i> Añadir Signos Vitales (Opcional) <i class="bi bi-chevron-down"></i>
+    </button>
+</div>
+
+{# 3. The Hidden Vitals Grid #}
+{# 3. The Hidden Vitals Grid #}
+<div class="collapse" id="collapseVitals">
+    <div class="card card-body bg-light mb-3 py-3 border-secondary">
+        <div class="row g-3">
+            {# Changed to col-lg-4 col-md-6 for better spacing (3 per row on big screens, 2 on medium) #}
+            <div class="col-lg-4 col-md-6">
+                {{ form_label(form.paSistolica, null, {'label_attr': {'class': 'small fw-bold text-muted mb-1'}}) }}
+                {{ form_widget(form.paSistolica, {'attr': {'class': 'form-control form-control-sm', 'placeholder': 'Ej: 120'}}) }}
+            </div>
+            <div class="col-lg-4 col-md-6">
+                {{ form_label(form.paDiastolica, null, {'label_attr': {'class': 'small fw-bold text-muted mb-1'}}) }}
+                {{ form_widget(form.paDiastolica, {'attr': {'class': 'form-control form-control-sm', 'placeholder': 'Ej: 80'}}) }}
+            </div>
+            <div class="col-lg-4 col-md-6">
+                {{ form_label(form.frecuenciaCardiaca, null, {'label_attr': {'class': 'small fw-bold text-muted mb-1'}}) }}
+                {{ form_widget(form.frecuenciaCardiaca, {'attr': {'class': 'form-control form-control-sm', 'placeholder': 'Ej: 75'}}) }}
+            </div>
+            <div class="col-lg-4 col-md-6">
+                {{ form_label(form.frecuenciaRespiratoria, null, {'label_attr': {'class': 'small fw-bold text-muted mb-1'}}) }}
+                {{ form_widget(form.frecuenciaRespiratoria, {'attr': {'class': 'form-control form-control-sm', 'placeholder': 'Ej: 18'}}) }}
+            </div>
+            <div class="col-lg-4 col-md-6">
+                {{ form_label(form.temperatura, null, {'label_attr': {'class': 'small fw-bold text-muted mb-1'}}) }}
+                {{ form_widget(form.temperatura, {'attr': {'class': 'form-control form-control-sm', 'placeholder': 'Ej: 37.5'}}) }}
+            </div>
+            <div class="col-lg-4 col-md-6">
+                {{ form_label(form.spo2, null, {'label_attr': {'class': 'small fw-bold text-muted mb-1'}}) }}
+                {{ form_widget(form.spo2, {'attr': {'class': 'form-control form-control-sm', 'placeholder': 'Ej: 98'}}) }}
+            </div>
+        </div>
+    </div>
+</div>
+{# 4. The Submit Button #}
+<div class="d-flex justify-content-end">
+    <button type="submit" class="btn btn-primary px-4 shadow-sm" data-submit-once-target="submitButton">
+        <i class="bi bi-save"></i> Guardar Evolución
+    </button>
+</div>
+
+{{ form_end(form) }}

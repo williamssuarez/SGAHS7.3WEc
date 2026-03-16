@@ -11,6 +11,8 @@ export default class extends Controller {
 
         Swal.fire({
             title: 'Cargando...',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
             didOpen: () => Swal.showLoading()
         });
 
@@ -22,21 +24,40 @@ export default class extends Controller {
             const htmlContent = await response.text();
 
             Swal.fire({
-                title: 'Asignar Cama',
+                title: 'Vincular Paciente',
                 html: htmlContent,
                 showCancelButton: true,
-                confirmButtonText: 'Asignar y Trasladar',
+                confirmButtonText: 'Vincular y guardar',
                 cancelButtonText: 'Cancelar',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
                 didOpen: (popup) => {
-                    $(popup).find('.srchSelect').select2({
+                    $(popup).find('.ajaxSrchSelect').select2({
                         theme: "bootstrap-5",
                         width: '100%',
                         language: "es",
-                        dropdownParent: $(popup)
+                        dropdownParent: $(popup),
+                        ajax: {
+                            url: '/paciente/autocomplete-paciente', // Match the route name/path
+                            dataType: 'json',
+                            delay: 250, // Wait 250ms after typing stops before sending request
+                            data: function (params) {
+                                return {
+                                    q: params.term // search term
+                                };
+                            },
+                            processResults: function (data) {
+                                return {
+                                    results: data.results
+                                };
+                            },
+                            cache: true
+                        },
+                        minimumInputLength: 3, // Only search after 3 characters
                     });
                 },
                 preConfirm: async () => {
-                    const form = document.getElementById('assign-bed-form');
+                    const form = document.getElementById('assign-patient-form');
                     const formData = new FormData(form);
 
                     try {
@@ -50,7 +71,7 @@ export default class extends Controller {
                         const result = await postResponse.json();
 
                         if (!result.success) {
-                            throw new Error(result.error || 'Error al asignar la cama.');
+                            throw new Error(result.error || 'Error al asignar el paciente.');
                         }
                         return result;
                     } catch (error) {
@@ -61,7 +82,7 @@ export default class extends Controller {
                 if (result.isConfirmed) {
                     Swal.fire({
                         icon: 'success',
-                        title: '¡Trasladado!',
+                        title: '¡Vinculado!',
                         text: result.value.message,
                         timer: 2000,
                         showConfirmButton: false

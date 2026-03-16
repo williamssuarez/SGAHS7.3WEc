@@ -1,0 +1,177 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Detalles de Emergencia{% endblock %}
+
+{% block titlewrap %}
+    Detalles de  Emergencia
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_emergencia_index') }}">Emergencias</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Detalles de Emergencia</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="container-fluid px-0">
+        {# 1. THE PATIENT HEADER: Always visible identity and location #}
+        <div class="card shadow-sm mb-4 border-top border-primary border-3">
+            <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-3 mb-md-0">
+                    <h2 class="mb-1 text-dark fw-bold">
+                        {% if entity.paciente %}
+                            {{ entity.paciente.nombre }} {{ entity.paciente.apellido }}
+                        {% else %}
+                            <span class="text-danger"><i class="bi bi-incognito"></i> {{ entity.pacienteTemporal }}</span>
+                        {% endif %}
+                    </h2>
+                    <div class="text-muted fs-6">
+                    <span class="me-3">
+                        <i class="bi bi-geo-alt-fill text-primary"></i>
+                        <strong>Ubicación:</strong> {{ entity.camaActual.zona.nombre|default('N/A') }} - {{ entity.camaActual.codigo|default('N/A') }}
+                    </span>
+                        <span>
+                        <i class="bi bi-clock-fill text-warning"></i>
+                        <strong>Ingreso:</strong> {{ entity.fechaIngreso|date('d/m/Y h:i A') }} ({{ entity.fechaIngreso|time_ago }})
+                    </span>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    {# Action Buttons for the Doctor #}
+                    <a href="#" class="btn btn-success shadow-sm">
+                        <i class="bi bi-check-circle-fill"></i> Dar de Alta
+                    </a>
+                    {% if not entity.paciente %}
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                data-controller="assign-patient" {# You can literally reuse your assign_bed_controller.js! #}
+                                data-assign-patient-url-value="{{ path('app_emergencia_associate_patient', {id: entity.id}) }}"
+                                data-action="click->assign-patient#openModal"
+                                title="Vincular a perfil de paciente">
+                            <i class="bi bi-person-lines-fill"></i> Identificar Paciente
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            {# 2. LEFT COLUMN: The Baseline (Triage Data) #}
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-light py-3">
+                        <h5 class="card-title mb-0 fw-bold">
+                            <i class="bi bi-clipboard2-pulse text-danger"></i> Triaje
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if entity.triage %}
+                            <div class="mb-3">
+                                {% set badge = entity.triage.triageNivelesPrioridadBadgeConfig %}
+                                <span class="badge {{ badge.class|default('bg-secondary') }} w-100 py-2 fs-6">
+                                Prioridad: {{ badge.label|default(entity.triage.nivelPrioridad.name) }}
+                            </span>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6 class="fw-bold text-muted border-bottom pb-1">Motivo de Consulta</h6>
+                                <p class="mb-0">{{ entity.triage.motivoIngreso }}</p>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6 class="fw-bold text-muted border-bottom pb-1">Evaluacion</h6>
+                                <p class="mb-0">{{ entity.triage.fechaEvaluacion|date('d/m/Y h:i A') }} ({{ entity.triage.fechaEvaluacion|time_ago }})</p>
+                            </div>
+
+                            <h6 class="fw-bold text-muted border-bottom pb-1">Signos Vitales Iniciales</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-activity text-primary"></i> Presión Art.</span>
+                                    <strong class="{{ entity.triage.statusColor('presi') }}">{{ entity.triage.paSistolica ?: '--' }}/{{ entity.triage.paDiastolica ?: '--' }} mmHg</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-heart-pulse text-danger"></i> Frec. Cardíaca</span>
+                                    <strong class="{{ entity.triage.statusColor('fc') }}">{{ entity.triage.frecuenciaCardiaca ?: '--' }} lpm</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-lungs text-info"></i> Frec. Respiratoria</span>
+                                    <strong class="{{ entity.triage.statusColor('fr') }}">{{ entity.triage.frecuenciaRespiratoria ?: '--' }} rpm</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-thermometer-half text-warning"></i> Temperatura</span>
+                                    <strong class="{{ entity.triage.statusColor('temp') }}">{{ entity.triage.temperatura ?: '--' }} °C</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-moisture text-primary"></i> SpO2</span>
+                                    <strong class="{{ entity.triage.statusColor('spo2') }}">{{ entity.triage.spo2 ?: '--' }} %</strong>
+                                </li>
+                            </ul>
+                        {% else %}
+                            <div class="alert alert-warning">No hay datos de triage registrados.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {# 3. RIGHT COLUMN: The Clinical Timeline #}
+            <div class="col-lg-8">
+                <h4 class="mb-3 fw-bold border-bottom pb-2">Evolución Clínica</h4>
+
+                {# --- THE NEW EVOLUTION FORM CARD --- #}
+                <div class="card shadow-sm mb-4 border-primary">
+                    <div class="card-header bg-primary text-white py-2">
+                        <h6 class="card-title mb-0"><i class="bi bi-journal-plus"></i> Redactar Nueva Evolución</h6>
+                    </div>
+                    <div class="card-body">
+                        {{ include('emergencia/forms/_new_evolucion.html.twig') }}
+                    </div>
+                </div>
+                {# --- END OF FORM CARD --- #}
+
+                <div class="timeline-container">
+                    {# Assuming you mapped OneToMany from Emergencia to EvolucionEmergencia #}
+                    {% for evolucion in entity.evolucionEmergencias %}
+                        <div class="card shadow-sm mb-3 border-start border-info border-4">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+                            <span class="text-muted">
+                                <i class="bi bi-clock"></i> {{ evolucion.fechaHora|date('d/m/Y h:i A') }}
+                            </span>
+                                <span class="badge bg-light text-dark border">
+                                <i class="bi bi-person-badge"></i> {{ evolucion.uidCreate|public_username|title|default('Turno') }}
+                            </span>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-3">{{ evolucion.notaClinica|nl2br }}</p>
+
+                                {# Mini Vitals Display for this specific timestamp #}
+                                <div class="d-flex flex-wrap gap-3 p-2 bg-light rounded text-muted fs-7">
+                                    {% if evolucion.paSistolica %}<div class="{{ entity.triage.statusColor('presi') }}"><strong>PA:</strong> {{ evolucion.paSistolica }}/{{ evolucion.paDiastolica }} mmHg</div>{% endif %}
+                                    {% if evolucion.frecuenciaCardiaca %}<div class="{{ entity.triage.statusColor('fc') }}"><strong>FC:</strong> {{ evolucion.frecuenciaCardiaca }} lpm</div>{% endif %}
+                                    {% if evolucion.frecuenciaRespiratoria %}<div class="{{ entity.triage.statusColor('fr') }}"><strong>FR:</strong> {{ evolucion.frecuenciaRespiratoria }} rpm</div>{% endif %}
+                                    {% if evolucion.temperatura %}<div class="{{ entity.triage.statusColor('temp') }}"><strong>Temp:</strong> {{ evolucion.temperatura }}°C</div>{% endif %}
+                                    {% if evolucion.spo2 %}<div class="{{ entity.triage.statusColor('spo2') }}"><strong>SpO2:</strong> {{ evolucion.spo2 }}%</div>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card shadow-sm bg-light border-dashed text-center p-5">
+                            <div class="text-muted">
+                                <i class="bi bi-journal-medical display-4 mb-3"></i>
+                                <h5>Sin evoluciones registradas</h5>
+                                <p>Haga clic en "Agregar Evolución" para registrar la primera nota clínica.</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

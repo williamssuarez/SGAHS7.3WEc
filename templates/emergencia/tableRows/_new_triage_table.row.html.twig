@@ -1,5 +1,5 @@
 <tr class="new-row" id="emergencia-{{ emergencia.id }}">
-    <td>{{ emergencia.fechaIngreso|date('d/m/Y H:i') }} ({{ emergencia.fechaIngreso|time_ago }})</td>
+    <td>{{ emergencia.fechaIngreso|date('d/m/Y H:i A') }} ({{ emergencia.fechaIngreso|time_ago }})</td>
     <td>
         {% if emergencia.paciente %}
             <strong>{{ emergencia.paciente.nombre }} {{ emergencia.paciente.apellido }}</strong>
@@ -7,7 +7,7 @@
             <strong class="text-danger"><i class="bi bi-incognito"></i> {{ emergencia.pacienteTemporal }}</strong>
         {% endif %}
     </td>
-    <td>{{ emergencia.triage.fechaEvaluacion|date('d/m/Y H:i') }} ({{ emergencia.triage.fechaEvaluacion|time_ago }})</td>
+    <td>{{ emergencia.triage.fechaEvaluacion|date('d/m/Y H:i A') }} ({{ emergencia.triage.fechaEvaluacion|time_ago }})</td>
     <td>
         {% set badge = emergencia.triage.triageNivelesPrioridadBadgeConfig %}
         <span class="badge {{ badge.class }} fs-6">

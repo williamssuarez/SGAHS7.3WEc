@@ -4,14 +4,17 @@ namespace App\Controller;
 
 use App\Entity\Discapacidades;
 use App\Entity\Emergencia;
+use App\Entity\EvolucionEmergencia;
 use App\Entity\StatusRecord;
 use App\Entity\Triage;
 use App\Enum\CamaEstados;
 use App\Enum\EmergenciasEstados;
 use App\Form\AsignarCamaType;
+use App\Form\AsociarPacienteType;
 use App\Form\DiscapacidadesType;
 use App\Form\EmergenciaIngresoType;
 use App\Form\EmergenciaTriageType;
+use App\Form\EvolucionEmergenciaType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -94,6 +97,77 @@ final class EmergenciaController extends AbstractController
         return $this->render('emergencia/newIngreso.html.twig', [
             'entity' => $emergencia,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/show', name: 'app_emergencia_paciente_show', methods: ['GET', 'POST'])]
+    public function pacienteShow(Request $request, Emergencia $emergencia, EntityManagerInterface $entityManager): Response
+    {
+        $evolucion = new EvolucionEmergencia();
+        $form = $this->createForm(EvolucionEmergenciaType::class, $evolucion);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $evolucion->setEmergencia($emergencia);
+
+            $entityManager->persist($evolucion);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Evolución clínica agregada correctamente.');
+            return $this->redirectToRoute('app_emergencia_paciente_show', ['id' => $emergencia->getId()]);
+        }
+
+        return $this->render('emergencia/pacienteShow.html.twig', [
+            'entity' => $emergencia,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{id}/asociar-paciente', name: 'app_emergencia_associate_patient', methods: ['GET', 'POST'])]
+    public function associatePatient(Request $request, Emergencia $emergencia, EntityManagerInterface $em, HubInterface $hub): Response
+    {
+        $form = $this->createForm(AsociarPacienteType::class, $emergencia, [
+            'action' => $this->generateUrl('app_emergencia_associate_patient', ['id' => $emergencia->getId()]),
+        ]);
+
+        $form->handleRequest($request);
+
+        //@TODO: Fix csrf token for ajax forms
+        if ($form->isSubmitted()) { // Assuming you fixed or bypassed the CSRF!
+            // Optional: You can clear the temporal name, or leave it as historical data.
+            //$emergencia->setPacienteTemporal(null);
+
+            $em->persist($emergencia);
+            $em->flush();
+
+            // Figure out which template to render based on current state
+            $template = match($emergencia->getEstado()) {
+                EmergenciasEstados::WAITING_TRIAGE => 'emergencia/tableRows/_new_er_table_row.html.twig',
+                EmergenciasEstados::WAITING_BED => 'emergencia/tableRows/_new_triage_table.row.html.twig',
+                EmergenciasEstados::IN_TREATMENT => 'emergencia/tableRows/_new_treatment_table_row.html.twig',
+                default => null
+            };
+
+            if ($template) {
+                $html = $this->renderView($template, ['emergencia' => $emergencia]);
+
+                // Push update to Mercure. The JS will automatically update the row in place!
+                $update = new Update(
+                    'emergencias',
+                    json_encode([
+                        'id' => $emergencia->getId(),
+                        'estado' => $emergencia->getEstado()->name,
+                        'html' => $html
+                    ])
+                );
+                $hub->publish($update);
+            }
+
+            return $this->json(['success' => true, 'message' => 'Paciente vinculado exitosamente.']);
+        }
+
+        return $this->render('emergencia/forms/_associate_patient_form.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 

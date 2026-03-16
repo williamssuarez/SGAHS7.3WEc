@@ -1,5 +1,5 @@
 <tr class="new-row" id="emergencia-{{ emergencia.id }}">
-    <td>{{ emergencia.fechaIngreso|date('d/m/Y H:i') }} ({{ emergencia.fechaIngreso|time_ago }})</td>
+    <td>{{ emergencia.fechaIngreso|date('d/m/Y H:i A') }} ({{ emergencia.fechaIngreso|time_ago }})</td>
     <td>
         {% if emergencia.paciente %}
             <strong>{{ emergencia.paciente.nombre }} {{ emergencia.paciente.apellido }}</strong>

@@ -1,0 +1,9 @@
+{{ form_start(form, {'attr': {'id': 'associate-patient-form'}}) }}
+<div class="mb-4 text-start">
+    <div class="alert alert-info text-sm">
+        <i class="bi bi-info-circle"></i> Busque al paciente por su número de documento o nombre. Si no existe, debe crearlo primero en el módulo de Pacientes.
+    </div>
+    {{ form_label(form.paciente, null, {'label_attr': {'class': 'fw-bold mb-2'}}) }}
+    {{ form_widget(form.paciente) }}
+</div>
+{{ form_end(form, {'render_rest': false}) }} {# Add your manual CSRF token here if you are using it! #}
