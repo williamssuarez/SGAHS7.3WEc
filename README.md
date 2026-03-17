@@ -37,15 +37,36 @@ Este proceso permitirá administrar toda la gestión del quirófano, desde la pl
 Si tiene los requerimientos, clone el repositorio, abra la consola, navegue hasta el directorio del proyecto y ejecute lo siguiente en la consola
 
 ### Instale las Librerias
+Instalar librerias:
 ```bash
 composer install
+```
+Instalar librerias js:
+```bash
 npm install
+```
+Instalar y crear contenedor de Docker:
+```bash
 docker compose up -d
 ```
 
+### Instale la base de datos
+Crear Base de datos (si el contenedor de docker esta corriendo)
+```bash
+php bin/console doctrine:database:create
+```
+Subir tablas
+```bash
+php bin/console doctrine:schema:update --dump-sql --force
+```
+
 ### Inicie el Proyecto
+Compile los js
 ```bash
 npm run dev
+```
+Inicie el servidor local
+```bash
 symfony server:start 
 ```
 
