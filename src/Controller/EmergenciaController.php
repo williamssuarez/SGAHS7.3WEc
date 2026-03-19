@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\AltaMedica;
 use App\Entity\Discapacidades;
 use App\Entity\Emergencia;
 use App\Entity\EvolucionEmergencia;
@@ -9,9 +10,11 @@ use App\Entity\StatusRecord;
 use App\Entity\Triage;
 use App\Enum\CamaEstados;
 use App\Enum\EmergenciasEstados;
+use App\Form\AltaMedicaType;
 use App\Form\AsignarCamaType;
 use App\Form\AsociarPacienteType;
 use App\Form\DiscapacidadesType;
+use App\Form\EditTemporaryNameType;
 use App\Form\EmergenciaIngresoType;
 use App\Form\EmergenciaTriageType;
 use App\Form\EvolucionEmergenciaType;
@@ -133,9 +136,15 @@ final class EmergenciaController extends AbstractController
         $form->handleRequest($request);
 
         //@TODO: Fix csrf token for ajax forms
-        if ($form->isSubmitted()) { // Assuming you fixed or bypassed the CSRF!
-            // Optional: You can clear the temporal name, or leave it as historical data.
-            //$emergencia->setPacienteTemporal(null);
+        if ($form->isSubmitted()) {
+
+            $checkEmergency = $em->getRepository(Emergencia::class)->getEmergencyByPatient4Check($emergencia->getPaciente()->getId());
+            if ($checkEmergency) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'El paciente ya tiene una emergencia activa.'
+                ]);
+            }
 
             $em->persist($emergencia);
             $em->flush();
@@ -156,18 +165,121 @@ final class EmergenciaController extends AbstractController
                     'emergencias',
                     json_encode([
                         'id' => $emergencia->getId(),
-                        'estado' => $emergencia->getEstado()->name,
+                        'estado' => $emergencia->getEstado()->value,
                         'html' => $html
                     ])
                 );
                 $hub->publish($update);
             }
 
-            return $this->json(['success' => true, 'message' => 'Paciente vinculado exitosamente.']);
+            return $this->json([
+                'success' => true,
+                'message' => 'Paciente vinculado exitosamente.',
+                'paciente_nombre' => $emergencia->getPaciente()->getNombre() . ' ' . $emergencia->getPaciente()->getApellido(),
+                'paciente_url' => $this->generateUrl('app_paciente_show', ['id' => $emergencia->getPaciente()->getId()]),
+                'unlink_url' => $this->generateUrl('app_emergencia_unlink_patient', ['id' => $emergencia->getId()]),
+            ]);
         }
 
         return $this->render('emergencia/forms/_associate_patient_form.html.twig', [
             'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{id}/edit-temporary-name', name: 'app_emergencia_edit_temporary_name', methods: ['GET', 'POST'])]
+    public function editTempPatientName(Request $request, Emergencia $emergencia, EntityManagerInterface $em, HubInterface $hub): Response
+    {
+        $form = $this->createForm(EditTemporaryNameType::class, $emergencia, [
+            'action' => $this->generateUrl('app_emergencia_edit_temporary_name', ['id' => $emergencia->getId()]),
+        ]);
+
+        $form->handleRequest($request);
+
+        //@TODO: Fix csrf token for ajax forms
+        if ($form->isSubmitted()) {
+
+            $data = $form->getData();
+            if (!$data->getPacienteTemporal()){
+                return $this->json([
+                    'success' => false,
+                    'message' => 'El nombre temporal no puede esta vacio.'
+                ]);
+            }
+
+            $em->persist($emergencia);
+            $em->flush();
+
+            // Figure out which template to render based on current state
+            $template = match($emergencia->getEstado()) {
+                EmergenciasEstados::WAITING_TRIAGE => 'emergencia/tableRows/_new_er_table_row.html.twig',
+                EmergenciasEstados::WAITING_BED => 'emergencia/tableRows/_new_triage_table.row.html.twig',
+                EmergenciasEstados::IN_TREATMENT => 'emergencia/tableRows/_new_treatment_table_row.html.twig',
+                default => null
+            };
+
+            if ($template) {
+                $html = $this->renderView($template, ['emergencia' => $emergencia]);
+
+                // Push update to Mercure. The JS will automatically update the row in place!
+                $update = new Update(
+                    'emergencias',
+                    json_encode([
+                        'id' => $emergencia->getId(),
+                        'estado' => $emergencia->getEstado()->value,
+                        'html' => $html
+                    ])
+                );
+                $hub->publish($update);
+            }
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Descripcion de paciente guardada exitosamente.',
+                'paciente_nombre' => $emergencia->getPacienteTemporal(),
+                'paciente_url' => $this->generateUrl('app_emergencia_edit_temporary_name', ['id' => $emergencia->getId()]),
+            ]);
+        }
+
+        return $this->render('emergencia/forms/_edit_temporary_name.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{id}/unlink-paciente', name: 'app_emergencia_unlink_patient', methods: ['POST'])]
+    public function unlinkPatient(Emergencia $emergencia, EntityManagerInterface $em, HubInterface $hub): Response
+    {
+        // 1. Unlink the patient
+        $emergencia->setPaciente(null);
+        $em->flush();
+
+        // 3. Mercure Broadcast (Updates the tables instantly!)
+        $template = match($emergencia->getEstado()) {
+            EmergenciasEstados::WAITING_TRIAGE => 'emergencia/tableRows/_new_er_table_row.html.twig',
+            EmergenciasEstados::WAITING_BED => 'emergencia/tableRows/_new_triage_table.row.html.twig',
+            EmergenciasEstados::IN_TREATMENT => 'emergencia/tableRows/_new_treatment_table_row.html.twig',
+            default => null
+        };
+
+        if ($template) {
+            $html = $this->renderView($template, ['emergencia' => $emergencia]);
+
+            $update = new Update(
+                'emergencias',
+                json_encode([
+                    'id' => $emergencia->getId(),
+                    'estado' => strtolower($emergencia->getEstado()->value),
+                    'html' => $html
+                ])
+            );
+            $hub->publish($update);
+        }
+
+        // 4. Return the JSON payload for Stimulus
+        return $this->json([
+            'success' => true,
+            'message' => 'Paciente desvinculado correctamente.',
+            'paciente_nombre' => $emergencia->getPacienteTemporal(),
+            'paciente_url' => $this->generateUrl('app_emergencia_edit_temporary_name', ['id' => $emergencia->getId()]),
         ]);
     }
 
@@ -284,6 +396,74 @@ final class EmergenciaController extends AbstractController
         return $this->render('emergencia/forms/_assign_bed_form.html.twig', [
             'form' => $form->createView(),
             'manual_csrf_token' => $tokenValue, // <--- Passing it here
+        ]);
+    }
+
+    #[Route('/{id}/alta', name: 'app_emergencia_discharge', methods: ['GET', 'POST'])]
+    public function dischargePatient(Request $request, Emergencia $emergencia, EntityManagerInterface $em, HubInterface $hub): Response
+    {
+        $alta = new AltaMedica();
+        // Automatically set the exit timestamp right now
+        $alta->setFechaEgreso(new \DateTimeImmutable());
+
+        $form = $this->createForm(AltaMedicaType::class, $alta, [
+            'action' => $this->generateUrl('app_emergencia_discharge', ['id' => $emergencia->getId()]),
+        ]);
+
+        $form->handleRequest($request);
+
+        //@TODO: Fix csrf token for ajax forms
+        if ($form->isSubmitted()) {
+
+            $data = $form->getData();
+            if (!$data->getDiagnosticoFinal() || !$data->getIndicacionesMedicas()){
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Ni el diagnostico ni las indicaciones pueden estar vacias.'
+                ]);
+            }
+
+            // 1. Link the Alta to the Emergencia
+            $emergencia->setAltaMedica($alta);
+            $alta->setEmergencia($emergencia);
+
+            // 2. State Transitions
+            $emergencia->setEstado(EmergenciasEstados::DISCHARGED);
+
+            // 3. FREE THE BED! (Crucial step)
+            if ($form->get('needsCleaning')->getData()){
+                if ($cama = $emergencia->getCamaActual()) {
+                    $cama->setEstado(CamaEstados::CLEANING);
+                    $em->persist($cama);
+                }
+            } else {
+                if ($cama = $emergencia->getCamaActual()) {
+                    $cama->setEstado(CamaEstados::AVAILABLE);
+                    $em->persist($cama);
+                }
+            }
+
+
+            $em->persist($alta);
+            $em->persist($emergencia);
+            $em->flush();
+
+            // 4. Mercure Push (Tells the tables to remove this row)
+            $update = new Update(
+                'emergencias',
+                json_encode([
+                    'id' => $emergencia->getId(),
+                    'estado' => EmergenciasEstados::DISCHARGED->value, // Lowercase so the JS ignores insertion
+                    'html' => ''
+                ])
+            );
+            $hub->publish($update);
+
+            return $this->json(['success' => true, 'message' => 'Paciente dado de alta exitosamente.']);
+        }
+
+        return $this->render('emergencia/forms/_alta_medica_form.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 }

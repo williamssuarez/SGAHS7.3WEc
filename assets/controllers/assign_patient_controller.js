@@ -57,7 +57,7 @@ export default class extends Controller {
                     });
                 },
                 preConfirm: async () => {
-                    const form = document.getElementById('assign-patient-form');
+                    const form = document.getElementById('associate-patient-form');
                     const formData = new FormData(form);
 
                     try {
@@ -71,7 +71,7 @@ export default class extends Controller {
                         const result = await postResponse.json();
 
                         if (!result.success) {
-                            throw new Error(result.error || 'Error al asignar el paciente.');
+                            throw new Error(result.error || 'Error al asignar el paciente: '+result.message);
                         }
                         return result;
                     } catch (error) {
@@ -84,9 +84,41 @@ export default class extends Controller {
                         icon: 'success',
                         title: '¡Vinculado!',
                         text: result.value.message,
-                        timer: 2000,
+                        timer: 1500,
                         showConfirmButton: false
                     });
+
+                    // 1. Check if we are on the Dashboard page by looking for the header ID
+                    const patientNameHeader = document.getElementById('patientName');
+
+                    if (patientNameHeader) {
+                        // Inject the new HTML using the data from our PHP JSON response
+                        patientNameHeader.innerHTML = `
+                            ${result.value.paciente_nombre}
+                            <a class="btn btn-outline-primary" target="_blank" href="${result.value.paciente_url}">
+                                <i class="fa-solid fa-address-book"></i>
+                                <i class="fa-solid fa-up-right-from-square"></i>
+                            </a>
+
+                            <button type="button"
+                                    class="btn btn-outline-danger"
+                                    data-controller="unlink-patient"
+                                    data-unlink-patient-url-value="${result.value.unlink_url}"
+                                    data-action="click->unlink-patient#unlink"
+                                    title="Desvincular paciente por error">
+                                <i class="bi bi-person-x-fill"></i>
+                            </button>
+                        `;
+                    }
+
+                    // 2. Remove the button that was clicked so it can't be clicked again
+                    const patientIdentifierBtn = document.getElementById('assignPatientBtn');
+                    if (patientIdentifierBtn) {
+                        console.log('boton encontrado');
+                        patientIdentifierBtn.innerHTML = '<i class="bi bi-person-lines-fill"></i> Cambiar Paciente';
+                    } else {
+                        console.log('boton no encontrado');
+                    }
                 }
             });
 

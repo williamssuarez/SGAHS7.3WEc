@@ -1,0 +1,9 @@
+{{ form_start(form, {'attr': {'id': 'edit-patient-form'}}) }}
+<div class="mb-4 text-start">
+    <div class="alert alert-info text-sm">
+        <i class="bi bi-info-circle"></i> Ingrese una descripcion del paciente.
+    </div>
+    {{ form_label(form.pacienteTemporal, null, {'label_attr': {'class': 'fw-bold mb-2'}}) }}
+    {{ form_widget(form.pacienteTemporal) }}
+</div>
+{{ form_end(form, {'render_rest': false}) }}

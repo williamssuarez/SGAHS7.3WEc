@@ -24,28 +24,76 @@ class EvolucionEmergenciaType extends AbstractType
                 ]
             ])
             // --- Optional Vitals ---
-            ->add('paSistolica', IntegerType::class, [
+            ->add('paSistolica', NumberType::class, [
                 'label' => 'PA Sistólica',
+                'label_attr' => [
+                    'class' => 'small fw-bold text-muted mb-1'
+                ],
+                'attr' => [
+                    'class' => 'form-control form-control-sm number-only',
+                    'maxLength' => 3,
+                    'placeholder' => 'Ej: 120'
+                ],
                 'required' => false,
             ])
-            ->add('paDiastolica', IntegerType::class, [
+            ->add('paDiastolica', NumberType::class, [
                 'label' => 'PA Diastólica',
+                'label_attr' => [
+                    'class' => 'small fw-bold text-muted mb-1'
+                ],
+                'attr' => [
+                    'class' => 'form-control form-control-sm number-only',
+                    'maxLength' => 3,
+                    'placeholder' => 'Ej: 80'
+                ],
                 'required' => false,
             ])
-            ->add('frecuenciaCardiaca', IntegerType::class, [
+            ->add('frecuenciaCardiaca', NumberType::class, [
                 'label' => 'Frec. Cardíaca',
+                'label_attr' => [
+                    'class' => 'small fw-bold text-muted mb-1'
+                ],
+                'attr' => [
+                    'class' => 'form-control form-control-sm number-only',
+                    'maxLength' => 3,
+                    'placeholder' => 'Ej: 75'
+                ],
                 'required' => false,
             ])
-            ->add('frecuenciaRespiratoria', IntegerType::class, [
+            ->add('frecuenciaRespiratoria', NumberType::class, [
                 'label' => 'Frec. Resp.',
+                'label_attr' => [
+                    'class' => 'small fw-bold text-muted mb-1'
+                ],
+                'attr' => [
+                    'class' => 'form-control form-control-sm number-only',
+                    'maxLength' => 3,
+                    'placeholder' => 'Ej: 18'
+                ],
                 'required' => false,
             ])
             ->add('temperatura', NumberType::class, [
                 'label' => 'Temp (°C)',
+                'label_attr' => [
+                    'class' => 'small fw-bold text-muted mb-1'
+                ],
+                'attr' => [
+                    'class' => 'form-control form-control-sm',
+                    'data-controller' => 'mask',
+                    'data-mask-type-value' => 'decimal',
+                    'placeholder' => 'Ej: 37.5'
+                ],
                 'required' => false,
             ])
             ->add('spo2', NumberType::class, [
                 'label' => 'SpO2 (%)',
+                'label_attr' => [
+                    'class' => 'small fw-bold text-muted mb-1'
+                ],
+                'attr' => [
+                    'class' => 'form-control form-control-sm number-only',
+                    'placeholder' => 'Ej: 98'
+                ],
                 'required' => false,
             ]);
     }

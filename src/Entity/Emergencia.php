@@ -54,6 +54,9 @@ class Emergencia
     #[ORM\OneToMany(targetEntity: EvolucionEmergencia::class, mappedBy: 'emergencia')]
     private Collection $evolucionEmergencias;
 
+    #[ORM\OneToOne(mappedBy: 'emergencia', cascade: ['persist', 'remove'])]
+    private ?AltaMedica $altaMedica = null;
+
     public function __construct()
     {
         $this->uuid = Uuid::v4();
@@ -202,6 +205,28 @@ class Emergencia
                 $evolucionEmergencia->setEmergencia(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAltaMedica(): ?AltaMedica
+    {
+        return $this->altaMedica;
+    }
+
+    public function setAltaMedica(?AltaMedica $altaMedica): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($altaMedica === null && $this->altaMedica !== null) {
+            $this->altaMedica->setEmergencia(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($altaMedica !== null && $altaMedica->getEmergencia() !== $this) {
+            $altaMedica->setEmergencia($this);
+        }
+
+        $this->altaMedica = $altaMedica;
 
         return $this;
     }

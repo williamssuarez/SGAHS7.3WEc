@@ -1,0 +1,29 @@
+{{ form_start(form, {'attr': {'id': 'discharge-form'}}) }}
+<div class="alert alert-warning text-start small">
+    <i class="bi bi-exclamation-triangle-fill"></i> Al confirmar, el paciente será retirado de la emergencia y la cama actual quedará libre. Esta acción finaliza el registro.
+</div>
+
+<div class="mb-3 text-start">
+    {{ form_label(form.condicionAlta, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}
+    {{ form_widget(form.condicionAlta) }}
+</div>
+
+<div class="mb-3 text-start">
+    {{ form_label(form.diagnosticoFinal, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}
+    {{ form_widget(form.diagnosticoFinal) }}
+</div>
+
+<div class="mb-3 text-start">
+    {{ form_label(form.indicacionesMedicas, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}
+    {{ form_widget(form.indicacionesMedicas) }}
+</div>
+
+<div class="mb-3 text-start">
+    {{ form_label(form.needsCleaning, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    {{ form_widget(form.needsCleaning) }}
+</div>
+
+{{ form_end(form, {'render_rest': false}) }}

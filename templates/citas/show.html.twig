@@ -156,7 +156,7 @@
                                     </a>
                                     {% if cita.estadoCita.value == 'expected' %}
                                         {# 1. CHECK-IN BUTTON: Only visible if the appointment is TODAY #}
-                                        {% if cita.fecha|date('Y-m-d') == 'now'|date('Y-m-d') %}
+                                        {% if cita.fecha|date('Y-m-d', false) == 'now'|date('Y-m-d') %}
                                             <form action="{{ path('app_citas_checkin', {'id': cita.id}) }}"
                                                   method="POST"
                                                   data-controller="confirm-finalizar"

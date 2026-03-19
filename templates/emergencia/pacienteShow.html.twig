@@ -25,11 +25,33 @@
         <div class="card shadow-sm mb-4 border-top border-primary border-3">
             <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                 <div class="mb-3 mb-md-0">
-                    <h2 class="mb-1 text-dark fw-bold">
+                    <h2 class="mb-1 text-dark fw-bold" id="patientName">
                         {% if entity.paciente %}
                             {{ entity.paciente.nombre }} {{ entity.paciente.apellido }}
+                            <a class="btn btn-outline-primary" target="_blank" href="{{ path('app_paciente_show', { 'id': entity.paciente.id }) }}">
+                                <i class="fa-solid fa-address-book"></i>
+                                <i class="fa-solid fa-up-right-from-square"></i>
+                            </a>
+
+                            {# THE UNLINK BUTTON #}
+                            <button type="button"
+                                    class="btn btn-outline-danger"
+                                    data-controller="unlink-patient"
+                                    data-unlink-patient-url-value="{{ path('app_emergencia_unlink_patient', {id: entity.id}) }}"
+                                    data-action="click->unlink-patient#unlink"
+                                    title="Desvincular paciente por error">
+                                <i class="bi bi-person-x-fill"></i>
+                            </button>
                         {% else %}
                             <span class="text-danger"><i class="bi bi-incognito"></i> {{ entity.pacienteTemporal }}</span>
+                            <button type="button"
+                                    class="btn btn-outline-primary"
+                                    data-controller="edit-patient"
+                                    data-edit-patient-url-value="{{ path('app_emergencia_edit_temporary_name', {id: entity.id}) }}"
+                                    data-action="click->edit-patient#editModal"
+                                    title="Editar nombre temporal">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
                         {% endif %}
                     </h2>
                     <div class="text-muted fs-6">
@@ -46,13 +68,29 @@
 
                 <div class="d-flex gap-2">
                     {# Action Buttons for the Doctor #}
-                    <a href="#" class="btn btn-success shadow-sm">
+                    <button type="button"
+                            class="btn btn-success shadow-sm"
+                            data-controller="discharge"
+                            data-discharge-url-value="{{ path('app_emergencia_discharge', {id: entity.id}) }}"
+                            data-discharge-redirect-value="{{ path('app_emergencia_index') }}"
+                            data-action="click->discharge#openModal">
                         <i class="bi bi-check-circle-fill"></i> Dar de Alta
-                    </a>
-                    {% if not entity.paciente %}
+                    </button>
+                    {% if entity.paciente %}
                         <button type="button"
+                                id="assignPatientBtn"
                                 class="btn btn-outline-primary"
-                                data-controller="assign-patient" {# You can literally reuse your assign_bed_controller.js! #}
+                                data-controller="assign-patient"
+                                data-assign-patient-url-value="{{ path('app_emergencia_associate_patient', {id: entity.id}) }}"
+                                data-action="click->assign-patient#openModal"
+                                title="Vincular a perfil de paciente">
+                            <i class="bi bi-person-lines-fill"></i> Cambiar Paciente
+                        </button>
+                    {% else %}
+                        <button type="button"
+                                id="assignPatientBtn"
+                                class="btn btn-outline-primary"
+                                data-controller="assign-patient"
                                 data-assign-patient-url-value="{{ path('app_emergencia_associate_patient', {id: entity.id}) }}"
                                 data-action="click->assign-patient#openModal"
                                 title="Vincular a perfil de paciente">

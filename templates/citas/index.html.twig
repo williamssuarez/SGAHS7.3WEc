@@ -87,7 +87,7 @@
                             {% if entity.estadoCita.value == 'expected' %}
 
                                 {# 1. CHECK-IN BUTTON: Only visible if the appointment is TODAY #}
-                                {% if entity.fecha|date('Y-m-d') == 'now'|date('Y-m-d') %}
+                                {% if entity.fecha|date('Y-m-d', false) == 'now'|date('Y-m-d') %}
                                     <form action="{{ path('app_citas_checkin', {'id': entity.id}) }}"
                                           method="POST"
                                           data-controller="confirm-finalizar"

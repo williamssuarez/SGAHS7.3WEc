@@ -27,7 +27,6 @@ class AsociarPacienteType extends AbstractType
             'required' => true,
         ]);
 
-        // We use your exact event listeners to handle the dynamic AJAX submission
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             $emergencia = $event->getData();
             if ($emergencia && $emergencia->getPaciente()) {
