@@ -1,0 +1,38 @@
+<h4>
+    Discapacidades Registradas
+</h4>
+<table class="table table-striped dtHere">
+    <thead>
+    <tr>
+        <th>Discapacidad</th>
+        <th>Porcentaje</th>
+        <th>Nro. Certificado</th>
+        <th>Congenita</th>
+        <th>Ayuda Tecnica</th>
+        <th>Limitaciones Funcionales</th>
+        <th>Observaciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for entity in discapacidades %}
+        <tr class="align-middle">
+            <td>{{ entity.discapacidad }}</td>
+            <td>
+                {% if entity.porcentaje <= 30 %}
+                    <span class="badge rounded-pill text-bg-success">{{ entity.porcentaje }}%</span>
+                {% elseif entity.porcentaje <= 60 %}
+                    <span class="badge rounded-pill text-bg-warning">{{ entity.porcentaje }}%</span>
+                {% else %}
+                    <span class="badge rounded-pill text-bg-danger">{{ entity.porcentaje }}%</span>
+                {% endif %}
+
+            </td>
+            <td>{{ entity.numeroCertificado }}</td>
+            <td>{{ entity.congenita ? 'Si':'No' }}</td>
+            <td>{{ entity.ayudaTecnica }}</td>
+            <td>{{ entity.limitacionesFuncionales }}</td>
+            <td>{{ entity.observaciones }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

@@ -7,6 +7,7 @@ use App\Entity\Discapacidades;
 use App\Entity\Enfermedades;
 use App\Entity\Paciente;
 use App\Entity\Inmunizaciones;
+use App\Enum\SangreTipos;
 use App\Form\DataTransformer\PhoneNumberTransformer;
 use App\Form\Type\PhoneType;
 use App\Repository\AlergenosRepository;
@@ -19,6 +20,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -150,54 +152,6 @@ class PacienteType extends AbstractType
                 ],
                 'required' => true,
             ])
-            /*->add('enfermedades', EntityType::class, [
-                'class' => Enfermedades::class,
-                'choice_label' => 'nombre',
-                'multiple' => true,
-                'attr' => [
-                    'class' => 'srchSelect'
-                ],
-                'required' => false,
-                'query_builder' => function (EnfermedadesRepository $er) {
-                    return $er->getActivesforSelect();
-                }
-            ])*/
-            /*->add('alergenos', EntityType::class, [
-                'class' => Alergenos::class,
-                'choice_label' => 'nombre',
-                'multiple' => true,
-                'attr' => [
-                    'class' => 'srchSelect'
-                ],
-                'required' => false,
-                'query_builder' => function (AlergenosRepository $er) {
-                    return $er->getActivesforSelect();
-                }
-            ])*/
-            /*->add('discapacidades', EntityType::class, [
-                'class' => Discapacidades::class,
-                'choice_label' => 'nombre',
-                'multiple' => true,
-                'attr' => [
-                    'class' => 'srchSelect'
-                ],
-                'required' => false,
-                'query_builder' => function (DiscapacidadesRepository $er) {
-                    return $er->getActivesforSelect();
-                }
-            ])
-            ->add('inmunizaciones', EntityType::class, [
-                'class' => Inmunizaciones::class,
-                'choice_label' => 'nombre',
-                'multiple' => true,
-                'attr' => [
-                    'class' => 'srchSelect'
-                ],
-                'required' => false,
-                'query_builder' => function (InmunizacionesRepository $er) {
-                    return $er->getActivesforSelect();
-                }
-            ])*/
             ->add('hasMarcaPaso', CheckboxType::class, [
                 'label' => '¿Tiene marca pasos el paciente?',
                 'label_attr' => [
@@ -207,6 +161,19 @@ class PacienteType extends AbstractType
                 'attr' => [
                     'class' => 'form-check-input bigCheckbox'
                 ],
+            ])
+            ->add('sangreTipo', EnumType::class, [
+                'class' => SangreTipos::class,
+                'label' => 'Tipo de Sangre',
+                'label_attr' => [
+                    'class' => 'form-label'
+                ],
+                'attr' => [
+                    'class' => 'noSrchSelect'
+                ],
+                'expanded' => false,
+                'required' => true,
+                'choice_label' => fn (SangreTipos $choice) => $choice->getReadableText(),
             ])
         ;
     }

@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Subir Archivo{% endblock %}
+
+{% block titlewrap %}
+    Subir archivo para {{ paciente.nombre|title }} {{ paciente.apellido|title }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('my_profile_show', {'uuid': app.user.externalProfile.uuid}) }}">Mi Perfil</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Subir Archivo</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('attachment/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

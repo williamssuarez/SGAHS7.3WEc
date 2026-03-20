@@ -1,6 +1,6 @@
-{% extends '../../base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}Gestion de Usuarios Internos{% endblock %}
+{% block title %}Gestion de Usuarios Externos{% endblock %}
 
 {% block titlewrap %}
     Usuarios
@@ -30,7 +30,6 @@
             <thead>
             <tr>
                 <th>Email</th>
-                <th>Tipo</th>
                 <th>Nombre</th>
                 <th>Acciones</th>
             </tr>
@@ -39,13 +38,7 @@
             {% for user in users %}
                 <tr class="align-middle">
                     <td>{{ user.email }}</td>
-                    <td>
-                        {% set badge = user.badgeConfig %}
-                        <span class="badge rounded-pill {{ badge.class }}">
-                            {{ badge.label }}
-                        </span>
-                    </td>
-                    <td>{{ user.displayNameorNothing }}</td>
+                    <td>{{ user.externalNameorNothing }}</td>
                     <td>
                         <div class="btn-group">
                             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -53,12 +46,12 @@
                             </button>
                             <ul class="dropdown-menu" style="">
                                 <li>
-                                    <a class="dropdown-item" href="{{ path('app_user_show', {'id': user.id}) }}">
+                                    <a class="dropdown-item" href="{{ path('app_user_external_show', {'id': user.id}) }}">
                                         <i class="bi bi-search"></i> Ver Detalles
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="{{ path('app_user_edit', {'id': user.id}) }}">
+                                    <a class="dropdown-item" href="{{ path('app_user_external_edit', {'id': user.id}) }}">
                                         <i class="bi bi-pencil-square"></i> Editar
                                     </a>
                                 </li>
@@ -84,12 +77,6 @@
             {% endfor %}
             </tbody>
         </table>
-    </div>
-
-    <br>
-
-    <div class="card-footer clearfix">
-        <a href="{{ path('app_user_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
     </div>
 </div>
 {% endblock %}

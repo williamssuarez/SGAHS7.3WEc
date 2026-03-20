@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Traits\SoftDeletetableTrait;
+use App\Enum\SangreTipos;
 use App\Repository\PacienteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -147,6 +148,9 @@ class Paciente
      */
     #[ORM\OneToMany(targetEntity: Emergencia::class, mappedBy: 'paciente')]
     private Collection $emergencias;
+
+    #[ORM\Column(nullable: false, enumType: SangreTipos::class)]
+    private ?SangreTipos $sangreTipo = null;
 
     public function __construct()
     {
@@ -711,6 +715,18 @@ class Paciente
                 $emergencia->setPaciente(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSangreTipo(): SangreTipos
+    {
+        return $this->sangreTipo;
+    }
+
+    public function setSangreTipo(SangreTipos $sangreTipo): static
+    {
+        $this->sangreTipo = $sangreTipo;
 
         return $this;
     }

@@ -1,14 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Consulta{% endblock %}
+{% block title %}Mi Perfil{% endblock %}
 
 {% block titlewrap %}
-    Detalles
+    Mi Perfil
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_consulta_index') }}">Consultas</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Detalles Consulta</li>
+    <li class="breadcrumb-item active" aria-current="page">Mi Perfil</li>
 {% endblock %}
 
 {% block body %}
@@ -20,6 +19,9 @@
             </div>
         {% endfor %}
     {% endfor %}
+    <div class="alert alert-info text-start small">
+        <i class="bi bi-exclamation-circle-fill"></i> Si cree que alguno de sus datos es incorrecto por favor solicite una cita medica para actualizarlos.
+    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="card card-primary card-outline">
@@ -59,25 +61,10 @@
                                 <h4>
                                     <span class="badge rounded-pill text-bg-secondary">{{ paciente.tipoDocumento|title }} - {{ paciente.cedula|number_format(0, '', '.') }}</span>
                                 </h4>
-
                                 <h4>
                                     <span class="badge rounded-pill text-bg-danger">
                                         <i class="fa-solid fa-droplet"></i>
                                         {{ paciente.sangreTipo.readableText }}
-                                    </span>
-                                </h4>
-
-                                <h4>
-                                    {% set badge = consultum.consultaTiposBadgeConfig %}
-                                    <span class="badge rounded-pill {{ badge.class }}">
-                                        {{ badge.label }}
-                                    </span>
-                                </h4>
-
-                                <h4>
-                                    {% set badge = consultum.consultaEstadosBadgeConfig %}
-                                    <span class="badge rounded-pill {{ badge.class }}">
-                                        {{ badge.label }}
                                     </span>
                                 </h4>
                             </div>
@@ -126,43 +113,6 @@
                                     </div>
                                 </div>
                             </div>
-                            {% if consultum.estadoConsulta.value == 'active' %}
-                                <br>
-                                <br>
-                                <div class="col-md-12">
-                                    <form action="{{ path('app_consulta_finalizar', {'id': consultum.id}) }}"
-                                          method="POST"
-                                          data-controller="confirm-finalizar"
-                                          data-action="submit->confirm-finalizar#confirm"
-                                          data-confirm-finalizar-title-value="¿Desea cerrar y finalizar la Consulta?"
-                                          data-confirm-finalizar-text-value="Una vez cerrada, esta consulta será de solo lectura. Para nuevos cambios, deberá abrir una nueva consulta."
-                                          data-confirm-finalizar-confirm-button-text-value="Sí, cerrar consulta"
-                                          class="d-inline">
-
-                                        <button type="submit" class="btn btn-success form-control">
-                                            <i class="bi bi-check-circle-fill"></i> Cerrar y Finalizar Consulta
-                                        </button>
-                                    </form>
-                                </div>
-                            {% elseif consultum.estadoConsulta.value == 'pending' %}
-                                <br>
-                                <br>
-                                <div class="col-md-12">
-                                    <form action="{{ path('app_consulta_iniciar', {'id': consultum.id}) }}"
-                                          method="POST"
-                                          data-controller="confirm-finalizar"
-                                          data-action="submit->confirm-finalizar#confirm"
-                                          data-confirm-finalizar-title-value="¿Desea Iniciar la Consulta?"
-                                          data-confirm-finalizar-text-value="Una vez iniciada, no podra ser cancelada y debe ser terminada."
-                                          data-confirm-finalizar-confirm-button-text-value="Sí, iniciar consulta"
-                                          class="d-inline">
-
-                                        <button type="submit" class="btn btn-primary form-control">
-                                            <i class="bi bi-check-circle-fill"></i> Iniciar Consulta
-                                        </button>
-                                    </form>
-                                </div>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -173,7 +123,7 @@
     <div class="col-md-12">
         <div class="card card-primary card-outline mb-4">
 
-            {{ include('consulta/_showPacienteTabs.html.twig') }}
+            {{ include('my_profile/_showPacienteTabs.html.twig') }}
         </div>
     </div>
 {% endblock %}

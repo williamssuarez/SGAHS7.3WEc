@@ -11,6 +11,7 @@ enum EmergenciasEstados: string
     case WAITING_BED = 'waiting_bed';
     case IN_TREATMENT = 'in_treatment';
     case DISCHARGED = 'discharged';
+    case DERIVED_CONSULTATION = 'derived_consultation';
 
     /**
      * Retorna un texto amigable para el usuario final.
@@ -22,6 +23,7 @@ enum EmergenciasEstados: string
             self::WAITING_BED => 'En espera de Cama',
             self::IN_TREATMENT => 'En Cama',
             self::DISCHARGED => 'Alta médica',
+            self::DERIVED_CONSULTATION => 'Enviado a Consulta',
         };
     }
 

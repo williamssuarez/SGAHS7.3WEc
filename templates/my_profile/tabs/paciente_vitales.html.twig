@@ -1,0 +1,55 @@
+<h4>
+    Vitales Registradas
+</h4>
+<table class="table table-striped dtHere">
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Temperatura</th>
+        <th>P. Arterial</th>
+        <th>F. Cardíaca</th>
+        <th>F. Respiratoria</th>
+        <th>SpO2</th>
+        <th>Peso / Altura</th>
+        <th>CMB</th>
+        <th>IMC</th>
+        <th>Fecha</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for entity in vitales %}
+        <tr>
+            <td>
+                {{ loop.index }}
+            </td>
+            <td class="{{ entity.statusColor('temp') }}">
+                {{ entity.temperatura|number_format(1) }} °C
+            </td>
+            <td class="{{ (entity.paSistolica >= 140 or entity.paDiastolica >= 90) ? 'table-danger' : '' }}">
+                {{ entity.paSistolica }}/{{ entity.paDiastolica }}
+            </td>
+            <td class="{{ entity.statusColor('fc') }}">
+                {{ entity.frecuenciaCardiaca }} <small>lpm</small>
+            </td>
+            <td class="{{ entity.statusColor('fr') }}">
+                {{ entity.frecuenciaRespiratoria }} <small>rpm</small>
+            </td>
+            <td class="{{ entity.statusColor('spo2') }}">
+                {{ entity.spo2 }}%
+            </td>
+            <td>
+                {{ entity.peso }}kg / {{ entity.altura }}cm
+            </td>
+            <td>
+                {{ entity.cmb ? entity.cmb ~ 'cm' : ' ' }}
+            </td>
+            <td class="{{ entity.statusColor('imc') }}">
+                <strong>{{ entity.imc }}</strong>
+            </td>
+            <td>
+                {{ entity.created|date('d/m/Y H:i') }} <i>({{ entity.created|time_ago }})</i>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

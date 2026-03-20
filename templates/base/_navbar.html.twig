@@ -178,7 +178,7 @@
                         {% if is_granted('ROLE_INTERNAL') %}
                             <a href="#" class="btn btn-primary btn-flat">Mi Perfil</a>
                         {% else %}
-                            <a href="{{ path('app_profile_complete') }}" class="btn btn-success btn-flat">Mi Perfil</a>
+                            <a href="{{ path('my_profile_show', {'uuid': app.user.externalProfile.uuid}) }}" class="btn btn-success btn-flat">Mi Perfil</a>
                         {% endif %}
 
                         <a href="{{ path('app_logout') }}" class="btn btn-danger btn-flat float-end">Salir</a>

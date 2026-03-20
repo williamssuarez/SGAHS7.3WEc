@@ -102,6 +102,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return ucfirst($profile->getNombre()) . ' ' . ucfirst($profile->getApellido());
     }
 
+    public function getExternalNameorNothing(): string
+    {
+        if ($this->getExternalProfile() !== null) {
+            return ucfirst($this->getExternalProfile()->getNombre()) . ' ' . ucfirst($this->getExternalProfile()->getApellido());
+        } else {
+            return 'Usuario Incompleto';
+        }
+    }
+
     public function getDisplayRoleLabel(): string
     {
         if (in_array('ROLE_ADMIN', $this->getRoles()) || in_array('ROLE_INTERNAL', $this->getRoles())) {

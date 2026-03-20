@@ -1,0 +1,42 @@
+<h4>
+    Historial del Paciente
+</h4>
+
+<div class="card card-success card-outline">
+    <div class="card-header">
+        <div class="card-title">Historial Completo</div>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-striped dtHere">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Accion</th>
+                <th>Detalles</th>
+                <th>Direccion IP</th>
+                <th>Creado por</th>
+                <th>Fecha Creada</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entity in allHistory %}
+                <tr class="align-middle">
+                    <td>{{ loop.index }}</td>
+                    <td>{{ entity.tipoAudit.getReadableText }}</td>
+                    <td>{{ entity.descripcion }}</td>
+                    <td>{{ entity.direccionIp }}</td>
+                    {#<td>
+                        {% set badge = entity.prescripcionesEstadosBadgeConfig %}
+                        <span class="badge rounded-pill {{ badge.class }}">
+                                {{ badge.label }}
+                            </span>
+                    </td>#}
+                    <td>{{ entity.uidCreate|public_username|title }}</td>
+                    <td><strong>{{ entity.created|date('d-m-Y H:i') }}</strong> <i>({{ entity.created|time_ago }})</i></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

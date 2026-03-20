@@ -21,7 +21,7 @@ final class UserExternalController extends AbstractController
     #[Route(name: 'app_user_external_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
-        return $this->render('user/index.html.twig', [
+        return $this->render('users/user_external/index.html.twig', [
             'users' => $userRepository->getActivesExternalsforTable(),
         ]);
     }

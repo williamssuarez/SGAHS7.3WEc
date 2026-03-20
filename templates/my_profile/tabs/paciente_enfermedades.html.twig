@@ -1,0 +1,30 @@
+<h4>
+    Enfermedades Registradas
+</h4>
+<table class="table table-striped dtHere">
+    <thead>
+    <tr>
+        <th>Enfermedad</th>
+        <th>Diagnostico</th>
+        <th>Tipo</th>
+        <th>Cronica</th>
+        <th>Notas</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for entity in enfermedades %}
+        <tr class="align-middle">
+            <td>{{ entity.enfermedad.nombre }}</td>
+            <td>{{ entity.fechaDiagnostico|date('d/m/Y', false) }}</td>
+            <td>
+                {% set badge = entity.pacienteEnfermedadesTiposBadgeConfig %}
+                <span class="badge rounded-pill {{ badge.class }}">
+                    {{ badge.label }}
+                </span>
+            </td>
+            <td>{{ entity.cronica ? 'Si':'No' }}</td>
+            <td>{{ entity.notas }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

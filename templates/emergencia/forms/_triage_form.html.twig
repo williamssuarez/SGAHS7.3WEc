@@ -1,6 +1,6 @@
 {{ form_start(form, {
     'attr': {
-        'data-controller': 'submit-once',
+        'data-controller': 'submit-once triage-routing',
         'data-action': 'submit->submit-once#disable'
     }
 }) }}
@@ -100,21 +100,40 @@
 
         <div class="col-md-6">
             <div class="mb-3">
-                {{form_label( form.nivelPrioridad ) }}
+                {{form_label( form.escalaGlasgow ) }}
                 <div class="input-group">
-                    {{form_widget( form.nivelPrioridad ) }}
-                    <span class="input-group-text" id="inputGroupPrepend">
-                        <strong>kg.</strong>
-                    </span>
+                    {{form_widget( form.escalaGlasgow ) }}
                 </div>
             </div>
         </div>
 
         <div class="col-md-6">
             <div class="mb-3">
-                {{form_label( form.escalaGlasgow ) }}
+                {{form_label( form.nivelPrioridad ) }}
                 <div class="input-group">
-                    {{form_widget( form.escalaGlasgow ) }}
+                    {# Add the target and action to the select field #}
+                    {{ form_widget(form.nivelPrioridad, {
+                        'attr': {
+                            'data-triage-routing-target': 'priority',
+                            'data-action': 'change->triage-routing#toggleSections'
+                        }
+                    }) }}
+                </div>
+            </div>
+        </div>
+
+        {# THE NEW DYNAMIC ROUTING SECTION #}
+        <div class="col-md-12 mt-4 d-none p-3 bg-light border rounded" data-triage-routing-target="consultationSection">
+            <h6 class="text-primary fw-bold"><i class="bi bi-info-circle"></i> Triaje de Baja Prioridad</h6>
+            <div class="form-check form-switch fs-5 mb-3">
+                {{ form_widget(form.sendConsultation) }}
+                {{ form_label(form.sendConsultation) }}
+            </div>
+
+            <div class="row d-none" data-triage-routing-target="specialtySection">
+                <div class="col-md-12">
+                    {{ form_label(form.specialty) }}
+                    {{ form_widget(form.specialty) }}
                 </div>
             </div>
         </div>

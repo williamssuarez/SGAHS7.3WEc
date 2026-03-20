@@ -4,15 +4,20 @@ namespace App\Form;
 
 use App\Entity\ExternalProfile;
 use App\Entity\User;
+use App\Enum\SangreTipos;
 use App\Form\Type\PhoneType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ExternalProfileType extends AbstractType
@@ -72,7 +77,7 @@ class ExternalProfileType extends AbstractType
                 ],
                 'attr' => [
                     'class' => 'form-control number-only',
-                    'maxlength' => '9'
+                    'maxlength' => '8'
                 ],
                 'required' => true,
             ])
@@ -83,6 +88,69 @@ class ExternalProfileType extends AbstractType
                 ],
                 'attr' => ['class' => 'noSrchSelect']
             ])
+            ->add('sangreTipo', EnumType::class, [
+                'class' => SangreTipos::class,
+                'label' => 'Tipo de Sangre',
+                'label_attr' => [
+                    'class' => 'form-label'
+                ],
+                'attr' => [
+                    'class' => 'noSrchSelect'
+                ],
+                'expanded' => false,
+                'required' => true,
+                'choice_label' => fn (SangreTipos $choice) => $choice->getReadableText(),
+            ])
+            ->add('sexo', ChoiceType::class, [
+                'label' => 'Sexo',
+                'label_attr' => [
+                    'class' => 'form-label'
+                ],
+                'choices'  => [
+                    'Masculino' => 'M',
+                    'Femenino' => 'F'
+                ],
+                'attr' => ['class' => 'noSrchSelect']
+            ])
+            ->add(
+                'fechaNacimiento',
+                DateType::class,
+                [
+                    //'format' => 'dd/MM/yyyy',
+                    'widget' => 'single_text',
+                    'label' => 'Fecha de Nacimiento',
+                    'label_attr' => [
+                        'class' => 'form-label mask'
+                    ],
+                    'attr' => [
+                        'class' => 'mask form-control',
+                        'data-inputmask' => " 'alias': 'date', 'clearIncomplete': true "
+                    ],
+                    'required' => false,
+                    //'data' => new \DateTime(),
+                ]
+            )
+            ->add('foto', FileType::class,
+                [
+                    'label' => 'Foto del Paciente',
+                    'label_attr' => [
+                        'class' => 'input-group-text'
+                    ],
+                    'attr' => [
+                        'class' => 'form-control'
+                    ],
+                    'mapped' => false,
+                    'required' => false,
+                    'constraints' => [
+                        new File(
+                            maxSize: '2M',
+                            maxSizeMessage: 'El archivo es demasiado grande. El tamaño maximo permitido es 2MB.',
+                            extensions: ['jpg', 'png'],
+                            extensionsMessage: 'Por Favor suba un archivo valido. Los tipos de archivos validos son .jpg .png',
+                        )
+                    ]
+                ]
+            )
         ;
     }
 

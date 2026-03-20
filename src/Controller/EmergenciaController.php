@@ -297,27 +297,54 @@ final class EmergenciaController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $emergencia->setTriage($triage);
-            $emergencia->setEstado(EmergenciasEstados::WAITING_BED);
 
-            $em->persist($triage);
-            $em->persist($emergencia);
-            $em->flush();
+            $sendToConsultation = $form->get('sendConsultation')->getData();
+            $specialty = $form->get('specialty')->getData();
 
-            $html = $this->renderView('emergencia/tableRows/_new_triage_table.row.html.twig', [
-                'emergencia' => $emergencia
-            ]);
+            if ($sendToConsultation) {
+                $emergencia->setEstado(EmergenciasEstados::DERIVED_CONSULTATION);
 
-            $update = new Update(
-                'emergencias',
-                json_encode([
-                    'id' => $emergencia->getId(),
-                    'estado' => EmergenciasEstados::WAITING_BED->value, // e.g., 'waiting_bed'
-                    'html' => $html
-                ])
-            );
-            $hub->publish($update);
+                $em->persist($triage);
+                $em->persist($emergencia);
+                $em->flush();
 
-            $this->addFlash('success', 'Triaje registrado. Paciente en espera de cama.');
+                $html = $this->renderView('emergencia/tableRows/_new_triage_table.row.html.twig', [
+                    'emergencia' => $emergencia
+                ]);
+
+                $update = new Update(
+                    'emergencias',
+                    json_encode([
+                        'id' => $emergencia->getId(),
+                        'estado' => EmergenciasEstados::DERIVED_CONSULTATION->value,
+                        'html' => $html
+                    ])
+                );
+                $hub->publish($update);
+                $this->addFlash('success', 'Paciente enviado a consulta externa de ' . $specialty);
+            } else {
+                $emergencia->setEstado(EmergenciasEstados::WAITING_BED);
+
+                $em->persist($triage);
+                $em->persist($emergencia);
+                $em->flush();
+
+                $html = $this->renderView('emergencia/tableRows/_new_triage_table.row.html.twig', [
+                    'emergencia' => $emergencia
+                ]);
+
+                $update = new Update(
+                    'emergencias',
+                    json_encode([
+                        'id' => $emergencia->getId(),
+                        'estado' => EmergenciasEstados::WAITING_BED->value,
+                        'html' => $html
+                    ])
+                );
+                $hub->publish($update);
+                $this->addFlash('success', 'Triaje registrado. Paciente en espera de cama.');
+            }
+
             return $this->redirectToRoute('app_emergencia_index', [], Response::HTTP_SEE_OTHER);
         }
 

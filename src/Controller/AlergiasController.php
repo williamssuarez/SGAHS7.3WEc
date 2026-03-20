@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Alergias;
 use App\Entity\Consulta;
+use App\Entity\ExternalProfile;
 use App\Entity\Paciente;
 use App\Entity\StatusRecord;
 use App\Enum\AuditTipos;
@@ -11,10 +12,12 @@ use App\Form\AlergiasType;
 use App\Repository\AlergiasRepository;
 use App\Service\AuditService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/alergias')]
 final class AlergiasController extends AbstractController

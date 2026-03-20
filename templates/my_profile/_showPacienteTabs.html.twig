@@ -1,0 +1,78 @@
+<div class="card-body">
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tabVitales" data-bs-toggle="tab" data-bs-target="#tabVitales-pane" type="button" role="tab" aria-controls="tabVitales-pane" aria-selected="true">
+                <i class="bi bi-heart-pulse-fill"></i> Vitales y biométricos
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabMedicaciones" data-bs-toggle="tab" data-bs-target="#tabMedicaciones-pane" type="button" role="tab" aria-controls="tabMedicaciones-pane" aria-selected="false">
+                <i class="bi bi-capsule-pill"></i> Medicaciones
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabAlergias" data-bs-toggle="tab" data-bs-target="#tabAlergias-pane" type="button" role="tab" aria-controls="tabAlergias-pane" aria-selected="false">
+                <i class="bi bi-virus"></i> Alergias
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabCondiciones" data-bs-toggle="tab" data-bs-target="#tabCondiciones-pane" type="button" role="tab" aria-controls="tabCondiciones-pane" aria-selected="false">
+                <i class="fa fa-person-cane"></i> Condiciones
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabEnfermedades" data-bs-toggle="tab" data-bs-target="#tabEnfermedades-pane" type="button" role="tab" aria-controls="tabEnfermedades-pane" aria-selected="false">
+                <i class="fa-solid fa-head-side-cough"></i> Enfermedades
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabDiscapacidades" data-bs-toggle="tab" data-bs-target="#tabDiscapacidades-pane" type="button" role="tab" aria-controls="tabDiscapacidades-pane" aria-selected="false">
+                <i class="bi bi-person-wheelchair"></i> Discapacidades
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabInmunizaciones" data-bs-toggle="tab" data-bs-target="#tabInmunizaciones-pane" type="button" role="tab" aria-controls="tabInmunizaciones-pane" aria-selected="false">
+                <i class="fa-solid fa-syringe"></i> Inmunizaciones
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabArchivos" data-bs-toggle="tab" data-bs-target="#tabArchivos-pane" type="button" role="tab" aria-controls="tabArchivos-pane" aria-selected="false">
+                <i class="bi bi-folder-fill"></i> Archivos
+            </button>
+        </li>
+        {#<li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabHistorial" data-bs-toggle="tab" data-bs-target="#tabHistorial-pane" type="button" role="tab" aria-controls="tabHistorial-pane" aria-selected="false">
+                <i class="bi bi-clock-history"></i> Historial
+            </button>
+        </li>#}
+    </ul>
+    <div class="tab-content" id="formTabContent">
+        <div class="tab-pane fade show active" id="tabVitales-pane" role="tabpanel" aria-labelledby="tabVitales" tabindex="0">
+            {{ include('my_profile/tabs/paciente_vitales.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabMedicaciones-pane" role="tabpanel" aria-labelledby="tabMedicaciones" tabindex="0">
+            {{ include('my_profile/tabs/paciente_prescripciones.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabAlergias-pane" role="tabpanel" aria-labelledby="tabAlergias" tabindex="0">
+            {{ include('my_profile/tabs/paciente_alergias.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabCondiciones-pane" role="tabpanel" aria-labelledby="tabCondiciones" tabindex="0">
+            {{ include('my_profile/tabs/paciente_condiciones.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabEnfermedades-pane" role="tabpanel" aria-labelledby="tabEnfermedades" tabindex="0">
+            {{ include('my_profile/tabs/paciente_enfermedades.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabDiscapacidades-pane" role="tabpanel" aria-labelledby="tabDiscapacidades" tabindex="0">
+            {{ include('my_profile/tabs/paciente_discapacidades.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabInmunizaciones-pane" role="tabpanel" aria-labelledby="tabInmunizaciones" tabindex="0">
+            {{ include('my_profile/tabs/paciente_inmunizaciones.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabArchivos-pane" role="tabpanel" aria-labelledby="tabArchivos" tabindex="0">
+            {{ include('my_profile/tabs/paciente_archivos.html.twig') }}
+        </div>
+        {#<div class="tab-pane fade" id="tabHistorial-pane" role="tabpanel" aria-labelledby="tabHistorial" tabindex="0">
+            {{ include('my_profile/tabs/paciente_historial.html.twig') }}
+        </div>#}
+    </div>
+</div>

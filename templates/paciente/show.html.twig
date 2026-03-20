@@ -59,6 +59,12 @@
                                 <h4>
                                     <span class="badge rounded-pill text-bg-secondary">{{ paciente.tipoDocumento|title }} - {{ paciente.cedula|number_format(0, '', '.') }}</span>
                                 </h4>
+                                <h4>
+                                    <span class="badge rounded-pill text-bg-danger">
+                                        <i class="fa-solid fa-droplet"></i>
+                                        {{ paciente.sangreTipo.readableText }}
+                                    </span>
+                                </h4>
                             </div>
                             <div class="accordion" id="accordionExample">
                                 <div class="accordion-item">

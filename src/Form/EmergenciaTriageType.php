@@ -2,12 +2,15 @@
 
 namespace App\Form;
 
+use App\Entity\Especialidades;
 use App\Entity\StatusRecord;
 use App\Entity\Triage;
 use App\Enum\EnfermedadesCategorias;
 use App\Enum\TriageNivelesPrioridad;
+use App\Repository\EspecialidadesRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -136,6 +139,35 @@ class EmergenciaTriageType extends AbstractType
                     'placeholder' => 'Ej: Dolor torácico opresivo irradiado al brazo izquierdo...'
                 ],
                 'required' => true
+            ])
+            ->add('sendConsultation', CheckboxType::class, [
+                'mapped' => false,
+                'required' => false,
+                'label' => 'Enviar a Consulta Externa (No requiere cama)',
+                'label_attr' => [
+                    'class' => 'form-label fw-bold'
+                ],
+                'attr' => [
+                    'class' => 'form-check-input',
+                    'data-triage-routing-target' => 'checkbox',
+                    'data-action' => 'change->triage-routing#toggleSpecialty'
+                ]
+            ])
+            ->add('specialty', EntityType::class, [
+                'mapped' => false,
+                'required' => false,
+                'class' => Especialidades::class,
+                'label' => 'Especialidad',
+                'label_attr' => [
+                    'class' => 'form-label fw-bold'
+                ],
+                'placeholder' => 'Seleccione especialidad...',
+                'attr' => [
+                    'class' => 'srchSelect'
+                ],
+                'query_builder' => function (EspecialidadesRepository $er) {
+                    return $er->getActivesforSelect();
+                }
             ])
         ;
     }

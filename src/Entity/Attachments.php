@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\AttachmentsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: AttachmentsRepository::class)]
 class Attachments
@@ -27,6 +28,9 @@ class Attachments
 
     #[ORM\ManyToOne(inversedBy: 'attachments')]
     private ?Paciente $paciente = null;
+
+    #[ORM\Column(type: 'uuid', nullable: true)]
+    private ?Uuid $uuid = null;
 
     public function getId(): ?int
     {
@@ -89,6 +93,18 @@ class Attachments
     public function setPaciente(?Paciente $paciente): static
     {
         $this->paciente = $paciente;
+
+        return $this;
+    }
+
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(?Uuid $uuid): static
+    {
+        $this->uuid = $uuid;
 
         return $this;
     }

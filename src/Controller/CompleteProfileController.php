@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\ExternalProfile;
+use App\Entity\Paciente;
 use App\Entity\User;
 use App\Exception\BusinessRuleException;
 use App\Form\ExternalProfileType;

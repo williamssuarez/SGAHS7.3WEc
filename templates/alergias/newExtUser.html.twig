@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nueva Alergia para {{ paciente.nombre|title }}{% endblock %}
+
+{% block titlewrap %}
+    Nueva Alergia para {{ paciente.nombre|title }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('my_profile_show', {'uuid': app.user.externalProfile.uuid}) }}">Mi Perfil</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nueva Alergia</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('alergias/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

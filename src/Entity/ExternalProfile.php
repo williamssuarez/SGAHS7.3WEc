@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use App\Enum\SangreTipos;
 use App\Repository\ExternalProfileRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: ExternalProfileRepository::class)]
 class ExternalProfile
@@ -37,6 +39,26 @@ class ExternalProfile
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Paciente $paciente = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $fechaNacimiento = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $foto = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $sexo = null;
+
+    #[ORM\Column(enumType: SangreTipos::class)]
+    private ?SangreTipos $sangreTipo = null;
+
+    #[ORM\Column(type: 'uuid')]
+    private ?Uuid $uuid = null;
+
+    public function __construct()
+    {
+        $this->uuid = Uuid::v4();
+    }
 
     public function getId(): ?int
     {
@@ -145,6 +167,66 @@ class ExternalProfile
     public function setPaciente(?Paciente $paciente): static
     {
         $this->paciente = $paciente;
+
+        return $this;
+    }
+
+    public function getFechaNacimiento(): ?\DateTime
+    {
+        return $this->fechaNacimiento;
+    }
+
+    public function setFechaNacimiento(\DateTime $fechaNacimiento): static
+    {
+        $this->fechaNacimiento = $fechaNacimiento;
+
+        return $this;
+    }
+
+    public function getFoto(): ?string
+    {
+        return $this->foto;
+    }
+
+    public function setFoto(?string $foto): static
+    {
+        $this->foto = $foto;
+
+        return $this;
+    }
+
+    public function getSexo(): ?string
+    {
+        return $this->sexo;
+    }
+
+    public function setSexo(string $sexo): static
+    {
+        $this->sexo = $sexo;
+
+        return $this;
+    }
+
+    public function getSangreTipo(): ?SangreTipos
+    {
+        return $this->sangreTipo;
+    }
+
+    public function setSangreTipo(SangreTipos $sangreTipo): static
+    {
+        $this->sangreTipo = $sangreTipo;
+
+        return $this;
+    }
+
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(Uuid $uuid): static
+    {
+        $this->uuid = $uuid;
 
         return $this;
     }

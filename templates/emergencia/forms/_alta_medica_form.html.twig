@@ -1,29 +1,53 @@
 {{ form_start(form, {'attr': {'id': 'discharge-form'}}) }}
-<div class="alert alert-warning text-start small">
-    <i class="bi bi-exclamation-triangle-fill"></i> Al confirmar, el paciente será retirado de la emergencia y la cama actual quedará libre. Esta acción finaliza el registro.
-</div>
+<div data-controller="discharge-routing">
+    <div class="alert alert-primary text-start small">
+        <i class="bi bi-exclamation-triangle-fill"></i> Al confirmar, el paciente será retirado de la emergencia y la cama actual quedará libre. Esta acción finaliza el registro.
+    </div>
 
-<div class="mb-3 text-start">
-    {{ form_label(form.condicionAlta, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}
-    {{ form_widget(form.condicionAlta) }}
-</div>
+    <div class="mb-3 text-start">
+        {{ form_label(form.condicionAlta, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}
+        {{ form_widget(form.condicionAlta) }}
+    </div>
 
-<div class="mb-3 text-start">
-    {{ form_label(form.diagnosticoFinal, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}
-    {{ form_widget(form.diagnosticoFinal) }}
-</div>
+    <div class="mb-3 text-start">
+        {{ form_label(form.diagnosticoFinal, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}
+        {{ form_widget(form.diagnosticoFinal) }}
+    </div>
 
-<div class="mb-3 text-start">
-    {{ form_label(form.indicacionesMedicas, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}
-    {{ form_widget(form.indicacionesMedicas) }}
-</div>
+    {# DYNAMIC: TRANSFER SECTION #}
+    <div class="alert alert-warning border rounded mb-3 d-none text-start" data-discharge-routing-target="transferSection">
+        <h6><i class="fa-solid fa-truck-medical"></i> Datos de Traslado</h6>
+        <div class="mb-2">
+            {{ form_label(form.hospitalDestino) }}
+            {{ form_widget(form.hospitalDestino) }}
+        </div>
+        <div>
+            {{ form_label(form.motivoTraslado) }}
+            {{ form_widget(form.motivoTraslado) }}
+        </div>
+    </div>
 
-<div class="mb-3 text-start">
-    {{ form_label(form.needsCleaning, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}
-    &nbsp;
-    &nbsp;
-    &nbsp;
-    {{ form_widget(form.needsCleaning) }}
-</div>
+    {# DYNAMIC: ADMISSION SECTION #}
+    <div class="alert alert-info border rounded mb-3 d-none text-start" data-discharge-routing-target="admissionSection">
+        <h6><i class="bi bi-hospital"></i> Datos de Ingreso</h6>
+        <div>
+            {{ form_label(form.servicioIngreso) }}
+            {{ form_widget(form.servicioIngreso) }}
+        </div>
+    </div>
 
+    {# DYNAMIC: INSTRUCTIONS SECTION #}
+    <div class="mb-3 text-start" data-discharge-routing-target="instructionsSection">
+        {{ form_label(form.indicacionesMedicas, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}
+        {{ form_widget(form.indicacionesMedicas) }}
+    </div>
+
+    <div class="mb-3 text-start">
+        {{ form_label(form.needsCleaning, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        {{ form_widget(form.needsCleaning) }}
+    </div>
+</div>
 {{ form_end(form, {'render_rest': false}) }}
