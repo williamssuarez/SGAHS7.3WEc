@@ -443,10 +443,10 @@ final class EmergenciaController extends AbstractController
         if ($form->isSubmitted()) {
 
             $data = $form->getData();
-            if (!$data->getDiagnosticoFinal() || !$data->getIndicacionesMedicas()){
+            if (!$data->getDiagnosticoFinal()){
                 return $this->json([
                     'success' => false,
-                    'message' => 'Ni el diagnostico ni las indicaciones pueden estar vacias.'
+                    'message' => 'El diagnostico no puede estar vacio.'
                 ]);
             }
 

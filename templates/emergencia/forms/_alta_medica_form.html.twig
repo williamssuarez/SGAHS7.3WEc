@@ -36,6 +36,15 @@
         </div>
     </div>
 
+    {# DYNAMIC: DECEASED SECTION #}
+    <div class="alert alert-dark border rounded mb-3 d-none text-start" data-discharge-routing-target="deceasedSection">
+        <h6><i class="fa-solid fa-skull"></i> Datos de Fallecimiento</h6>
+        <div>
+            {{ form_label(form.fechaMuerte) }}
+            {{ form_widget(form.fechaMuerte) }}
+        </div>
+    </div>
+
     {# DYNAMIC: INSTRUCTIONS SECTION #}
     <div class="mb-3 text-start" data-discharge-routing-target="instructionsSection">
         {{ form_label(form.indicacionesMedicas, null, {'label_attr': {'class': 'fw-bold mb-1'}}) }}

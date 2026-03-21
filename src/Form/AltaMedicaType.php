@@ -9,6 +9,8 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -74,6 +76,26 @@ class AltaMedicaType extends AbstractType
                 ],
                 'attr' => ['class' => 'form-select noSrchSelect']
             ])
+            // --- DECEASED FIELDS ---
+            ->add('fechaMuerte', DateTimeType::class, [
+                    //'format' => 'dd/MM/yyyy',
+                    'widget' => 'single_text',
+                    'label' => 'Fecha y Hora de Muerte',
+                    'label_attr' => [
+                        'class' => 'form-label mask'
+                    ],
+                    'with_seconds' => false,
+                    'model_timezone' => 'UTC',              // Como se guarda en la db
+                    'view_timezone' => 'America/Caracas',   // Como la escribe el doctor
+                    'attr' => [
+                        'class' => 'mask form-control',
+                        'data-inputmask' => " 'alias': 'date', 'clearIncomplete': true, 'inputFormat': 'dd/mm/yyyy HH:MM' "
+                    ],
+                    'required' => false,
+                    'mapped' => false,
+                    //'data' => new \DateTime(),
+                ]
+            )
             ->add('diagnosticoFinal', TextareaType::class, [
                 'label' => 'Diagnóstico Final',
                 'label_attr' => [

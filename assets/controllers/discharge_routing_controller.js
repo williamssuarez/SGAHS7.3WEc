@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 import $ from 'jquery';
 
 export default class extends Controller {
-    static targets = ["condition", "transferSection", "admissionSection", "instructionsSection"]
+    static targets = ["condition", "transferSection", "admissionSection", "deceasedSection", "instructionsSection"]
 
     connect() {
         this.toggleFields();
@@ -19,6 +19,7 @@ export default class extends Controller {
         // Reset all dynamic sections first
         this.transferSectionTarget.classList.add('d-none');
         this.admissionSectionTarget.classList.add('d-none');
+        this.deceasedSectionTarget.classList.add('d-none');
         this.instructionsSectionTarget.classList.remove('d-none'); // Usually visible
 
         // Reveal based on selection
@@ -31,6 +32,7 @@ export default class extends Controller {
             this.instructionsSectionTarget.classList.add('d-none'); // Inpatient orders are handled elsewhere
         }
         else if (condition === 'deceased') {
+            this.deceasedSectionTarget.classList.remove('d-none');
             this.instructionsSectionTarget.classList.add('d-none');
         }
     }

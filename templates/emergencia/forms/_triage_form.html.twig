@@ -6,7 +6,7 @@
 }) }}
 {{ include('base/_form_error_messages.html.twig') }}
 <div class="card-body">
-    <h5>Informacion de Signos Vitales:</h5>
+    <h5>Información de Signos Vitales:</h5>
     <div class="row">
         <div class="col-md-6">
             <div class="mb-3">
@@ -123,8 +123,8 @@
         </div>
 
         {# THE NEW DYNAMIC ROUTING SECTION #}
-        <div class="col-md-12 mt-4 d-none p-3 bg-light border rounded" data-triage-routing-target="consultationSection">
-            <h6 class="text-primary fw-bold"><i class="bi bi-info-circle"></i> Triaje de Baja Prioridad</h6>
+        <div class="col-md-12 mt-4 d-none p-3 alert alert-warning border rounded text-start" data-triage-routing-target="consultationSection">
+            <h6 class="fw-bold"><i class="bi bi-info-circle"></i> Triaje de Baja Prioridad</h6>
             <div class="form-check form-switch fs-5 mb-3">
                 {{ form_widget(form.sendConsultation) }}
                 {{ form_label(form.sendConsultation) }}

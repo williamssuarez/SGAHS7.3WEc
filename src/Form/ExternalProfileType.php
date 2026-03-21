@@ -126,7 +126,7 @@ class ExternalProfileType extends AbstractType
                         'class' => 'mask form-control',
                         'data-inputmask' => " 'alias': 'date', 'clearIncomplete': true "
                     ],
-                    'required' => false,
+                    'required' => true,
                     //'data' => new \DateTime(),
                 ]
             )
