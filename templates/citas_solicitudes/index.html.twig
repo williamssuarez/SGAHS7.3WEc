@@ -28,6 +28,7 @@
             <table class="table table-striped dtHere">
                 <thead>
                 <tr>
+                    <th>#</th>
                     <th>Especialidad</th>
                     <th>Motivo</th>
                     <th>Estado</th>
@@ -38,6 +39,7 @@
                 <tbody>
                     {% for entity in entities %}
                         <tr>
+                            <td>{{ loop.index }}</td>
                             <td>{{ entity.especialidad.nombre }}</td>
                             <td>{{ entity.motivoConsulta }}</td>
                             <td>

@@ -34,6 +34,26 @@ class EspecialidadesRepository extends ServiceEntityRepository
         return $query;
     }
 
+    //TODO: MAKE SURE THIS ONLY BRINGS SPECIALTIES THAT HAVE A CONFIGURATION
+    public function getActivesWithConfigforSelect()
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb
+            ->distinct()
+            ->select('u')
+
+            ->leftJoin('u.citasConfiguraciones', 'c')
+
+            ->where('u.status = :sts')
+            ->addOrderBy('u.nombre', 'ASC')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+        ;
+
+        return $query;
+    }
+
     public function getActivesforTable()
     {
         $qb = $this->createQueryBuilder('u');

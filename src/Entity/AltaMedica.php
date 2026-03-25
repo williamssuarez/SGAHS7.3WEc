@@ -27,11 +27,23 @@ class AltaMedica
     #[ORM\Column(enumType: EmergenciasCondicionAlta::class)]
     private ?EmergenciasCondicionAlta $condicionAlta = null;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $indicacionesMedicas = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $fechaEgreso = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $hospitalDestino = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $motivoTraslado = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $servicioIngreso = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $fechaMuerte = null;
 
     public function getId(): ?int
     {
@@ -79,7 +91,7 @@ class AltaMedica
         return $this->indicacionesMedicas;
     }
 
-    public function setIndicacionesMedicas(string $indicacionesMedicas): static
+    public function setIndicacionesMedicas(?string $indicacionesMedicas): static
     {
         $this->indicacionesMedicas = $indicacionesMedicas;
 
@@ -96,5 +108,89 @@ class AltaMedica
         $this->fechaEgreso = $fechaEgreso;
 
         return $this;
+    }
+
+    public function getHospitalDestino(): ?string
+    {
+        return $this->hospitalDestino;
+    }
+
+    public function setHospitalDestino(?string $hospitalDestino): static
+    {
+        $this->hospitalDestino = $hospitalDestino;
+
+        return $this;
+    }
+
+    public function getMotivoTraslado(): ?string
+    {
+        return $this->motivoTraslado;
+    }
+
+    public function setMotivoTraslado(?string $motivoTraslado): static
+    {
+        $this->motivoTraslado = $motivoTraslado;
+
+        return $this;
+    }
+
+    public function getServicioIngreso(): ?string
+    {
+        return $this->servicioIngreso;
+    }
+
+    public function setServicioIngreso(?string $servicioIngreso): static
+    {
+        $this->servicioIngreso = $servicioIngreso;
+
+        return $this;
+    }
+
+    public function getFechaMuerte(): ?\DateTimeImmutable
+    {
+        return $this->fechaMuerte;
+    }
+
+    public function setFechaMuerte(?\DateTimeImmutable $fechaMuerte): static
+    {
+        $this->fechaMuerte = $fechaMuerte;
+
+        return $this;
+    }
+
+    public function getCondicionAltaBadgeConfig(): array
+    {
+        switch ($this->getCondicionAlta()) {
+            case EmergenciasCondicionAlta::SENT_HOME:
+                return [
+                    'class' => 'text-bg-success',
+                    'label' => EmergenciasCondicionAlta::SENT_HOME->getReadableText()
+                ];
+            case EmergenciasCondicionAlta::ADMITTED_ROOM:
+                return [
+                    'class' => 'text-bg-primary',
+                    'label' => EmergenciasCondicionAlta::ADMITTED_ROOM->getReadableText()
+                ];
+            case EmergenciasCondicionAlta::TRANSFER:
+                return [
+                    'class' => 'text-bg-warning',
+                    'label' => EmergenciasCondicionAlta::TRANSFER->getReadableText()
+                ];
+            case EmergenciasCondicionAlta::LEFT:
+                return [
+                    'class' => 'text-bg-secondary',
+                    'label' => EmergenciasCondicionAlta::LEFT->getReadableText()
+                ];
+            case EmergenciasCondicionAlta::DECEASED:
+                return [
+                    'class' => 'text-bg-dark',
+                    'label' => EmergenciasCondicionAlta::DECEASED->getReadableText()
+                ];
+        }
+
+        return [
+            'class' => 'text-bg-danger',
+            'label' => 'Error'
+        ];
     }
 }

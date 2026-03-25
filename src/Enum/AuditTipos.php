@@ -35,6 +35,12 @@ enum AuditTipos: string
     case RECEPTION_CHECKIN = 'reception_checkin';
     case RECEPTION_CANCELED = 'reception_canceled';
     case SYSTEM_RECEPTION_AUTO_CANCELED = 'system_reception_auto_canceled';
+    case SYSTEM_AUTO_LINK_ACCOUNT = 'system_auto_link_account';
+    case EMERGENCY_DISCHARGE_TRANSFER = 'emergency_discharge_transfer';
+    case EMERGENCY_DISCHARGE_ADMITTED_ROOM = 'emergency_discharge_admitted_room';
+    case EMERGENCY_DISCHARGE_DECEASED = 'emergency_discharge_deceased';
+    case EMERGENCY_DISCHARGE_SENT_HOME = 'emergency_discharge_sent_home';
+    case EMERGENCY_DISCHARGE_LEFT = 'emergency_discharge_left';
 
     /**
      * Retorna un texto amigable para el usuario final.
@@ -70,6 +76,12 @@ enum AuditTipos: string
             self::RECEPTION_CHECKIN => 'Cita Atendida',
             self::RECEPTION_CANCELED => 'Cita Cancelada',
             self::SYSTEM_RECEPTION_AUTO_CANCELED => 'Cancelación de cita automática',
+            self::SYSTEM_AUTO_LINK_ACCOUNT => 'Vinculacion automática de cuenta de usuario con perfil de paciente',
+            self::EMERGENCY_DISCHARGE_TRANSFER => 'Alta de emergencia: Traslado',
+            self::EMERGENCY_DISCHARGE_ADMITTED_ROOM => 'Alta de emergencia: Hospitalización',
+            self::EMERGENCY_DISCHARGE_DECEASED => 'Alta de emergencia: Fallecimiento',
+            self::EMERGENCY_DISCHARGE_SENT_HOME => 'Alta de emergencia: Alta Médica',
+            self::EMERGENCY_DISCHARGE_LEFT => 'Alta de emergencia: Fuga/Retiro Voluntario',
         };
     }
 

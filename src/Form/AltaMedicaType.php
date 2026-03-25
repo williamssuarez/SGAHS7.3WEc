@@ -40,7 +40,6 @@ class AltaMedicaType extends AbstractType
             // --- TRANSFER FIELDS ---
             ->add('hospitalDestino', TextType::class, [
                 'required' => false,
-                'mapped' => false,
                 'label' => 'Hospital / Clínica de Destino',
                 'label_attr' => [
                     'class' => 'form-label'
@@ -52,7 +51,6 @@ class AltaMedicaType extends AbstractType
             ])
             ->add('motivoTraslado', TextareaType::class, [
                 'required' => false,
-                'mapped' => false,
                 'label' => 'Motivo del Traslado',
                 'label_attr' => [
                     'class' => 'form-label'
@@ -66,7 +64,6 @@ class AltaMedicaType extends AbstractType
             // --- ADMISSION FIELDS ---
             ->add('servicioIngreso', ChoiceType::class, [
                 'required' => false,
-                'mapped' => false,
                 'label' => 'Servicio de Hospitalización',
                 'choices' => [
                     'Medicina Interna' => 'medicina_interna',
@@ -74,7 +71,8 @@ class AltaMedicaType extends AbstractType
                     'Traumatología' => 'traumatologia',
                     'UCI' => 'uci',
                 ],
-                'attr' => ['class' => 'form-select noSrchSelect']
+                'attr' => ['class' => 'form-select noSrchSelect'],
+                'placeholder' => 'Seleccione...',
             ])
             // --- DECEASED FIELDS ---
             ->add('fechaMuerte', DateTimeType::class, [
@@ -92,7 +90,6 @@ class AltaMedicaType extends AbstractType
                         'data-inputmask' => " 'alias': 'date', 'clearIncomplete': true, 'inputFormat': 'dd/mm/yyyy HH:MM' "
                     ],
                     'required' => false,
-                    'mapped' => false,
                     //'data' => new \DateTime(),
                 ]
             )

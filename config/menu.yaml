@@ -81,3 +81,4 @@ parameters:
                     icon: 'fa-solid fa-bed-pulse text-danger'
                     children:
                         - { title: Emergencias Actuales, route: app_emergencia_index, icon: 'fa-solid fa-bed-pulse text-danger' }
+                        - { title: Historial de Emergencias, route: app_emergencia_listado, icon: 'fa-solid fa-magnifying-glass-plus text-danger' }

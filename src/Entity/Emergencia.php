@@ -230,4 +230,40 @@ class Emergencia
 
         return $this;
     }
+
+    public function getEmergenciaEstadosBadgeConfig(): array
+    {
+        switch ($this->getEstado()) {
+            case EmergenciasEstados::WAITING_TRIAGE:
+                return [
+                    'class' => 'text-bg-danger',
+                    'label' => EmergenciasEstados::WAITING_TRIAGE->getReadableText()
+                ];
+            case EmergenciasEstados::WAITING_BED:
+                return [
+                    'class' => 'text-bg-warning',
+                    'label' => EmergenciasEstados::WAITING_BED->getReadableText()
+                ];
+            case EmergenciasEstados::IN_TREATMENT:
+                return [
+                    'class' => 'text-bg-primary',
+                    'label' => EmergenciasEstados::IN_TREATMENT->getReadableText()
+                ];
+            case EmergenciasEstados::DISCHARGED:
+                return [
+                    'class' => 'text-bg-success',
+                    'label' => EmergenciasEstados::DISCHARGED->getReadableText()
+                ];
+            case EmergenciasEstados::DERIVED_CONSULTATION:
+                return [
+                    'class' => 'text-bg-dark',
+                    'label' => EmergenciasEstados::DERIVED_CONSULTATION->getReadableText()
+                ];
+        }
+
+        return [
+            'class' => 'text-bg-danger',
+            'label' => 'Error'
+        ];
+    }
 }

@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administracion de Emergencias{% endblock %}
+
+{% block titlewrap %}
+    Administracion de Emergencias
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active" aria-current="page">Administracion de Emergencias</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="card card-primary card-outline mb-4">
+        <div class="card-body">
+            <form method="get" action="{{ path('app_emergencia_listado') }}" class="row g-3 mb-4">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Desde</label>
+                        <input type="date" name="startDate" value="{{ startDate }}" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Hasta</label>
+                        <input type="date" name="endDate" value="{{ endDate }}" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Estado</label>
+                        <select name="state" class="form-control noSrchSelect">
+                            <option value="sent_home" {{ currentState == 'sent_home' ? 'selected' }}>Alta Médica</option>
+                            <option value="admitted_room" {{ currentState == 'admitted_room' ? 'selected' }}>Hospitalización</option>
+                            <option value="transfer" {{ currentState == 'transfer' ? 'selected' }}>Traslado</option>
+                            <option value="left" {{ currentState == 'left' ? 'selected' }}>Fuga/Retiro Voluntario</option>
+                            <option value="deceased" {{ currentState == 'deceased' ? 'selected' }}>Fallecimiento</option>
+                            <option value="all" {{ currentState == 'all' ? 'selected' }}>Todas las Emergencias</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                        <a href="{{ path('app_emergencia_listado') }}" class="btn btn-secondary ms-2">Limpiar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card card-primary card-outline mb-4">
+        <div class="card-header">
+            <h3 class="card-title">Emergencias</h3>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-striped dtHere">
+                <thead>
+                <tr>
+                    <th>Ingreso</th>
+                    <th>Egreso</th>
+                    <th>Paciente</th>
+                    <th>Prioridad</th>
+                    <th>Condición de Alta</th>
+                    <th>Diagnóstico Final</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entity in entities %}
+                    <tr class="align-middle">
+                        <td>{{ entity.fechaIngreso|date('d/m/Y H:i A') }} ({{ entity.fechaIngreso|time_ago }})</td>
+                        <td>
+                            {% if entity.altaMedica %}
+                                {{ entity.altaMedica.fechaEgreso|date('d/m/Y H:i A') }} ({{ entity.altaMedica.fechaEgreso|time_ago }})
+                            {% else %}
+                                <span class="badge text-danger fs-6">
+                                    Sin Egreso
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>{{ entity.paciente ? entity.paciente.nombre ~ ' ' ~ entity.paciente.apellido : entity.pacienteTemporal }}</td>
+                        <td>
+                            {% if entity.triage %}
+                                {% set badge = entity.triage.triageNivelesPrioridadBadgeConfig %}
+                                <span class="badge {{ badge.class }} fs-6">
+                                    {{ badge.label }}
+                                </span>
+                            {% else %}
+                                <span class="badge text-danger fs-6">
+                                    Sin Triaje
+                                </span>
+                            {% endif %}
+
+                        </td>
+                        <td>
+                            {% if entity.altaMedica %}
+                                {% set badge = entity.altaMedica.condicionAltaBadgeConfig %}
+                                <span class="badge {{ badge.class }} fs-6">
+                                    {{ badge.label }}
+                                </span>
+                            {% else %}
+                                <span class="badge text-danger fs-6">
+                                    Sin Alta
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>{{ entity.altaMedica ? entity.altaMedica.diagnosticoFinal : '--' }}</td>
+                        <td>
+                            <a class="btn btn-outline-primary btn-sm" href="{{ path('app_emergencia_show_record', {'id': entity.id}) }}">
+                                <i class="bi bi-file-earmark-medical"></i> Ver Expediente
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

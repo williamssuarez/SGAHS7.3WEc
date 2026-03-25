@@ -36,4 +36,48 @@ class EmergenciaRepository extends ServiceEntityRepository
 
         return $query->getQuery()->getOneOrNullResult();
     }
+
+    public function getActivesforTableByDateOnly(\DateTime $from, \DateTime $to)
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb
+            ->select('u')
+
+            ->where('u.status = :sts')
+            ->andWhere('u.fechaIngreso between :from AND :to')
+            ->andWhere('u.estado = :estado')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+            ->setParameter('estado', EmergenciasEstados::DISCHARGED)
+        ;
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getActivesforTableByState($state, \DateTime $from, \DateTime $to)
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $query = $qb
+            ->select('u,a')
+
+            ->innerJoin('u.altaMedica', 'a')
+
+            ->where('u.status = :sts')
+            ->andWhere('u.estado = :estado')
+            ->andWhere('a.condicionAlta = :state')
+            ->andWhere('u.fechaIngreso between :from AND :to')
+
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('estado', EmergenciasEstados::DISCHARGED)
+            ->setParameter('state', $state)
+            ->setParameter('from', $from)
+            ->setParameter('to', $to)
+        ;
+
+        return $query->getQuery()->getResult();
+    }
 }

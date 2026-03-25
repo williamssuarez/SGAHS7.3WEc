@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Consulta;
+use App\Entity\MainConfiguration;
 use App\Entity\Prescripciones;
 use App\Enum\AuditTipos;
 use App\Enum\PrescripcionesEstados;
@@ -103,10 +104,13 @@ final class PrescripcionesController extends AbstractController
 
         $dompdf = new Dompdf($pdfOptions);
 
+        $mainConfig = $entityManager->getRepository(MainConfiguration::class)->find(1);
+
         // Pass the consultation and its active prescriptions to the view
         $html = $this->renderView('prescripciones/pdf_template.html.twig', [
             'consulta' => $consulta,
             'prescripcion' => $prescripcion,
+            'mainConfig' => $mainConfig,
         ]);
 
         $dompdf->loadHtml($html);

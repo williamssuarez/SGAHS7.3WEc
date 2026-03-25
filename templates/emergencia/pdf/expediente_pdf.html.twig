@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Expediente de Emergencia</title>
+    <style>
+        body { font-family: Helvetica, Arial, sans-serif; font-size: 12px; color: #333; line-height: 1.4; }
+        .header { text-align: center; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 20px; }
+        .hospital-name { font-size: 18px; font-weight: bold; color: #2c3e50; text-transform: uppercase; }
+        .doc-title { font-size: 16px; font-weight: bold; margin-top: 5px; }
+
+        .section-title { background-color: #f2f2f2; font-weight: bold; padding: 5px; border: 1px solid #ccc; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; font-size: 11px;}
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        td, th { border: 1px solid #ddd; padding: 6px; text-align: left; vertical-align: top; }
+        th { background-color: #fafafa; width: 25%; color: #555; font-size: 11px;}
+
+        .badge { padding: 3px 6px; border-radius: 3px; font-weight: bold; font-size: 10px; color: #fff; }
+        .bg-danger { background-color: #dc3545; }
+        .bg-warning { background-color: #ffc107; color: #000; }
+        .bg-success { background-color: #198754; }
+        .bg-secondary { background-color: #6c757d; }
+
+        .timeline-item { border-left: 2px solid #3498db; padding-left: 10px; margin-bottom: 15px; }
+        .timeline-date { font-weight: bold; color: #7f8c8d; font-size: 11px; }
+        .timeline-author { font-style: italic; color: #555; font-size: 11px; }
+
+        .footer { margin-top: 50px; text-align: center; }
+        .signature-line { border-top: 1px solid #000; width: 250px; margin: 0 auto; padding-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="hospital-name">{{ mainConfig.nombreInstitucion }}</div>
+    <div>Servicio de Emergencias Médicas</div>
+    <div class="doc-title">EXPEDIENTE CLÍNICO DE EMERGENCIA</div>
+    <div style="font-size: 10px; color: #777; margin-top: 5px;">
+        Generado el: {{ 'now'|date('d/m/Y H:i') }} | Ref: #{{ entity.id|default('000') }}
+    </div>
+</div>
+
+<div class="section-title">Datos del Paciente</div>
+<table>
+    <tr>
+        <th>Nombre Completo:</th>
+        <td>{{ entity.paciente ? entity.paciente.nombre ~ ' ' ~ entity.paciente.apellido : entity.pacienteTemporal }}</td>
+        <th>Documento (CI):</th>
+        <td>{{ entity.paciente.tipoDocumento }} - {{ entity.paciente ? entity.paciente.cedula|number_format(0, '', '.') : 'No Identificado' }}</td>
+    </tr>
+    <tr>
+        <th>Fecha Ingreso:</th>
+        <td>{{ entity.fechaIngreso|date('d/m/Y H:i A') }}</td>
+        <th>Fecha Egreso:</th>
+        <td>{{ entity.altaMedica ? entity.altaMedica.fechaEgreso|date('d/m/Y H:i A') : 'En Atención' }}</td>
+    </tr>
+</table>
+
+<div class="section-title">Triaje y Evaluación Inicial</div>
+{% if entity.triage %}
+    <table>
+        <tr>
+            <th>Motivo de Consulta:</th>
+            <td colspan="3">{{ entity.triage.motivoIngreso }}</td>
+        </tr>
+        <tr>
+            <th>Prioridad:</th>
+            <td colspan="3">{{ entity.triage.triageNivelesPrioridadBadgeConfig.label|default(entity.triage.nivelPrioridad.name) }}</td>
+        </tr>
+        <tr>
+            <th>Signos Vitales:</th>
+            <td colspan="3">
+                PA: {{ entity.triage.paSistolica ?: '--' }}/{{ entity.triage.paDiastolica ?: '--' }} mmHg |
+                FC: {{ entity.triage.frecuenciaCardiaca ?: '--' }} lpm |
+                FR: {{ entity.triage.frecuenciaRespiratoria ?: '--' }} rpm |
+                Temp: {{ entity.triage.temperatura ?: '--' }} °C |
+                SpO2: {{ entity.triage.spo2 ?: '--' }}%
+            </td>
+        </tr>
+    </table>
+{% else %}
+    <p style="font-style: italic; color: #777;">Sin datos de triaje registrados.</p>
+{% endif %}
+
+{% if entity.altaMedica %}
+    <div class="section-title">Resumen de Alta Médica</div>
+    <table>
+        <tr>
+            <th>Condición de Egreso:</th>
+            <td colspan="3"><strong>{{ entity.altaMedica.condicionAltaBadgeConfig.label }}</strong></td>
+        </tr>
+        <tr>
+            <th>Diagnóstico Final:</th>
+            <td colspan="3">{{ entity.altaMedica.diagnosticoFinal }}</td>
+        </tr>
+
+        {% if entity.altaMedica.indicacionesMedicas %}
+            <tr>
+                <th>Indicaciones:</th>
+                <td colspan="3">{{ entity.altaMedica.indicacionesMedicas|nl2br }}</td>
+            </tr>
+        {% endif %}
+
+        {% if entity.altaMedica.hospitalDestino %}
+            <tr>
+                <th>Hospital Destino:</th>
+                <td>{{ entity.altaMedica.hospitalDestino }}</td>
+                <th>Motivo:</th>
+                <td>{{ entity.altaMedica.motivoTraslado }}</td>
+            </tr>
+        {% endif %}
+    </table>
+{% endif %}
+
+<div class="section-title">Historial de Evoluciones Clínicas</div>
+<div style="margin-top: 10px;">
+    {% for evolucion in entity.evolucionEmergencias %}
+        <div class="timeline-item">
+            <div class="timeline-date">{{ evolucion.fechaHora|date('d/m/Y H:i A') }} - <span class="timeline-author">Dr(a). {{ evolucion.uidCreate|public_username|default('Médico') }}</span></div>
+            <div style="margin-top: 5px;">{{ evolucion.notaClinica|nl2br }}</div>
+
+            {% if evolucion.paSistolica or evolucion.frecuenciaCardiaca %}
+                <div style="font-size: 10px; color: #555; margin-top: 3px;">
+                    SV: PA {{ evolucion.paSistolica }}/{{ evolucion.paDiastolica }} | FC {{ evolucion.frecuenciaCardiaca }} | FR {{ evolucion.frecuenciaRespiratoria }} | Temp {{ evolucion.temperatura }} | SpO2 {{ evolucion.spo2 }}%
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <p style="font-style: italic; color: #777;">Sin evoluciones registradas.</p>
+    {% endfor %}
+</div>
+
+<div class="footer">
+    <div class="signature-line">
+        <strong>Firma del Médico Tratante / Sello</strong><br>
+        <span style="font-size: 10px; color: #777;">Documento generado electrónicamente por {{ mainConfig.nombreInstitucion }}</span>
+    </div>
+</div>
+
+</body>
+</html>

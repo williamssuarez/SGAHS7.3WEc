@@ -5,14 +5,14 @@ namespace App\Service;
 use App\Entity\ExternalProfile;
 use App\Entity\Paciente;
 use App\Entity\StatusRecord;
+use App\Enum\AuditTipos;
 use App\Exception\BusinessRuleException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 readonly class ExternalProfileProcessor
 {
-    public function __construct(private EntityManagerInterface $entityManager, private FileUploader $fileUploader
-    )
+    public function __construct(private EntityManagerInterface $entityManager, private FileUploader $fileUploader, private AuditService $auditService)
     {
     }
 
@@ -66,6 +66,13 @@ readonly class ExternalProfileProcessor
             if ($dbDate === $formDate) {
                 // It's a match! Link them safely.
                 $profile->setPaciente($paciente);
+
+                $this->auditService->persistAudit(
+                    AuditTipos::SYSTEM_AUTO_LINK_ACCOUNT,
+                    "Paciente encontrado y vinculado exitosamente a un usuario en la web.",
+                    $paciente,
+                    null
+                );
             } else {
                 // The Cédula exists, but the names don't match. STOP THE PROCESS.
                 throw new BusinessRuleException('El documento ingresado ya pertenece a un paciente, pero los datos no coinciden. Por favor, contacte a admisión.');
@@ -82,12 +89,19 @@ readonly class ExternalProfileProcessor
             $newPatient->setFechaNacimiento($profile->getFechaNacimiento());
             $newPatient->setFallecido(false);
             $newPatient->setSangreTipo($profile->getSangreTipo());
-            $newPatient->setSexo($profile->getSangreTipo());
+            $newPatient->setSexo($profile->getSexo());
             $newPatient->setCorreo($profile->getWebUser()->getEmail());
             $newPatient->setFoto($profile->getFoto());
 
             $this->entityManager->persist($newPatient);
             $profile->setPaciente($newPatient);
+
+            $this->auditService->persistAudit(
+                AuditTipos::SYSTEM_AUTO_LINK_ACCOUNT,
+                "Paciente creado automaticamente por sistema.",
+                $newPatient,
+                null
+            );
         }
 
         //no errors

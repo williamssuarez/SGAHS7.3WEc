@@ -1,0 +1,197 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Expediente de Emergencia{% endblock %}
+
+{% block titlewrap %}
+    Expediente de Emergencia
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_emergencia_listado') }}">Administración de Emergencias</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Expediente de Emergencia</li>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-0">
+        {# 1. THE HEADER: Identity and Timestamps (NO ACTION BUTTONS) #}
+        <div class="card shadow-sm mb-4 border-top border-secondary border-3">
+            <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-3 mb-md-0">
+                    <h2 class="mb-1 text-dark fw-bold">
+                        {% if entity.paciente %}
+                            {{ entity.paciente.nombre }} {{ entity.paciente.apellido }}
+                            <a class="btn btn-outline-primary btn-sm" target="_blank" href="{{ path('app_paciente_show', { 'id': entity.paciente.id }) }}">
+                                <i class="fa-solid fa-address-book"></i> Perfil
+                            </a>
+                        {% else %}
+                            <span class="text-secondary"><i class="bi bi-incognito"></i> {{ entity.pacienteTemporal }} (No Identificado)</span>
+                        {% endif %}
+                    </h2>
+                    <div class="text-muted fs-6 mt-2">
+                    <span class="me-3">
+                        <i class="bi bi-box-arrow-in-right text-warning"></i>
+                        <strong>Ingreso:</strong> {{ entity.fechaIngreso|date('d/m/Y h:i A') }}
+                    </span>
+                        {% if entity.altaMedica %}
+                            <span>
+                        <i class="bi bi-box-arrow-right text-success"></i>
+                        <strong>Egreso:</strong> {{ entity.altaMedica.fechaEgreso|date('d/m/Y h:i A') }}
+                        (Duración: {{ entity.fechaIngreso.diff(entity.altaMedica.fechaEgreso).format('%h horas, %i min') }})
+                    </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="{{ path('app_emergencia_listado') }}" class="btn btn-secondary shadow-sm">
+                        <i class="bi bi-arrow-left"></i> Volver al Listado
+                    </a>
+                    <a href="{{ path('app_emergencia_pdf', {'id': entity.id}) }}" target="_blank" class="btn btn-outline-dark shadow-sm">
+                        <i class="bi bi-printer"></i> Imprimir Expediente
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            {# 2. LEFT COLUMN: The Baseline (Triage Data - Kept exactly as you had it!) #}
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-light py-3">
+                        <h5 class="card-title mb-0 fw-bold">
+                            <i class="bi bi-clipboard2-pulse text-danger"></i> Triaje
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if entity.triage %}
+                            <div class="mb-3">
+                                {% set badge = entity.triage.triageNivelesPrioridadBadgeConfig %}
+                                <span class="badge {{ badge.class|default('bg-secondary') }} w-100 py-2 fs-6">
+                                Prioridad: {{ badge.label|default(entity.triage.nivelPrioridad.name) }}
+                            </span>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6 class="fw-bold text-muted border-bottom pb-1">Motivo de Consulta</h6>
+                                <p class="mb-0">{{ entity.triage.motivoIngreso }}</p>
+                            </div>
+
+                            <div class="mb-4">
+                                <h6 class="fw-bold text-muted border-bottom pb-1">Evaluacion</h6>
+                                <p class="mb-0">{{ entity.triage.fechaEvaluacion|date('d/m/Y h:i A') }} ({{ entity.triage.fechaEvaluacion|time_ago }})</p>
+                            </div>
+
+                            <h6 class="fw-bold text-muted border-bottom pb-1">Signos Vitales Iniciales</h6>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-activity text-primary"></i> Presión Art.</span>
+                                    <strong class="{{ entity.triage.statusColor('presi') }}">{{ entity.triage.paSistolica ?: '--' }}/{{ entity.triage.paDiastolica ?: '--' }} mmHg</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-heart-pulse text-danger"></i> Frec. Cardíaca</span>
+                                    <strong class="{{ entity.triage.statusColor('fc') }}">{{ entity.triage.frecuenciaCardiaca ?: '--' }} lpm</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-lungs text-info"></i> Frec. Respiratoria</span>
+                                    <strong class="{{ entity.triage.statusColor('fr') }}">{{ entity.triage.frecuenciaRespiratoria ?: '--' }} rpm</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-thermometer-half text-warning"></i> Temperatura</span>
+                                    <strong class="{{ entity.triage.statusColor('temp') }}">{{ entity.triage.temperatura ?: '--' }} °C</strong>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <span><i class="bi bi-moisture text-primary"></i> SpO2</span>
+                                    <strong class="{{ entity.triage.statusColor('spo2') }}">{{ entity.triage.spo2 ?: '--' }} %</strong>
+                                </li>
+                            </ul>
+                        {% else %}
+                            <div class="alert alert-warning">No hay datos de triage registrados.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {# 3. RIGHT COLUMN: Discharge Summary & Timeline #}
+            <div class="col-lg-8">
+
+                {# --- THE DISCHARGE SUMMARY (ALTA MEDICA) --- #}
+                {% if entity.altaMedica %}
+                    <div class="card shadow-sm mb-4 border-success border-2">
+                        <div class="card-header bg-success text-white py-2 d-flex justify-content-between">
+                            <h5 class="card-title mb-0"><i class="bi bi-check2-square"></i> Resumen de Alta Médica</h5>
+                            <span class="badge bg-light text-success fs-6">{{ entity.altaMedica.condicionAltaBadgeConfig.label }}</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <h6 class="fw-bold text-success border-bottom pb-1">Diagnóstico Final</h6>
+                                    <p class="mb-0 fs-5">{{ entity.altaMedica.diagnosticoFinal }}</p>
+                                </div>
+
+                                {# Dynamically show fields based on discharge type #}
+                                {% if entity.altaMedica.indicacionesMedicas %}
+                                    <div class="col-12 mb-3">
+                                        <h6 class="fw-bold text-muted border-bottom pb-1">Indicaciones / Tratamiento</h6>
+                                        <p class="mb-0">{{ entity.altaMedica.indicacionesMedicas|nl2br }}</p>
+                                    </div>
+                                {% endif %}
+
+                                {% if entity.altaMedica.hospitalDestino %}
+                                    <div class="col-md-6 mb-3">
+                                        <h6 class="fw-bold text-muted border-bottom pb-1">Trasladado a:</h6>
+                                        <p class="mb-0">{{ entity.altaMedica.hospitalDestino }}</p>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <h6 class="fw-bold text-muted border-bottom pb-1">Motivo Traslado:</h6>
+                                        <p class="mb-0">{{ entity.altaMedica.motivoTraslado }}</p>
+                                    </div>
+                                {% endif %}
+
+                                {% if entity.altaMedica.servicioIngreso %}
+                                    <div class="col-12 mb-3">
+                                        <h6 class="fw-bold text-muted border-bottom pb-1">Ingresado a Hospitalización (Servicio):</h6>
+                                        <p class="mb-0">{{ entity.altaMedica.servicioIngreso }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# --- THE CLINICAL TIMELINE (Read-Only) --- #}
+                <h5 class="mb-3 fw-bold text-muted border-bottom pb-2">Historial de Evoluciones</h5>
+
+                <div class="timeline-container">
+                    {% for evolucion in entity.evolucionEmergencias %}
+                        <div class="card shadow-sm mb-3 border-start border-info border-4">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                            <span class="text-muted fw-bold">
+                                <i class="bi bi-clock"></i> {{ evolucion.fechaHora|date('d/m/Y h:i A') }}
+                            </span>
+                                <span class="badge bg-secondary text-white">
+                                <i class="bi bi-person-badge"></i> {{ evolucion.uidCreate|public_username|title|default('Médico') }}
+                            </span>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-3">{{ evolucion.notaClinica|nl2br }}</p>
+
+                                {# Mini Vitals #}
+                                <div class="d-flex flex-wrap gap-3 p-2 bg-light rounded text-muted fs-7">
+                                    {% if evolucion.paSistolica %}<div><strong>PA:</strong> {{ evolucion.paSistolica }}/{{ evolucion.paDiastolica }}</div>{% endif %}
+                                    {% if evolucion.frecuenciaCardiaca %}<div><strong>FC:</strong> {{ evolucion.frecuenciaCardiaca }} lpm</div>{% endif %}
+                                    {% if evolucion.frecuenciaRespiratoria %}<div><strong>FR:</strong> {{ evolucion.frecuenciaRespiratoria }} rpm</div>{% endif %}
+                                    {% if evolucion.temperatura %}<div><strong>Temp:</strong> {{ evolucion.temperatura }}°C</div>{% endif %}
+                                    {% if evolucion.spo2 %}<div><strong>SpO2:</strong> {{ evolucion.spo2 }}%</div>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-secondary text-center">
+                            <i class="bi bi-journal-x"></i> No se registraron evoluciones clínicas durante esta emergencia.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

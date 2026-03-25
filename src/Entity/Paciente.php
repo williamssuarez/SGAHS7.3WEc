@@ -719,7 +719,7 @@ class Paciente
         return $this;
     }
 
-    public function getSangreTipo(): SangreTipos
+    public function getSangreTipo(): ?SangreTipos
     {
         return $this->sangreTipo;
     }

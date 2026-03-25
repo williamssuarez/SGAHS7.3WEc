@@ -6,9 +6,12 @@ use App\Entity\AltaMedica;
 use App\Entity\Discapacidades;
 use App\Entity\Emergencia;
 use App\Entity\EvolucionEmergencia;
+use App\Entity\MainConfiguration;
 use App\Entity\StatusRecord;
 use App\Entity\Triage;
+use App\Enum\AuditTipos;
 use App\Enum\CamaEstados;
+use App\Enum\EmergenciasCondicionAlta;
 use App\Enum\EmergenciasEstados;
 use App\Form\AltaMedicaType;
 use App\Form\AsignarCamaType;
@@ -18,6 +21,8 @@ use App\Form\EditTemporaryNameType;
 use App\Form\EmergenciaIngresoType;
 use App\Form\EmergenciaTriageType;
 use App\Form\EvolucionEmergenciaType;
+use App\Repository\EmergenciaRepository;
+use App\Service\AuditService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +31,8 @@ use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 #[Route('/emergencia')]
 final class EmergenciaController extends AbstractController
@@ -64,6 +71,87 @@ final class EmergenciaController extends AbstractController
         return $this->render('emergencia/index.html.twig', [
             'emergencias' => $emergencias,
         ]);
+    }
+
+    #[Route('/listado', name: 'app_emergencia_listado', methods: ['GET'])]
+    public function listado(Request $request, EmergenciaRepository $emergenciaRepository): Response
+    {
+        // Default values: today and 'expected' state
+        $today = new \DateTime('now');
+
+        $startDate = $request->query->get('startDate')
+            ? new \DateTime($request->query->get('startDate'))
+            : clone $today->setTime(0, 0, 0);
+
+        $endDate = $request->query->get('endDate')
+            ? new \DateTime($request->query->get('endDate'))
+            : clone $today->setTime(23, 59, 59);
+
+        $state = $request->query->get('state', EmergenciasCondicionAlta::SENT_HOME->value);
+
+        if ($state == 'all'){
+            $entities = $emergenciaRepository->getActivesforTableByDateOnly($startDate, $endDate);
+        } else {
+            $entities = $emergenciaRepository->getActivesforTableByState($state, $startDate, $endDate);
+        }
+
+        return $this->render('emergencia/listado.html.twig', [
+            'entities' => $entities,
+            'currentState' => $state,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d'),
+        ]);
+    }
+
+    #[Route('/{id}/expediente', name: 'app_emergencia_show_record', methods: ['GET'])]
+    public function showRecord(Emergencia $emergencia): Response
+    {
+        // Optional: Add a security check here to ensure the emergency is actually discharged
+        if ($emergencia->getEstado() !== EmergenciasEstados::DISCHARGED) {
+            $this->addFlash('error', 'Esta emergencia aun esta activa');
+            return $this->redirectToRoute('app_emergencia_listado');
+        }
+
+        return $this->render('emergencia/show_record.html.twig', [
+            'entity' => $emergencia,
+        ]);
+    }
+
+    #[Route('/{id}/pdf', name: 'app_emergencia_pdf', methods: ['GET'])]
+    public function generatePdf(Emergencia $emergencia, EntityManagerInterface $entityManager): Response
+    {
+        // 1. Configure Dompdf Options
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Helvetica');
+        $pdfOptions->set('isRemoteEnabled', true); // Allows loading external images like a hospital logo
+
+        // 2. Instantiate Dompdf
+        $dompdf = new Dompdf($pdfOptions);
+
+        // 3. Render the HTML using a dedicated PDF Twig template
+        $html = $this->renderView('emergencia/pdf/expediente_pdf.html.twig', [
+            'entity' => $emergencia,
+            'mainConfig' => $entityManager->getRepository(MainConfiguration::class)->find(1),
+        ]);
+
+        // 4. Load the HTML into Dompdf
+        $dompdf->loadHtml($html);
+
+        // 5. Setup paper size (A4 is standard for medical docs)
+        $dompdf->setPaper('A4', 'portrait');
+
+        // 6. Render the PDF
+        $dompdf->render();
+
+        // 7. Stream the PDF to the browser
+        return new Response(
+            $dompdf->output(),
+            Response::HTTP_OK,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="Expediente_Emergencia_' . $emergencia->getId() . '.pdf"'
+            ]
+        );
     }
 
     #[Route('/new-ingreso', name: 'app_emergencia_new', methods: ['GET', 'POST'])]
@@ -427,7 +515,7 @@ final class EmergenciaController extends AbstractController
     }
 
     #[Route('/{id}/alta', name: 'app_emergencia_discharge', methods: ['GET', 'POST'])]
-    public function dischargePatient(Request $request, Emergencia $emergencia, EntityManagerInterface $em, HubInterface $hub): Response
+    public function dischargePatient(Request $request, Emergencia $emergencia, EntityManagerInterface $em, HubInterface $hub, AuditService $auditService): Response
     {
         $alta = new AltaMedica();
         // Automatically set the exit timestamp right now
@@ -441,8 +529,15 @@ final class EmergenciaController extends AbstractController
 
         //@TODO: Fix csrf token for ajax forms
         if ($form->isSubmitted()) {
-
             $data = $form->getData();
+
+            if (!$emergencia->getPaciente()) {
+                return $this->json([
+                    'success' => false,
+                    'message' => '¡Debe identificar y vincular al paciente (crear su perfil) antes de procesar el alta!'
+                ]);
+            }
+
             if (!$data->getDiagnosticoFinal()){
                 return $this->json([
                     'success' => false,
@@ -450,37 +545,119 @@ final class EmergenciaController extends AbstractController
                 ]);
             }
 
-            // 1. Link the Alta to the Emergencia
+            // 2. Dynamic Validation & Sanitization
+            switch ($alta->getCondicionAlta()) {
+                case EmergenciasCondicionAlta::TRANSFER:
+                    if (!$alta->getHospitalDestino() || !$alta->getMotivoTraslado()) {
+                        return $this->json(['success' => false, 'message' => 'Debe especificar el hospital de destino y el motivo del traslado.']);
+                    }
+                    // Wipe irrelevant data
+                    $alta->setServicioIngreso(null);
+                    $alta->setIndicacionesMedicas(null);
+
+                    $nombre = $emergencia->getPaciente()->getNombre();
+                    $diagnose = $alta->getMotivoTraslado();
+                    $auditService->persistAudit(
+                        AuditTipos::EMERGENCY_DISCHARGE_TRANSFER,
+                        "El Paciente $nombre debe ser trasladado a otro hospital debido a: $diagnose",
+                        $emergencia->getPaciente(),
+                        null
+                    );
+
+                    break;
+
+                case EmergenciasCondicionAlta::ADMITTED_ROOM:
+                    if (!$alta->getServicioIngreso()) {
+                        return $this->json(['success' => false, 'message' => 'Debe seleccionar el servicio de hospitalización.']);
+                    }
+                    // Wipe irrelevant data
+                    $alta->setHospitalDestino(null);
+                    $alta->setMotivoTraslado(null);
+                    $alta->setIndicacionesMedicas(null);
+
+                    $nombre = $emergencia->getPaciente()->getNombre();
+                    $unit = $alta->getServicioIngreso();
+                    $diagnose = $alta->getDiagnosticoFinal();
+                    $auditService->persistAudit(
+                        AuditTipos::EMERGENCY_DISCHARGE_ADMITTED_ROOM,
+                        "El Paciente $nombre debe ser hospitalizado en $unit debido a: $diagnose",
+                        $emergencia->getPaciente(),
+                        null
+                    );
+
+                    break;
+
+                case EmergenciasCondicionAlta::DECEASED:
+                    // Wipe irrelevant data
+                    $alta->setHospitalDestino(null);
+                    $alta->setMotivoTraslado(null);
+                    $alta->setServicioIngreso(null);
+                    $alta->setIndicacionesMedicas(null);
+
+                    $nombre = $emergencia->getPaciente()->getNombre();
+                    $diagnose = $alta->getDiagnosticoFinal();
+                    $auditService->persistAudit(
+                        AuditTipos::EMERGENCY_DISCHARGE_DECEASED,
+                        "El Paciente $nombre ha fallecido durante una emergencia. Diagnostico: $diagnose",
+                        $emergencia->getPaciente(),
+                        null
+                    );
+
+                    break;
+
+                case EmergenciasCondicionAlta::SENT_HOME:
+                    $nombre = $emergencia->getPaciente()->getNombre();
+                    $diagnose = $alta->getDiagnosticoFinal();
+                    $auditService->persistAudit(
+                        AuditTipos::EMERGENCY_DISCHARGE_SENT_HOME,
+                        "El Paciente $nombre fue dado de alta exitosamente. Diagnostico: $diagnose",
+                        $emergencia->getPaciente(),
+                        null
+                    );
+                    break;
+                case EmergenciasCondicionAlta::LEFT:
+                    $alta->setHospitalDestino(null);
+                    $alta->setMotivoTraslado(null);
+                    $alta->setServicioIngreso(null);
+
+                    $nombre = $emergencia->getPaciente()->getNombre();
+                    $diagnose = $alta->getDiagnosticoFinal();
+                    $auditService->persistAudit(
+                        AuditTipos::EMERGENCY_DISCHARGE_LEFT,
+                        "El Paciente $nombre se ha retirado contra opinion medica. Diagnostico: $diagnose",
+                        $emergencia->getPaciente(),
+                        null
+                    );
+
+                    break;
+            }
+
+            // 3. Link the Alta to the Emergencia
             $emergencia->setAltaMedica($alta);
             $alta->setEmergencia($emergencia);
 
-            // 2. State Transitions
+            // 4. State Transitions
             $emergencia->setEstado(EmergenciasEstados::DISCHARGED);
 
-            // 3. FREE THE BED! (Crucial step)
-            if ($form->get('needsCleaning')->getData()){
-                if ($cama = $emergencia->getCamaActual()) {
-                    $cama->setEstado(CamaEstados::CLEANING);
-                    $em->persist($cama);
-                }
-            } else {
-                if ($cama = $emergencia->getCamaActual()) {
-                    $cama->setEstado(CamaEstados::AVAILABLE);
-                    $em->persist($cama);
-                }
-            }
+            // 5. FREE THE BED! (Crucial step)
+            $needsCleaning = $form->has('needsCleaning') && $form->get('needsCleaning')->getData();
 
+            if ($cama = $emergencia->getCamaActual()) {
+                $cama->setEstado($needsCleaning ? CamaEstados::CLEANING : CamaEstados::AVAILABLE);
+                $em->persist($cama);
+                $emergencia->setCamaActual(null);
+            }
 
             $em->persist($alta);
             $em->persist($emergencia);
             $em->flush();
 
-            // 4. Mercure Push (Tells the tables to remove this row)
+            // 6. Mercure Push (Tells the tables to remove this row)
             $update = new Update(
                 'emergencias',
                 json_encode([
                     'id' => $emergencia->getId(),
-                    'estado' => EmergenciasEstados::DISCHARGED->value, // Lowercase so the JS ignores insertion
+                    'estado' => EmergenciasEstados::DISCHARGED->value,
                     'html' => ''
                 ])
             );

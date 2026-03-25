@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\CitasConfiguraciones;
 use App\Entity\CitasSolicitudes;
+use App\Entity\MainConfiguration;
 use App\Entity\StatusRecord;
 use App\Entity\User;
 use App\Enum\CitasEstados;
@@ -154,10 +155,15 @@ final class CitasSolicitudesController extends AbstractController
             'uuid' => $cita->getUuid()
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
+        $mainConfig = $entityManager->getRepository(MainConfiguration::class)->findOneBy([
+            'id' => 1
+        ]);
+
         // 2. Render the Twig template (which will include the QR code)
         $html = $this->renderView('citas_solicitudes/voucher_pdf.html.twig', [
             'cita' => $cita,
-            'verificationUrl' => $verificationUrl
+            'verificationUrl' => $verificationUrl,
+            'mainConfig' => $mainConfig
         ]);
 
         // 3. Configure Dompdf
