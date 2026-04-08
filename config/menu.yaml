@@ -15,6 +15,7 @@ parameters:
                     children: # <-- This triggers the recursion
                         - { title: Usuarios Internos, route: app_user_internal_index, icon: 'bi bi-person-lines-fill text-info' }
                         - { title: Usuarios Externos, route: app_user_external_index, icon: 'bi bi-person-lines-fill text-info' }
+                        - { title: Auditoria, route: app_auditoria_index, icon: 'bi bi-person-lines-fill text-info' }
                 -   title: Alergias
                     icon: 'bi bi-virus text-success'
                     children: # <-- This triggers the recursion
@@ -50,6 +51,7 @@ parameters:
                     icon: 'bi bi-pie-chart-fill text-success'
                     children:
                         - { title: Citas, route: app_citas_estadisticas_list, icon: 'bi bi-graph-down text-success' }
+                        - { title: Especialidades, route: app_citas_estadisticas_especialidades, icon: 'bi bi-graph-down text-success' }
         -
             title: Mis Citas
             icon: 'bi bi-calendar-plus-fill text-primary'
@@ -77,6 +79,21 @@ parameters:
                     children:
                         - { title: Zonas, route: app_zona_cama_index, icon: 'bi bi-gear text-warning' }
                         - { title: Camas, route: app_cama_index, icon: 'bi bi-gear text-warning' }
+                -   title: Todas
+                    icon: 'fa-solid fa-bed-pulse text-danger'
+                    children:
+                        - { title: Emergencias Actuales, route: app_emergencia_index, icon: 'fa-solid fa-bed-pulse text-danger' }
+                        - { title: Historial de Emergencias, route: app_emergencia_listado, icon: 'fa-solid fa-magnifying-glass-plus text-danger' }
+        -   title: Hospitalizaciones
+            icon: 'fa-solid fa-bed text-info'
+            roles: 'ROLE_INTERNAL'
+            children:
+                -   title: Configuraciones
+                    icon: 'bi bi-gear text-warning'
+                    children:
+                        - { title: Areas, route: app_area_index, icon: 'bi bi-gear text-warning' }
+                        - { title: Habitaciones, route: app_habitacion_index, icon: 'bi bi-gear text-warning' }
+                        - { title: Camas, route: app_hospitalizacioncama_index, icon: 'bi bi-gear text-warning' }
                 -   title: Todas
                     icon: 'fa-solid fa-bed-pulse text-danger'
                     children:

@@ -5,7 +5,8 @@ import Chart from 'chart.js/auto';
 export default class extends Controller {
     static values = {
         labels: Array,
-        datasets: Array // Changed from 'values' to 'datasets'
+        datasets: Array, // Changed from 'values' to 'datasets'
+        stacking: Boolean
     }
 
     connect() {
@@ -21,8 +22,8 @@ export default class extends Controller {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    x: { stacked: true }, // Optional: stacks bars on top of each other
-                    y: { stacked: true, beginAtZero: true }
+                    x: { stacked: this.stackingValue }, // Optional: stacks bars on top of each other
+                    y: { stacked: this.stackingValue, beginAtZero: true }
                 },
                 plugins: {
                     legend: { position: 'top' }

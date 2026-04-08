@@ -29,7 +29,7 @@
                 <thead>
                 <tr>
                     <th>Codigo</th>
-                    <th>Zona</th>
+                    <th>Habitacion</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -38,7 +38,7 @@
                 {% for entity in entities %}
                     <tr class="align-middle">
                         <td>{{ entity.codigo }}</td>
-                        <td>{{ entity.zona }}</td>
+                        <td>{{ entity.habitacion }}</td>
                         <td>
                             {% set badge = entity.estadosBadgeConfig %}
                             <span class="badge rounded-pill {{ badge.class }}">
@@ -46,17 +46,17 @@
                             </span>
                         </td>
                         <td>
-                            {#<a class="btn btn-secondary" href="{{ path('app_cama_show', {'id': entity.id}) }}">Detalles</a>#}
+                            {#<a class="btn btn-secondary" href="{{ path('app_hospitalizacioncama_show', {'id': entity.id}) }}">Detalles</a>#}
                             {% if entity.estado.value != 'ocupied' %}
-                                <a class="btn btn-success" href="{{ path('app_cama_edit', {'id': entity.id}) }}">Editar</a>
+                                <a class="btn btn-success" href="{{ path('app_hospitalizacioncama_edit', {'id': entity.id}) }}">Editar</a>
 
                                 {% if entity.estado.value == 'available' %}
-                                    <form action="{{ path('app_cama_cleaning', {'id': entity.id}) }}"
+                                    <form action="{{ path('app_hospitalizacioncama_cleaning', {'id': entity.id}) }}"
                                           method="POST"
                                           data-controller="confirm-finalizar"
                                           data-action="submit->confirm-finalizar#confirm"
                                           data-confirm-finalizar-title-value="¿Solicitar Limpieza?"
-                                          data-confirm-finalizar-text-value="¿Desea solicitar la limpieza? Esto no permitirá que sea elegible para emergencias."
+                                          data-confirm-finalizar-text-value="¿Desea solicitar la limpieza? Esto no permitirá que sea elegible para hospitalizaciones."
                                           data-confirm-finalizar-confirm-button-text-value="Sí, solicitar limpieza"
                                           class="d-inline">
 
@@ -64,12 +64,12 @@
                                             <i class="fa-solid fa-broom"></i> Solicitar Limpieza
                                         </button>
                                     </form>
-                                    <form action="{{ path('app_cama_maintenance', {'id': entity.id}) }}"
+                                    <form action="{{ path('app_hospitalizacioncama_maintenance', {'id': entity.id}) }}"
                                           method="POST"
                                           data-controller="confirm-finalizar"
                                           data-action="submit->confirm-finalizar#confirm"
                                           data-confirm-finalizar-title-value="¿Mandar a Mantenimiento?"
-                                          data-confirm-finalizar-text-value="¿Desea mandar la cama a mantenimiento? Esto no permitirá que sea elegible para emergencias."
+                                          data-confirm-finalizar-text-value="¿Desea mandar la cama a mantenimiento? Esto no permitirá que sea elegible para hospitalizaciones."
                                           data-confirm-finalizar-confirm-button-text-value="Sí, mandar a Mantenimiento"
                                           class="d-inline">
 
@@ -78,12 +78,12 @@
                                         </button>
                                     </form>
                                 {% elseif entity.estado.value == 'cleaning' %}
-                                    <form action="{{ path('app_cama_finish_cleaning', {'id': entity.id}) }}"
+                                    <form action="{{ path('app_hospitalizacioncama_finish_cleaning', {'id': entity.id}) }}"
                                           method="POST"
                                           data-controller="confirm-finalizar"
                                           data-action="submit->confirm-finalizar#confirm"
                                           data-confirm-finalizar-title-value="¿Finalizar la Limpieza?"
-                                          data-confirm-finalizar-text-value="Si la cama ya esta limpia puede finalizar la limpieza y la cama estará disponible para que sea elegible para emergencias."
+                                          data-confirm-finalizar-text-value="Si la cama ya esta limpia puede finalizar la limpieza y la cama estará disponible para que sea elegible para hospitalizaciones."
                                           data-confirm-finalizar-confirm-button-text-value="Sí, finalizar"
                                           class="d-inline">
 
@@ -91,12 +91,12 @@
                                             <i class="fa-solid fa-broom"></i> Finalizar Limpieza
                                         </button>
                                     </form>
-                                    <form action="{{ path('app_cama_maintenance', {'id': entity.id}) }}"
+                                    <form action="{{ path('app_hospitalizacioncama_maintenance', {'id': entity.id}) }}"
                                           method="POST"
                                           data-controller="confirm-finalizar"
                                           data-action="submit->confirm-finalizar#confirm"
                                           data-confirm-finalizar-title-value="¿Mandar a Mantenimiento?"
-                                          data-confirm-finalizar-text-value="¿Desea mandar la cama a mantenimiento? Esto no permitirá que sea elegible para emergencias."
+                                          data-confirm-finalizar-text-value="¿Desea mandar la cama a mantenimiento? Esto no permitirá que sea elegible para hospitalizaciones."
                                           data-confirm-finalizar-confirm-button-text-value="Sí, mandar a Mantenimiento"
                                           class="d-inline">
 
@@ -105,12 +105,12 @@
                                         </button>
                                     </form>
                                 {% elseif entity.estado.value == 'maintenance' %}
-                                    <form action="{{ path('app_cama_reactivate', {'id': entity.id}) }}"
+                                    <form action="{{ path('app_hospitalizacioncama_reactivate', {'id': entity.id}) }}"
                                           method="POST"
                                           data-controller="confirm-finalizar"
                                           data-action="submit->confirm-finalizar#confirm"
                                           data-confirm-finalizar-title-value="¿Reactivar la Cama?"
-                                          data-confirm-finalizar-text-value="La cama estará disponible para que sea elegible para emergencias."
+                                          data-confirm-finalizar-text-value="La cama estará disponible para que sea elegible para hospitalizaciones."
                                           data-confirm-finalizar-confirm-button-text-value="Sí, reactivar"
                                           class="d-inline">
 
@@ -129,7 +129,7 @@
         </div>
 
         <div class="card-footer clearfix">
-            <a href="{{ path('app_cama_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+            <a href="{{ path('app_hospitalizacioncama_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
         </div>
     </div>
 {% endblock %}

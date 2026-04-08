@@ -42,7 +42,7 @@ class ScheduleAppointmentsCommand extends Command
             return Command::SUCCESS;
         }
 
-        $targetDate = new \DateTime('+1 day');
+        $targetDate = new \DateTime('+10 day');
         $totalAssigned = 0;
 
         foreach ($configs as $config) {

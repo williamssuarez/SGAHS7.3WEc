@@ -109,4 +109,24 @@ class CitasRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Counts assigned appointments grouped by specialty for a given date range.
+     */
+    public function countAssignedBySpecialty(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('e.nombre AS specialtyName', 'COUNT(c.id) AS totalAssigned')
+            ->join('c.especialidad', 'e')
+            // Assuming you filter by the appointment date:
+            ->andWhere('c.fecha between :start AND :end')
+            // Optional: You might want to exclude canceled appointments so you only see actual capacity
+            // ->andWhere('c.estado != :canceledState')
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->groupBy('e.id')
+            ->orderBy('totalAssigned', 'DESC') // Sort by most demanded
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

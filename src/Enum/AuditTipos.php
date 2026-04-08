@@ -2,11 +2,14 @@
 
 namespace App\Enum;
 
+use phpDocumentor\Reflection\Types\Self_;
+
 /**
  * Enum que representa los tipos de acciones que audiatar.
  */
 enum AuditTipos: string
 {
+    case ALL = 'all';
     case PATIENT_NEW = 'patient_new';
     case PATIENT_EDIT = 'patient_edit';
     case PATIENT_ALLERGY_NEW = 'patient_allergy_new';
@@ -48,6 +51,7 @@ enum AuditTipos: string
     public function getReadableText(): string
     {
         return match($this) {
+            self::ALL => 'Todos',
             self::PATIENT_NEW => 'Registro Nuevo Paciente',
             self::PATIENT_EDIT => 'Edicion de Datos del Paciente',
             self::PATIENT_ALLERGY_NEW => 'Nueva Alergia',

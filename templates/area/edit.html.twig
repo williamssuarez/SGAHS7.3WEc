@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Area{% endblock %}
+
+{% block titlewrap %}
+    Editar Area
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_area_index') }}">Areas</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Area</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('area/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

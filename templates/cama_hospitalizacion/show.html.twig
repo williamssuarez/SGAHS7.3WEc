@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CamaHospitalizacion{% endblock %}
+
+{% block body %}
+    <h1>CamaHospitalizacion</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ cama_hospitalizacion.id }}</td>
+            </tr>
+            <tr>
+                <th>Codigo</th>
+                <td>{{ cama_hospitalizacion.codigo }}</td>
+            </tr>
+            <tr>
+                <th>CamaEstados</th>
+                <td>{{ cama_hospitalizacion.CamaEstados }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_cama_hospitalizacion_index') }}">back to list</a>
+
+    <a href="{{ path('app_cama_hospitalizacion_edit', {'id': cama_hospitalizacion.id}) }}">edit</a>
+
+    {{ include('cama_hospitalizacion/_delete_form.html.twig') }}
+{% endblock %}

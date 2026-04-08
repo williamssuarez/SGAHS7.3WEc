@@ -65,4 +65,21 @@ class CitasSolicitudesRepository extends ServiceEntityRepository
 
         return $query->getQuery()->getResult();
     }
+
+    /**
+     * Counts appointment requests grouped by specialty for a given date range.
+     */
+    public function countRequestsBySpecialty(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+    {
+        return $this->createQueryBuilder('s')
+            ->select('e.nombre AS specialtyName', 'COUNT(s.id) AS totalRequests')
+            ->join('s.especialidad', 'e')
+            ->andWhere('s.created between :start AND :end')
+
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->groupBy('e.id')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

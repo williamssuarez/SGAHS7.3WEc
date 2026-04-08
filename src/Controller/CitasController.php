@@ -123,10 +123,10 @@ final class CitasController extends AbstractController
 
         $now = new \DateTime('now');
 
-        if ($cita->getFecha()->format('Y-m-d') != $now->format('Y-m-d')) {
+        /*if ($cita->getFecha()->format('Y-m-d') != $now->format('Y-m-d')) {
             $this->addFlash('error', 'No puede anunciar la llegada debido a que este paciente no esta programado para hoy.');
             return $this->redirectToRoute('app_citas_index_list');
-        }
+        }*/
 
         // 1. Prevent double check-ins
         if ($cita->getConsulta() !== null) {

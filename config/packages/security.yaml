@@ -6,8 +6,16 @@ security:
         # ROLE_INTERNAL is for staff. They inherit everything from EXTERNAL
         ROLE_INTERNAL: ROLE_USER
 
-        # ROLE_ADMIN is for the boss. They inherit everything from INTERNAL
-        ROLE_ADMIN: [ROLE_INTERNAL]
+        # Specific Staff Roles (They all inherit INTERNAL)
+        ROLE_RECEPTIONIST: ROLE_INTERNAL
+        ROLE_NURSE: ROLE_INTERNAL
+        ROLE_DOCTOR: ROLE_INTERNAL
+
+        # You can even get more specific if ER doctors need special buttons
+        ROLE_ER_DOCTOR: [ROLE_DOCTOR]
+
+        # The Boss gets everything
+        ROLE_ADMIN: [ROLE_ER_DOCTOR, ROLE_NURSE, ROLE_RECEPTIONIST]
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'

@@ -29,6 +29,7 @@ class AppExtension extends AbstractExtension
             new TwigFilter('calculate_age', $this->calculateAge(...)),
             new TwigFilter('time_ago', $this->getTimeAgo(...)),
             new TwigFilter('public_username', $this->getPublicUsername(...)),
+            new TwigFilter('public_username_email', $this->getPublicUsernameAndEmail(...)),
             new TwigFilter('filter_severity', $this->filterSeverity(...)),
             new TwigFilter('time_since', $this->getTimeSince(...)),
         ];
@@ -122,7 +123,7 @@ class AppExtension extends AbstractExtension
     }
 
     /**
-     * Returns a username string by a specific id.
+     * Returns a username string with it's email by a specific id.
      *
      * @param int|null $id The id to search
      * @return string
@@ -141,7 +142,50 @@ class AppExtension extends AbstractExtension
                 'status' => $this->entityManager->getRepository(StatusRecord::class)->getActive()
             ]);
 
-            $name = sprintf('usuario %s %s', $user->getInternalProfile()->getNombre(), $user->getInternalProfile()->getApellido());
+            if ($user->getExternalProfile()) {
+                $name = sprintf('usuario externo %s %s', $user->getExternalProfile()->getNombre(), $user->getExternalProfile()->getApellido());
+            } else {
+                $name = sprintf('usuario %s %s', $user->getInternalProfile()->getNombre(), $user->getInternalProfile()->getApellido());
+            }
+        }
+
+        // Return the final formatted string
+        return $name;
+    }
+
+    /**
+     * Returns a username string by a specific id.
+     *
+     * @param int|null $id The id to search
+     * @return string
+     */
+    public function getPublicUsernameAndEmail(?int $id): string
+    {
+        if (!$id) {
+            return 'No encontrado';
+        }
+
+        if ($id == -1){
+            $name = 'Sistema';
+        } else {
+            $user = $this->entityManager->getRepository(User::class)->findOneBy([
+                'id' => $id,
+                'status' => $this->entityManager->getRepository(StatusRecord::class)->getActive()
+            ]);
+
+            if ($user->getExternalProfile()) {
+                $name = sprintf('%s %s (Externo - %s)',
+                    $user->getExternalProfile()->getNombre(),
+                    $user->getExternalProfile()->getApellido(),
+                    $user->getEmail()
+                );
+            } else {
+                $name = sprintf('%s %s (Interno - %s)',
+                    $user->getInternalProfile()->getNombre(),
+                    $user->getInternalProfile()->getApellido(),
+                    $user->getEmail()
+                );
+            }
         }
 
         // Return the final formatted string

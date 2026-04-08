@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Estadísticas de Citas por Especialidad{% endblock %}
+
+{% block titlewrap %}
+    Estadísticas de Citas por Especialidad
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active" aria-current="page">Estadísticas de Citas por Especialidad</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="card card-primary card-outline mb-4">
+        <div class="card-body">
+            <form method="get" action="{{ path('app_citas_estadisticas_especialidades') }}" class="row g-3 mb-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Desde</label>
+                        <input type="date" name="startDate" value="{{ startDate }}" class="form-control">
+                    </div>
+                    <div class="col-md-4">
+                        <label>Hasta</label>
+                        <input type="date" name="endDate" value="{{ endDate }}" class="form-control">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                        <a href="{{ path('app_citas_estadisticas_especialidades') }}" class="btn btn-secondary ms-2">Limpiar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if chartData %}
+
+        <div class="card">
+            <div class="card-body">
+                <div
+                    style="position: relative; height: 300px;"
+                    data-controller="citagroupdaychart"
+                    data-citagroupdaychart-labels-value="{{ chartData.labels|json_encode }}"
+                    data-citagroupdaychart-datasets-value="{{ chartData.datasets|json_encode }}"
+                    data-citagroupdaychart-stacking-value="false"
+                >
+                    <canvas id="appointmentsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <br>
+
+    {% if entities %}
+        <div class="card card-primary card-outline mb-4">
+            <div class="card-header">
+                <h3 class="card-title">Citas</h3>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-striped dtHere">
+                    <thead>
+                    <tr>
+                        <th>Especialidad</th>
+                        <th>Consultorio</th>
+                        <th>Paciente</th>
+                        <th>Fecha</th>
+                        <th>Inicio-Fin</th>
+                        <th>Estado</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for entity in entities %}
+                        <tr class="align-middle">
+                            <td>{{ entity.especialidad.nombre }}</td>
+                            <td>{{ entity.consultorio.nombre }}</td>
+                            <td>{{ entity.paciente.nombre }} {{ entity.paciente.apellido }}</td>
+                            <td>{{ entity.fecha|date('d/m/Y', false) }}</td>
+                            <td>{{ entity.horaInicio|date('H:i', false) }} - {{ entity.horaFin|date('H:i', false) }}</td>
+                            <td>
+                                {% set badge = entity.citasEstadosBadgeConfig %}
+                                <span class="badge rounded-pill {{ badge.class }}">
+                                    {{ badge.label }}
+                            </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
