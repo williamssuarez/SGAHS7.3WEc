@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}VisitaHospitalaria{% endblock %}
+
+{% block body %}
+    <h1>VisitaHospitalaria</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ visita_hospitalarium.id }}</td>
+            </tr>
+            <tr>
+                <th>NombreVisitante</th>
+                <td>{{ visita_hospitalarium.nombreVisitante }}</td>
+            </tr>
+            <tr>
+                <th>Parentesco</th>
+                <td>{{ visita_hospitalarium.parentesco }}</td>
+            </tr>
+            <tr>
+                <th>FechaHoraEntrada</th>
+                <td>{{ visita_hospitalarium.fechaHoraEntrada ? visita_hospitalarium.fechaHoraEntrada|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>FechaHoraSalida</th>
+                <td>{{ visita_hospitalarium.fechaHoraSalida ? visita_hospitalarium.fechaHoraSalida|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Estado</th>
+                <td>{{ visita_hospitalarium.estado }}</td>
+            </tr>
+            <tr>
+                <th>UidCreate</th>
+                <td>{{ visita_hospitalarium.uidCreate }}</td>
+            </tr>
+            <tr>
+                <th>UidUpdate</th>
+                <td>{{ visita_hospitalarium.uidUpdate }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ visita_hospitalarium.created ? visita_hospitalarium.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Updated</th>
+                <td>{{ visita_hospitalarium.updated ? visita_hospitalarium.updated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_visita_hospitalaria_index') }}">back to list</a>
+
+    <a href="{{ path('app_visita_hospitalaria_edit', {'id': visita_hospitalarium.id}) }}">edit</a>
+
+    {{ include('visita_hospitalaria/_delete_form.html.twig') }}
+{% endblock %}

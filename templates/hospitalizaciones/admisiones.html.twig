@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hospitalizaciones{% endblock %}
+
+{% block titlewrap %}
+    Hospitalizaciones
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active" aria-current="page">Hospitalizaciones</li>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+            <h2 class="text-dark fw-bold">
+                <i class="bi bi-hospital"></i> Panel de Admisiones
+            </h2>
+            <span class="badge bg-danger fs-6 rounded-pill">
+            {{ pendientes|length }} Pacientes en Espera
+        </span>
+        </div>
+
+        <div class="card shadow-sm border-top border-primary border-4">
+            <div class="card-body p-0">
+                {% if pendientes is empty %}
+                    <div class="text-center p-5">
+                        <i class="bi bi-check2-circle text-success display-1 mb-3"></i>
+                        <h4 class="text-muted">No hay pacientes en espera</h4>
+                        <p class="text-muted">Todas las solicitudes de ingreso han sido procesadas.</p>
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Tiempo de Espera</th>
+                                <th>Paciente</th>
+                                <th>Origen</th>
+                                <th>Servicio / Piso Solicitado</th>
+                                <th>Diagnóstico</th>
+                                <th class="text-end">Acción</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for hospitalizacion in pendientes %}
+                                <tr>
+                                    <td>
+                                        <span class="text-danger fw-bold"><i class="bi bi-clock-history"></i> {{ hospitalizacion.fechaIngreso|time_ago }}</span><br>
+                                        <small class="text-muted">{{ hospitalizacion.fechaIngreso|date('d/m/Y H:i A') }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ hospitalizacion.paciente.nombre }} {{ hospitalizacion.paciente.apellido }}</strong><br>
+                                        <small class="text-muted">CI: {{ hospitalizacion.paciente.cedula }}</small>
+                                    </td>
+                                    <td>
+                                        {% if hospitalizacion.emergencia %}
+                                            <span class="badge bg-danger"><i class="bi bi-ambulance"></i> Emergencia</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Consulta</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {# Stripping out the prefix we added in the ER controller #}
+                                        <span class="badge bg-info text-dark fs-6">
+                                            {{ hospitalizacion.diagnosticoIngreso|replace({'Servicio Solicitado: ': ''})|default('Por clasificar') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 250px;" title="{{ hospitalizacion.diagnosticoIngreso }}">
+                                            {{ hospitalizacion.diagnosticoIngreso }}
+                                        </div>
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-primary shadow-sm"
+                                                data-controller="assign-bed"
+                                                data-assign-bed-url-value="{{ path('app_hospitalizacion_assign_bed', {id: hospitalizacion.id}) }}"
+                                                data-action="click->assign-bed#openModal">
+                                            <i class="bi bi-door-open-fill"></i> Asignar Cama
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

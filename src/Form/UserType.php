@@ -46,7 +46,10 @@ class UserType extends AbstractType
                 ],
                 'choices' => [
                     'Administrador del Sistema' => User::ROLE_ADMIN,
-                    'Staff Medico' => User::ROLE_INTERNAL
+                    'Recepcionista' => User::ROLE_RECEPTIONIST,
+                    'Enfermeria' => User::ROLE_NURSE,
+                    'Doctor' => User::ROLE_DOCTOR,
+                    'Doctor Emergencias' => User::ROLE_ER_DOCTOR,
                 ],
                 'invalid_message' => 'El rol seleccionado no es valido',
             ])

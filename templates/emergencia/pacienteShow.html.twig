@@ -68,14 +68,16 @@
 
                 <div class="d-flex gap-2">
                     {# Action Buttons for the Doctor #}
-                    <button type="button"
-                            class="btn btn-success shadow-sm"
-                            data-controller="discharge"
-                            data-discharge-url-value="{{ path('app_emergencia_discharge', {id: entity.id}) }}"
-                            data-discharge-redirect-value="{{ path('app_emergencia_index') }}"
-                            data-action="click->discharge#openModal">
-                        <i class="bi bi-check-circle-fill"></i> Dar de Alta
-                    </button>
+                    {% if is_granted('ROLE_ER_DOCTOR') %}
+                        <button type="button"
+                                class="btn btn-success shadow-sm"
+                                data-controller="discharge"
+                                data-discharge-url-value="{{ path('app_emergencia_discharge', {id: entity.id}) }}"
+                                data-discharge-redirect-value="{{ path('app_emergencia_index') }}"
+                                data-action="click->discharge#openModal">
+                            <i class="bi bi-check-circle-fill"></i> Dar de Alta
+                        </button>
+                    {% endif %}
                     {% if entity.paciente %}
                         <button type="button"
                                 id="assignPatientBtn"

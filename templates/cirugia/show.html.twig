@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cirugia{% endblock %}
+
+{% block body %}
+    <h1>Cirugia</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ cirugium.id }}</td>
+            </tr>
+            <tr>
+                <th>ProcedimientoPropuesto</th>
+                <td>{{ cirugium.procedimientoPropuesto }}</td>
+            </tr>
+            <tr>
+                <th>Estado</th>
+                <td>{{ cirugium.estado }}</td>
+            </tr>
+            <tr>
+                <th>FechaPrograma</th>
+                <td>{{ cirugium.fechaPrograma ? cirugium.fechaPrograma|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>HoraCorte</th>
+                <td>{{ cirugium.horaCorte ? cirugium.horaCorte|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>HoraCierre</th>
+                <td>{{ cirugium.horaCierre ? cirugium.horaCierre|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>UidCreate</th>
+                <td>{{ cirugium.uidCreate }}</td>
+            </tr>
+            <tr>
+                <th>UidUpdate</th>
+                <td>{{ cirugium.uidUpdate }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ cirugium.created ? cirugium.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Updated</th>
+                <td>{{ cirugium.updated ? cirugium.updated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_cirugia_index') }}">back to list</a>
+
+    <a href="{{ path('app_cirugia_edit', {'id': cirugium.id}) }}">edit</a>
+
+    {{ include('cirugia/_delete_form.html.twig') }}
+{% endblock %}

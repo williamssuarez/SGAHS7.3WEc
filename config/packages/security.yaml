@@ -6,13 +6,16 @@ security:
         # ROLE_INTERNAL is for staff. They inherit everything from EXTERNAL
         ROLE_INTERNAL: ROLE_USER
 
+        # ROLE_INTERNAL is for staff. They inherit everything from EXTERNAL
+        ROLE_ER: ROLE_ER
+
         # Specific Staff Roles (They all inherit INTERNAL)
         ROLE_RECEPTIONIST: ROLE_INTERNAL
-        ROLE_NURSE: ROLE_INTERNAL
+        ROLE_NURSE: [ROLE_INTERNAL, ROLE_ER]
         ROLE_DOCTOR: ROLE_INTERNAL
 
         # You can even get more specific if ER doctors need special buttons
-        ROLE_ER_DOCTOR: [ROLE_DOCTOR]
+        ROLE_ER_DOCTOR: [ROLE_DOCTOR, ROLE_ER]
 
         # The Boss gets everything
         ROLE_ADMIN: [ROLE_ER_DOCTOR, ROLE_NURSE, ROLE_RECEPTIONIST]
@@ -71,6 +74,11 @@ security:
         - { path: ^/discapacidades, roles: ROLE_ADMIN }
         - { path: ^/paciente, roles: ROLE_INTERNAL }
         - { path: ^/historia/paciente, roles: ROLE_INTERNAL }
+        - { path: ^/especialidades, roles: ROLE_ADMIN }
+        - { path: ^/consultorios, roles: ROLE_ADMIN }
+        - { path: ^/citas/configuraciones, roles: ROLE_ADMIN }
+        - { path: ^/citas, roles: ROLE_RECEPTIONIST }
+        - { path: ^/citas/estadisticas, roles: ROLE_ADMIN }
 
 when@test:
     security:

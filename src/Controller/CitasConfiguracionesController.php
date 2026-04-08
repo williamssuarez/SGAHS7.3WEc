@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\CitasConfiguraciones;
+use App\Entity\StatusRecord;
 use App\Form\CitasConfiguracionesType;
 use App\Repository\CitasConfiguracionesRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,6 +31,15 @@ final class CitasConfiguracionesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $prevConfig = $entityManager->getRepository(CitasConfiguraciones::class)->findOneBy([
+                'especialidad' => $citasConfiguracione->getEspecialidad(),
+                'status' => $entityManager->getRepository(StatusRecord::class)->getActive()
+            ]);
+
+            if ($prevConfig) {
+                $this->addFlash('danger', 'La especialidad ya tiene una configuracion asociada.');
+                return $this->redirectToRoute('app_citas_configuraciones_index', [], Response::HTTP_SEE_OTHER);
+            }
             $entityManager->persist($citasConfiguracione);
             $entityManager->flush();
 

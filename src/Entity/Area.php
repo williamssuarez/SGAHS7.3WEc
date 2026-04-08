@@ -31,9 +31,16 @@ class Area
     #[ORM\OneToMany(targetEntity: Habitacion::class, mappedBy: 'area')]
     private Collection $habitaciones;
 
+    /**
+     * @var Collection<int, HorarioVisitas>
+     */
+    #[ORM\OneToMany(targetEntity: HorarioVisitas::class, mappedBy: 'area')]
+    private Collection $horarioVisitas;
+
     public function __construct()
     {
         $this->habitaciones = new ArrayCollection();
+        $this->horarioVisitas = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -98,6 +105,36 @@ class Area
             // set the owning side to null (unless already changed)
             if ($habitacione->getArea() === $this) {
                 $habitacione->setArea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, HorarioVisitas>
+     */
+    public function getHorarioVisitas(): Collection
+    {
+        return $this->horarioVisitas;
+    }
+
+    public function addHorarioVisita(HorarioVisitas $horarioVisita): static
+    {
+        if (!$this->horarioVisitas->contains($horarioVisita)) {
+            $this->horarioVisitas->add($horarioVisita);
+            $horarioVisita->setArea($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHorarioVisita(HorarioVisitas $horarioVisita): static
+    {
+        if ($this->horarioVisitas->removeElement($horarioVisita)) {
+            // set the owning side to null (unless already changed)
+            if ($horarioVisita->getArea() === $this) {
+                $horarioVisita->setArea(null);
             }
         }
 

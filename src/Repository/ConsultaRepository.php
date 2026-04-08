@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Consulta;
+use App\Entity\InternalProfile;
 use App\Entity\StatusRecord;
+use App\Enum\ConsultaEstados;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -47,5 +49,22 @@ class ConsultaRepository extends ServiceEntityRepository
         ;
 
         return $query->getQuery()->getResult();
+    }
+
+    public function findPendingAppointmentsForDoctor(InternalProfile $doctorProfile, $state)
+    {
+        $specialties = $doctorProfile->getEspecialidades();
+
+        return $this->createQueryBuilder('u')
+            ->where('u.especialidad IN (:specialties)')
+            ->andWhere('u.estadoConsulta = :state')
+            ->andWhere('u.status = :sts')
+
+            ->setParameter('specialties', $specialties)
+            ->setParameter('state', $state)
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+
+            ->getQuery()
+            ->getResult();
     }
 }

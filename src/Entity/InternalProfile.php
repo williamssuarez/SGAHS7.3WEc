@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\InternalProfileRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -34,6 +36,17 @@ class InternalProfile
 
     #[ORM\OneToOne(mappedBy: 'internalProfile', cascade: ['persist', 'remove'])]
     private ?User $webUser = null;
+
+    /**
+     * @var Collection<int, Especialidades>
+     */
+    #[ORM\ManyToMany(targetEntity: Especialidades::class)]
+    private Collection $especialidades;
+
+    public function __construct()
+    {
+        $this->especialidades = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -130,6 +143,30 @@ class InternalProfile
         }
 
         $this->webUser = $webUser;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Especialidades>
+     */
+    public function getEspecialidades(): Collection
+    {
+        return $this->especialidades;
+    }
+
+    public function addEspecialidade(Especialidades $especialidade): static
+    {
+        if (!$this->especialidades->contains($especialidade)) {
+            $this->especialidades->add($especialidade);
+        }
+
+        return $this;
+    }
+
+    public function removeEspecialidade(Especialidades $especialidade): static
+    {
+        $this->especialidades->removeElement($especialidade);
 
         return $this;
     }

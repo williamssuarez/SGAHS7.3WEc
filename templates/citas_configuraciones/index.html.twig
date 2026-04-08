@@ -55,7 +55,6 @@
                         <td>{{ entity.duracionCita }} minutos</td>
                         <td>{{ entity.tiempoReceso ? entity.tiempoReceso ~ ' minutos': '--' }}</td>
                         <td>
-                            <a class="btn btn-secondary" href="{{ path('app_citas_configuraciones_show', {'id': entity.id}) }}">Detalles</a>
                             <a class="btn btn-success" href="{{ path('app_citas_configuraciones_edit', {'id': entity.id}) }}">Editar</a>
                         </td>
                     </tr>

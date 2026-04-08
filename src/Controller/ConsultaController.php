@@ -12,6 +12,7 @@ use App\Entity\PacienteEnfermedades;
 use App\Entity\PacienteInmunizaciones;
 use App\Entity\Prescripciones;
 use App\Entity\StatusRecord;
+use App\Entity\User;
 use App\Entity\Vitales;
 use App\Enum\AuditTipos;
 use App\Enum\CitasEstados;
@@ -24,6 +25,7 @@ use App\Form\ConsultaPendingType;
 use App\Repository\ConsultaRepository;
 use App\Service\AuditService;
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Handler\SyslogUdp\UdpSocket;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,26 +36,34 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ConsultaController extends AbstractController
 {
     #[Route('/pending', name: 'app_consulta_pendientes_index', methods: ['GET'])]
-    public function indexPendientes(ConsultaRepository $consultaRepository): Response
+    public function indexPendientes(ConsultaRepository $consultaRepository, EntityManagerInterface $entityManager): Response
     {
+        $user = $entityManager->getRepository(User::class)->find($this->getUser());
+
         return $this->render('consulta/index.html.twig', [
-            'entities' => $consultaRepository->getActivesforTableByState(ConsultaEstados::PENDING),
+            'entities' => $consultaRepository->findPendingAppointmentsForDoctor( $user->getInternalProfile(), ConsultaEstados::PENDING),
         ]);
     }
 
     #[Route('/active', name: 'app_consulta_activas_index', methods: ['GET'])]
-    public function indexActivas(ConsultaRepository $consultaRepository): Response
+    public function indexActivas(ConsultaRepository $consultaRepository, EntityManagerInterface $entityManager): Response
     {
+        $user = $entityManager->getRepository(User::class)->find($this->getUser());
+
         return $this->render('consulta/index.html.twig', [
-            'entities' => $consultaRepository->getActivesforTableByState(ConsultaEstados::ACTIVE),
+            //'entities' => $consultaRepository->getActivesforTableByState(ConsultaEstados::ACTIVE),
+            'entities' => $consultaRepository->findPendingAppointmentsForDoctor( $user->getInternalProfile(), ConsultaEstados::ACTIVE),
         ]);
     }
 
     #[Route(name: 'app_consulta_index', methods: ['GET'])]
-    public function index(ConsultaRepository $consultaRepository): Response
+    public function index(ConsultaRepository $consultaRepository, EntityManagerInterface $entityManager): Response
     {
+        $user = $entityManager->getRepository(User::class)->find($this->getUser());
+
         return $this->render('consulta/index.html.twig', [
-            'entities' => $consultaRepository->getActivesforTable(),
+            //'entities' => $consultaRepository->getActivesforTable(),
+            'entities' => $consultaRepository->findPendingAppointmentsForDoctor( $user->getInternalProfile(), ConsultaEstados::FINISHED),
         ]);
     }
 

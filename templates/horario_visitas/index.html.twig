@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Horarios de Visitas{% endblock %}
+
+{% block titlewrap %}
+    Horarios de Visitas
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active" aria-current="page">Horarios de Visitas</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="card card-primary card-outline mb-4">
+        <div class="card-header">
+            <h3 class="card-title">Horarios de Visitas</h3>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-striped dtHere">
+                <thead>
+                <tr>
+                    <th>Area</th>
+                    <th>Dia</th>
+                    <th>Inicio-Fin</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entity in entities %}
+                    <tr class="align-middle">
+                        <td>{{ entity.area.nombre }}</td>
+                        <td>
+                            <ul>
+                                <li>{{ entity.readableDias }}</li>
+                            </ul>
+                        </td>
+                        <td>{{ entity.horaInicio|date('H:i', false) }} - {{ entity.horaFin|date('H:i', false) }}</td>
+                        <td>
+                            <a class="btn btn-success" href="{{ path('app_horario_visitas_edit', {'id': entity.id}) }}">Editar</a>
+
+                            <button class="btn btn-danger"
+                                    onclick="softDeleteRecord(
+                                        '{{ path('app_horario_visitas_delete', {'id': entity.id}) }}',
+                                        '{{ csrf_token('delete' ~ entity.id) }}'
+                                        )">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer clearfix">
+            <a href="{{ path('app_horario_visitas_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+        </div>
+    </div>
+{% endblock %}

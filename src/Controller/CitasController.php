@@ -108,7 +108,7 @@ final class CitasController extends AbstractController
     public function show(Citas $cita, EntityManagerInterface $entityManager): Response
     {
         if ($cita->getStatus() != $entityManager->getRepository(StatusRecord::class)->getActive()){
-            $this->addFlash('error', 'No se pudo encontrar la inforamcion.');
+            $this->addFlash('danger', 'No se pudo encontrar la inforamcion.');
             return $this->redirectToRoute('app_citas_index_list');
         }
 
@@ -144,6 +144,7 @@ final class CitasController extends AbstractController
         $consulta->setFechaInicio(new \DateTime('now'));
         $consulta->setTipoConsulta(ConsultaTipos::CT_GENERAL);
         $consulta->setEstadoConsulta(ConsultaEstados::PENDING);
+        $consulta->setEspecialidad($cita->getEspecialidad());
 
         // 4. Link them together!
         $cita->setConsulta($consulta);

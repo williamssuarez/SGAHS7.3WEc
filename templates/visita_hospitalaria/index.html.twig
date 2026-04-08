@@ -1,0 +1,83 @@
+{# templates/visitas/dashboard.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Control de Visitantes{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+            <h2 class="text-dark fw-bold"><i class="bi bi-people-fill"></i> Visitantes Activos</h2>
+            {#<a href="{{ path('app_visita_hospitalaria_new') }}" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newVisitorModal">
+                <i class="bi bi-person-plus-fill"></i> Registrar Nuevo Visitante
+            </a>#}
+        </div>
+
+        <div class="card shadow-sm border-top border-info border-4">
+            <div class="card-body p-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Hora Entrada</th>
+                        <th>Visitante</th>
+                        <th>Parentesco</th>
+                        <th>Visitando a (Paciente)</th>
+                        <th>Ubicación</th>
+                        <th class="text-end">Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {# Loop through all VisitaHospitalaria entities where estado == 'ACTIVA' #}
+                    {% for visita in entities %}
+                        <tr>
+                            <td>
+                                <span class="fw-bold text-success"><i class="bi bi-box-arrow-in-right"></i> {{ visita.fechaHoraEntrada|date('H:i') }}</span><br>
+                                <small class="text-muted">Hace {{ visita.fechaHoraEntrada|time_ago }}</small>
+                            </td>
+                            <td>
+                                <strong>{{ visita.nombreVisitante }}</strong><br>
+                            </td>
+                            <td><span class="badge bg-secondary">{{ visita.parentesco }}</span></td>
+                            <td>{{ visita.hospitalizacion.paciente.nombre }} {{ visita.hospitalizacion.paciente.apellido }}</td>
+                            <td>
+                                {{ visita.hospitalizacion.camaActual.habitacion.area.nombre }}<br>
+                                <strong>Hab: {{ visita.hospitalizacion.camaActual.habitacion.nombre }}</strong>
+                            </td>
+                            <td class="text-end">
+                                {# The Check-Out Form
+                                <form action="{{ path('app_visitas_marcar_salida', {'id': visita.id}) }}" method="POST">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('checkout' ~ visita.id) }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm shadow-sm" title="Marcar Salida">
+                                        <i class="bi bi-box-arrow-right"></i> Marcar Salida
+                                    </button>
+                                </form>#}
+
+                                <form action="{{ path('app_visitas_marcar_salida', {'id': visita.id}) }}"
+                                      method="POST"
+                                      data-controller="confirm-finalizar"
+                                      data-action="submit->confirm-finalizar#confirm"
+                                      data-confirm-finalizar-title-value="¿Marcar Salida?"
+                                      data-confirm-finalizar-text-value="¿Desea marcar la salida de esta persona '{{ visita.nombreVisitante }}'?"
+                                      data-confirm-finalizar-confirm-button-text-value="Sí, marcar">
+
+                                    <input type="hidden" name="_token" value="{{ csrf_token('checkout' ~ visita.id) }}">
+
+                                    <button type="submit" class="btn btn-outline-danger btn-sm shadow-sm" title="Marcar Salida">
+                                        <i class="bi bi-box-arrow-right"></i> Marcar Salida
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-5">
+                                <i class="bi bi-shield-check display-4 d-block mb-2"></i>
+                                No hay visitantes activos en las instalaciones.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

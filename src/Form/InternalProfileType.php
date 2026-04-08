@@ -2,9 +2,13 @@
 
 namespace App\Form;
 
+use App\Entity\Especialidades;
 use App\Entity\InternalProfile;
+use App\Entity\Reacciones;
 use App\Entity\User;
 use App\Form\Type\PhoneType;
+use App\Repository\EspecialidadesRepository;
+use App\Repository\ReaccionesRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -82,6 +86,22 @@ class InternalProfileType extends AbstractType
                     'E' => 'E'
                 ],
                 'attr' => ['class' => 'noSrchSelect']
+            ])
+            ->add('especialidades', EntityType::class, [
+                'class' => Especialidades::class,
+                'label' => 'Especialidades',
+                'label_attr' => [
+                    'class' => 'form-label'
+                ],
+                'choice_label' => 'nombre',
+                'multiple' => true,
+                'attr' => [
+                    'class' => 'srchSelect'
+                ],
+                'required' => true,
+                'query_builder' => function (EspecialidadesRepository $er) {
+                    return $er->getActivesforSelect();
+                }
             ])
         ;
     }

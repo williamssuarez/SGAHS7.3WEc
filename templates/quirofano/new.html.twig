@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nuevo Quirofano{% endblock %}
+
+{% block titlewrap %}
+    Nuevo Quirofano
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_quirofano_index') }}">Quirofanos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nuevo Quirofano</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('quirofano/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

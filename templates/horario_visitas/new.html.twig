@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nuevo Horario de Visita{% endblock %}
+
+{% block titlewrap %}
+    Nuevo Horario de Visita
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_horario_visitas_index') }}">Horarios de Visitas</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nuevo Horario de Visita</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('horario_visitas/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

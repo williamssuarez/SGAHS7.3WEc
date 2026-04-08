@@ -22,6 +22,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public const ROLE_ADMIN = 'ROLE_ADMIN';
     public const ROLE_INTERNAL = 'ROLE_INTERNAL';
+    public const ROLE_RECEPTIONIST = 'ROLE_RECEPTIONIST';
+    public const ROLE_NURSE = 'ROLE_NURSE';
+    public const ROLE_DOCTOR = 'ROLE_DOCTOR';
+    public const ROLE_ER_DOCTOR = 'ROLE_ER_DOCTOR';
     public const ROLE_EXTERNAL = 'ROLE_EXTERNAL';
 
     #[ORM\Id]
@@ -66,9 +70,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatarUrl = null;
 
+    /**
+     * @var Collection<int, Hospitalizaciones>
+     */
+    #[ORM\OneToMany(targetEntity: Hospitalizaciones::class, mappedBy: 'medicoTratante')]
+    private Collection $hospitalizaciones;
+
     public function __construct()
     {
         $this->historiaPacientes = new ArrayCollection();
+        $this->hospitalizaciones = new ArrayCollection();
     }
 
     public function getActiveProfile(): ?object
@@ -295,6 +306,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAvatarUrl(?string $avatarUrl): static
     {
         $this->avatarUrl = $avatarUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Hospitalizaciones>
+     */
+    public function getHospitalizaciones(): Collection
+    {
+        return $this->hospitalizaciones;
+    }
+
+    public function addHospitalizacione(Hospitalizaciones $hospitalizacione): static
+    {
+        if (!$this->hospitalizaciones->contains($hospitalizacione)) {
+            $this->hospitalizaciones->add($hospitalizacione);
+            $hospitalizacione->setMedicoTratante($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHospitalizacione(Hospitalizaciones $hospitalizacione): static
+    {
+        if ($this->hospitalizaciones->removeElement($hospitalizacione)) {
+            // set the owning side to null (unless already changed)
+            if ($hospitalizacione->getMedicoTratante() === $this) {
+                $hospitalizacione->setMedicoTratante(null);
+            }
+        }
 
         return $this;
     }

@@ -2,10 +2,6 @@
 parameters:
     app_menu.sidebar:
         -
-            title: Dashboard
-            icon: 'bi bi-house-door-fill text-primary'
-            route: app_dashboard
-        -
             title: Configuraciones
             icon: 'bi bi-gear-fill text-warning'
             roles: 'ROLE_ADMIN'
@@ -39,6 +35,7 @@ parameters:
             children:
                 -   title: Configuraciones
                     icon: 'bi bi-gear text-warning'
+                    roles: 'ROLE_ADMIN'
                     children:
                         - { title: Especialidades, route: app_especialidades_index, icon: 'bi bi-gear text-warning' }
                         - { title: Consultorios, route: app_consultorios_index, icon: 'bi bi-gear text-warning' }
@@ -49,6 +46,7 @@ parameters:
                         - { title: Filtrar Citas, route: app_citas_index_list, icon: 'bi bi-calendar-plus text-info' }
                 -   title: Estadísticas
                     icon: 'bi bi-pie-chart-fill text-success'
+                    roles: 'ROLE_ADMIN'
                     children:
                         - { title: Citas, route: app_citas_estadisticas_list, icon: 'bi bi-graph-down text-success' }
                         - { title: Especialidades, route: app_citas_estadisticas_especialidades, icon: 'bi bi-graph-down text-success' }
@@ -64,15 +62,15 @@ parameters:
         -
             title: Consultas
             icon: 'bi bi-hospital-fill text-success'
-            roles: 'ROLE_INTERNAL'
+            roles: 'ROLE_DOCTOR'
             children:
-                - { title: Consultas Pendientes, route: app_consulta_pendientes_index, icon: 'bi bi-hospital text-warning' }
-                - { title: Consultas Activas, route: app_consulta_activas_index, icon: 'bi bi-hospital text-primary' }
-                - { title: Todas las Consultas, route: app_consulta_index, icon: 'bi bi-hospital text-success' }
+                - { title: Consultas Pendientes, route: app_consulta_pendientes_index, icon: 'bi bi-hospital text-warning', roles: 'ROLE_DOCTOR' }
+                - { title: Consultas Activas, route: app_consulta_activas_index, icon: 'bi bi-hospital text-primary', roles: 'ROLE_DOCTOR' }
+                - { title: Todas las Consultas, route: app_consulta_index, icon: 'bi bi-hospital text-success', roles: 'ROLE_DOCTOR' }
         -
             title: Emergencias
             icon: 'fa-solid fa-circle-h text-danger'
-            roles: 'ROLE_INTERNAL'
+            roles: 'ROLE_ER'
             children:
                 -   title: Configuraciones
                     icon: 'bi bi-gear text-warning'
@@ -94,8 +92,27 @@ parameters:
                         - { title: Areas, route: app_area_index, icon: 'bi bi-gear text-warning' }
                         - { title: Habitaciones, route: app_habitacion_index, icon: 'bi bi-gear text-warning' }
                         - { title: Camas, route: app_hospitalizacioncama_index, icon: 'bi bi-gear text-warning' }
+                        - { title: Visitas, route: app_horario_visitas_index, icon: 'bi bi-gear text-warning' }
                 -   title: Todas
-                    icon: 'fa-solid fa-bed-pulse text-danger'
+                    icon: 'fa-solid fa-bed-pulse text-info'
                     children:
-                        - { title: Emergencias Actuales, route: app_emergencia_index, icon: 'fa-solid fa-bed-pulse text-danger' }
-                        - { title: Historial de Emergencias, route: app_emergencia_listado, icon: 'fa-solid fa-magnifying-glass-plus text-danger' }
+                        - { title: Hospitalizaciones Pendientes, route: app_hospitalizacion_admisiones, icon: 'fa-solid fa-bed-pulse text-info' }
+                        - { title: Hospitalizaciones Actuales, route: app_hospitalizacion_censo, icon: 'fa-solid fa-bed-pulse text-info' }
+                -   title: Visitas
+                    icon: 'bi bi-calendar-fill text-success'
+                    children:
+                        - { title: Visitas, route: app_visita_hospitalaria_index, icon: 'bi bi-calendar-fill text-info' }
+        -   title: Quirofano
+            icon: 'fa-solid fa-circle-h text-warning'
+            roles: 'ROLE_INTERNAL'
+            children:
+                -   title: Configuraciones
+                    icon: 'bi bi-gear text-warning'
+                    children:
+                        - { title: Quirofano, route: app_quirofano_index, icon: 'bi bi-gear text-warning' }
+                -   title: Programacion
+                    icon: 'fa-solid fa-bed-pulse text-info'
+                    children:
+                        - { title: Pendientes, route: app_cirugia_index, icon: 'fa-solid fa-bed-pulse text-info' }
+                        - { title: En Proceso, route: app_hospitalizacion_censo, icon: 'fa-solid fa-bed-pulse text-info' }
+                        - { title: Finalizadas, route: app_hospitalizacion_censo, icon: 'fa-solid fa-bed-pulse text-info' }

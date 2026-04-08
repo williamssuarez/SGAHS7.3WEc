@@ -6,6 +6,7 @@ use App\Entity\AltaMedica;
 use App\Entity\Discapacidades;
 use App\Entity\Emergencia;
 use App\Entity\EvolucionEmergencia;
+use App\Entity\Hospitalizaciones;
 use App\Entity\MainConfiguration;
 use App\Entity\StatusRecord;
 use App\Entity\Triage;
@@ -13,6 +14,7 @@ use App\Enum\AuditTipos;
 use App\Enum\CamaEstados;
 use App\Enum\EmergenciasCondicionAlta;
 use App\Enum\EmergenciasEstados;
+use App\Enum\HospitalizacionEstados;
 use App\Form\AltaMedicaType;
 use App\Form\AsignarCamaType;
 use App\Form\AsociarPacienteType;
@@ -574,6 +576,22 @@ final class EmergenciaController extends AbstractController
                     $alta->setHospitalDestino(null);
                     $alta->setMotivoTraslado(null);
                     $alta->setIndicacionesMedicas(null);
+
+                    // --- THE NEW HANDOFF LOGIC ---
+                    $hospitalizacion = new Hospitalizaciones();
+                    $hospitalizacion->setPaciente($emergencia->getPaciente());
+                    $hospitalizacion->setEmergencia($emergencia);
+                    $hospitalizacion->setFechaIngreso(new \DateTime()); // Exact moment of ER discharge
+                    $hospitalizacion->setDiagnosticoIngreso($alta->getDiagnosticoFinal());
+                    $hospitalizacion->setEstado(HospitalizacionEstados::PENDING_BED);
+                    $hospitalizacion->setVisitasPermitidas(true);
+
+                    // You can use the 'motivoHospitalizacion' field to store the requested Service (e.g., UCI, Pediatria)
+                    // so the admissions nurse knows which floor to send them to!
+                    $hospitalizacion->setDiagnosticoIngreso('Servicio Solicitado: ' . $alta->getServicioIngreso());
+
+                    $em->persist($hospitalizacion);
+                    // ------------------------------
 
                     $nombre = $emergencia->getPaciente()->getNombre();
                     $unit = $alta->getServicioIngreso();

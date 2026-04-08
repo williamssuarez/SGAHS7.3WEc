@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Entity\Traits\SoftDeletetableTrait;
 use App\Enum\CamaEstados;
 use App\Repository\CamaHospitalizacionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CamaHospitalizacionRepository::class)]
@@ -26,6 +28,17 @@ class HospitalizacionCama
 
     #[ORM\Column(enumType: CamaEstados::class)]
     private ?CamaEstados $estado = null;
+
+    /**
+     * @var Collection<int, Hospitalizaciones>
+     */
+    #[ORM\OneToMany(targetEntity: Hospitalizaciones::class, mappedBy: 'camaActual')]
+    private Collection $hospitalizaciones;
+
+    public function __construct()
+    {
+        $this->hospitalizaciones = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -97,5 +110,35 @@ class HospitalizacionCama
             'class' => 'text-bg-danger',
             'label' => 'Error'
         ];
+    }
+
+    /**
+     * @return Collection<int, Hospitalizaciones>
+     */
+    public function getHospitalizaciones(): Collection
+    {
+        return $this->hospitalizaciones;
+    }
+
+    public function addHospitalizacione(Hospitalizaciones $hospitalizacione): static
+    {
+        if (!$this->hospitalizaciones->contains($hospitalizacione)) {
+            $this->hospitalizaciones->add($hospitalizacione);
+            $hospitalizacione->setCamaActual($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHospitalizacione(Hospitalizaciones $hospitalizacione): static
+    {
+        if ($this->hospitalizaciones->removeElement($hospitalizacione)) {
+            // set the owning side to null (unless already changed)
+            if ($hospitalizacione->getCamaActual() === $this) {
+                $hospitalizacione->setCamaActual(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\CitasConfiguraciones;
 use App\Entity\Condiciones;
 use App\Entity\Especialidades;
 use App\Entity\StatusRecord;
@@ -101,6 +102,17 @@ final class EspecialidadesController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $especialidad->getId(), $submittedToken)) {
             $especialidad->setStatus($entityManager->getRepository(StatusRecord::class)->getRemove());
             $entityManager->persist($especialidad);
+
+            $config = $entityManager->getRepository(CitasConfiguraciones::class)->findOneBy([
+                'especialidad' => $especialidad->getId(),
+                'status' => $entityManager->getRepository(StatusRecord::class)->getActive()
+            ]);
+
+            if ($config) {
+                $config->setStatus($entityManager->getRepository(StatusRecord::class)->getRemove());
+                $entityManager->persist($config);
+            }
+
             $entityManager->flush();
         } else {
             return new JsonResponse('Token Invalido', Response::HTTP_UNAUTHORIZED);

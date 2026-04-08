@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Quirofano{% endblock %}
+
+{% block body %}
+    <h1>Quirofano</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ quirofano.id }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ quirofano.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Estado</th>
+                <td>{{ quirofano.estado }}</td>
+            </tr>
+            <tr>
+                <th>UidCreate</th>
+                <td>{{ quirofano.uidCreate }}</td>
+            </tr>
+            <tr>
+                <th>UidUpdate</th>
+                <td>{{ quirofano.uidUpdate }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ quirofano.created ? quirofano.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Updated</th>
+                <td>{{ quirofano.updated ? quirofano.updated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_quirofano_index') }}">back to list</a>
+
+    <a href="{{ path('app_quirofano_edit', {'id': quirofano.id}) }}">edit</a>
+
+    {{ include('quirofano/_delete_form.html.twig') }}
+{% endblock %}

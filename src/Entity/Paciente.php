@@ -152,6 +152,18 @@ class Paciente
     #[ORM\Column(nullable: false, enumType: SangreTipos::class)]
     private ?SangreTipos $sangreTipo = null;
 
+    /**
+     * @var Collection<int, Hospitalizaciones>
+     */
+    #[ORM\OneToMany(targetEntity: Hospitalizaciones::class, mappedBy: 'paciente')]
+    private Collection $hospitalizaciones;
+
+    /**
+     * @var Collection<int, Cirugia>
+     */
+    #[ORM\OneToMany(targetEntity: Cirugia::class, mappedBy: 'paciente')]
+    private Collection $cirugias;
+
     public function __construct()
     {
         $this->historiaPacientes = new ArrayCollection();
@@ -167,6 +179,8 @@ class Paciente
         $this->citasSolicitudes = new ArrayCollection();
         $this->citas = new ArrayCollection();
         $this->emergencias = new ArrayCollection();
+        $this->hospitalizaciones = new ArrayCollection();
+        $this->cirugias = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -727,6 +741,66 @@ class Paciente
     public function setSangreTipo(SangreTipos $sangreTipo): static
     {
         $this->sangreTipo = $sangreTipo;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Hospitalizaciones>
+     */
+    public function getHospitalizaciones(): Collection
+    {
+        return $this->hospitalizaciones;
+    }
+
+    public function addHospitalizacione(Hospitalizaciones $hospitalizacione): static
+    {
+        if (!$this->hospitalizaciones->contains($hospitalizacione)) {
+            $this->hospitalizaciones->add($hospitalizacione);
+            $hospitalizacione->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHospitalizacione(Hospitalizaciones $hospitalizacione): static
+    {
+        if ($this->hospitalizaciones->removeElement($hospitalizacione)) {
+            // set the owning side to null (unless already changed)
+            if ($hospitalizacione->getPaciente() === $this) {
+                $hospitalizacione->setPaciente(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Cirugia>
+     */
+    public function getCirugias(): Collection
+    {
+        return $this->cirugias;
+    }
+
+    public function addCirugia(Cirugia $cirugia): static
+    {
+        if (!$this->cirugias->contains($cirugia)) {
+            $this->cirugias->add($cirugia);
+            $cirugia->setPaciente($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCirugia(Cirugia $cirugia): static
+    {
+        if ($this->cirugias->removeElement($cirugia)) {
+            // set the owning side to null (unless already changed)
+            if ($cirugia->getPaciente() === $this) {
+                $cirugia->setPaciente(null);
+            }
+        }
 
         return $this;
     }

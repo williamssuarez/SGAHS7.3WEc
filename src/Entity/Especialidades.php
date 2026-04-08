@@ -35,10 +35,17 @@ class Especialidades
     #[ORM\OneToMany(targetEntity: Citas::class, mappedBy: 'especialidad')]
     private Collection $citas;
 
+    /**
+     * @var Collection<int, Consulta>
+     */
+    #[ORM\OneToMany(targetEntity: Consulta::class, mappedBy: 'especialidad')]
+    private Collection $consultas;
+
     public function __construct()
     {
         $this->citasSolicitudes = new ArrayCollection();
         $this->citas = new ArrayCollection();
+        $this->consultas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -133,6 +140,36 @@ class Especialidades
             // set the owning side to null (unless already changed)
             if ($cita->getEspecialidad() === $this) {
                 $cita->setEspecialidad(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Consulta>
+     */
+    public function getConsultas(): Collection
+    {
+        return $this->consultas;
+    }
+
+    public function addConsulta(Consulta $consulta): static
+    {
+        if (!$this->consultas->contains($consulta)) {
+            $this->consultas->add($consulta);
+            $consulta->setEspecialidad($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsulta(Consulta $consulta): static
+    {
+        if ($this->consultas->removeElement($consulta)) {
+            // set the owning side to null (unless already changed)
+            if ($consulta->getEspecialidad() === $this) {
+                $consulta->setEspecialidad(null);
             }
         }
 

@@ -60,6 +60,9 @@ class Consulta
     #[ORM\OneToMany(targetEntity: Audit::class, mappedBy: 'consulta')]
     private Collection $audits;
 
+    #[ORM\ManyToOne(inversedBy: 'consultas')]
+    private ?Especialidades $especialidad = null;
+
     public function __construct()
     {
         $this->vitales = new ArrayCollection();
@@ -256,6 +259,18 @@ class Consulta
                 $audit->setConsulta(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEspecialidad(): ?Especialidades
+    {
+        return $this->especialidad;
+    }
+
+    public function setEspecialidad(?Especialidades $especialidad): static
+    {
+        $this->especialidad = $especialidad;
 
         return $this;
     }
