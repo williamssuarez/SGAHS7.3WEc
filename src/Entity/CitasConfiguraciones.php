@@ -58,7 +58,7 @@ class CitasConfiguraciones
     #[ORM\Column]
     private ?bool $tieneTiempoReceso = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $tiempoReceso = null;
 
     public function __construct()
@@ -253,7 +253,7 @@ class CitasConfiguraciones
         return $this->tiempoReceso;
     }
 
-    public function setTiempoReceso(int $tiempoReceso): static
+    public function setTiempoReceso(?int $tiempoReceso): static
     {
         $this->tiempoReceso = $tiempoReceso;
 

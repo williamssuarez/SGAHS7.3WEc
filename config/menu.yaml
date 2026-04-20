@@ -96,8 +96,8 @@ parameters:
                 -   title: Todas
                     icon: 'fa-solid fa-bed-pulse text-info'
                     children:
-                        - { title: Hospitalizaciones Pendientes, route: app_hospitalizacion_admisiones, icon: 'fa-solid fa-bed-pulse text-info' }
-                        - { title: Hospitalizaciones Actuales, route: app_hospitalizacion_censo, icon: 'fa-solid fa-bed-pulse text-info' }
+                        - { title: Pendientes, route: app_hospitalizacion_admisiones, icon: 'fa-solid fa-bed-pulse text-info' }
+                        - { title: Actuales, route: app_hospitalizacion_censo, icon: 'fa-solid fa-bed-pulse text-info' }
                 -   title: Visitas
                     icon: 'bi bi-calendar-fill text-success'
                     children:

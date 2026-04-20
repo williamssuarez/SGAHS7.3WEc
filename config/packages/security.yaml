@@ -77,7 +77,6 @@ security:
         - { path: ^/especialidades, roles: ROLE_ADMIN }
         - { path: ^/consultorios, roles: ROLE_ADMIN }
         - { path: ^/citas/configuraciones, roles: ROLE_ADMIN }
-        - { path: ^/citas, roles: ROLE_RECEPTIONIST }
         - { path: ^/citas/estadisticas, roles: ROLE_ADMIN }
 
 when@test:

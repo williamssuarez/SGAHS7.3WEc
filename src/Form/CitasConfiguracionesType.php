@@ -46,7 +46,8 @@ class CitasConfiguracionesType extends AbstractType
                 'choice_label' => 'nombre',
                 'multiple' => true,
                 'attr' => [
-                    'class' => 'srchSelect'
+                    'class' => 'srchSelect',
+                    'data-capacity-validator-target' => 'consultorios'
                 ],
                 'required' => true,
                 'query_builder' => function (ConsultoriosRepository $er) {
@@ -61,7 +62,9 @@ class CitasConfiguracionesType extends AbstractType
                 ],
                 'attr' => [
                     'class' => 'mask form-control',
-                    'data-inputmask' => " 'alias': 'datetime', 'clearIncomplete': true, 'inputFormat': 'hh:ii' "
+                    'data-inputmask' => " 'alias': 'datetime', 'clearIncomplete': true, 'inputFormat': 'hh:ii' ",
+                    'data-capacity-validator-target' => 'inicio',
+                    'data-action' => 'input->capacity-validator#calculate'
                 ],
                 'required' => true,
             ])
@@ -73,7 +76,9 @@ class CitasConfiguracionesType extends AbstractType
                 ],
                 'attr' => [
                     'class' => 'mask form-control',
-                    'data-inputmask' => " 'alias': 'datetime', 'clearIncomplete': true, 'inputFormat': 'hh:ii' "
+                    'data-inputmask' => " 'alias': 'datetime', 'clearIncomplete': true, 'inputFormat': 'hh:ii' ",
+                    'data-capacity-validator-target' => 'fin',
+                    'data-action' => 'input->capacity-validator#calculate'
                 ],
                 'required' => true,
             ])
@@ -85,13 +90,15 @@ class CitasConfiguracionesType extends AbstractType
                 'attr' => [
                     'class' => 'form-control number-only',
                     'maxLength' => 4,
+                    'data-capacity-validator-target' => 'max',
+                    'data-action' => 'input->capacity-validator#calculate'
                 ],
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar el maximo de pacientes a atender.'),
                 ]
             ])
             ->add('tieneEdadPrioridad', CheckboxType::class, [
-                'label' => '¿Tiene Prioridad de edad?',
+                'label' => '¿Tiene prioridad de edad?',
                 'label_attr' => ['class' => 'form-check-label'],
                 'attr' => [
                     'class' => 'form-check-input bigCheckbox',
@@ -119,6 +126,8 @@ class CitasConfiguracionesType extends AbstractType
                 'attr' => [
                     'class' => 'form-control number-only',
                     'maxLength' => 4,
+                    'data-capacity-validator-target' => 'duracion',
+                    'data-action' => 'input->capacity-validator#calculate'
                 ],
                 'required' => true,
                 'constraints' => [
@@ -151,7 +160,8 @@ class CitasConfiguracionesType extends AbstractType
                 'attr' => [
                     'class' => 'form-check-input bigCheckbox',
                     'data-conditional-field-target' => 'trigger',
-                    'data-action' => 'change->conditional-field#toggle'
+                    'data-action' => 'change->conditional-field#toggle change->capacity-validator#calculate', // Note the multiple actions!
+                    'data-capacity-validator-target' => 'tieneReceso'
                 ],
                 'required' => false,
             ])
@@ -162,6 +172,8 @@ class CitasConfiguracionesType extends AbstractType
                     'class' => 'form-control number-only',
                     'placeholder' => 'Ej: 5, 10...',
                     'maxLength' => 2,
+                    'data-capacity-validator-target' => 'receso',
+                    'data-action' => 'input->capacity-validator#calculate'
                 ],
                 'required' => false,
             ])
