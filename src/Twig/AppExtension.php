@@ -29,6 +29,7 @@ class AppExtension extends AbstractExtension
             new TwigFilter('calculate_age', $this->calculateAge(...)),
             new TwigFilter('time_ago', $this->getTimeAgo(...)),
             new TwigFilter('public_username', $this->getPublicUsername(...)),
+            new TwigFilter('doctor_username', $this->getDoctorUsername(...)),
             new TwigFilter('public_username_email', $this->getPublicUsernameAndEmail(...)),
             new TwigFilter('filter_severity', $this->filterSeverity(...)),
             new TwigFilter('time_since', $this->getTimeSince(...)),
@@ -146,6 +147,38 @@ class AppExtension extends AbstractExtension
                 $name = sprintf('usuario externo %s %s', $user->getExternalProfile()->getNombre(), $user->getExternalProfile()->getApellido());
             } else {
                 $name = sprintf('usuario %s %s', $user->getInternalProfile()->getNombre(), $user->getInternalProfile()->getApellido());
+            }
+        }
+
+        // Return the final formatted string
+        return $name;
+    }
+
+    /**
+     * Returns a username string with Dr at the begining by a specific id.
+     *
+     * @param int|null $id The id to search
+     * @return string
+     */
+    public function getDoctorUsername(?int $id): string
+    {
+        if (!$id) {
+            return 'No encontrado';
+        }
+
+        if ($id == -1){
+            $name = 'Sistema';
+        } else {
+            $user = $this->entityManager->getRepository(User::class)->findOneBy([
+                'id' => $id,
+                'status' => $this->entityManager->getRepository(StatusRecord::class)->getActive()
+            ]);
+
+            if ($user->getExternalProfile()) {
+                $name = "El usuario no es un doctor";
+            } else {
+                //$title = ;
+                $name = sprintf('Dr(a). %s %s', $user->getInternalProfile()->getNombre(), $user->getInternalProfile()->getApellido());
             }
         }
 

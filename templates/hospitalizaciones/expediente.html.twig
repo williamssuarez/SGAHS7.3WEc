@@ -291,7 +291,7 @@
                                                 <td><span class="badge bg-light text-dark border"><i class="bi bi-clock"></i> {{ indicacion.frecuencia }}</span></td>
                                                 <td>
                                                     <small class="text-muted d-block">{{ indicacion.created|date('d/m/Y H:i') }}</small>
-                                                    <small class="fst-italic">Dr(a). {{ indicacion.uidCreate|public_username }}</small>
+                                                    <small class="fst-italic">{{ indicacion.uidCreate|doctor_username }}</small>
                                                 </td>
                                                 {# --- THE NEW LAST DOSE COLUMN --- #}
                                                 <td>

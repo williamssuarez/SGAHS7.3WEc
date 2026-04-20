@@ -37,10 +37,17 @@ class Area
     #[ORM\OneToMany(targetEntity: HorarioVisitas::class, mappedBy: 'area')]
     private Collection $horarioVisitas;
 
+    /**
+     * @var Collection<int, AltaMedica>
+     */
+    #[ORM\OneToMany(targetEntity: AltaMedica::class, mappedBy: 'areaHospitalizacion')]
+    private Collection $altaMedicas;
+
     public function __construct()
     {
         $this->habitaciones = new ArrayCollection();
         $this->horarioVisitas = new ArrayCollection();
+        $this->altaMedicas = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -135,6 +142,36 @@ class Area
             // set the owning side to null (unless already changed)
             if ($horarioVisita->getArea() === $this) {
                 $horarioVisita->setArea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AltaMedica>
+     */
+    public function getAltaMedicas(): Collection
+    {
+        return $this->altaMedicas;
+    }
+
+    public function addAltaMedica(AltaMedica $altaMedica): static
+    {
+        if (!$this->altaMedicas->contains($altaMedica)) {
+            $this->altaMedicas->add($altaMedica);
+            $altaMedica->setAreaHospitalizacion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAltaMedica(AltaMedica $altaMedica): static
+    {
+        if ($this->altaMedicas->removeElement($altaMedica)) {
+            // set the owning side to null (unless already changed)
+            if ($altaMedica->getAreaHospitalizacion() === $this) {
+                $altaMedica->setAreaHospitalizacion(null);
             }
         }
 

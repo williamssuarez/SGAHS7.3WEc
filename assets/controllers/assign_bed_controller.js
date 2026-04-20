@@ -66,6 +66,8 @@ export default class extends Controller {
                         timer: 2000,
                         showConfirmButton: false
                     });
+
+                    window.location.reload();
                 }
             });
 

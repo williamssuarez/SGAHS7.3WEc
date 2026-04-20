@@ -106,7 +106,7 @@ final class EmergenciaController extends AbstractController
     }
 
     #[Route('/{id}/expediente', name: 'app_emergencia_show_record', methods: ['GET'])]
-    public function showRecord(Emergencia $emergencia): Response
+    public function showRecord(Emergencia $emergencia, EntityManagerInterface $entityManager): Response
     {
         // Optional: Add a security check here to ensure the emergency is actually discharged
         if ($emergencia->getEstado() !== EmergenciasEstados::DISCHARGED) {
@@ -114,8 +114,14 @@ final class EmergenciaController extends AbstractController
             return $this->redirectToRoute('app_emergencia_listado');
         }
 
+        $evo = $entityManager->getRepository(EvolucionEmergencia::class)->findBy([
+            'emergencia' => $emergencia,
+            'status' => $entityManager->getRepository(StatusRecord::class)->getActive(),
+        ], ['id' => 'DESC']);
+
         return $this->render('emergencia/show_record.html.twig', [
             'entity' => $emergencia,
+            'evo' => $evo,
         ]);
     }
 
@@ -210,9 +216,15 @@ final class EmergenciaController extends AbstractController
             return $this->redirectToRoute('app_emergencia_paciente_show', ['id' => $emergencia->getId()]);
         }
 
+        $evo = $entityManager->getRepository(EvolucionEmergencia::class)->findBy([
+            'emergencia' => $emergencia,
+            'status' => $entityManager->getRepository(StatusRecord::class)->getActive(),
+        ], ['id' => 'DESC']);
+
         return $this->render('emergencia/pacienteShow.html.twig', [
             'entity' => $emergencia,
             'form' => $form->createView(),
+            'evo' => $evo,
         ]);
     }
 
@@ -569,9 +581,9 @@ final class EmergenciaController extends AbstractController
                     break;
 
                 case EmergenciasCondicionAlta::ADMITTED_ROOM:
-                    if (!$alta->getServicioIngreso()) {
+                    /*if (!$alta->getServicioIngreso()) {
                         return $this->json(['success' => false, 'message' => 'Debe seleccionar el servicio de hospitalización.']);
-                    }
+                    }*/
                     // Wipe irrelevant data
                     $alta->setHospitalDestino(null);
                     $alta->setMotivoTraslado(null);
@@ -588,7 +600,7 @@ final class EmergenciaController extends AbstractController
 
                     // You can use the 'motivoHospitalizacion' field to store the requested Service (e.g., UCI, Pediatria)
                     // so the admissions nurse knows which floor to send them to!
-                    $hospitalizacion->setDiagnosticoIngreso('Servicio Solicitado: ' . $alta->getServicioIngreso());
+                    $hospitalizacion->setDiagnosticoIngreso('Servicio Solicitado: ' . $alta->getAreaHospitalizacion()->getNombre());
 
                     $em->persist($hospitalizacion);
                     // ------------------------------

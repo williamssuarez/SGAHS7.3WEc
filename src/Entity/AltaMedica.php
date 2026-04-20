@@ -45,6 +45,9 @@ class AltaMedica
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $fechaMuerte = null;
 
+    #[ORM\ManyToOne(inversedBy: 'altaMedicas')]
+    private ?Area $areaHospitalizacion = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -192,5 +195,17 @@ class AltaMedica
             'class' => 'text-bg-danger',
             'label' => 'Error'
         ];
+    }
+
+    public function getAreaHospitalizacion(): ?Area
+    {
+        return $this->areaHospitalizacion;
+    }
+
+    public function setAreaHospitalizacion(?Area $areaHospitalizacion): static
+    {
+        $this->areaHospitalizacion = $areaHospitalizacion;
+
+        return $this;
     }
 }

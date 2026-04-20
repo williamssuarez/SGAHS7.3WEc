@@ -2,9 +2,13 @@
 
 namespace App\Form;
 
+use App\Entity\Alergenos;
 use App\Entity\AltaMedica;
+use App\Entity\Area;
 use App\Entity\Emergencia;
 use App\Enum\EmergenciasCondicionAlta;
+use App\Repository\AlergenosRepository;
+use App\Repository\AreaRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -62,7 +66,7 @@ class AltaMedicaType extends AbstractType
                 ]
             ])
             // --- ADMISSION FIELDS ---
-            ->add('servicioIngreso', ChoiceType::class, [
+            /*->add('servicioIngreso', ChoiceType::class, [
                 'required' => false,
                 'label' => 'Servicio de Hospitalización',
                 'choices' => [
@@ -73,6 +77,21 @@ class AltaMedicaType extends AbstractType
                 ],
                 'attr' => ['class' => 'form-select noSrchSelect'],
                 'placeholder' => 'Seleccione...',
+            ])*/
+            ->add('areaHospitalizacion', EntityType::class, [
+                'class' => Area::class,
+                'label' => 'Servicio de Hospitalización',
+                'label_attr' => [
+                    'class' => 'form-label'
+                ],
+                'choice_label' => 'nombre',
+                'attr' => [
+                    'class' => 'form-select srchSelect'
+                ],
+                'required' => true,
+                'query_builder' => function (AreaRepository $er) {
+                    return $er->getActivesforSelect();
+                }
             ])
             // --- DECEASED FIELDS ---
             ->add('fechaMuerte', DateTimeType::class, [
