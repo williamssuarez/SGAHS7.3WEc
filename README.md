@@ -45,6 +45,11 @@ Instalar librerias js:
 ```bash
 npm install
 ```
+Instalar cloudflared para tunel https:
+```bash
+winget install --id Cloudflare.cloudflared
+```
+
 Instalar y crear contenedor de Docker:
 ```bash
 docker compose up -d
@@ -69,5 +74,12 @@ Inicie el servidor local
 ```bash
 symfony server:start 
 ```
+Inicie el tunel
+```bash
+cloudflared tunnel --url http://127.0.0.1:8000
+```
+
+Ahora abra Goocle Cloud Console, dirijase a APIs y Servicios -> Credenciales, click en el Client ID
+y agregue la nueva URI, ejemplo: https://random-words-here.trycloudflare.com/connect/google/check
 
 Navegue hasta el servidor local en [https://127.0.0.1:8000/login](https://127.0.0.1:8000/login)

@@ -33,6 +33,15 @@ class Audit
     #[ORM\ManyToOne(inversedBy: 'audits')]
     private ?Consulta $consulta = null;
 
+    #[ORM\ManyToOne(inversedBy: 'audits')]
+    private ?Cirugia $cirugia = null;
+
+    #[ORM\ManyToOne(inversedBy: 'audits')]
+    private ?Emergencia $emergencia = null;
+
+    #[ORM\ManyToOne(inversedBy: 'audits')]
+    private ?Hospitalizaciones $hospitalizacion = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -94,6 +103,42 @@ class Audit
     public function setConsulta(?Consulta $consulta): static
     {
         $this->consulta = $consulta;
+
+        return $this;
+    }
+
+    public function getCirugia(): ?Cirugia
+    {
+        return $this->cirugia;
+    }
+
+    public function setCirugia(?Cirugia $cirugia): static
+    {
+        $this->cirugia = $cirugia;
+
+        return $this;
+    }
+
+    public function getEmergencia(): ?Emergencia
+    {
+        return $this->emergencia;
+    }
+
+    public function setEmergencia(?Emergencia $emergencia): static
+    {
+        $this->emergencia = $emergencia;
+
+        return $this;
+    }
+
+    public function getHospitalizacion(): ?Hospitalizaciones
+    {
+        return $this->hospitalizacion;
+    }
+
+    public function setHospitalizacion(?Hospitalizaciones $hospitalizacion): static
+    {
+        $this->hospitalizacion = $hospitalizacion;
 
         return $this;
     }

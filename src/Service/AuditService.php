@@ -3,7 +3,10 @@
 namespace App\Service;
 
 use App\Entity\Audit;
+use App\Entity\Cirugia;
 use App\Entity\Consulta;
+use App\Entity\Emergencia;
+use App\Entity\Hospitalizaciones;
 use App\Entity\Paciente;
 use App\Enum\AuditTipos;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,7 +19,15 @@ readonly class AuditService
         private RequestStack           $requestStack
     ) {}
 
-    public function persistAudit(AuditTipos $tipo, string $mensaje, ?Paciente $paciente = null, ?Consulta $consulta = null): void
+    public function persistAudit(
+        AuditTipos $tipo,
+        string $mensaje,
+        ?Paciente $paciente = null,
+        ?Consulta $consulta = null,
+        ?Cirugia $cirugia = null,
+        ?Emergencia  $emergencia = null,
+        ?Hospitalizaciones $hospitalizacion = null
+    ): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -26,11 +37,22 @@ readonly class AuditService
         $log->setPaciente($paciente);
         $log->setConsulta($consulta);
         $log->setDireccionIp($request?->getClientIp());
+        $log->setCirugia($cirugia);
+        $log->setEmergencia($emergencia);
+        $log->setHospitalizacion($hospitalizacion);
 
         $this->em->persist($log);
     }
 
-    public function persistAndFlushAudit(AuditTipos $tipo, string $mensaje, ?Paciente $paciente = null, ?Consulta $consulta = null): void
+    public function persistAndFlushAudit(
+        AuditTipos $tipo,
+        string $mensaje,
+        ?Paciente $paciente = null,
+        ?Consulta $consulta = null,
+        ?Cirugia $cirugia = null,
+        ?Emergencia  $emergencia = null,
+        ?Hospitalizaciones $hospitalizacion = null
+    ): void
     {
         $request = $this->requestStack->getCurrentRequest();
 
@@ -40,6 +62,9 @@ readonly class AuditService
         $log->setPaciente($paciente);
         $log->setConsulta($consulta);
         $log->setDireccionIp($request?->getClientIp());
+        $log->setCirugia($cirugia);
+        $log->setEmergencia($emergencia);
+        $log->setHospitalizacion($hospitalizacion);
 
         $this->em->persist($log);
         $this->em->flush();
@@ -49,7 +74,10 @@ readonly class AuditService
         object $entity,
         AuditTipos $tipo,
         ?Paciente $paciente = null,
-        ?Consulta $consulta = null
+        ?Consulta $consulta = null,
+        ?Cirugia $cirugia = null,
+        ?Emergencia  $emergencia = null,
+        ?Hospitalizaciones $hospitalizacion = null
     ): void {
         $uow = $this->em->getUnitOfWork();
         $uow->computeChangeSets();
@@ -72,14 +100,17 @@ readonly class AuditService
 
         $mensaje = "Edición de " . (new \ReflectionClass($entity))->getShortName() . ": " . implode(', ', $details);
 
-        $this->persistAndFlushAudit($tipo, $mensaje, $paciente, $consulta);
+        $this->persistAndFlushAudit($tipo, $mensaje, $paciente, $consulta, $cirugia, $emergencia, $hospitalizacion);
     }
 
     public function persistEditionAudit(
         object $entity,
         AuditTipos $tipo,
         ?Paciente $paciente = null,
-        ?Consulta $consulta = null
+        ?Consulta $consulta = null,
+        ?Cirugia $cirugia = null,
+        ?Emergencia  $emergencia = null,
+        ?Hospitalizaciones $hospitalizacion = null
     ): void {
         $uow = $this->em->getUnitOfWork();
         $uow->computeChangeSets();
@@ -102,7 +133,7 @@ readonly class AuditService
 
         $mensaje = "Edición de " . (new \ReflectionClass($entity))->getShortName() . ": " . implode(', ', $details);
 
-        $this->persistAudit($tipo, $mensaje, $paciente, $consulta);
+        $this->persistAudit($tipo, $mensaje, $paciente, $consulta, $cirugia, $emergencia, $hospitalizacion);
     }
 
     private function formatValue($value): string

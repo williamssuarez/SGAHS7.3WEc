@@ -1,0 +1,211 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Detalles de Cirugía - {{ cirugia.paciente.nombre|first|upper }}. {{ cirugia.paciente.apellido }}{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-4">
+
+        {# --- HEADER & ACTIONS --- #}
+        <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+            <div>
+                <h2 class="text-dark fw-bold mb-0">
+                    <i class="bi bi-file-medical"></i> Expediente Quirúrgico
+                </h2>
+                <p class="text-muted mb-0">
+                    Paciente: <strong>{{ cirugia.paciente.nombre }} {{ cirugia.paciente.apellido }}</strong>
+                    (CI: {{ cirugia.paciente.cedula }})
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_cirugia_agenda') }}" class="btn btn-outline-secondary shadow-sm">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+                {# Only show Edit if the surgery hasn't started #}
+                {% if cirugia.estado.value in ['programada', 'pre_op'] %}
+                    <a href="{{ path('app_cirugia_editar', {'id': cirugia.id}) }}" class="btn btn-primary shadow-sm">
+                        <i class="bi bi-pencil-square"></i> Editar Logística
+                    </a>
+                    <form action="{{ path('app_cirugia_cancelar', {'id': cirugia.id}) }}"
+                          method="POST"
+                          data-controller="cancel-appointment"
+                          data-action="submit->cancel-appointment#confirm"
+                          data-cancel-appointment-patient-name-value="{{ cirugia.paciente.nombre }} {{ cirugia.paciente.apellido }}"
+                          class="d-inline">
+
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-person-x-fill"></i> Cancelar Cirugia
+                        </button>
+                    </form>
+                {% endif %}
+                <button class="btn btn-outline-dark shadow-sm" onclick="window.print()">
+                    <i class="bi bi-printer"></i> Imprimir
+                </button>
+            </div>
+        </div>
+
+        {# --- CANCELLATION ALERT --- #}
+        {% if cirugia.estado.value == 'cancelada' %}
+            <div class="alert alert-danger shadow-sm border-start border-danger border-4">
+                <h5 class="alert-heading fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> Cirugía Cancelada</h5>
+                <hr>
+                <p class="mb-0"><strong>Motivo:</strong> {{ cirugia.motivoCancelacion|default('No especificado') }}</p>
+            </div>
+        {% endif %}
+
+        {# --- MAIN TABS --- #}
+        <div class="card shadow-sm border-top border-primary border-4 mb-4">
+            <div class="card-header bg-white p-0 border-bottom-0">
+                <ul class="nav nav-tabs nav-justified" id="surgeryTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active py-3 fw-bold" id="resumen-tab" data-bs-toggle="tab" data-bs-target="#resumen" type="button" role="tab">
+                            <i class="bi bi-clipboard-data"></i> Resumen y Tiempos
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-3 fw-bold text-success" id="consumos-tab" data-bs-toggle="tab" data-bs-target="#consumos" type="button" role="tab">
+                            <i class="bi bi-box-seam"></i> Consumos (Kardex)
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-3 fw-bold text-dark" id="protocolo-tab" data-bs-toggle="tab" data-bs-target="#protocolo" type="button" role="tab">
+                            <i class="bi bi-journal-check"></i> Protocolo Quirúrgico
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body p-4 bg-light">
+                <div class="tab-content" id="surgeryTabsContent">
+
+                    {# --- TAB 1: RESUMEN Y TIEMPOS --- #}
+                    <div class="tab-pane fade show active" id="resumen" role="tabpanel">
+                        <div class="row g-4">
+
+                            {# Left Column: Clinical & Logistics #}
+                            <div class="col-lg-8">
+                                <div class="card shadow-sm h-100">
+                                    <div class="card-header bg-white fw-bold text-primary">
+                                        <i class="bi bi-info-circle"></i> Datos del Procedimiento
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-borderless mb-0">
+                                            <tbody>
+                                            <tr>
+                                                <th style="width: 30%" class="text-muted">Procedimiento:</th>
+                                                <td class="fw-bold fs-5">{{ cirugia.procedimientoPropuesto }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted">Diagnóstico Pre-Op:</th>
+                                                <td>{{ cirugia.diagnosticoPreoperatorio }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted">Lateralidad:</th>
+                                                <td>
+                                                    <span class="badge bg-secondary">{{ cirugia.lateralidad|default('N/A') }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2"><hr class="text-muted"></td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted">Cirujano Principal:</th>
+                                                <td>Dr(a). {{ cirugia.cirujanoPrincipal.nombre }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted">Quirófano:</th>
+                                                <td>
+                                                    {% if cirugia.quirofano %}
+                                                        <strong>{{ cirugia.quirofano.nombre }}</strong>
+                                                    {% else %}
+                                                        <span class="text-warning fw-bold"><i class="bi bi-exclamation-circle"></i> Pendiente de asignación</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {# Right Column: Timestamps & State #}
+                            <div class="col-lg-4">
+                                <div class="card shadow-sm h-100">
+                                    <div class="card-header bg-white fw-bold text-info">
+                                        <i class="bi bi-clock-history"></i> Tiempos Quirúrgicos
+                                    </div>
+                                    <div class="card-body">
+
+                                        {# Current State Badge #}
+                                        <div class="text-center mb-4 pb-3 border-bottom">
+                                            <h6 class="text-muted mb-2">Estado Actual</h6>
+                                            <span class="badge bg-dark fs-5 p-2 w-100">{{ cirugia.estado.readableText|upper }}</span>
+                                        </div>
+
+                                        {# Timeline #}
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <span><i class="bi bi-calendar-check text-primary"></i> Programada:</span>
+                                                <strong>{{ cirugia.fechaHoraProgramada|date('d/m/Y H:i', false) }}</strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <span><i class="bi bi-play-circle text-warning"></i> Anestesia:</span>
+                                                <strong class="{{ cirugia.horaInicioAnestesia ? '' : 'text-muted' }}">
+                                                    {{ cirugia.horaInicioAnestesia ? cirugia.horaInicioAnestesia|date('H:i') : '--:--' }}
+                                                </strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <span><i class="bi bi-scissors text-danger"></i> Incisión (Corte):</span>
+                                                <strong class="{{ cirugia.horaIncision ? '' : 'text-muted' }}">
+                                                    {{ cirugia.horaIncision ? cirugia.horaIncision|date('H:i') : '--:--' }}
+                                                </strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <span><i class="bi bi-bandaid text-success"></i> Cierre:</span>
+                                                <strong class="{{ cirugia.horaCierre ? '' : 'text-muted' }}">
+                                                    {{ cirugia.horaCierre ? cirugia.horaCierre|date('H:i') : '--:--' }}
+                                                </strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <span><i class="bi bi-box-arrow-right text-secondary"></i> Salida a URPA:</span>
+                                                <strong class="{{ cirugia.horaSalidaSala ? '' : 'text-muted' }}">
+                                                    {{ cirugia.horaSalidaSala ? cirugia.horaSalidaSala|date('H:i') : '--:--' }}
+                                                </strong>
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {# --- TAB 2: CONSUMOS (Placeholder for now) --- #}
+                    <div class="tab-pane fade" id="consumos" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold text-success">Gestión de Insumos</h5>
+                            <button class="btn btn-success btn-sm"><i class="bi bi-plus-lg"></i> Registrar Consumo</button>
+                        </div>
+                        <div class="alert alert-light border text-center p-5">
+                            <i class="bi bi-box-seam display-4 text-muted mb-3 d-block"></i>
+                            <p class="text-muted fs-5 mb-0">Aquí se registrarán los hilos, mallas y medicamentos utilizados durante la cirugía (Sistema Híbrido).</p>
+                        </div>
+                    </div>
+
+                    {# --- TAB 3: PROTOCOLO (Placeholder for now) --- #}
+                    <div class="tab-pane fade" id="protocolo" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold text-dark">Protocolo Operatorío</h5>
+                            <button class="btn btn-dark btn-sm"><i class="bi bi-pen"></i> Redactar Protocolo</button>
+                        </div>
+                        <div class="alert alert-light border text-center p-5">
+                            <i class="bi bi-file-earmark-medical display-4 text-muted mb-3 d-block"></i>
+                            <p class="text-muted fs-5 mb-0">El cirujano redactará los hallazgos y técnica quirúrgica en esta sección al finalizar el procedimiento.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

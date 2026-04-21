@@ -57,11 +57,25 @@ class Emergencia
     #[ORM\OneToOne(mappedBy: 'emergencia', cascade: ['persist', 'remove'])]
     private ?AltaMedica $altaMedica = null;
 
+    /**
+     * @var Collection<int, Cirugia>
+     */
+    #[ORM\OneToMany(targetEntity: Cirugia::class, mappedBy: 'emergenciaOrigen')]
+    private Collection $cirugias;
+
+    /**
+     * @var Collection<int, Audit>
+     */
+    #[ORM\OneToMany(targetEntity: Audit::class, mappedBy: 'emergencia')]
+    private Collection $audits;
+
     public function __construct()
     {
         $this->uuid = Uuid::v4();
         $this->fechaIngreso = new \DateTime();
         $this->evolucionEmergencias = new ArrayCollection();
+        $this->cirugias = new ArrayCollection();
+        $this->audits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -265,5 +279,65 @@ class Emergencia
             'class' => 'text-bg-danger',
             'label' => 'Error'
         ];
+    }
+
+    /**
+     * @return Collection<int, Cirugia>
+     */
+    public function getCirugias(): Collection
+    {
+        return $this->cirugias;
+    }
+
+    public function addCirugia(Cirugia $cirugia): static
+    {
+        if (!$this->cirugias->contains($cirugia)) {
+            $this->cirugias->add($cirugia);
+            $cirugia->setEmergenciaOrigen($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCirugia(Cirugia $cirugia): static
+    {
+        if ($this->cirugias->removeElement($cirugia)) {
+            // set the owning side to null (unless already changed)
+            if ($cirugia->getEmergenciaOrigen() === $this) {
+                $cirugia->setEmergenciaOrigen(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Audit>
+     */
+    public function getAudits(): Collection
+    {
+        return $this->audits;
+    }
+
+    public function addAudit(Audit $audit): static
+    {
+        if (!$this->audits->contains($audit)) {
+            $this->audits->add($audit);
+            $audit->setEmergencia($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAudit(Audit $audit): static
+    {
+        if ($this->audits->removeElement($audit)) {
+            // set the owning side to null (unless already changed)
+            if ($audit->getEmergencia() === $this) {
+                $audit->setEmergencia(null);
+            }
+        }
+
+        return $this;
     }
 }

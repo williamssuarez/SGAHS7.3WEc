@@ -63,10 +63,17 @@ class Consulta
     #[ORM\ManyToOne(inversedBy: 'consultas')]
     private ?Especialidades $especialidad = null;
 
+    /**
+     * @var Collection<int, Cirugia>
+     */
+    #[ORM\OneToMany(targetEntity: Cirugia::class, mappedBy: 'consultaOrigen')]
+    private Collection $cirugias;
+
     public function __construct()
     {
         $this->vitales = new ArrayCollection();
         $this->audits = new ArrayCollection();
+        $this->cirugias = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -271,6 +278,36 @@ class Consulta
     public function setEspecialidad(?Especialidades $especialidad): static
     {
         $this->especialidad = $especialidad;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Cirugia>
+     */
+    public function getCirugias(): Collection
+    {
+        return $this->cirugias;
+    }
+
+    public function addCirugia(Cirugia $cirugia): static
+    {
+        if (!$this->cirugias->contains($cirugia)) {
+            $this->cirugias->add($cirugia);
+            $cirugia->setConsultaOrigen($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCirugia(Cirugia $cirugia): static
+    {
+        if ($this->cirugias->removeElement($cirugia)) {
+            // set the owning side to null (unless already changed)
+            if ($cirugia->getConsultaOrigen() === $this) {
+                $cirugia->setConsultaOrigen(null);
+            }
+        }
 
         return $this;
     }

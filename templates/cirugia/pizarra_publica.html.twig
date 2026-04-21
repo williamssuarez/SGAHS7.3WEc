@@ -1,0 +1,50 @@
+{# templates/cirugia/pizarra_publica.html.twig #}
+{% extends 'base_tv.html.twig' %} {# Assuming a base with no sidebars/navbars #}
+
+{% block title %}Pizarra Quirúrgica{% endblock %}
+
+{% block body %}
+    {# The Stimulus controller will trigger a reload every 30 seconds #}
+    <div class="container-fluid bg-dark text-white min-vh-100 p-4"
+         data-controller="auto-refresh"
+         data-auto-refresh-interval-value="30000">
+
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+            <h1 class="display-5 fw-bold text-info"><i class="bi bi-display"></i> Estado de Cirugías</h1>
+            <h3 class="text-secondary">{{ 'now'|date('d/m/Y H:i', false) }}</h3>
+        </div>
+
+        <table class="table table-dark table-striped table-hover fs-4 align-middle">
+            <thead>
+            <tr class="text-info">
+                <th>Hora Programada</th>
+                <th>Paciente</th>
+                <th>Procedimiento</th>
+                <th>Estado Actual</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for cirugia in surgeries %}
+                <tr>
+                    <td class="fw-bold">{{ cirugia.fechaHoraProgramada|date('H:i', false) }}</td>
+                    <td>
+                        {# Privacy Standard: First Initial + Last Name #}
+                        {{ cirugia.paciente.nombre|first|upper }}. {{ cirugia.paciente.apellido }}
+                    </td>
+                    <td>{{ cirugia.procedimientoPropuesto }}</td>
+                    <td>
+                        {% set badge = cirugia.cirugiaEstadosBadgeConfig %}
+                        <span class="badge {{ badge.class }} p-3 w-100 text-center">
+                            {{ badge.label }}
+                        </span>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4" class="text-center py-5 text-muted">No hay cirugías programadas para hoy.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -43,9 +43,23 @@ class InternalProfile
     #[ORM\ManyToMany(targetEntity: Especialidades::class)]
     private Collection $especialidades;
 
+    /**
+     * @var Collection<int, Cirugia>
+     */
+    #[ORM\OneToMany(targetEntity: Cirugia::class, mappedBy: 'cirujanoPrincipal')]
+    private Collection $cirugias;
+
+    /**
+     * @var Collection<int, Cirugia>
+     */
+    #[ORM\OneToMany(targetEntity: Cirugia::class, mappedBy: 'anestesiologo')]
+    private Collection $anestesiologo;
+
     public function __construct()
     {
         $this->especialidades = new ArrayCollection();
+        $this->cirugias = new ArrayCollection();
+        $this->anestesiologo = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -167,6 +181,66 @@ class InternalProfile
     public function removeEspecialidade(Especialidades $especialidade): static
     {
         $this->especialidades->removeElement($especialidade);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Cirugia>
+     */
+    public function getCirugias(): Collection
+    {
+        return $this->cirugias;
+    }
+
+    public function addCirugia(Cirugia $cirugia): static
+    {
+        if (!$this->cirugias->contains($cirugia)) {
+            $this->cirugias->add($cirugia);
+            $cirugia->setCirujanoPrincipal($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCirugia(Cirugia $cirugia): static
+    {
+        if ($this->cirugias->removeElement($cirugia)) {
+            // set the owning side to null (unless already changed)
+            if ($cirugia->getCirujanoPrincipal() === $this) {
+                $cirugia->setCirujanoPrincipal(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Cirugia>
+     */
+    public function getAnestesiologo(): Collection
+    {
+        return $this->anestesiologo;
+    }
+
+    public function addAnestesiologo(Cirugia $anestesiologo): static
+    {
+        if (!$this->anestesiologo->contains($anestesiologo)) {
+            $this->anestesiologo->add($anestesiologo);
+            $anestesiologo->setAnestesiologo($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAnestesiologo(Cirugia $anestesiologo): static
+    {
+        if ($this->anestesiologo->removeElement($anestesiologo)) {
+            // set the owning side to null (unless already changed)
+            if ($anestesiologo->getAnestesiologo() === $this) {
+                $anestesiologo->setAnestesiologo(null);
+            }
+        }
 
         return $this;
     }

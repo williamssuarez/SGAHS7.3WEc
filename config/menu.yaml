@@ -104,7 +104,7 @@ parameters:
                         - { title: Visitas, route: app_visita_hospitalaria_index, icon: 'bi bi-calendar-fill text-info' }
         -   title: Quirofano
             icon: 'fa-solid fa-circle-h text-warning'
-            roles: 'ROLE_INTERNAL'
+            roles: 'ROLE_DOCTOR_QUIROFANO'
             children:
                 -   title: Configuraciones
                     icon: 'bi bi-gear text-warning'
@@ -113,6 +113,5 @@ parameters:
                 -   title: Programacion
                     icon: 'fa-solid fa-bed-pulse text-info'
                     children:
-                        - { title: Pendientes, route: app_cirugia_index, icon: 'fa-solid fa-bed-pulse text-info' }
-                        - { title: En Proceso, route: app_hospitalizacion_censo, icon: 'fa-solid fa-bed-pulse text-info' }
-                        - { title: Finalizadas, route: app_hospitalizacion_censo, icon: 'fa-solid fa-bed-pulse text-info' }
+                        - { title: Pizarra, route: app_cirugia_pizarra, icon: 'fa-solid fa-bed-pulse text-info' }
+                        - { title: Agenda, route: app_cirugia_agenda, icon: 'fa-solid fa-bed-pulse text-info' }

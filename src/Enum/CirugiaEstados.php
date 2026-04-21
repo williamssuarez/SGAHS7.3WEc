@@ -12,7 +12,7 @@ enum CirugiaEstados: string
     case FINALIZADA = 'finalizada'; // Trasladado a piso o alta
     case CANCELADA = 'cancelada';   // Suspendida
 
-    public function getLabel(): string
+    public function getReadableText(): string
     {
         return match($this) {
             self::PROGRAMADA => 'Programada',

@@ -50,6 +50,7 @@ class UserType extends AbstractType
                     'Enfermeria' => User::ROLE_NURSE,
                     'Doctor' => User::ROLE_DOCTOR,
                     'Doctor Emergencias' => User::ROLE_ER_DOCTOR,
+                    'Doctor Cirujano' => User::ROLE_DOCTOR_QUIROFANO,
                 ],
                 'invalid_message' => 'El rol seleccionado no es valido',
             ])

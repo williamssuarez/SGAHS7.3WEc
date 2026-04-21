@@ -17,8 +17,12 @@ security:
         # You can even get more specific if ER doctors need special buttons
         ROLE_ER_DOCTOR: [ROLE_DOCTOR, ROLE_ER]
 
+        # Specific operating room roles
+        ROLE_DOCTOR_QUIROFANO: [ ROLE_DOCTOR, ROLE_ER_DOCTOR]
+        ROLE_ADMIN_QUIROFANO: [ ROLE_DOCTOR_QUIROFANO ]
+
         # The Boss gets everything
-        ROLE_ADMIN: [ROLE_ER_DOCTOR, ROLE_NURSE, ROLE_RECEPTIONIST]
+        ROLE_ADMIN: [ROLE_ER_DOCTOR, ROLE_NURSE, ROLE_RECEPTIONIST, ROLE_ADMIN_QUIROFANO]
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
@@ -78,6 +82,8 @@ security:
         - { path: ^/consultorios, roles: ROLE_ADMIN }
         - { path: ^/citas/configuraciones, roles: ROLE_ADMIN }
         - { path: ^/citas/estadisticas, roles: ROLE_ADMIN }
+        - { path: ^/citas/estadisticas, roles: ROLE_ADMIN }
+        - { path: ^/cirugia/agenda, roles: ROLE_ADMIN_QUIROFANO }
 
 when@test:
     security:

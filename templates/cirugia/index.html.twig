@@ -1,64 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Cirugia{% endblock %}
-
-{% block titlewrap %}
-    Cirugia
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item active" aria-current="page">Cirugia</li>
-{% endblock %}
+{% block title %}Hello CirugiaController!{% endblock %}
 
 {% block body %}
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    {% endfor %}
-    <div class="card card-primary card-outline mb-4">
-        <div class="card-header">
-            <h3 class="card-title">Cirugias Registradas</h3>
-        </div>
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
 
-        <div class="card-body">
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>Paciente</th>
-                    <th>Procedimiento</th>
-                    <th>Quirofano</th>
-                    <th>Fecha</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in entities %}
-                    <tr class="align-middle">
-                        <td>{{ entity.paciente.nombre }}</td>
-                        <td>{{ entity.procedimientoPropuesto }}</td>
-                        <td>{{ entity.quirofano.nombre }}</td>
-                        <td>{{ entity.fechaPrograma|date('d/m/Y H:i') }}</td>
-                        <td>
-                            <a class="btn btn-secondary" href="{{ path('app_cirugia_show', {'id': entity.id}) }}">
-                                <i class="bi bi-search"></i> Detalles
-                            </a>
-                            <a class="btn btn-success" href="{{ path('app_cirugia_edit', {'id': entity.id}) }}">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
 
-        <div class="card-footer clearfix">
-            <a href="{{ path('app_cirugia_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
-        </div>
-
-    </div>
+    This friendly message is coming from:
+    <ul>
+        <li>Your controller at <code>C:/Users/pc/Documents/PhpStorm 2021/SGAHS7.3WEc/src/Controller/CirugiaController.php</code></li>
+        <li>Your template at <code>C:/Users/pc/Documents/PhpStorm 2021/SGAHS7.3WEc/templates/cirugia/index.html.twig</code></li>
+    </ul>
+</div>
 {% endblock %}

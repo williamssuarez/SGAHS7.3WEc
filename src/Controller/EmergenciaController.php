@@ -575,7 +575,9 @@ final class EmergenciaController extends AbstractController
                         AuditTipos::EMERGENCY_DISCHARGE_TRANSFER,
                         "El Paciente $nombre debe ser trasladado a otro hospital debido a: $diagnose",
                         $emergencia->getPaciente(),
-                        null
+                        null,
+                        null,
+                        $emergencia
                     );
 
                     break;
@@ -612,7 +614,9 @@ final class EmergenciaController extends AbstractController
                         AuditTipos::EMERGENCY_DISCHARGE_ADMITTED_ROOM,
                         "El Paciente $nombre debe ser hospitalizado en $unit debido a: $diagnose",
                         $emergencia->getPaciente(),
-                        null
+                        null,
+                        null,
+                        $emergencia
                     );
 
                     break;
@@ -630,7 +634,9 @@ final class EmergenciaController extends AbstractController
                         AuditTipos::EMERGENCY_DISCHARGE_DECEASED,
                         "El Paciente $nombre ha fallecido durante una emergencia. Diagnostico: $diagnose",
                         $emergencia->getPaciente(),
-                        null
+                        null,
+                        null,
+                        $emergencia
                     );
 
                     break;
@@ -642,7 +648,9 @@ final class EmergenciaController extends AbstractController
                         AuditTipos::EMERGENCY_DISCHARGE_SENT_HOME,
                         "El Paciente $nombre fue dado de alta exitosamente. Diagnostico: $diagnose",
                         $emergencia->getPaciente(),
-                        null
+                        null,
+                        null,
+                        $emergencia
                     );
                     break;
                 case EmergenciasCondicionAlta::LEFT:
@@ -656,7 +664,9 @@ final class EmergenciaController extends AbstractController
                         AuditTipos::EMERGENCY_DISCHARGE_LEFT,
                         "El Paciente $nombre se ha retirado contra opinion medica. Diagnostico: $diagnose",
                         $emergencia->getPaciente(),
-                        null
+                        null,
+                        null,
+                        $emergencia
                     );
 
                     break;

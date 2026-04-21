@@ -1,0 +1,119 @@
+{# templates/cirugia/agenda_admin.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Agenda de Quirófanos{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+            <h2 class="text-dark fw-bold">Control de Quirófanos: {{ today|date('d/m/Y') }}</h2>
+            <a href="{{ path('app_cirugia_programar') }}" class="btn btn-primary shadow-sm">
+                <i class="bi bi-plus-lg"></i> Programar Nueva
+            </a>
+        </div>
+
+        <div class="row">
+            {% for roomName, surgeries in grid %}
+                <div class="col-12 mb-5">
+                    <div class="card shadow-sm border-0 bg-light">
+                        <div class="card-header bg-dark text-white d-flex justify-content-between py-3">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="bi bi-door-closed-fill text-info"></i> {{ roomName }}
+                            </h5>
+                            <span class="badge bg-secondary">{{ surgeries|length }} Procedimientos</span>
+                        </div>
+
+                        <div class="card-body p-3">
+                            {% if surgeries is empty %}
+                                <div class="text-center text-muted py-4">
+                                    <em>Sala sin programación. Disponible.</em>
+                                </div>
+                            {% else %}
+                                <div class="row g-3">
+                                    {% for cirugia in surgeries %}
+                                        <div class="col-md-4 col-xl-3">
+                                            {# THE SURGERY CARD #}
+                                            <div class="card h-100 border-start border-4 {{ cirugia.estado == 'trans_op' ? 'border-danger' : 'border-primary' }}">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between mb-2">
+                                                        <strong class="text-primary">{{ cirugia.fechaHoraProgramada|date('H:i', false) }}</strong>
+                                                        <span class="badge bg-dark">{{ cirugia.estado.readableText|upper }}</span>
+                                                    </div>
+                                                    <h6 class="fw-bold mb-1">{{ cirugia.paciente.nombre }} {{ cirugia.paciente.apellido }}</h6>
+                                                    <p class="small text-muted mb-2">{{ cirugia.procedimientoPropuesto }}</p>
+
+                                                    <div class="small mb-3">
+                                                        <div><i class="bi bi-person-fill text-secondary"></i> Dr(a). {{ cirugia.cirujanoPrincipal.nombre }}</div>
+                                                    </div>
+
+                                                    {# THE ACTION BUTTONS (Powered by Stimulus) #}
+                                                    <div class="d-grid gap-2"
+                                                         data-controller="surgery-state"
+                                                         data-surgery-state-id-value="{{ cirugia.id }}">
+
+                                                        {% if cirugia.estado.value == 'programada' %}
+                                                            <button class="btn btn-warning btn-sm fw-bold" data-action="click->surgery-state#advance" data-next-state="pre_op">
+                                                                <i class="bi bi-play-circle"></i> Iniciar Anestesia (Pre-Op)
+                                                            </button>
+                                                            <a class="btn btn-primary btn-sm fw-bold" href="{{ path('app_cirugia_ver', {'id': cirugia.id}) }}">
+                                                                <i class="bi bi-clipboard-heart"></i> Ver Detalles
+                                                            </a>
+                                                            <form action="{{ path('app_cirugia_cancelar', {'id': cirugia.id}) }}"
+                                                                  method="POST"
+                                                                  data-controller="cancel-appointment"
+                                                                  data-action="submit->cancel-appointment#confirm"
+                                                                  data-cancel-appointment-patient-name-value="{{ cirugia.paciente.nombre }} {{ cirugia.paciente.apellido }}"
+                                                                  class="form">
+
+                                                                <button type="submit" class="btn btn-danger btn-sm fw-bold">
+                                                                    <i class="bi bi-person-x-fill"></i> Cancelar Cirugia
+                                                                </button>
+                                                            </form>
+                                                        {% elseif cirugia.estado.value == 'pre_op' %}
+                                                            <button class="btn btn-danger btn-sm fw-bold" data-action="click->surgery-state#advance" data-next-state="trans_op">
+                                                                <i class="bi bi-scissors"></i> Iniciar Cirugía (Corte)
+                                                            </button>
+                                                            <a class="btn btn-primary btn-sm fw-bold" href="{{ path('app_cirugia_ver', {'id': cirugia.id}) }}">
+                                                                <i class="bi bi-clipboard-heart"></i> Ver Detalles
+                                                            </a>
+                                                            <form action="{{ path('app_cirugia_cancelar', {'id': cirugia.id}) }}"
+                                                                  method="POST"
+                                                                  data-controller="cancel-appointment"
+                                                                  data-action="submit->cancel-appointment#confirm"
+                                                                  data-cancel-appointment-patient-name-value="{{ cirugia.paciente.nombre }} {{ cirugia.paciente.apellido }}"
+                                                                  class="d-inline">
+
+                                                                <button type="submit" class="btn btn-danger btn-sm fw-bold">
+                                                                    <i class="bi bi-person-x-fill"></i> Cancelar Cirugia
+                                                                </button>
+                                                            </form>
+                                                        {% elseif cirugia.estado.value == 'trans_op' %}
+                                                            <button class="btn btn-primary btn-sm fw-bold" data-action="click->surgery-state#advance" data-next-state="post_op">
+                                                                <i class="bi bi-bandaid"></i> Fin de Cirugía (Cierre)
+                                                            </button>
+                                                            <a class="btn btn-primary btn-sm fw-bold" href="{{ path('app_cirugia_ver', {'id': cirugia.id}) }}">
+                                                                <i class="bi bi-clipboard-heart"></i> Ver Detalles
+                                                            </a>
+                                                        {% elseif cirugia.estado.value == 'post_op' %}
+                                                            <button class="btn btn-success btn-sm fw-bold" data-action="click->surgery-state#advance" data-next-state="finalizada">
+                                                                <i class="bi bi-check-circle"></i> Trasladar / Finalizar
+                                                            </button>
+                                                            <a class="btn btn-primary btn-sm fw-bold" href="{{ path('app_cirugia_ver', {'id': cirugia.id}) }}">
+                                                                <i class="bi bi-clipboard-heart"></i> Ver Detalles
+                                                            </a>
+                                                        {% endif %}
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

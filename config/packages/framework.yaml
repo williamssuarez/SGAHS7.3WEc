@@ -7,6 +7,11 @@ framework:
 
     #esi: true
     #fragments: true
+    # Tell Symfony to trust the local machine as a proxy (Cloudflared runs locally)
+    trusted_proxies: '127.0.0.1,REMOTE_ADDR'
+
+    # Tell Symfony to read the HTTPS and Host headers from Cloudflare
+    trusted_headers: [ 'x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix' ]
 
 when@test:
     framework:

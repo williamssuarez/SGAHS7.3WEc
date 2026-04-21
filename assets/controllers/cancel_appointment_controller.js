@@ -12,8 +12,9 @@ export default class extends Controller {
 
         // 2. Step One: The "Are you sure?" confirmation
         const confirmResult = await Swal.fire({
-            title: '¿Cancelar la cita?',
-            text: `¿Está seguro de cancelar la cita de ${this.patientNameValue}? El paciente deberá solicitar una nueva.`,
+            title: '¿Cancelar?',
+            //text: `¿Está seguro de cancelar la cita de ${this.patientNameValue}? El paciente deberá solicitar una nueva.`,
+            text: `¿Está seguro de cancelar?`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -37,7 +38,7 @@ export default class extends Controller {
             cancelButtonText: 'Cancelar',
             inputValidator: (value) => {
                 if (!value || value.trim() === '') {
-                    return 'Debe ingresar un motivo para poder cancelar la cita.';
+                    return 'Debe ingresar un motivo para poder cancelar.';
                 }
             }
         });

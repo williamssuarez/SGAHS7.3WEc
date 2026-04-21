@@ -84,12 +84,26 @@ class Hospitalizaciones
     #[ORM\OneToMany(targetEntity: VisitaHospitalaria::class, mappedBy: 'hospitalizacion')]
     private Collection $visitaHospitalarias;
 
+    /**
+     * @var Collection<int, Cirugia>
+     */
+    #[ORM\OneToMany(targetEntity: Cirugia::class, mappedBy: 'hospitalizacionOrigen')]
+    private Collection $cirugias;
+
+    /**
+     * @var Collection<int, Audit>
+     */
+    #[ORM\OneToMany(targetEntity: Audit::class, mappedBy: 'hospitalizacion')]
+    private Collection $audits;
+
     public function __construct()
     {
         $this->evolucionHospitalarias = new ArrayCollection();
         $this->indicacionMedicas = new ArrayCollection();
         $this->signosVitalesHospitalarios = new ArrayCollection();
         $this->visitaHospitalarias = new ArrayCollection();
+        $this->cirugias = new ArrayCollection();
+        $this->audits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -367,6 +381,66 @@ class Hospitalizaciones
             // set the owning side to null (unless already changed)
             if ($visitaHospitalaria->getHospitalizacion() === $this) {
                 $visitaHospitalaria->setHospitalizacion(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Cirugia>
+     */
+    public function getCirugias(): Collection
+    {
+        return $this->cirugias;
+    }
+
+    public function addCirugia(Cirugia $cirugia): static
+    {
+        if (!$this->cirugias->contains($cirugia)) {
+            $this->cirugias->add($cirugia);
+            $cirugia->setHospitalizacionOrigen($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCirugia(Cirugia $cirugia): static
+    {
+        if ($this->cirugias->removeElement($cirugia)) {
+            // set the owning side to null (unless already changed)
+            if ($cirugia->getHospitalizacionOrigen() === $this) {
+                $cirugia->setHospitalizacionOrigen(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Audit>
+     */
+    public function getAudits(): Collection
+    {
+        return $this->audits;
+    }
+
+    public function addAudit(Audit $audit): static
+    {
+        if (!$this->audits->contains($audit)) {
+            $this->audits->add($audit);
+            $audit->setHospitalizacion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAudit(Audit $audit): static
+    {
+        if ($this->audits->removeElement($audit)) {
+            // set the owning side to null (unless already changed)
+            if ($audit->getHospitalizacion() === $this) {
+                $audit->setHospitalizacion(null);
             }
         }
 

@@ -27,6 +27,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public const ROLE_DOCTOR = 'ROLE_DOCTOR';
     public const ROLE_ER_DOCTOR = 'ROLE_ER_DOCTOR';
     public const ROLE_EXTERNAL = 'ROLE_EXTERNAL';
+    public const ROLE_DOCTOR_QUIROFANO = 'ROLE_DOCTOR_QUIROFANO';
+    public const ROLE_ADMIN_QUIROFANO = 'ROLE_ADMIN_QUIROFANO';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
