@@ -50,6 +50,10 @@ enum AuditTipos: string
     case SURGERY_POST_OP = 'surgery_post_op';
     case SURGERY_FINISHED = 'surgery_finished';
     case SURGERY_CANCELED = 'surgery_cancelled';
+    case INVENTORY_BATCH_ENTRY = 'inventory_batch_entry';
+    case INVENTORY_BATCH_EXIT = 'inventory_batch_exit';
+    case INVENTORY_BATCH_ADJUSTMENT = 'inventory_batch_adjustment';
+    case INVENTORY_BATCH_EDITION = 'inventory_batch_edition';
 
     /**
      * Retorna un texto amigable para el usuario final.
@@ -98,6 +102,10 @@ enum AuditTipos: string
             self::SURGERY_POST_OP => 'Cirugia en Post-Operatorio',
             self::SURGERY_FINISHED => 'Cirugia Finalizada',
             self::SURGERY_CANCELED => 'Cirugia Cancelada',
+            self::INVENTORY_BATCH_ENTRY => 'Inventario: Entrada de lote',
+            self::INVENTORY_BATCH_EXIT => 'Inventario: Salida de lote',
+            self::INVENTORY_BATCH_ADJUSTMENT => 'Inventario: Ajuste de lote',
+            self::INVENTORY_BATCH_EDITION => 'Inventario: Edicion de lote',
         };
     }
 

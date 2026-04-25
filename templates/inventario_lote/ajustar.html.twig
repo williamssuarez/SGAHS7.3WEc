@@ -1,0 +1,84 @@
+{# templates/inventario_lote/ajustar.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajuste de Inventario - {{ lote.articulo.nombre }}{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+            <h2 class="text-dark fw-bold">
+                <i class="bi bi-sliders text-warning"></i> Ajuste Manual de Inventario
+            </h2>
+            <a href="{{ path('app_inventario_lote_index') }}" class="btn btn-outline-secondary shadow-sm">
+                <i class="bi bi-arrow-left"></i> Cancelar
+            </a>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-top border-warning border-4"
+                     data-controller="stock-adjuster"
+                     data-stock-adjuster-current-stock-value="{{ lote.cantidadActual }}">
+
+                    <div class="card-header bg-light p-4 border-bottom">
+                        <h5 class="mb-1 text-primary">{{ lote.articulo.nombre }}</h5>
+                        <div class="d-flex justify-content-between text-muted">
+                            <span>Lote: <strong>{{ lote.lote }}</strong></span>
+                            <span>Stock Actual: <strong>{{ lote.cantidadActual }} ({{ lote.articulo.unidadMedida }})</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <div class="alert alert-warning mb-4">
+                            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Atención:</strong> Cualquier modificación realizada aquí quedará registrada permanentemente en el historial de auditoría bajo su usuario.
+                        </div>
+
+                        {{ form_start(form, {
+                            'attr': {
+                                'data-controller': 'submit-once',
+                                'data-action': 'submit->submit-once#disable'
+                            }
+                        }) }}
+                        {{ include('base/_form_error_messages.html.twig') }}
+
+                        <div class="row mb-4 align-items-center">
+                            <div class="col-md-5">
+                                {{ form_label(form.cantidad) }}
+                                {{ form_widget(form.cantidad) }}
+                                <div class="form-text">Use signo negativo (-) para mermas.</div>
+                                {{ form_errors(form.cantidad) }}
+                            </div>
+
+                            <div class="col-md-2 text-center text-muted display-6">
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+
+                            <div class="col-md-5 text-center">
+                                <label class="form-label text-muted">Stock Proyectado</label>
+                                <div class="display-5 fw-bold" data-stock-adjuster-target="preview">
+                                    {{ lote.cantidadActual }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form_row(form.referenciaOrigen) }}
+                        </div>
+
+                        <div class="text-end">
+                            {#<button type="submit" class="btn btn-warning btn-lg fw-bold shadow-sm px-5" data-stock-adjuster-target="submitBtn" disabled>
+                                <i class="bi bi-shield-check"></i> Registrar Ajuste
+                            </button>#}
+
+                            <button type="submit" class="btn btn-warning btn-lg fw-bold shadow-sm px-5" data-stock-adjuster-target="submitBtn" data-submit-once-target="submitButton" disabled>
+                                <i class="bi bi-shield-check"></i> {{ button_label|default('Registrar Ajuste') }}
+                            </button>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

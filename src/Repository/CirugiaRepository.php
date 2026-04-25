@@ -28,7 +28,7 @@ class CirugiaRepository extends ServiceEntityRepository
             ->select('u')
 
             ->where('u.status = :sts')
-            ->andWhere('u.fechaHoraProgramada between :from AND :to')
+            ->andWhere('u.fechaHoraProgramada between :from and :to')
 
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
             ->setParameter('from', $from)

@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Control de Inventario y Lotes{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-4">
+
+        {# --- HEADER & GLOBAL ACTIONS --- #}
+        <div class="d-flex justify-content-between align-items-center mb-4 mt-3 border-bottom pb-3">
+            <div>
+                <h2 class="text-dark fw-bold mb-0">
+                    <i class="bi bi-box-seam"></i> Inventario Físico (Lotes)
+                </h2>
+                <p class="text-muted mb-0">Gestión de existencias, caducidades y lotes de farmacia/almacén.</p>
+            </div>
+            <div class="d-flex gap-2">
+                {# Notice the phrasing: You don't "Create a Batch", you "Receive Stock" #}
+                <a href="{{ path('app_inventario_lote_new') }}" class="btn btn-success shadow-sm fw-bold">
+                    <i class="bi bi-truck"></i> Registrar Entrada (Nuevo Lote)
+                </a>
+            </div>
+        </div>
+
+        {# --- THE SMART TABLE --- #}
+        <div class="card shadow-sm border-top border-primary border-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover dtHere align-middle mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Artículo</th>
+                            <th>Lote / Ref</th>
+                            <th>Caducidad (Status)</th>
+                            <th>Existencia</th>
+                            <th>Costo Unit.</th>
+                            <th class="text-end">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for lote in inventario_lotes %}
+
+                            {# --- SMART LOGIC CALCULATIONS --- #}
+                            {# 1. Expiration Logic #}
+                            {% set isExpired = date(lote.fechaCaducidad) < date('now') %}
+                            {% set isExpiringSoon = date(lote.fechaCaducidad) < date('+90 days') and not isExpired %}
+
+                            {# 2. Stock Logic #}
+                            {% set isLowStock = lote.cantidadActual <= lote.articulo.stockMinimo %}
+                            {% set isOutOfStock = lote.cantidadActual == 0 %}
+
+                            <tr class="{{ isOutOfStock or isExpired ? 'bg-light text-muted' : '' }}">
+
+                                {# Column 1: Article Info #}
+                                <td>
+                                    <strong class="d-block text-primary fs-6">{{ lote.articulo.nombre }}</strong>
+                                    <small class="text-muted"><i class="bi bi-tag"></i> {{ lote.articulo.categoria.readableText }}</small>
+                                </td>
+
+                                {# Column 2: Batch #}
+                                <td>
+                                    <span class="badge bg-secondary font-monospace fs-6">{{ lote.lote }}</span>
+                                </td>
+
+                                {# Column 3: Expiration Status #}
+                                <td>
+                                    <div class="fw-bold {{ isExpired ? 'text-danger' : (isExpiringSoon ? 'text-warning' : 'text-success') }}">
+                                        {{ lote.fechaCaducidad|date('d/m/Y') }}
+                                    </div>
+                                    {% if isExpired %}
+                                        <span class="badge bg-danger"><i class="bi bi-x-octagon"></i> CADUCADO</span>
+                                    {% elseif isExpiringSoon %}
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle"></i> Próximo a vencer</span>
+                                    {% endif %}
+                                </td>
+
+                                {# Column 4: Stock Levels #}
+                                <td>
+                                    <div class="fs-5 fw-bold {{ isOutOfStock ? 'text-danger' : (isLowStock ? 'text-warning' : 'text-dark') }}">
+                                        {{ lote.cantidadActual }} <small class="text-muted fs-6">({{ lote.articulo.unidadMedida }})</small>
+                                    </div>
+                                    {% if isOutOfStock %}
+                                        <span class="badge bg-danger">AGOTADO</span>
+                                    {% elseif isLowStock %}
+                                        <span class="badge bg-warning text-dark">Stock Crítico (Min: {{ lote.articulo.stockMinimo }})</span>
+                                    {% endif %}
+                                </td>
+
+                                {# Column 5: Financials (Optional, good for admins) #}
+                                <td>
+                                    ${{ lote.precioCompra|number_format(2, '.', ',') }}
+                                </td>
+
+                                {# Column 6: Actions #}
+                                <td class="text-end">
+                                    <div class="btn-group shadow-sm">
+                                        {# VER HISTORIAL: The most important button. Shows the audit trail #}
+                                        <a href="{{ path('app_inventario_lote_show', {'id': lote.id}) }}" class="btn btn-outline-primary btn-sm" title="Ver Historial de Movimientos">
+                                            <i class="bi bi-eye"></i> Historial
+                                        </a>
+
+                                        {# AJUSTAR: For breakages or manual counts #}
+                                        <a href="{{ path('app_inventario_lote_ajuste', {'id': lote.id}) }}" class="btn btn-outline-warning btn-sm text-dark" title="Ajuste Manual">
+                                            <i class="bi bi-sliders"></i> Ajustar
+                                        </a>
+
+                                        {# EDITAR: Standard CRUD edit (fix typos in batch number, etc.) #}
+                                        <a href="{{ path('app_inventario_lote_edit', {'id': lote.id}) }}" class="btn btn-outline-secondary btn-sm" title="Editar Metadatos">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

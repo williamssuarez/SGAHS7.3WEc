@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Artículo{% endblock %}
+
+{% block titlewrap %}
+    Editar Artículo
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_articulo_index') }}">Artículo</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Artículo</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('articulo/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,64 @@
+<div class="card shadow-sm border-top border-success border-4" data-controller="margin-calculator">
+    <div class="card-body bg-light p-4">
+        {{ form_start(form, {
+            'attr': {
+                'data-controller': 'submit-once',
+                'data-action': 'submit->submit-once#disable'
+            }
+        }) }}
+        {{ include('base/_form_error_messages.html.twig') }}
+
+        <div class="row g-4">
+            {# Left Column: Logistics #}
+            <div class="col-md-6 border-end">
+                <h5 class="text-success border-bottom pb-2 mb-3"><i class="bi bi-box"></i> Datos del Producto</h5>
+
+                <div class="mb-3">
+                    {{ form_row(form.articulo) }}
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(form.lote) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_row(form.fechaCaducidad) }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form_row(form.cantidadActual) }}
+                </div>
+            </div>
+
+            {# Right Column: Financials #}
+            <div class="col-md-6">
+                <h5 class="text-primary border-bottom pb-2 mb-3"><i class="bi bi-currency-dollar"></i> Costos y Facturación</h5>
+
+                <div class="mb-3">
+                    {{ form_row(form.precioCompra) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_row(form.precioVenta) }}
+                </div>
+
+                {# The dynamic feedback box controlled by Stimulus #}
+                <div class="alert alert-light border shadow-sm mt-4 text-center fs-5">
+                        <span data-margin-calculator-target="feedback">
+                            Calculando margen...
+                        </span>
+                </div>
+
+                <div class="text-end mt-5">
+                    {#<button type="submit" class="btn btn-success btn-lg shadow-sm w-100">
+                                <i class="bi bi-check-circle-fill"></i> Confirmar y Guardar Lote
+                            </button>#}
+
+                    <button type="submit" class="btn btn-success btn-lg shadow-sm w-100" data-submit-once-target="submitButton">
+                        {{ button_label|default('Confirmar y Guardar Lote') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+</div>

@@ -7,6 +7,7 @@ use App\Entity\Cirugia;
 use App\Entity\Consulta;
 use App\Entity\Emergencia;
 use App\Entity\Hospitalizaciones;
+use App\Entity\InventarioLote;
 use App\Entity\Paciente;
 use App\Enum\AuditTipos;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,7 +27,8 @@ readonly class AuditService
         ?Consulta $consulta = null,
         ?Cirugia $cirugia = null,
         ?Emergencia  $emergencia = null,
-        ?Hospitalizaciones $hospitalizacion = null
+        ?Hospitalizaciones $hospitalizacion = null,
+        ?InventarioLote $inventarioLote = null
     ): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -40,6 +42,7 @@ readonly class AuditService
         $log->setCirugia($cirugia);
         $log->setEmergencia($emergencia);
         $log->setHospitalizacion($hospitalizacion);
+        $log->setInventarioLote($inventarioLote);
 
         $this->em->persist($log);
     }
@@ -51,7 +54,8 @@ readonly class AuditService
         ?Consulta $consulta = null,
         ?Cirugia $cirugia = null,
         ?Emergencia  $emergencia = null,
-        ?Hospitalizaciones $hospitalizacion = null
+        ?Hospitalizaciones $hospitalizacion = null,
+        ?InventarioLote $inventarioLote = null
     ): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -65,6 +69,7 @@ readonly class AuditService
         $log->setCirugia($cirugia);
         $log->setEmergencia($emergencia);
         $log->setHospitalizacion($hospitalizacion);
+        $log->setInventarioLote($inventarioLote);
 
         $this->em->persist($log);
         $this->em->flush();
@@ -77,7 +82,8 @@ readonly class AuditService
         ?Consulta $consulta = null,
         ?Cirugia $cirugia = null,
         ?Emergencia  $emergencia = null,
-        ?Hospitalizaciones $hospitalizacion = null
+        ?Hospitalizaciones $hospitalizacion = null,
+        ?InventarioLote $inventarioLote = null
     ): void {
         $uow = $this->em->getUnitOfWork();
         $uow->computeChangeSets();
@@ -100,7 +106,7 @@ readonly class AuditService
 
         $mensaje = "Edición de " . (new \ReflectionClass($entity))->getShortName() . ": " . implode(', ', $details);
 
-        $this->persistAndFlushAudit($tipo, $mensaje, $paciente, $consulta, $cirugia, $emergencia, $hospitalizacion);
+        $this->persistAndFlushAudit($tipo, $mensaje, $paciente, $consulta, $cirugia, $emergencia, $hospitalizacion, $inventarioLote);
     }
 
     public function persistEditionAudit(
@@ -110,7 +116,8 @@ readonly class AuditService
         ?Consulta $consulta = null,
         ?Cirugia $cirugia = null,
         ?Emergencia  $emergencia = null,
-        ?Hospitalizaciones $hospitalizacion = null
+        ?Hospitalizaciones $hospitalizacion = null,
+        ?InventarioLote $inventarioLote = null
     ): void {
         $uow = $this->em->getUnitOfWork();
         $uow->computeChangeSets();
@@ -133,7 +140,7 @@ readonly class AuditService
 
         $mensaje = "Edición de " . (new \ReflectionClass($entity))->getShortName() . ": " . implode(', ', $details);
 
-        $this->persistAudit($tipo, $mensaje, $paciente, $consulta, $cirugia, $emergencia, $hospitalizacion);
+        $this->persistAudit($tipo, $mensaje, $paciente, $consulta, $cirugia, $emergencia, $hospitalizacion, $inventarioLote);
     }
 
     private function formatValue($value): string

@@ -110,6 +110,8 @@ parameters:
                     icon: 'bi bi-gear text-warning'
                     children:
                         - { title: Quirofano, route: app_quirofano_index, icon: 'bi bi-gear text-warning' }
+                        - { title: Articulos, route: app_articulo_index, icon: 'bi bi-gear text-warning' }
+                        - { title: Inventario, route: app_inventario_lote_index, icon: 'bi bi-gear text-warning' }
                 -   title: Programacion
                     icon: 'fa-solid fa-bed-pulse text-info'
                     children:

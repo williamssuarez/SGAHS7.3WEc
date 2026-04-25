@@ -42,6 +42,9 @@ class Audit
     #[ORM\ManyToOne(inversedBy: 'audits')]
     private ?Hospitalizaciones $hospitalizacion = null;
 
+    #[ORM\ManyToOne(inversedBy: 'audits')]
+    private ?InventarioLote $inventarioLote = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -139,6 +142,18 @@ class Audit
     public function setHospitalizacion(?Hospitalizaciones $hospitalizacion): static
     {
         $this->hospitalizacion = $hospitalizacion;
+
+        return $this;
+    }
+
+    public function getInventarioLote(): ?InventarioLote
+    {
+        return $this->inventarioLote;
+    }
+
+    public function setInventarioLote(?InventarioLote $inventarioLote): static
+    {
+        $this->inventarioLote = $inventarioLote;
 
         return $this;
     }

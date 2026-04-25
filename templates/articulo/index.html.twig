@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Artículos{% endblock %}
+
+{% block titlewrap %}
+    Artículos
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active" aria-current="page">Artículos</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="card card-primary card-outline mb-4">
+        <div class="card-header">
+            <h3 class="card-title">Artículos Registrados</h3>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-striped dtHere">
+                <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Categoria</th>
+                    <th>Descripcion</th>
+                    <th>Codigo de Barras</th>
+                    <th>Unidad</th>
+                    <th>Stock Minimo</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entity in entities %}
+                    <tr class="align-middle">
+                        <td>{{ entity.nombre }}</td>
+                        <td>{{ entity.categoria.readableText }}</td>
+                        <td>{{ entity.descripcion }}</td>
+                        <td>{{ entity.codigoBarras }}</td>
+                        <td>{{ entity.unidadMedida }}</td>
+                        <td>{{ entity.stockMinimo }}</td>
+                        <td>
+                            <a class="btn btn-success" href="{{ path('app_articulo_edit', {'id': entity.id}) }}">
+                                <i class="bi bi-pencil-square"></i> Editar
+                            </a>
+                            <button class="btn btn-danger"
+                                    onclick="softDeleteRecord(
+                                        '{{ path('app_articulo_delete', {'id': entity.id}) }}',
+                                        '{{ csrf_token('delete' ~ entity.id) }}'
+                                        )">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer clearfix">
+            <a href="{{ path('app_articulo_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+        </div>
+    </div>
+{% endblock %}
