@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+
 use App\Entity\Traits\SoftDeletetableTrait;
 use App\Repository\AlergenosRepository;
 use Doctrine\Common\Collections\ArrayCollection;

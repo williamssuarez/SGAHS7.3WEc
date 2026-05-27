@@ -39,7 +39,7 @@ class CitasConfiguracionesType extends AbstractType
             ])
             ->add('consultorio', EntityType::class, [
                 'class' => Consultorios::class,
-                'label' => 'Consultorios',
+                'label' => 'Doctores',
                 'label_attr' => [
                     'class' => 'form-label'
                 ],

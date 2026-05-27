@@ -6,12 +6,13 @@
         .patient-info { margin-bottom: 30px; }
         table { width: 100%; border-collapse: collapse; }
         th, td { border-bottom: 1px solid #ddd; padding: 10px; text-align: left; }
-        .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 10px; }
+        .footer { margin-top: 150px; text-align: center; }
+        .signature-line { border-top: 1px solid #000; width: 250px; margin: 0 auto; padding-top: 5px; }
     </style>
 </head>
 <body>
 <div class="header">
-    <h1>{{ mainConfig.nombreInstitucion}} - Orden Médica</h1>
+    <h1>{{ mainConfig.nombreInstitucion|title}} - Orden Médica</h1>
     <p>Fecha: {{ "now"|date("d/m/Y") }}</p>
 </div>
 
@@ -24,6 +25,25 @@
 <div class="header">
     <h3>Detalles de Prescripcion</h3>
 </div>
+
+<table>
+    <thead>
+    <tr>
+        <th>Doctor</th>
+        <th>Cedula</th>
+        <th>Telefono</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Dr(a). {{ doctor.internalProfile.nombre }} {{ doctor.internalProfile.apellido }}</td>
+        <td>{{ doctor.internalProfile.tipoDocumento }} - {{ doctor.internalProfile.nroDocumento }}</td>
+        <td>{{ doctor.internalProfile.telefono }}</td>
+    </tr>
+    </tbody>
+</table>
+<br>
+<br>
 
 <table>
     <thead>
@@ -81,7 +101,10 @@
 </table>
 
 <div class="footer">
-    Documento generado digitalmente por SGAHS.
+    <div class="signature-line">
+        <strong>Firma del Médico Tratante / Sello</strong><br>
+        <span style="font-size: 10px; color: #777;">Documento generado electrónicamente por {{ mainConfig.nombreInstitucion|title }}</span>
+    </div>
 </div>
 </body>
 </html>

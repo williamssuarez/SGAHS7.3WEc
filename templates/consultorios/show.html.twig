@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_consultorios_index') }}">Consultorios</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_consultorios_index') }}">Doctores</a></li>
     <li class="breadcrumb-item active" aria-current="page">Detalles</li>
 {% endblock %}
 
@@ -17,6 +17,9 @@
             <div class="card-body">
                 <div class="mb-3">
                     <h3>{{ entity.nombre }}</h3>
+                </div>
+                <div class="mb-3">
+                    <h3>V-{{ entity.cedula }}</h3>
                 </div>
                 <div class="mb-3">
                     <h3>{{ entity.ubicacion }}</h3>

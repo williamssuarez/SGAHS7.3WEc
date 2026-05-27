@@ -4,12 +4,19 @@ namespace App\Controller;
 
 use App\Entity\Cirugia;
 use App\Entity\Citas;
+use App\Entity\ConsumoQuirurgico;
 use App\Entity\Hospitalizaciones;
+use App\Entity\InventarioLote;
+use App\Entity\MovimientoInventario;
+use App\Entity\ProtocoloOperatorio;
 use App\Entity\Quirofano;
 use App\Enum\AuditTipos;
 use App\Enum\CirugiaEstados;
 use App\Enum\CitasEstados;
+use App\Enum\TipoMovimientoInventario;
 use App\Form\CirugiaType;
+use App\Form\ConsumoQuirurgicoType;
+use App\Form\ProtocoloOperatorioType;
 use App\Repository\CirugiaRepository;
 use App\Service\AuditService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -108,7 +115,7 @@ final class CirugiaController extends AbstractController
     }
 
     #[Route('/{id}/avanzar-estado', name: 'app_cirugia_avanzar_estado', methods: ['POST'])]
-    public function avanzarEstado(Request $request, Cirugia $cirugia, EntityManagerInterface $em): Response
+    public function avanzarEstado(Request $request, Cirugia $cirugia, EntityManagerInterface $em, AuditService $auditService): Response
     {
         //$this->denyAccessUnlessGranted('ROLE_ADMIN_QUIROFANO');
 
@@ -122,18 +129,54 @@ final class CirugiaController extends AbstractController
                 case 'pre_op':
                     $cirugia->setEstado(CirugiaEstados::PRE_OP);
                     $cirugia->setHoraInicioAnestesia($now);
+
+                    $message = 'Cirugia Avanzada a preoperatorio';
+                    $auditService->persistAudit(
+                        AuditTipos::SURGERY_PRE_OP,
+                        $message,
+                        $cirugia->getPaciente(),
+                        null,
+                        $cirugia
+                    );
                     break;
                 case 'trans_op':
                     $cirugia->setEstado(CirugiaEstados::TRANS_OP);
                     $cirugia->setHoraIncision($now);
+
+                    $message = 'Cirugia Avanzada a transoperatorio';
+                    $auditService->persistAudit(
+                        AuditTipos::SURGERY_TRANS_OP,
+                        $message,
+                        $cirugia->getPaciente(),
+                        null,
+                        $cirugia
+                    );
                     break;
                 case 'post_op':
                     $cirugia->setEstado(CirugiaEstados::POST_OP);
                     $cirugia->setHoraCierre($now);
+
+                    $message = 'Cirugia Avanzada a postoperatorio';
+                    $auditService->persistAudit(
+                        AuditTipos::SURGERY_POST_OP,
+                        $message,
+                        $cirugia->getPaciente(),
+                        null,
+                        $cirugia
+                    );
                     break;
                 case 'finalizada':
                     $cirugia->setEstado(CirugiaEstados::FINALIZADA);
                     $cirugia->setHoraSalidaSala($now);
+
+                    $message = 'Cirugia Avanzada a finalizada';
+                    $auditService->persistAudit(
+                        AuditTipos::SURGERY_FINISHED,
+                        $message,
+                        $cirugia->getPaciente(),
+                        null,
+                        $cirugia
+                    );
                     break;
             }
 
@@ -150,9 +193,126 @@ final class CirugiaController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN_QUIROFANO');
 
+        $consumo = new ConsumoQuirurgico();
+        $consumoForm = $this->createForm(ConsumoQuirurgicoType::class, $consumo);
+
+        $protocolo = new ProtocoloOperatorio();
+        $protocoloForm = $this->createForm(ProtocoloOperatorioType::class, $protocolo);
+
         return $this->render('cirugia/ver.html.twig', [
             'cirugia' => $cirugia,
+            'consumoForm' => $consumoForm->createView(),
+            'protocoloForm' => $protocoloForm->createView(),
         ]);
+    }
+
+    #[Route('/{id}/registrar-consumo', name: 'app_cirugia_registrar_consumo', methods: ['POST'])]
+    public function registrarConsumo(Request $request, Cirugia $cirugia, EntityManagerInterface $em): Response
+    {
+        $consumo = new ConsumoQuirurgico();
+        $form = $this->createForm(ConsumoQuirurgicoType::class, $consumo);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // 1. Set the automatic audit and timestamp fields
+            $consumo->setCirugia($cirugia);
+
+            // 2. THE INVENTORY DEDUCTION ENGINE (Only if hospital provided it)
+            if (!$consumo->isAportadoPorPaciente()) {
+
+                $cantidadRequerida = $consumo->getCantidad();
+                $articulo = $consumo->getArticuloInventario();
+
+                // Fetch batches for this item that have stock, ordered by expiration date (FIFO)
+                $lotesDisponibles = $em->getRepository(InventarioLote::class)->createQueryBuilder('l')
+                    ->where('l.articulo = :articulo')
+                    ->andWhere('l.cantidadActual > 0')
+                    ->setParameter('articulo', $articulo)
+                    ->orderBy('l.fechaCaducidad', 'ASC') // Closest to expiring first!
+                    ->getQuery()
+                    ->getResult();
+
+                // Check if we even have enough total stock before modifying anything
+                $stockTotal = array_reduce($lotesDisponibles, fn($sum, $lote) => $sum + $lote->getCantidadActual(), 0);
+
+                if ($stockTotal < $cantidadRequerida) {
+                    $this->addFlash('danger', 'No hay stock suficiente en inventario para ' . $articulo->getNombre() . '. Stock actual: ' . $stockTotal);
+                    // Redirect back to the surgery view with the consumos tab open
+                    return $this->redirect($this->generateUrl('app_cirugia_ver', ['id' => $cirugia->getId()]) . '#consumos');
+                }
+
+                // Loop through batches and deduct stock
+                foreach ($lotesDisponibles as $lote) {
+                    if ($cantidadRequerida <= 0) {
+                        break; // We have fulfilled the requested amount
+                    }
+
+                    $stockEnLote = $lote->getCantidadActual();
+                    $cantidadADescontar = min($stockEnLote, $cantidadRequerida);
+
+                    // Update the physical batch
+                    $lote->setCantidadActual($stockEnLote - $cantidadADescontar);
+
+                    // Create the Audit Trail Movement for this specific batch
+                    $movimiento = new MovimientoInventario();
+                    $movimiento->setInventarioLote($lote);
+                    $movimiento->setTipoMovimiento(TipoMovimientoInventario::SALIDA);
+                    $movimiento->setCantidad(-$cantidadADescontar); // Negative because it's leaving
+                    $movimiento->setReferenciaOrigen('Kardex Quirúrgico - Cirugía ID: ' . $cirugia->getId());
+
+                    $em->persist($movimiento);
+
+                    // Reduce the remaining amount we need to find
+                    $cantidadRequerida -= $cantidadADescontar;
+                }
+            }
+
+            // 3. Save the Kardex entry itself
+            $em->persist($consumo);
+            $em->flush();
+
+            $this->addFlash('success', 'Insumo registrado correctamente en el Kardex.');
+        } else {
+            // If someone bypassed the JS validation
+            $this->addFlash('error', 'Error en el formulario. Verifique los datos ingresados.');
+        }
+
+        // Redirect back to the surgery view, focusing on the Consumos tab
+        return $this->redirect($this->generateUrl('app_cirugia_ver', ['id' => $cirugia->getId()]) . '#consumos');
+    }
+
+    #[Route('/{id}/redactar-protocolo', name: 'app_cirugia_redactar_protocolo', methods: ['POST'])]
+    public function redactarProtocolo(Request $request, Cirugia $cirugia, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_DOCTOR');
+
+        // Security Check: Only allow writing if the surgery actually started or finished
+        if (in_array($cirugia->getEstado()->value, ['programada', 'cancelada'])) {
+            $this->addFlash('error', 'No puede redactar un protocolo para una cirugía que no se ha realizado.');
+            return $this->redirect($this->generateUrl('app_cirugia_ver', ['id' => $cirugia->getId()]) . '#protocolo');
+        }
+
+        $protocolo = $cirugia->getProtocoloOperatorio() ?? new ProtocoloOperatorio();
+
+        $form = $this->createForm(ProtocoloOperatorioType::class, $protocolo);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // If it's a new protocol, set the immutable data
+            if (!$protocolo->getId()) {
+                $protocolo->setCirugia($cirugia);
+                $cirugia->setProtocoloOperatorio($protocolo);
+            }
+
+            $em->persist($protocolo);
+            $em->flush();
+
+            $this->addFlash('success', 'El Protocolo Operatorío ha sido firmado y guardado exitosamente.');
+        }
+
+        return $this->redirect($this->generateUrl('app_cirugia_ver', ['id' => $cirugia->getId()]) . '#protocolo');
     }
 
     // 2. EDIT SCHEDULE

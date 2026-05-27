@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Consulta;
 use App\Entity\MainConfiguration;
 use App\Entity\Prescripciones;
+use App\Entity\User;
 use App\Enum\AuditTipos;
 use App\Enum\PrescripcionesEstados;
 use App\Form\PrescripcionesType;
@@ -107,9 +108,11 @@ final class PrescripcionesController extends AbstractController
         $mainConfig = $entityManager->getRepository(MainConfiguration::class)->find(1);
 
         // Pass the consultation and its active prescriptions to the view
+        $doctor = $entityManager->getRepository(User::class)->find($prescripcion->getUidCreate());
         $html = $this->renderView('prescripciones/pdf_template.html.twig', [
             'consulta' => $consulta,
             'prescripcion' => $prescripcion,
+            'doctor' => $doctor,
             'mainConfig' => $mainConfig,
         ]);
 

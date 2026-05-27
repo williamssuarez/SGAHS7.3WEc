@@ -12,7 +12,141 @@
 {% endblock %}
 
 {% block body %}
-    <div class="col-md-6">
+    <div class="col-md-8 col-lg-7 mx-auto"> {# Slightly wider and centered for better reading #}
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden mb-5">
+
+            {# --- HEADER: Dynamic Color & Status --- #}
+            <div class="card-header bg-primary text-white p-4 border-0">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h4 class="mb-1 fw-bold"><i class="bi bi-file-earmark-medical me-2"></i> Detalle de Solicitud</h4>
+                        <p class="mb-0 text-white-50 small">
+                            Registrada el {{ entity.created|date('d/m/Y') }}
+                            <span class="fst-italic">({{ entity.created|time_ago }})</span>
+                        </p>
+                    </div>
+                    <div>
+                        {% set badge = entity.citasSolicitudesEstadosBadgeConfig %}
+                        <span class="badge bg-light text-dark shadow-sm px-3 py-2 rounded-pill fs-6 border">
+                        {{ badge.label }}
+                    </span>
+                    </div>
+                </div>
+            </div>
+
+            {# --- BODY: The Information Grid --- #}
+            <div class="card-body p-4 bg-light">
+
+                <h6 class="text-uppercase text-muted fw-bold mb-3">
+                    <i class="bi bi-info-circle text-primary"></i> Información General
+                </h6>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-white border rounded-3 shadow-sm h-100">
+                            <small class="text-muted d-block mb-1">Especialidad Requerida</small>
+                            <span class="fw-bold fs-5 text-dark">{{ entity.especialidad.nombre }}</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-white border rounded-3 shadow-sm h-100">
+                            <small class="text-muted d-block mb-1">Motivo de Consulta</small>
+                            <span class="fw-bold text-dark">{{ entity.motivoConsulta }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {# --- CONDITIONAL: The "Ticket" (If Assigned) --- #}
+                {% if cita %}
+                    <h6 class="text-uppercase text-muted fw-bold mb-3 mt-2">
+                        <i class="bi bi-calendar-check text-success"></i> Cita Confirmada
+                    </h6>
+
+                    <div class="card border-success border-2 shadow-sm rounded-4 mb-2">
+                        <div class="card-body p-4">
+                            <div class="row g-4">
+                                {# Date & Time #}
+                                <div class="col-md-6 border-end">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3 text-success">
+                                            <i class="bi bi-calendar-event fs-3"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block text-uppercase fw-bold">Fecha Asignada</small>
+                                            <strong class="fs-5 text-dark d-block">{{ cita.fecha|date('d/m/Y', false) }}</strong>
+                                            <span class="text-secondary fw-medium">
+                                            <i class="bi bi-clock"></i> {{ cita.horaInicio|date('H:i', false) }} - {{ cita.horaFin|date('H:i', false) }}
+                                        </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {# Location #}
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3 text-primary">
+                                            <i class="bi bi-geo-alt fs-3"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block text-uppercase fw-bold">Doctor / Ubicación</small>
+                                            <strong class="fs-5 text-dark d-block">{{ cita.consultorio.nombre }}</strong>
+                                            <span class="text-secondary fw-medium">{{ cita.consultorio.ubicacion }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4 text-muted">
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted fw-bold">Estado actual de la cita:</span>
+                                <span class="badge bg-success rounded-pill px-3 py-2 fs-6 shadow-sm">
+                                <i class="bi bi-check-circle me-1"></i> {{ cita.estadoCita.readableText }}
+                            </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# --- CONDITIONAL: Empty State (If Pending) --- #}
+                {% else %}
+                    <div class="alert alert-warning border-warning shadow-sm d-flex align-items-center rounded-3 mt-4" role="alert">
+                        <i class="bi bi-clock-history fs-2 me-3 text-warning"></i>
+                        <div>
+                            <strong class="d-block text-dark">Pendiente de Asignación</strong>
+                            <small class="text-muted">Su cita aún está en cola de espera. Le notificaremos en cuanto se le asigne una fecha y consultorio.</small>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            {# --- FOOTER: Actions --- #}
+            <div class="card-footer bg-white p-4 border-top">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a class="btn btn-outline-secondary px-4 fw-bold shadow-sm" href="{{ path('app_citas_solicitudes_index') }}">
+                        <i class="bi bi-arrow-left me-1"></i> Volver
+                    </a>
+
+                    {#<a class="btn btn-outline-success px-4 fw-bold shadow-sm" href="{{ path('app_public_verifications_verify_cita', {'uuid': cita.uuid}) }}">
+                        Ver QR
+                    </a>#}
+
+                    <div>
+                        {% if entity.estadoSolicitud.value == 'pending' %}
+                            <a class="btn btn-success px-4 fw-bold shadow-sm" href="{{ path('app_citas_solicitudes_edit', {'uuid': entity.uuid}) }}">
+                                <i class="bi bi-pencil-square me-1"></i> Editar Solicitud
+                            </a>
+                        {% elseif cita.estadoCita.value == 'expected' %}
+                            <a class="btn btn-danger px-4 fw-bold shadow-sm" target="_blank" href="{{ path('app_citas_solicitudes_voucher', {'uuid': entity.uuid}) }}">
+                                <i class="bi bi-file-pdf me-1"></i> Ver Comprobante
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {#<div class="col-md-6">
         <div class="card card-primary card-outline mb-4">
             <div class="card-body">
                 <div class="mb-3">
@@ -47,9 +181,17 @@
                         </h4>
                     </div>
                     <div class="mb-3">
-                        <h3>Consultorio</h3>
+                        <h3>Doctor</h3>
                         <h4>
                             {{ cita.consultorio.nombre }} ({{ cita.consultorio.ubicacion }})
+                        </h4>
+                    </div>
+                    <div class="mb-3">
+                        <h3>Estado</h3>
+                        <h4>
+                            <span class="badge rounded-pill bg-primary">
+                            {{ cita.estadoCita.readableText }}
+                        </span>
                         </h4>
                     </div>
                 {% endif %}
@@ -82,5 +224,5 @@
             </div>
 
         </div>
-    </div>
+    </div>#}
 {% endblock %}

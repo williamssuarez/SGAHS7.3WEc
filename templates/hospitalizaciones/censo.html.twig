@@ -11,7 +11,15 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid px-4">
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="container-fluid px-4" data-controller="assign-doctor">
         <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
             <h2 class="text-dark fw-bold">
                 <i class="bi bi-clipboard2-pulse"></i> Censo de Hospitalización
@@ -86,9 +94,19 @@
                                         </td>
                                         <td>
                                             {% if hospitalizacion.medicoTratante %}
-                                                Dr(a). {{ hospitalizacion.medicoTratante.usuario.nombre }}
+                                                <button class="btn btn-sm btn-outline-primary shadow-sm"
+                                                        data-action="click->assign-doctor#openModal"
+                                                        data-id="{{ hospitalizacion.id }}"
+                                                        title="Cambiar Médico">
+                                                    Dr(a). {{ hospitalizacion.medicoTratante.internalProfile.nombre }}
+                                                    <i class="bi bi-pencil ms-1"></i>
+                                                </button>
                                             {% else %}
-                                                <span class="text-danger small"><i class="bi bi-exclamation-triangle"></i> Sin Asignar</span>
+                                                <button class="btn btn-sm btn-danger shadow-sm fw-bold"
+                                                        data-action="click->assign-doctor#openModal"
+                                                        data-id="{{ hospitalizacion.id }}">
+                                                    <i class="bi bi-person-plus-fill me-1"></i> Asignar
+                                                </button>
                                             {% endif %}
                                         </td>
                                         <td class="text-end">
@@ -112,6 +130,39 @@
                     </div>
                 </div>
             {% endfor %}
+
+            {# --- THE HIDDEN MODAL --- #}
+            <div class="modal fade" data-assign-doctor-target="modal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title fw-bold"><i class="bi bi-person-badge"></i> Asignar Médico Tratante</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body p-4">
+                            <form data-assign-doctor-target="form" data-action="submit->assign-doctor#submitForm">
+                                <div class="mb-4">
+                                    {# We manually render the field to attach the Stimulus target to it #}
+                                    {{ form_label(asignarMedicoForm.medico) }}
+                                    {{ form_widget(asignarMedicoForm.medico, {
+                                        'attr': {
+                                            'data-assign-doctor-target': 'select'
+                                        }
+                                    }) }}
+                                </div>
+
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-light me-2" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-primary fw-bold px-4">
+                                        <i class="bi bi-check-lg"></i> Guardar Asignación
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% endif %}
     </div>
 {% endblock %}

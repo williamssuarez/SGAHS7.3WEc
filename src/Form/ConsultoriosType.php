@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Consultorios;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -16,7 +17,7 @@ class ConsultoriosType extends AbstractType
     {
         $builder
             ->add('nombre', TextType::class, [
-                'label' => 'Nombre del consultorio',
+                'label' => 'Nombre del doctor',
                 'label_attr' => [
                     'class' => 'form-label'
                 ],
@@ -27,6 +28,18 @@ class ConsultoriosType extends AbstractType
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar un nombre'),
                 ]
+            ])
+            ->add('cedula', NumberType::class, [
+                'label' => 'Cedula del doctor',
+                'label_attr' => [
+                    'class' => 'form-label'
+                ],
+                'attr' => [
+                    'class' => 'form-control number-only',
+                    'maxlength' => '8',
+                    'minlength' => '6'
+                ],
+                'required' => true,
             ])
             ->add('ubicacion', TextType::class, [
                 'label' => 'Ubicacion del consultorio',

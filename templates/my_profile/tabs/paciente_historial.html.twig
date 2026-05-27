@@ -14,7 +14,6 @@
                 <th>#</th>
                 <th>Accion</th>
                 <th>Detalles</th>
-                <th>Direccion IP</th>
                 <th>Creado por</th>
                 <th>Fecha Creada</th>
             </tr>
@@ -25,13 +24,6 @@
                     <td>{{ loop.index }}</td>
                     <td>{{ entity.tipoAudit.getReadableText }}</td>
                     <td>{{ entity.descripcion }}</td>
-                    <td>{{ entity.direccionIp }}</td>
-                    {#<td>
-                        {% set badge = entity.prescripcionesEstadosBadgeConfig %}
-                        <span class="badge rounded-pill {{ badge.class }}">
-                                {{ badge.label }}
-                            </span>
-                    </td>#}
                     <td>{{ entity.uidCreate|public_username|title }}</td>
                     <td><strong>{{ entity.created|date('d-m-Y H:i') }}</strong> <i>({{ entity.created|time_ago }})</i></td>
                 </tr>

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Audit;
 use App\Entity\Emergencia;
 use App\Entity\EvolucionHospitalaria;
 use App\Entity\Hospitalizaciones;
@@ -9,6 +10,7 @@ use App\Entity\IndicacionMedica;
 use App\Entity\KardexEnfermeria;
 use App\Entity\SignosVitalesHospitalarios;
 use App\Entity\VisitaHospitalaria;
+use App\Enum\AuditTipos;
 use App\Enum\CamaEstados;
 use App\Enum\EmergenciasEstados;
 use App\Enum\HospitalizacionEstados;
@@ -16,10 +18,13 @@ use App\Enum\IndicacionMedicaEstado;
 use App\Form\AltaHospitalariaType;
 use App\Form\AsignarCamaHospitalizacionType;
 use App\Form\AsignarCamaType;
+use App\Form\AsignarMedicoType;
 use App\Form\EvolucionHospitalariaType;
 use App\Form\IndicacionMedicaType;
 use App\Form\SignosVitalesType;
 use App\Repository\HospitalizacionesRepository;
+use App\Repository\UserRepository;
+use App\Service\AuditService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,10 +51,8 @@ class HospitalizacionController extends AbstractController
     }
 
     #[Route('/censo', name: 'app_hospitalizacion_censo', methods: ['GET'])]
-    public function censo(HospitalizacionesRepository $hospitalizacionRepository): Response
+    public function censo(HospitalizacionesRepository $hospitalizacionRepository, UserRepository $userRepository): Response
     {
-        // Require the doctor/nurse roles
-        $this->denyAccessUnlessGranted('ROLE_INTERNAL');
 
         $activeAdmissions = $hospitalizacionRepository->findActiveCensus();
 
@@ -60,18 +63,47 @@ class HospitalizacionController extends AbstractController
             $groupedCenso[$areaName][] = $hospitalizacion;
         }
 
+        // Fetch your doctors using your custom method
+        $medicos = $userRepository->getActivesDoctorsforTable();
+
+        // Create the form, passing the doctors array
+        $form = $this->createForm(AsignarMedicoType::class, null, [
+            'medicos' => $medicos
+        ]);
+
         return $this->render('hospitalizaciones/censo.html.twig', [
             'groupedCenso' => $groupedCenso,
+            'asignarMedicoForm' => $form->createView(),
         ]);
     }
 
-    #[Route('/{id}/expediente', name: 'app_hospitalizacion_expediente', methods: ['GET'])]
-    public function expediente(Hospitalizaciones $hospitalizacion): Response
+    #[Route('/{id}/asignar-medico-ajax', name: 'app_hospitalizacion_asignar_medico_ajax', methods: ['POST'])]
+    public function asignarMedicoAjax(Request $request, Hospitalizaciones $hospitalizacion, UserRepository $userRepo, EntityManagerInterface $em): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_INTERNAL');
+        $medicoId = $request->request->get('medico_id');
+
+        if (!$medicoId) {
+            return $this->json(['success' => false, 'message' => 'ID de médico no recibido'], 400);
+        }
+
+        $medico = $userRepo->find($medicoId);
+
+        if ($medico) {
+            $hospitalizacion->setMedicoTratante($medico);
+            $em->flush();
+
+            return $this->json(['success' => true]);
+        }
+
+        return $this->json(['success' => false, 'message' => 'Médico no encontrado'], 404);
+    }
+
+    #[Route('/{id}/expediente', name: 'app_hospitalizacion_expediente', methods: ['GET'])]
+    public function expediente(Hospitalizaciones $hospitalizacion, UserRepository $userRepository): Response
+    {
 
         // Security check: Make sure they are actually admitted (or discharged, if viewing history)
-        if ($hospitalizacion->getEstado() === HospitalizacionEstados::PENDING_BED->value) {
+        if ($hospitalizacion->getEstado() === HospitalizacionEstados::PENDING_BED) {
             $this->addFlash('warning', 'Este paciente aún no tiene cama asignada.');
             return $this->redirectToRoute('app_hospitalizacion_admisiones');
         }
@@ -111,20 +143,28 @@ class HospitalizacionController extends AbstractController
             'action' => $this->generateUrl('app_hospitalizacion_dar_alta', ['id' => $hospitalizacion->getId()])
         ]);
 
+        // Fetch your doctors using your custom method
+        $medicos = $userRepository->getActivesDoctorsforTable();
+
+        // Create the form, passing the doctors array
+        $form = $this->createForm(AsignarMedicoType::class, null, [
+            'medicos' => $medicos
+        ]);
+
         return $this->render('hospitalizaciones/expediente.html.twig', [
             'entity' => $hospitalizacion,
             'evolucionForm' => $evolucionForm->createView(),
             'indicacionForm' => $indicacionForm->createView(),
             'vitalsChartData' => $vitalsChartData,
             'vitalsForm' => $vitalsForm->createView(),
-            'altaForm' => $altaForm->createView()
+            'altaForm' => $altaForm->createView(),
+            'asignarMedicoForm' => $form->createView(),
         ]);
     }
 
     #[Route('/{id}/dar-alta', name: 'app_hospitalizacion_dar_alta', methods: ['POST'])]
-    public function darAlta(Request $request, Hospitalizaciones $hospitalizacion, EntityManagerInterface $em): Response
+    public function darAlta(Request $request, Hospitalizaciones $hospitalizacion, EntityManagerInterface $em, AuditService $auditService): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_DOCTOR');
 
         // Prevent discharging someone twice
         if ($hospitalizacion->getEstado() === HospitalizacionEstados::DISCHARGED) {
@@ -161,6 +201,17 @@ class HospitalizacionController extends AbstractController
 
             // Note: We DO NOT set $hospitalizacion->setCamaActual(null).
             // We keep the relation intact so historical records show exactly which bed they were in!
+
+            $mensaje = 'El paciente se ha dado de alta correctamente.';
+            $auditService->persistAudit(
+                AuditTipos::HOSPITALIZATION_DISCHARGE,
+                $mensaje,
+                $hospitalizacion->getPaciente(),
+                null,
+                null,
+                null,
+                $hospitalizacion,
+            );
 
             $em->flush();
 

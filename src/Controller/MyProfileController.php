@@ -75,10 +75,10 @@ final class MyProfileController extends AbstractController
         $inmunizaciones = $entityManager->getRepository(PacienteInmunizaciones::class)->getActivesforTable($paciente->getId());
 
         //historial completo
-        /*$allHistory = $entityManager->getRepository(Audit::class)->findBy([
+        $allHistory = $entityManager->getRepository(Audit::class)->findBy([
             'paciente' => $paciente->getId(),
             'status' => $entityManager->getRepository(StatusRecord::class)->getActive()
-        ], ['id' => 'DESC']);*/
+        ], ['id' => 'DESC']);
 
         return $this->render('my_profile/show.html.twig', [
             'paciente' => $paciente,
@@ -90,7 +90,7 @@ final class MyProfileController extends AbstractController
             'enfermedades' => $enfermedades,
             'discapacidades' => $discapacidades,
             'inmunizaciones' => $inmunizaciones,
-            //'allHistory' => $allHistory,
+            'allHistory' => $allHistory,
         ]);
     }
 

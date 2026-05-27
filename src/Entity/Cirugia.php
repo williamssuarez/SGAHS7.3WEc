@@ -83,9 +83,19 @@ class Cirugia
     #[ORM\OneToMany(targetEntity: Audit::class, mappedBy: 'cirugia')]
     private Collection $audits;
 
+    /**
+     * @var Collection<int, ConsumoQuirurgico>
+     */
+    #[ORM\OneToMany(targetEntity: ConsumoQuirurgico::class, mappedBy: 'cirugia')]
+    private Collection $consumoQuirurgicos;
+
+    #[ORM\OneToOne(mappedBy: 'cirugia', cascade: ['persist', 'remove'])]
+    private ?ProtocoloOperatorio $protocoloOperatorio = null;
+
     public function __construct()
     {
         $this->audits = new ArrayCollection();
+        $this->consumoQuirurgicos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -376,6 +386,53 @@ class Cirugia
                 $audit->setCirugia(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ConsumoQuirurgico>
+     */
+    public function getConsumoQuirurgicos(): Collection
+    {
+        return $this->consumoQuirurgicos;
+    }
+
+    public function addConsumoQuirurgico(ConsumoQuirurgico $consumoQuirurgico): static
+    {
+        if (!$this->consumoQuirurgicos->contains($consumoQuirurgico)) {
+            $this->consumoQuirurgicos->add($consumoQuirurgico);
+            $consumoQuirurgico->setCirugia($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsumoQuirurgico(ConsumoQuirurgico $consumoQuirurgico): static
+    {
+        if ($this->consumoQuirurgicos->removeElement($consumoQuirurgico)) {
+            // set the owning side to null (unless already changed)
+            if ($consumoQuirurgico->getCirugia() === $this) {
+                $consumoQuirurgico->setCirugia(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getProtocoloOperatorio(): ?ProtocoloOperatorio
+    {
+        return $this->protocoloOperatorio;
+    }
+
+    public function setProtocoloOperatorio(ProtocoloOperatorio $protocoloOperatorio): static
+    {
+        // set the owning side of the relation if necessary
+        if ($protocoloOperatorio->getCirugia() !== $this) {
+            $protocoloOperatorio->setCirugia($this);
+        }
+
+        $this->protocoloOperatorio = $protocoloOperatorio;
 
         return $this;
     }

@@ -15,6 +15,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Entity(repositoryClass: CitasConfiguracionesRepository::class)]
 #[Assert\Callback(callback: 'validateEdadPrioridad')]
 #[Assert\Callback(callback: 'validateCapacity')]
+#[Assert\Callback(callback: 'validateDates')]
 #[ORM\HasLifecycleCallbacks]
 #[UniqueEntity(fields: ['especialidad'], message: 'Esta especialidad ya tiene una configuración activa.')]
 class CitasConfiguraciones
@@ -221,6 +222,18 @@ class CitasConfiguraciones
                 ->setParameter('{{ limit }}', (string)$totalCapacity)
                 ->atPath('maxPacientesDia')
                 ->addViolation();
+        }
+    }
+
+    #[Assert\Callback]
+    public function validateDates(ExecutionContextInterface $context): void
+    {
+        if ($this->horaInicio !== null && $this->horaFin !== null) {
+            if ($this->horaFin < $this->horaInicio) {
+                $context->buildViolation('La hora de finalización no puede ser anterior al inicio.')
+                    ->atPath('fechaFin')
+                    ->addViolation();
+            }
         }
     }
 

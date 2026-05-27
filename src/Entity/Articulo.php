@@ -44,9 +44,16 @@ class Articulo
     #[ORM\OneToMany(targetEntity: InventarioLote::class, mappedBy: 'articulo')]
     private Collection $inventarioLotes;
 
+    /**
+     * @var Collection<int, ConsumoQuirurgico>
+     */
+    #[ORM\OneToMany(targetEntity: ConsumoQuirurgico::class, mappedBy: 'articuloInventario')]
+    private Collection $consumoQuirurgicos;
+
     public function __construct()
     {
         $this->inventarioLotes = new ArrayCollection();
+        $this->consumoQuirurgicos = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -155,6 +162,36 @@ class Articulo
             // set the owning side to null (unless already changed)
             if ($inventarioLote->getArticulo() === $this) {
                 $inventarioLote->setArticulo(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ConsumoQuirurgico>
+     */
+    public function getConsumoQuirurgicos(): Collection
+    {
+        return $this->consumoQuirurgicos;
+    }
+
+    public function addConsumoQuirurgico(ConsumoQuirurgico $consumoQuirurgico): static
+    {
+        if (!$this->consumoQuirurgicos->contains($consumoQuirurgico)) {
+            $this->consumoQuirurgicos->add($consumoQuirurgico);
+            $consumoQuirurgico->setArticuloInventario($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsumoQuirurgico(ConsumoQuirurgico $consumoQuirurgico): static
+    {
+        if ($this->consumoQuirurgicos->removeElement($consumoQuirurgico)) {
+            // set the owning side to null (unless already changed)
+            if ($consumoQuirurgico->getArticuloInventario() === $this) {
+                $consumoQuirurgico->setArticuloInventario(null);
             }
         }
 

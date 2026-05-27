@@ -17,6 +17,7 @@
                 <th>Direccion IP</th>
                 <th>Creado por</th>
                 <th>Fecha Creada</th>
+                <th>Acciones</th>
             </tr>
             </thead>
             <tbody>
@@ -34,6 +35,18 @@
                     </td>#}
                     <td>{{ entity.uidCreate|public_username|title }}</td>
                     <td><strong>{{ entity.created|date('d-m-Y H:i') }}</strong> <i>({{ entity.created|time_ago }})</i></td>
+                    <td>
+                        {% if entity.emergencia  %}
+                        <a class="btn btn-sm btn-primary" href="{{ path('app_emergencia_show_record', {'id': entity.emergencia.id}) }}" target="_blank">
+                            <i class="bi bi-list-columns"></i> Ver Expediente
+                        </a>
+                        {% elseif entity.hospitalizacion %}
+                            <a class="btn btn-sm btn-primary" href="{{ path('app_hospitalizacion_expediente', {'id': entity.hospitalizacion.id}) }}" target="_blank">
+                                <i class="bi bi-list-columns"></i> Ver Expediente
+                            </a>
+                        {% endif %}
+
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
