@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nueva Parroquia del municipio {{ municipio.nombre }}{% endblock %}
+
+{% block titlewrap %}
+    Nueva Parroquia del municipio {{ municipio.nombre }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_estado_show', {'id': estado.id}) }}">Municipios del estado {{ estado.nombre }}</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_municipio_show', {'id': municipio.id}) }}">Parroquias del municipio {{ municipio.nombre }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nueva Parroquia</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('parroquia/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

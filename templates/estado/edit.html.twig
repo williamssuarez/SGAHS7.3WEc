@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Estado {{ estado.nombre }}{% endblock %}
+
+{% block titlewrap %}
+    Editar Estado {{ estado.nombre }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_estado_index') }}">Estados</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Estado {{ estado.nombre }}</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+
+            {{ include('estado/_form.html.twig', {'button_label': 'Actualizar'}) }}
+        </div>
+    </div>
+{% endblock %}

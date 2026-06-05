@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sectores de la parroquia {{ entity.nombre }}{% endblock %}
+
+{% block titlewrap %}
+    Sectores de la parroquia {{ entity.nombre }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_estado_show', {'id': estado.id}) }}">Municipios del estado {{ estado.nombre }}</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_municipio_show', {'id': municipio.id}) }}">Parroquias del municipio {{ municipio.nombre }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Sectores</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="col-md-12">
+        <div class="card card-primary card-outline mb-4">
+            <div class="card-header">
+                <h3 class="card-title">
+                    Sectores de la parroquia: <strong>{{ entity.nombre }}</strong>
+                    <a class="btn btn-sm btn-outline-success" href="{{ path('app_parroquia_edit', {'id': entity.id}) }}">
+                        <i class="bi bi-pencil-square"></i> Editar
+                    </a>
+                </h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped dtHere">
+                    <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Creado Por</th>
+                        <th>Actualizado Por</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for sector in entity.sectores %}
+                        <tr class="align-middle">
+                            <td>{{ sector.nombre }}</td>
+                            <td>
+                                {{ sector.uidCreate|public_username|title }}
+                                <strong>{{ sector.created|date('d-m-Y H:i') }}</strong> <i>({{ sector.created|time_ago }})</i>
+                            </td>
+                            <td>
+                                {{ sector.uidUpdate|public_username|title }}
+                                <strong>{{ sector.updated|date('d-m-Y H:i') }}</strong> <i>({{ sector.updated|time_ago }})</i>
+                            </td>
+                            <td>
+                                <a class="btn btn-success" href="{{ path('app_sector_edit', {'id': sector.id}) }}">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-primary" href="{{ path('app_municipio_show', {'id': municipio.id}) }}">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+
+                            <div class="d-flex">
+                                <a class="btn btn-primary" href="{{ path('app_sector_new_from_parroquia', {'id': entity.id}) }}">
+                                    <i class="bi bi-plus-circle"></i> Nuevo Sector
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

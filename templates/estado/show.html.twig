@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Municipios del estado {{ entity.nombre }}{% endblock %}
+
+{% block titlewrap %}
+    Municipios del estado {{ entity.nombre }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_estado_index') }}">Estados</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Municipios del estado {{ entity.nombre }}</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="col-md-12">
+        <div class="card card-primary card-outline mb-4">
+            <div class="card-header">
+                <h3 class="card-title">
+                    Municipios del estado: <strong>{{ entity.nombre }}</strong>
+                    <a class="btn btn-sm btn-outline-success" href="{{ path('app_estado_edit', {'id': entity.id}) }}">
+                        <i class="bi bi-pencil-square"></i> Editar
+                    </a>
+                </h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped dtHere">
+                    <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Creado Por</th>
+                        <th>Actualizado Por</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for municipio in entity.municipios %}
+                        <tr class="align-middle">
+                            <td>{{ municipio.nombre }}</td>
+                            <td>
+                                {{ entity.uidCreate|public_username|title }}
+                                <strong>{{ entity.created|date('d-m-Y H:i') }}</strong> <i>({{ entity.created|time_ago }})</i>
+                            </td>
+                            <td>
+                                {{ entity.uidUpdate|public_username|title }}
+                                <strong>{{ entity.updated|date('d-m-Y H:i') }}</strong> <i>({{ entity.updated|time_ago }})</i>
+                            </td>
+                            <td>
+                                <a class="btn btn-secondary" href="{{ path('app_municipio_show', {'id': municipio.id}) }}">
+                                    <i class="bi bi-search"></i> Parroquias
+                                </a>
+                                <a class="btn btn-success" href="{{ path('app_municipio_edit', {'id': municipio.id}) }}">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-primary" href="{{ path('app_estado_index') }}">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+
+                            <div class="d-flex">
+                                <a class="btn btn-primary" href="{{ path('app_municipio_new_from_estado', {'id': entity.id}) }}">
+                                    <i class="bi bi-plus-circle"></i> Nuevo Municipio
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

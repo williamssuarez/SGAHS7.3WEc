@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Parroquias del municipio {{ entity.nombre }}{% endblock %}
+
+{% block titlewrap %}
+    Parroquias del municipio {{ entity.nombre }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_estado_index') }}">Estados</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_estado_show', {'id': estado.id}) }}">Municipios del estado {{ estado.nombre }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Parroquias del municipio {{ entity.nombre }}</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    <div class="col-md-12">
+        <div class="card card-primary card-outline mb-4">
+            <div class="card-header">
+                <h3 class="card-title">
+                    Parroquias del municipio: <strong>{{ entity.nombre }}</strong>
+                    <a class="btn btn-sm btn-outline-success" href="{{ path('app_municipio_edit', {'id': entity.id}) }}">
+                        <i class="bi bi-pencil-square"></i> Editar
+                    </a>
+                </h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped dtHere">
+                    <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Creado Por</th>
+                        <th>Actualizado Por</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for parroquia in entity.parroquias %}
+                        <tr class="align-middle">
+                            <td>{{ parroquia.nombre }}</td>
+                            <td>
+                                {{ parroquia.uidCreate|public_username|title }}
+                                <strong>{{ parroquia.created|date('d-m-Y H:i') }}</strong> <i>({{ parroquia.created|time_ago }})</i>
+                            </td>
+                            <td>
+                                {{ parroquia.uidUpdate|public_username|title }}
+                                <strong>{{ parroquia.updated|date('d-m-Y H:i') }}</strong> <i>({{ parroquia.updated|time_ago }})</i>
+                            </td>
+                            <td>
+                                <a class="btn btn-secondary" href="{{ path('app_parroquia_show', {'id': parroquia.id}) }}">
+                                    <i class="bi bi-search"></i> Sectores
+                                </a>
+                                <a class="btn btn-success" href="{{ path('app_parroquia_edit', {'id': parroquia.id}) }}">
+                                    <i class="bi bi-pencil-square"></i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-primary" href="{{ path('app_estado_show', {'id': estado.id}) }}">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+
+                            <div class="d-flex">
+                                <a class="btn btn-primary" href="{{ path('app_parroquia_new_from_municipio', {'id': entity.id}) }}">
+                                    <i class="bi bi-plus-circle"></i> Nueva Parroquia
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

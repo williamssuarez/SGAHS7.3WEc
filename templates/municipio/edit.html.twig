@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Municipio del estado {{ estado.nombre }}{% endblock %}
+
+{% block titlewrap %}
+    Editar Municipio del estado {{ estado.nombre }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_estado_index') }}">Estados</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_estado_show', {'id': estado.id}) }}">Municipios del estado {{ estado.nombre }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Municipio</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-6">
+        <div class="card card-primary card-outline mb-4">
+
+            {{ include('municipio/_form.html.twig', {'button_label': 'Actualizar'}) }}
+        </div>
+    </div>
+{% endblock %}

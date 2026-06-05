@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Parroquia index{% endblock %}
+
+{% block body %}
+    <h1>Parroquia index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>UidCreate</th>
+                <th>UidUpdate</th>
+                <th>Created</th>
+                <th>Updated</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for parroquium in parroquias %}
+            <tr>
+                <td>{{ parroquium.id }}</td>
+                <td>{{ parroquium.nombre }}</td>
+                <td>{{ parroquium.uidCreate }}</td>
+                <td>{{ parroquium.uidUpdate }}</td>
+                <td>{{ parroquium.created ? parroquium.created|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ parroquium.updated ? parroquium.updated|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_parroquia_show', {'id': parroquium.id}) }}">show</a>
+                    <a href="{{ path('app_parroquia_edit', {'id': parroquium.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_parroquia_new') }}">Create new</a>
+{% endblock %}
