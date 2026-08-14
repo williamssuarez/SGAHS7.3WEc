@@ -1,0 +1,5 @@
+# translations/security.es.yaml
+
+"Invalid credentials.": "El correo o la contraseña son incorrectos."
+
+"Too many failed login attempts, please try again in %minutes% minutes.": "Por su seguridad, hemos bloqueado el acceso. Intente nuevamente en %minutes% minutos."

@@ -25,6 +25,7 @@ class DiscapacidadesType extends AbstractType
                 'attr' => [
                     'class' => 'form-control'
                 ],
+                'required' => true,
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar un nombre'),
                 ]
