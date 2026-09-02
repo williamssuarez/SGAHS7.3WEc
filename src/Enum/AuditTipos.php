@@ -55,6 +55,9 @@ enum AuditTipos: string
     case INVENTORY_BATCH_EXIT = 'inventory_batch_exit';
     case INVENTORY_BATCH_ADJUSTMENT = 'inventory_batch_adjustment';
     case INVENTORY_BATCH_EDITION = 'inventory_batch_edition';
+    case EXTERNAL_USER_ADMIN_EDIT = 'external_user_admin_edit';
+    case EXTERNAL_USER_ADMIN_BLOCK = 'external_user_admin_block';
+    case EXTERNAL_USER_ADMIN_UNBLOCK = 'external_user_admin_unblock';
 
     /**
      * Retorna un texto amigable para el usuario final.
@@ -108,6 +111,9 @@ enum AuditTipos: string
             self::INVENTORY_BATCH_EXIT => 'Inventario: Salida de lote',
             self::INVENTORY_BATCH_ADJUSTMENT => 'Inventario: Ajuste de lote',
             self::INVENTORY_BATCH_EDITION => 'Inventario: Edicion de lote',
+            self::EXTERNAL_USER_ADMIN_EDIT => 'Edicion de datos de usuario externo por administrador',
+            self::EXTERNAL_USER_ADMIN_BLOCK => 'Bloqueo de cuenta de usuario externo por administrador',
+            self::EXTERNAL_USER_ADMIN_UNBLOCK => 'Desbloqueo de cuenta de usuario externo por administrador',
         };
     }
 

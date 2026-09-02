@@ -33,6 +33,7 @@ class AppExtension extends AbstractExtension
             new TwigFilter('public_username_email', $this->getPublicUsernameAndEmail(...)),
             new TwigFilter('filter_severity', $this->filterSeverity(...)),
             new TwigFilter('time_since', $this->getTimeSince(...)),
+            new TwigFilter('status_badge', $this->formatStatusBadge(...), ['is_safe' => ['html']]),
         ];
     }
 
@@ -314,5 +315,32 @@ class AppExtension extends AbstractExtension
         }
 
         return '';
+    }
+
+    /**
+     * Returns badges depending on the record's status
+     *
+     * @param StatusRecord|null $status
+     * @return string
+     */
+    public function formatStatusBadge(?StatusRecord $status): string
+    {
+        if (!$status) {
+            return '<span class="badge bg-secondary"><i class="bi bi-question-circle"></i> Desconocido</span>';
+        }
+
+        $codigo = $status->getCodigo();
+        $titulo = $status->getTitulo();
+
+        // Match the specific codes from your image_76f6a7.png database table
+        return match ($codigo) {
+            'ACTRECORD'  => sprintf('<span class="badge bg-success fs-6 shadow-sm"><i class="bi bi-check-circle"></i> %s</span>', $titulo),
+            'REMRECORD'  => sprintf('<span class="badge bg-danger fs-6 shadow-sm"><i class="bi bi-trash"></i> %s</span>', $titulo),
+            'DISHRECORD' => sprintf('<span class="badge bg-secondary fs-6 shadow-sm"><i class="bi bi-slash-circle"></i> %s</span>', $titulo),
+            'NEXPREC'    => sprintf('<span class="badge bg-warning text-dark fs-6 shadow-sm"><i class="bi bi-clock-history"></i> %s</span>', $titulo),
+            'NLOKREC'    => sprintf('<span class="badge bg-dark fs-6 shadow-sm"><i class="bi bi-lock-fill"></i> %s</span>', $titulo),
+            'CEXPREC'    => sprintf('<span class="badge bg-warning text-dark fs-6 shadow-sm"><i class="bi bi-key-fill"></i> %s</span>', $titulo),
+            default      => sprintf('<span class="badge bg-light text-dark border fs-6 shadow-sm">%s</span>', $titulo),
+        };
     }
 }

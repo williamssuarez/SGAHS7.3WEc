@@ -32,6 +32,10 @@ class StatusRecordRepository extends ServiceEntityRepository
         return $this->_getByCode('NLOKREC');
     }
 
+    public function getExpiredCredentialUser(){
+        return $this->_getByCode('CEXPREC');
+    }
+
     private function _getByCode($code){
 
         $qb = $this->createQueryBuilder('_u')

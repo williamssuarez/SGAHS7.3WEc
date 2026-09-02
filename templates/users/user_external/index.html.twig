@@ -31,6 +31,7 @@
             <tr>
                 <th>Email</th>
                 <th>Nombre</th>
+                <th>Estado</th>
                 <th>Acciones</th>
             </tr>
             </thead>
@@ -39,6 +40,7 @@
                 <tr class="align-middle">
                     <td>{{ user.email }}</td>
                     <td>{{ user.externalNameorNothing }}</td>
+                    <td>{{ user.status|status_badge }}</td>
                     <td>
                         <div class="btn-group">
                             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -58,16 +60,24 @@
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
+                                {% if user.status.codigo == 'NLOKREC' %}
+                                    <li>
+                                        <a class="dropdown-item" href="{{ path('app_user_external_unblock', {'id': user.id}) }}">
+                                            <i class="bi bi-unlock-fill"></i>
+                                            Desbloquear Cuenta
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <a class="dropdown-item" href="{{ path('app_user_external_block', {'id': user.id}) }}">
+                                            <i class="bi bi-lock-fill"></i>
+                                            Bloquear Cuenta
+                                        </a>
+                                    </li>
+                                {% endif %}
                                 <li>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="bi bi-person-fill-lock"></i>
-                                        Desactivar Cuenta
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="bi bi-unlock-fill"></i>
-                                        Reiniciar Clave
+                                    <a class="dropdown-item" href="{{ path('app_user_external_force_reset', {'id': user.id}) }}">
+                                        <i class="bi bi-unlock-fill"></i> Forzar Reinicio
                                     </a>
                                 </li>
                             </ul>

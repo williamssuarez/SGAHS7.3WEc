@@ -38,6 +38,12 @@ services:
       - mercure_config:/config
 ###< symfony/mercure-bundle ###
 
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "1025:1025" # SMTP port (Symfony sends here)
+      - "8025:8025" # Web UI (You view emails here)
+
 volumes:
   database_data:
 

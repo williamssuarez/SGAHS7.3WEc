@@ -9,6 +9,7 @@ use App\Entity\Paciente;
 use App\Entity\Inmunizaciones;
 use App\Enum\SangreTipos;
 use App\Form\DataTransformer\PhoneNumberTransformer;
+use App\Form\Type\LocationSelectorType;
 use App\Form\Type\PhoneType;
 use App\Repository\AlergenosRepository;
 use App\Repository\DiscapacidadesRepository;
@@ -128,9 +129,13 @@ class PacienteType extends AbstractType
                 ],
                 'attr' => ['class' => 'noSrchSelect']
             ])
-            ->add('telefono', PhoneType::class, [ // This will use the entity's 'telefono' property
+            ->add('telefono', PhoneType::class, [
                 'label' => 'Teléfono',
                 //'mapped' => false,
+            ])
+
+            ->add('location', LocationSelectorType::class, [
+                'label' => false,
             ])
             ->add('correo', EmailType::class, [
                 'label' => 'Correo del Paciente',

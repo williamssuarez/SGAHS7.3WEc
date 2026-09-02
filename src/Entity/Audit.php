@@ -45,6 +45,15 @@ class Audit
     #[ORM\ManyToOne(inversedBy: 'audits')]
     private ?InventarioLote $inventarioLote = null;
 
+    #[ORM\ManyToOne(inversedBy: 'audits')]
+    private ?User $usuario = null;
+
+    #[ORM\ManyToOne(inversedBy: 'audits')]
+    private ?InternalProfile $internalProfile = null;
+
+    #[ORM\ManyToOne(inversedBy: 'audits')]
+    private ?ExternalProfile $externalProfile = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -154,6 +163,42 @@ class Audit
     public function setInventarioLote(?InventarioLote $inventarioLote): static
     {
         $this->inventarioLote = $inventarioLote;
+
+        return $this;
+    }
+
+    public function getUsuario(): ?User
+    {
+        return $this->usuario;
+    }
+
+    public function setUsuario(?User $usuario): static
+    {
+        $this->usuario = $usuario;
+
+        return $this;
+    }
+
+    public function getInternalProfile(): ?InternalProfile
+    {
+        return $this->internalProfile;
+    }
+
+    public function setInternalProfile(?InternalProfile $internalProfile): static
+    {
+        $this->internalProfile = $internalProfile;
+
+        return $this;
+    }
+
+    public function getExternalProfile(): ?ExternalProfile
+    {
+        return $this->externalProfile;
+    }
+
+    public function setExternalProfile(?ExternalProfile $externalProfile): static
+    {
+        $this->externalProfile = $externalProfile;
 
         return $this;
     }

@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enum\SangreTipos;
 use App\Repository\ExternalProfileRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -55,9 +57,16 @@ class ExternalProfile
     #[ORM\Column(type: 'uuid')]
     private ?Uuid $uuid = null;
 
+    /**
+     * @var Collection<int, Audit>
+     */
+    #[ORM\OneToMany(targetEntity: Audit::class, mappedBy: 'externalProfile')]
+    private Collection $audits;
+
     public function __construct()
     {
         $this->uuid = Uuid::v4();
+        $this->audits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -227,6 +236,36 @@ class ExternalProfile
     public function setUuid(Uuid $uuid): static
     {
         $this->uuid = $uuid;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Audit>
+     */
+    public function getAudits(): Collection
+    {
+        return $this->audits;
+    }
+
+    public function addAudit(Audit $audit): static
+    {
+        if (!$this->audits->contains($audit)) {
+            $this->audits->add($audit);
+            $audit->setExternalProfile($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAudit(Audit $audit): static
+    {
+        if ($this->audits->removeElement($audit)) {
+            // set the owning side to null (unless already changed)
+            if ($audit->getExternalProfile() === $this) {
+                $audit->setExternalProfile(null);
+            }
+        }
 
         return $this;
     }

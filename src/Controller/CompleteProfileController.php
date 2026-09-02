@@ -65,4 +65,16 @@ final class CompleteProfileController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/profile/bloqueada', name: 'app_account_blocked')]
+    public function accountBlocked(): Response
+    {
+        return $this->render('profile/blocked.html.twig');
+    }
+
+    #[Route('/profile/expirada', name: 'app_account_expired')]
+    public function accountExpired(): Response
+    {
+        return $this->render('profile/force_reset.html.twig');
+    }
 }

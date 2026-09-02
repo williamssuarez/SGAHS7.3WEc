@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Verifica tu Correo{% endblock %}</title>
+    <title>Verificacion Pendiente - SGAHS</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
     {% block stylesheets %}
         {{ encore_entry_link_tags('app') }}
@@ -12,38 +12,62 @@
         {{ encore_entry_script_tags('app') }}
     {% endblock %}
 </head>
-<body class="login-page bg-body-secondary">
-<div class="login-logo">
-    <a href="#"><b>SGAHS</b></a>
-</div>
-<!-- /.login-logo -->
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h3 class="mb-0">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    Verifica tu Correo
-                    <i class="fa-solid fa-at"></i>
-                </h3>
-            </div>
-            <div class="card-body login-card-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="alert alert-primary" role="alert">
-                            <h4>
-                                Hemos enviado un enlace de verificacion al correo <strong>{{ app.user.email }}</strong>, por favor, ingrese y presionelo para validar la cuenta...
-                            </h4>
-                            <br>
-                            <small>Si no esta en la bandeja de entrada, verifique en la carpeta de <strong>SPAM</strong></small>
+    <body class="login-page bg-body-secondary d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+        <div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow-lg border-warning">
+                    <div class="card-header bg-warning text-dark text-center py-3">
+                        <h4 class="mb-0 fw-bold"><i class="bi bi-envelope-exclamation"></i> Verificación Pendiente</h4>
+                    </div>
+                    <div class="card-body p-4 text-center">
+
+                        {# ADD THIS BLOCK TO CATCH THE CONTROLLER FLASH MESSAGES #}
+                        {% for label, messages in app.flashes %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show text-start shadow-sm" role="alert">
+                                    <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                        <p class="text-muted fs-5 mb-4">
+                            Para continuar usando el sistema, debes confirmar tu dirección de correo electrónico.
+                        </p>
+                        <div class="alert alert-info text-start shadow-sm mb-4">
+                            <i class="bi bi-info-circle-fill me-2"></i> Hemos enviado un enlace de confirmación a tu correo. Revisa tu bandeja de entrada o carpeta de Spam.
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a href="{{ path('app_logout') }}" class="btn btn-outline-secondary fw-bold shadow-sm">
+                                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                            </a>
+                        </div>
+                        <div class="mt-4 text-center">
+                            <p class="text-muted small fw-bold" id="timer-text">Puedes solicitar un nuevo enlace en <span id="countdown" class="text-danger">120</span> segundos.</p>
+
+                            <a href="{{ path('app_verify_resend_email') }}" id="resend-btn" class="btn btn-outline-primary fw-bold shadow-sm d-none">
+                                <i class="bi bi-send"></i> Reenviar Correo de Confirmación
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- /.login-card-body -->
         </div>
-    </div>
-</div>
-<!-- /.login-box -->
-</body>
+        <script>
+            let timeLeft = 120;
+            const timerText = document.getElementById('timer-text');
+            const countdownSpan = document.getElementById('countdown');
+            const resendBtn = document.getElementById('resend-btn');
+
+            const timer = setInterval(() => {
+                timeLeft--;
+                countdownSpan.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timerText.classList.add('d-none');
+                    resendBtn.classList.remove('d-none');
+                }
+            }, 1000);
+        </script>
+    </body>
 </html>

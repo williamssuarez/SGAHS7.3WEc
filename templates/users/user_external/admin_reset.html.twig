@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Forzar Reinicio de Clave{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_user_external_index') }}">Usuarios</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Reinicio de Clave</li>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-0">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm border-warning">
+                    <div class="card-header bg-warning text-dark py-3">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-envelope-exclamation"></i> Enviar Enlace de Recuperación</h5>
+                    </div>
+                    <div class="card-body p-4">
+
+                        <div class="alert alert-info border-info mb-4">
+                            Está a punto de invalidar la sesión actual del usuario <strong>{{ target_user.email }}</strong> y enviarle un enlace seguro para establecer una nueva contraseña.
+                        </div>
+
+                        {{ form_start(form) }}
+
+                        <div class="mb-3">
+                            {{ form_row(form.reason) }}
+                        </div>
+
+                        <hr class="my-4">
+
+                        <p class="text-muted small fw-bold text-uppercase mb-2"><i class="bi bi-shield-lock"></i> Autorización Requerida</p>
+                        <div class="mb-4">
+                            {{ form_row(form.password) }}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('app_user_external_index') }}" class="btn btn-outline-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-warning fw-bold text-dark shadow-sm">
+                                <i class="bi bi-send"></i> Enviar Correo
+                            </button>
+                        </div>
+
+                        {{ form_end(form) }}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,12 +1,17 @@
-<div style="background-color: #f4f7f6; padding: 20px; font-family: sans-serif;">
-    <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; border: 1px solid #e1e4e8;">
-        <div style="background-color: #4F46E5; padding: 20px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">Confirm Your Account</h1>
+<div style="font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 40px 0;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div style="background-color: #0d6efd; padding: 20px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px;">SGAHS</h1>
         </div>
         <div style="padding: 30px; text-align: center;">
-            <p style="font-size: 16px; color: #333;">Welcome! Please click the button below to verify your email address and unlock your dashboard.</p>
-            <a href="{{ signedUrl|raw }}" style="display: inline-block; padding: 12px 24px; background-color: #4F46E5; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin: 20px 0;">Verify Email Address</a>
-            <p style="font-size: 12px; color: #666;">This link will expire in {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.</p>
+            <h2 style="font-size: 20px; color: #212529;">¡Bienvenido al sistema!</h2>
+            <p style="font-size: 16px; color: #6c757d; margin-bottom: 30px;">
+                Por favor confirma tu dirección de correo electrónico haciendo clic en el botón de abajo.
+            </p>
+            <a href="{{ signedUrl }}" style="background-color: #0d6efd; color: #ffffff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Confirmar mi Correo</a>
+            <p style="font-size: 14px; color: #6c757d; margin-top: 30px;">
+                <em>Este enlace expirará en {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.</em>
+            </p>
         </div>
     </div>
 </div>

@@ -1,0 +1,114 @@
+<div class="row g-4">
+
+    {# LEFT COLUMN: Profile Card #}
+    <div class="col-md-4">
+        <div class="card card-primary card-outline shadow-sm h-100">
+            <div class="card-body text-center mt-4">
+
+                {# Profile Picture #}
+                {% if user.avatarUrl starts with 'http' %}
+                    {# It is a Google/External URL, leave this trash as it is #}
+                    {% set final_src = user.avatarUrl %}
+                    {% set original_src = user.avatarUrl %}
+                {% else %}
+                    {# It is a Local File, apply filters and services  #}
+                    {% set full_photo_path = external_user_photo_path ~ user.avatarUrl %}
+                    {% set final_src = asset(full_photo_path) | imagine_filter('patient_profile') %}
+                    {% set original_src = asset(full_photo_path) | imagine_filter('patient_viewer_full') %}
+                {% endif %}
+                {% set avatar = final_src|default('build/assets/img/user2-160x160.jpg') %}
+
+                <div class="mb-4">
+                    <img
+                        {#src="{{ asset('uploads/profiles/' ~ profile.foto) }}"#}
+                        src="{{ asset(avatar) }}"
+                        class="rounded-circle img-thumbnail shadow-sm"
+                        alt="Foto de Perfil"
+                        style="width: 150px; height: 150px; object-fit: cover;">
+                </div>
+
+                <h3 class="fw-bold mb-1">{{ profile.nombre|default('Nombre') }} {{ profile.apellido|default('No registrado') }}</h3>
+                <p class="text-muted mb-3"><i class="bi bi-person-badge"></i> CI / Doc: <strong>{{ profile.nroDocumento|default('No registrado') }}</strong></p>
+
+                <div class="d-flex justify-content-center gap-2 mb-4">
+                    {{ user.status|status_badge }}
+                    {% if profile.sangreTipo %}
+                        <span class="badge bg-danger fs-6"><i class="bi bi-droplet-fill"></i> {{ profile.sangreTipo.readableText }}</span>
+                    {% endif %}
+                </div>
+
+            </div>
+            <div class="card-footer bg-white text-center">
+                <a href="{{ path('app_user_external_edit', {'id': user.id}) }}" class="btn btn-primary shadow-sm w-100">
+                    <i class="bi bi-pencil-square"></i> Editar Perfil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# RIGHT COLUMN: Detailed Information #}
+    <div class="col-md-8">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-header bg-light border-bottom">
+                <h5 class="card-title mb-0 fw-bold text-secondary">
+                    <i class="bi bi-info-circle"></i> Información General
+                </h5>
+            </div>
+            <div class="card-body p-4">
+
+                <div class="row g-4">
+                    {# Account Details #}
+                    <div class="col-sm-6">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Correo Electrónico</small>
+                        <p class="fs-5 mb-0"><i class="bi bi-envelope text-primary me-2"></i> {{ user.email }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Teléfono</small>
+                        <p class="fs-5 mb-0"><i class="bi bi-telephone text-primary me-2"></i> {{ profile.telefono|default('No registrado') }}</p>
+                    </div>
+
+                    <div class="col-12"><hr class="text-muted my-2"></div>
+
+                    {# Demographics #}
+                    <div class="col-sm-6">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Fecha de Nacimiento</small>
+                        <p class="fs-5 mb-0">
+                            <i class="bi bi-calendar text-primary me-2"></i>
+                            {% if profile.fechaNacimiento %}
+                                {{ profile.fechaNacimiento|date('d/m/Y', false) }}
+                                <span class="text-muted fs-6 fst-italic">({{ date('now').diff(date(profile.fechaNacimiento)).y }} años)</span>
+                            {% else %}
+                                No registrada
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-sm-6">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Sexo Biológico</small>
+                        <p class="fs-5 mb-0">
+                            {% if profile.sexo == 'M' or profile.sexo == 'Masculino' %}
+                                <i class="bi bi-gender-male text-primary me-2"></i> Masculino
+                            {% elseif profile.sexo == 'F' or profile.sexo == 'Femenino' %}
+                                <i class="bi bi-gender-female text-danger me-2"></i> Femenino
+                            {% else %}
+                                <i class="bi bi-gender-ambiguous text-secondary me-2"></i> {{ profile.sexo|default('No registrado') }}
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="col-12"><hr class="text-muted my-2"></div>
+
+                    {# Address #}
+                    <div class="col-12">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Dirección de Residencia</small>
+                        <p class="fs-5 mb-0">
+                            <i class="bi bi-geo-alt text-primary me-2"></i>
+                            {{ profile.direccion|default('No se ha proporcionado una dirección de residencia.') }}
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,8 @@
+# config/packages/rate_limiter.yaml
+framework:
+    rate_limiter:
+        # The name of the limiter (will be injected as resendEmailLimiter)
+        resend_email:
+            policy: 'sliding_window'
+            limit: 1
+            interval: '2 minutes'

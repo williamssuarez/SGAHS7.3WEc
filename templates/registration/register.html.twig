@@ -19,7 +19,11 @@
             </div>
         </div>
         <div class="input-group mb-3">
-            {{ form_widget(registrationForm.plainPassword) }}
+            {{ form_widget(registrationForm.plainPassword.first) }}
+            <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
+        </div>
+        <div class="input-group mb-3">
+            {{ form_widget(registrationForm.plainPassword.second) }}
             <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
         </div>
         <!--begin::Row-->

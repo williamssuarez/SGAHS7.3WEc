@@ -1,0 +1,49 @@
+{{ form_start(form, {
+    'attr': {
+        'data-controller': 'submit-once',
+        'data-action': 'submit->submit-once#disable'
+    }
+}) }}
+{{ include('base/_form_error_messages.html.twig') }}
+<div class="row g-4">
+    <div class="col-md-12">
+        <div class="card card-primary card-outline shadow-sm h-100">
+            <div class="card-body p-4">
+                <div class="alert alert-info mt-2">
+                    <h5><i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Auditoria de Procesos</strong></h5>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.password ) }}</small>
+                        {{form_widget( form.password ) }}
+                    </div>
+                    <div class="col-12">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.reason ) }}</small>
+                        {{form_widget( form.reason ) }}
+                    </div>
+                </div>
+
+                {# fucking ugly ass line break #}
+                <br>
+
+                {# Bottom Actions (Navigation) #}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('app_user_external_index') }}" class="btn btn-outline-secondary shadow-sm px-4">
+                                <i class="bi bi-arrow-left"></i> Volver a la lista
+                            </a>
+
+                            <div class="d-flex">
+                                <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
+                                    {{ button_label|default('Guardar') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}

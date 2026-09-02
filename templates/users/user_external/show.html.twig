@@ -1,66 +1,25 @@
-{% extends '../../base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}User{% endblock %}
+{% block title %}Perfil de Usuario Externo{% endblock %}
+
+{% block titlewrap %}
+    Detalles del Usuario
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_user_external_index') }}">Usuarios</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ profile.nombre|default('Usuario') }}</li>
+{% endblock %}
 
 {% block body %}
-    <h1>User</h1>
+    <div class="container-fluid px-0">
+        {{ include('users/user_external/_show.html.twig') }}
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ user.id }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ user.email }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ user.password }}</td>
-            </tr>
-            <tr>
-                <th>IsVerified</th>
-                <td>{{ user.isVerified ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>FirstName</th>
-                <td>{{ user.firstName }}</td>
-            </tr>
-            <tr>
-                <th>LastName</th>
-                <td>{{ user.lastName }}</td>
-            </tr>
-            <tr>
-                <th>AvatarUrl</th>
-                <td>{{ user.avatarUrl }}</td>
-            </tr>
-            <tr>
-                <th>UidCreate</th>
-                <td>{{ user.uidCreate }}</td>
-            </tr>
-            <tr>
-                <th>UidUpdate</th>
-                <td>{{ user.uidUpdate }}</td>
-            </tr>
-            <tr>
-                <th>Created</th>
-                <td>{{ user.created ? user.created|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Updated</th>
-                <td>{{ user.updated ? user.updated|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_user_index') }}">back to list</a>
-
-    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
-
-    {{ include('user_internal/_delete_form.html.twig') }}
+        {# Bottom Actions (Navigation) #}
+        <div class="mt-4">
+            <a href="{{ path('app_user_external_index') }}" class="btn btn-outline-secondary shadow-sm px-4">
+                <i class="bi bi-arrow-left"></i> Volver a la lista
+            </a>
+        </div>
+    </div>
 {% endblock %}

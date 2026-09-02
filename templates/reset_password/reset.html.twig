@@ -1,0 +1,23 @@
+{% extends 'resetBase.html.twig' %}
+
+{% block title %}Reiniciar Clave{% endblock %}
+
+{% block body %}
+    {{ form_start(form, {
+        'attr': {
+            'data-controller': 'submit-once',
+            'data-action': 'submit->submit-once#disable'
+        }
+    }) }}
+    {{ include('base/_form_error_messages.html.twig') }}
+        {{ form_row(form.plainPassword) }}
+
+        {# ugly ahh line break #}
+        <br>
+
+        <button type="submit" class="btn btn-success form-control" data-submit-once-target="submitButton">
+            {{ button_label|default('Reiniciar') }}
+        </button>
+        {#<button class="btn btn-primary">Reset password</button>#}
+    {{ form_end(form) }}
+{% endblock %}

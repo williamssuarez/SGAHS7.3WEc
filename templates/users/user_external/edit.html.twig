@@ -1,13 +1,176 @@
-{% extends '../../base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}Edit User{% endblock %}
+{% block title %}Perfil de Usuario Externo{% endblock %}
+
+{% block titlewrap %}
+    Detalles del Usuario
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_user_external_index') }}">Usuarios</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ profile.nombre|default('Usuario') }}</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Edit User</h1>
+    <div class="container-fluid px-0">
+        {{ form_start(form, {
+            'attr': {
+                'data-controller': 'submit-once',
+                'data-action': 'submit->submit-once#disable'
+            }
+        }) }}
+        {{ include('base/_form_error_messages.html.twig') }}
+            <div class="row g-4">
 
-    {{ include('user_internal/_form.html.twig', {'button_label': 'Update'}) }}
+                {# LEFT COLUMN: Profile Card #}
+                <div class="col-md-4">
+                    <div class="card card-primary card-outline shadow-sm h-100">
+                        <div class="card-body text-center mt-4">
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
+                            {# Profile Picture #}
+                            {% if user.avatarUrl starts with 'http' %}
+                                {# It is a Google/External URL, leave this trash as it is #}
+                                {% set final_src = user.avatarUrl %}
+                                {% set original_src = user.avatarUrl %}
+                            {% else %}
+                                {# It is a Local File, apply filters and services  #}
+                                {% set full_photo_path = external_user_photo_path ~ user.avatarUrl %}
+                                {% set final_src = asset(full_photo_path) | imagine_filter('patient_profile') %}
+                                {% set original_src = asset(full_photo_path) | imagine_filter('patient_viewer_full') %}
+                            {% endif %}
+                            {% set avatar = final_src|default('build/assets/img/user2-160x160.jpg') %}
 
-    {{ include('user_internal/_delete_form.html.twig') }}
+                            <div class="mb-4">
+                                <img
+                                    {#src="{{ asset('uploads/profiles/' ~ profile.foto) }}"#}
+                                    src="{{ asset(avatar) }}"
+                                    class="rounded-circle img-thumbnail shadow-sm"
+                                    alt="Foto de Perfil"
+                                    style="width: 150px; height: 150px; object-fit: cover;">
+                            </div>
+
+                            <h6 class="fw-bold">
+                                {{form_label( form.nombre ) }}
+                                {{form_widget( form.nombre ) }}
+                            </h6>
+                            <h6 class="fw-bold">
+                                {{form_label( form.apellido ) }}
+                                {{form_widget( form.apellido ) }}
+                            </h6>
+                            <h6 class="fw-bold">
+                                Documento
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{form_widget( form.tipoDocumento ) }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{form_widget( form.nroDocumento ) }}
+                                </div>
+                            </div>
+
+                            <h6 class="fw-bold">
+                                {{ form_label( form.sangreTipo ) }}
+                                {{ form_widget( form.sangreTipo ) }}
+                            </h6>
+
+                        </div>
+                    </div>
+                </div>
+
+                {# RIGHT COLUMN: Detailed Information #}
+                <div class="col-md-8">
+                    <div class="card shadow-sm h-100 border-0">
+                        <div class="card-header bg-light border-bottom">
+                            <h5 class="card-title mb-0 fw-bold text-secondary">
+                                <i class="bi bi-info-circle"></i> Información General
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+
+                            <div class="row g-4">
+                                {# Account Details #}
+                                <div class="col-sm-6">
+                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">Correo Electrónico</small>
+                                    <p class="fs-5 mb-0"><i class="bi bi-envelope text-primary me-2"></i> {{ user.email }}</p>
+                                </div>
+                                <div class="col-sm-6">
+                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{ form_label( form.telefono ) }}</small>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            {{form_widget( form.telefono.prefix ) }}
+                                        </div>
+                                        <div class="col-md-9">
+                                            {{form_widget( form.telefono.number ) }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12"><hr class="text-muted my-2"></div>
+
+                                {# Demographics #}
+                                <div class="col-sm-6">
+                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.fechaNacimiento ) }}</small>
+                                    {{form_widget( form.fechaNacimiento ) }}
+                                </div>
+                                <div class="col-sm-6">
+                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.sexo ) }}</small>
+                                    {{form_widget( form.sexo ) }}
+                                </div>
+
+                                <div class="col-12"><hr class="text-muted my-2"></div>
+
+                                {# Address #}
+                                <div class="col-12">
+                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.direccion ) }}</small>
+                                    {{form_widget( form.direccion ) }}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="card card-primary card-outline shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <div class="alert alert-info mt-2">
+                                <h5><i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Auditoria de Procesos</strong></h5>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.password ) }}</small>
+                                    {{form_widget( form.password ) }}
+                                </div>
+                                <div class="col-12">
+                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.reason ) }}</small>
+                                    {{form_widget( form.reason ) }}
+                                </div>
+                            </div>
+
+                            {# fucking ugly ass line break #}
+                            <br>
+
+                            {# Bottom Actions (Navigation) #}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="d-flex justify-content-between">
+                                        <a href="{{ path('app_user_external_index') }}" class="btn btn-outline-secondary shadow-sm px-4">
+                                            <i class="bi bi-arrow-left"></i> Volver a la lista
+                                        </a>
+
+                                        <div class="d-flex">
+                                            <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
+                                                {{ button_label|default('Guardar') }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{ form_end(form) }}
+    </div>
 {% endblock %}

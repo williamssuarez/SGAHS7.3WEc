@@ -7,11 +7,14 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
+use Symfony\Component\Validator\Constraints\PasswordStrength;
 
 class RegistrationFormType extends AbstractType
 {
@@ -21,12 +24,10 @@ class RegistrationFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Email'
+                    'placeholder' => 'Correo'
                 ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Debe ingresar un correo.',
-                    ]),
+                    new NotBlank(message: 'Debe ingresar un correo.'),
                 ],
             ])
             ->add('agreeTerms', CheckboxType::class, [
@@ -39,31 +40,40 @@ class RegistrationFormType extends AbstractType
                     'class' => 'form-check-input'
                 ],
                 'constraints' => [
-                    new IsTrue([
-                        'message' => 'Debe estar de acuerdo con los terminos.',
-                    ]),
+                    new IsTrue(message: 'Debe estar de acuerdo con los terminos.'),
                 ],
             ])
-            ->add('plainPassword', PasswordType::class, [
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
+            ->add('plainPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
+                'options' => [
+                    'attr' => [
+                        'autocomplete' => 'new-password',
+                    ],
+                ],
+                'first_options' => [
+                    'constraints' => [
+                        new NotBlank(message: 'Debe ingresar una clave.'),
+                        new Length(min: 12, max: 4096, minMessage: 'La clave debe ser al menos {{ limit }} caracteres'),
+                        new PasswordStrength(minScore: PasswordStrength::STRENGTH_MEDIUM),
+                        new NotCompromisedPassword(),
+                    ],
+                    'label' => 'Nueva Clave',
+                    'attr' => [
+                        'class' => 'form-control',
+                        'placeholder' => 'Nueva Clave',
+                    ],
+                    'required' => true,
+                ],
+                'second_options' => [
+                    'label' => 'Repita la Clave',
+                    'attr' => [
+                        'class' => 'form-control',
+                        'placeholder' => 'Repita la Clave',
+                    ],
+                    'required' => true,
+                ],
+                'invalid_message' => 'Las claves deben coincidir.',
                 'mapped' => false,
-                'attr' => [
-                    'autocomplete' => 'new-password',
-                    'class' => 'form-control',
-                    'placeholder' => 'Password'
-                ],
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Debe ingresar una clave',
-                    ]),
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'La clave debe ser de al menos {{ limit }} caracteres',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 4096,
-                    ]),
-                ],
             ])
         ;
     }

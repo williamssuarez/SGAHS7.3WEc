@@ -407,7 +407,7 @@ $(document).ready(function () {
     }
 });
 
-new Sortable(document.querySelector('.connectedSortable'), {
+/*new Sortable(document.querySelector('.connectedSortable'), {
     group: 'shared',
     handle: '.card-header',
 });
@@ -415,7 +415,7 @@ new Sortable(document.querySelector('.connectedSortable'), {
 const cardHeaders = document.querySelectorAll('.connectedSortable .card-header');
 cardHeaders.forEach((cardHeader) => {
     cardHeader.style.cursor = 'move';
-});
+});*/
 
 //ALL DOMCONTENTLOADED EVENTS GO HERE
 document.addEventListener('DOMContentLoaded', function () {
@@ -452,7 +452,7 @@ document.addEventListener('DOMContentLoaded', function () {
 /* Overlayscrollbars config end */
 
 // World map by jsVectorMap
-new jsVectorMap({
+/*new jsVectorMap({
     selector: '#world-map',
     map: 'world',
 });
@@ -540,10 +540,11 @@ const option_sparkline3 = {
 };
 
 const sparkline3 = new ApexCharts(document.querySelector('#sparkline-3'), option_sparkline3);
-sparkline3.render();
+sparkline3.render();*/
 
 /*Color Mode Toggler Start*/
-(() => {
+//CLAUSURADO DEBIDO A QUE NO FUNCIONA BIEN CON SELECT2
+/*(() => {
     "use strict";
 
     const storedTheme = localStorage.getItem("theme");
@@ -553,17 +554,17 @@ sparkline3.render();
             return storedTheme;
         }
 
-        return window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
+        return window.matchMedia("(prefers-color-scheme: light)").matches
+            ? "light"
+            : "dark";
     };
 
     const setTheme = function (theme) {
         if (
             theme === "auto" &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches
+            window.matchMedia("(prefers-color-scheme: light)").matches
         ) {
-            document.documentElement.setAttribute("data-bs-theme", "dark");
+            document.documentElement.setAttribute("data-bs-theme", "light");
         } else {
             document.documentElement.setAttribute("data-bs-theme", theme);
         }
@@ -621,5 +622,5 @@ sparkline3.render();
             });
         }
     });
-})();
+})();*/
 /*Color Mode Toggler End*/

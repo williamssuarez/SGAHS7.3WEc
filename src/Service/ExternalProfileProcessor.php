@@ -92,6 +92,7 @@ readonly class ExternalProfileProcessor
             $newPatient->setSexo($profile->getSexo());
             $newPatient->setCorreo($profile->getWebUser()->getEmail());
             $newPatient->setFoto($profile->getFoto());
+            $newPatient->setHasMarcaPaso(false);
 
             $this->entityManager->persist($newPatient);
             $profile->setPaciente($newPatient);

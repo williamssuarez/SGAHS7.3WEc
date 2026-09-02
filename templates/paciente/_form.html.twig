@@ -1,6 +1,6 @@
 {{ form_start(form, {
     'attr': {
-        'data-controller': 'submit-once',
+        'data-controller': 'submit-once cascading-location',
         'data-action': 'submit->submit-once#disable'
     }
 }) }}
@@ -15,6 +15,11 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab2" data-bs-toggle="tab" data-bs-target="#tab2-pane" type="button" role="tab" aria-controls="tab2-pane" aria-selected="false">
                 Contactos
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab3" data-bs-toggle="tab" data-bs-target="#tab3-pane" type="button" role="tab" aria-controls="tab3-pane" aria-selected="false">
+                Direcciones
             </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -81,16 +86,7 @@
             </div>
         </div>
         <div class="tab-pane fade" id="tab2-pane" role="tabpanel" aria-labelledby="tab2" tabindex="0">
-            <h3>Contactos y Direcciones</h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.direccion ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        {{form_widget( form.direccion ) }}
-                    </div>
-                </div>
-            </div>
+            <h3>Contactos</h3>
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -122,6 +118,54 @@
                         {{form_label( form.sexo ) }}
                         <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
                         {{form_widget( form.sexo ) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="tab3-pane" role="tabpanel" aria-labelledby="tab3" tabindex="0">
+            <h3>Direcciones</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.location.estado ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.location.estado ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.location.municipio ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.location.municipio ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.location.parroquia ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.location.parroquia ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.location.sector ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.location.sector ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.direccion ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.direccion ) }}
                     </div>
                 </div>
             </div>

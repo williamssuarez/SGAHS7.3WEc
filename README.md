@@ -79,6 +79,12 @@ Inicie el tunel
 cloudflared tunnel --url http://127.0.0.1:8000
 ```
 
+Para iniciar el servicio de correos de prueba (opcional)
+```bash
+php bin/console messenger:stop-workers
+php bin/console messenger:consume async -vv
+```
+
 Ahora abra Goocle Cloud Console, dirijase a APIs y Servicios -> Credenciales, click en el Client ID
 y agregue la nueva URI, ejemplo: https://random-words-here.trycloudflare.com/connect/google/check
 

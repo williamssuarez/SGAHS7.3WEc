@@ -96,30 +96,28 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $query->getResult();
     }
 
-    public function getActivesExternalsforTable()
+    public function getAllExternalsforTable()
     {
         // 1. Get the Status ID (Since we are writing raw SQL, we need the ID, not the object)
-        $activeStatusId = $this->getEntityManager()
+        /*$activeStatusId = $this->getEntityManager()
             ->getRepository(StatusRecord::class)
             ->getActive()
-            ->getId();
+            ->getId();*/
 
         // 2. Setup the Mapping (Tell Doctrine how to map the raw SQL result back to your User entity)
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(\App\Entity\User::class, 'u');
 
         // 3. Write the Raw SQL with the ::text cast
-        // Note: 'app_user' is the table name in DB. Check if yours is 'user' or 'app_user'
         $sql = "
         SELECT u.* FROM app_user u
-        WHERE u.status_id = :sts
-        AND (u.roles::text LIKE :role_external)
+        WHERE (u.roles::text LIKE :role_external)
     ";
 
         // 4. Create and Run the Query
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
 
-        $query->setParameter('sts', $activeStatusId);
+        /*$query->setParameter('sts', $activeStatusId);*/
         $query->setParameter('role_external', '%"ROLE_EXTERNAL"%');
 
         return $query->getResult();

@@ -164,6 +164,9 @@ class Paciente
     #[ORM\OneToMany(targetEntity: Cirugia::class, mappedBy: 'paciente')]
     private Collection $cirugias;
 
+    #[ORM\ManyToOne(inversedBy: 'pacientes')]
+    private ?Sector $sector = null;
+
     public function __construct()
     {
         $this->historiaPacientes = new ArrayCollection();
@@ -801,6 +804,18 @@ class Paciente
                 $cirugia->setPaciente(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSector(): ?Sector
+    {
+        return $this->sector;
+    }
+
+    public function setSector(?Sector $sector): static
+    {
+        $this->sector = $sector;
 
         return $this;
     }

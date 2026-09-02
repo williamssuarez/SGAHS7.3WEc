@@ -6,9 +6,12 @@ use App\Entity\Audit;
 use App\Entity\Cirugia;
 use App\Entity\Consulta;
 use App\Entity\Emergencia;
+use App\Entity\ExternalProfile;
 use App\Entity\Hospitalizaciones;
+use App\Entity\InternalProfile;
 use App\Entity\InventarioLote;
 use App\Entity\Paciente;
+use App\Entity\User;
 use App\Enum\AuditTipos;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -28,7 +31,10 @@ readonly class AuditService
         ?Cirugia $cirugia = null,
         ?Emergencia  $emergencia = null,
         ?Hospitalizaciones $hospitalizacion = null,
-        ?InventarioLote $inventarioLote = null
+        ?InventarioLote $inventarioLote = null,
+        ?User $usuario = null,
+        ?InternalProfile $internalProfile = null,
+        ?ExternalProfile $externalProfile = null,
     ): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -43,6 +49,9 @@ readonly class AuditService
         $log->setEmergencia($emergencia);
         $log->setHospitalizacion($hospitalizacion);
         $log->setInventarioLote($inventarioLote);
+        $log->setUsuario($usuario);
+        $log->setInternalProfile($internalProfile);
+        $log->setExternalProfile($externalProfile);
 
         $this->em->persist($log);
     }
@@ -55,7 +64,10 @@ readonly class AuditService
         ?Cirugia $cirugia = null,
         ?Emergencia  $emergencia = null,
         ?Hospitalizaciones $hospitalizacion = null,
-        ?InventarioLote $inventarioLote = null
+        ?InventarioLote $inventarioLote = null,
+        ?User $usuario = null,
+        ?InternalProfile $internalProfile = null,
+        ?ExternalProfile $externalProfile = null,
     ): void
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -70,6 +82,9 @@ readonly class AuditService
         $log->setEmergencia($emergencia);
         $log->setHospitalizacion($hospitalizacion);
         $log->setInventarioLote($inventarioLote);
+        $log->setUsuario($usuario);
+        $log->setInternalProfile($internalProfile);
+        $log->setExternalProfile($externalProfile);
 
         $this->em->persist($log);
         $this->em->flush();
@@ -83,7 +98,10 @@ readonly class AuditService
         ?Cirugia $cirugia = null,
         ?Emergencia  $emergencia = null,
         ?Hospitalizaciones $hospitalizacion = null,
-        ?InventarioLote $inventarioLote = null
+        ?InventarioLote $inventarioLote = null,
+        ?User $usuario = null,
+        ?InternalProfile $internalProfile = null,
+        ?ExternalProfile $externalProfile = null,
     ): void {
         $uow = $this->em->getUnitOfWork();
         $uow->computeChangeSets();
@@ -106,7 +124,7 @@ readonly class AuditService
 
         $mensaje = "Edición de " . (new \ReflectionClass($entity))->getShortName() . ": " . implode(', ', $details);
 
-        $this->persistAndFlushAudit($tipo, $mensaje, $paciente, $consulta, $cirugia, $emergencia, $hospitalizacion, $inventarioLote);
+        $this->persistAndFlushAudit($tipo, $mensaje, $paciente, $consulta, $cirugia, $emergencia, $hospitalizacion, $inventarioLote, $usuario, $internalProfile, $externalProfile);
     }
 
     public function persistEditionAudit(
@@ -117,7 +135,10 @@ readonly class AuditService
         ?Cirugia $cirugia = null,
         ?Emergencia  $emergencia = null,
         ?Hospitalizaciones $hospitalizacion = null,
-        ?InventarioLote $inventarioLote = null
+        ?InventarioLote $inventarioLote = null,
+        ?User $usuario = null,
+        ?InternalProfile $internalProfile = null,
+        ?ExternalProfile $externalProfile = null,
     ): void {
         $uow = $this->em->getUnitOfWork();
         $uow->computeChangeSets();
@@ -140,7 +161,7 @@ readonly class AuditService
 
         $mensaje = "Edición de " . (new \ReflectionClass($entity))->getShortName() . ": " . implode(', ', $details);
 
-        $this->persistAudit($tipo, $mensaje, $paciente, $consulta, $cirugia, $emergencia, $hospitalizacion, $inventarioLote);
+        $this->persistAudit($tipo, $mensaje, $paciente, $consulta, $cirugia, $emergencia, $hospitalizacion, $inventarioLote, $usuario, $internalProfile, $externalProfile);
     }
 
     private function formatValue($value): string

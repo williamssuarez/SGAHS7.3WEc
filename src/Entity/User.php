@@ -78,10 +78,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Hospitalizaciones::class, mappedBy: 'medicoTratante')]
     private Collection $hospitalizaciones;
 
+    /**
+     * @var Collection<int, Audit>
+     */
+    #[ORM\OneToMany(targetEntity: Audit::class, mappedBy: 'usuario')]
+    private Collection $audits;
+
     public function __construct()
     {
         $this->historiaPacientes = new ArrayCollection();
         $this->hospitalizaciones = new ArrayCollection();
+        $this->audits = new ArrayCollection();
     }
 
     public function getActiveProfile(): ?object
@@ -336,6 +343,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($hospitalizacione->getMedicoTratante() === $this) {
                 $hospitalizacione->setMedicoTratante(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Audit>
+     */
+    public function getAudits(): Collection
+    {
+        return $this->audits;
+    }
+
+    public function addAudit(Audit $audit): static
+    {
+        if (!$this->audits->contains($audit)) {
+            $this->audits->add($audit);
+            $audit->setUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAudit(Audit $audit): static
+    {
+        if ($this->audits->removeElement($audit)) {
+            // set the owning side to null (unless already changed)
+            if ($audit->getUsuario() === $this) {
+                $audit->setUsuario(null);
             }
         }
 

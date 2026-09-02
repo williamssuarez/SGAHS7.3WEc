@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Desbloquear perfil de Usuario Externo{% endblock %}
+
+{% block titlewrap %}
+    Desbloquear perfil de Usuario Externo
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_user_external_index') }}">Usuarios</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ profile.nombre|default('Usuario') }}</li>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-0">
+        {{ include('users/user_external/_admin_audit.html.twig') }}
+    </div>
+{% endblock %}
