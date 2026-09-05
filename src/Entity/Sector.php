@@ -31,14 +31,38 @@ class Sector
     #[ORM\OneToMany(targetEntity: Paciente::class, mappedBy: 'sector')]
     private Collection $pacientes;
 
+    /**
+     * @var Collection<int, InternalProfile>
+     */
+    #[ORM\OneToMany(targetEntity: InternalProfile::class, mappedBy: 'sector')]
+    private Collection $internalProfiles;
+
+    /**
+     * @var Collection<int, ExternalProfile>
+     */
+    #[ORM\OneToMany(targetEntity: ExternalProfile::class, mappedBy: 'sector')]
+    private Collection $externalProfiles;
+
     public function __construct()
     {
         $this->pacientes = new ArrayCollection();
+        $this->internalProfiles = new ArrayCollection();
+        $this->externalProfiles = new ArrayCollection();
     }
 
     public function __toString(): string
     {
         return $this->nombre;
+    }
+
+    public function displayFullLocation()
+    {
+        return sprintf('Edo. %s, municipio %s, parroquia %s, sector %s, ',
+            $this->getParroquia()->getMunicipio()->getEstado()->getNombre(),
+            $this->getParroquia()->getMunicipio()->getNombre(),
+            $this->getParroquia()->getNombre(),
+            $this->getNombre()
+        );
     }
 
     public function getId(): ?int
@@ -94,6 +118,66 @@ class Sector
             // set the owning side to null (unless already changed)
             if ($paciente->getSector() === $this) {
                 $paciente->setSector(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, InternalProfile>
+     */
+    public function getInternalProfiles(): Collection
+    {
+        return $this->internalProfiles;
+    }
+
+    public function addInternalProfile(InternalProfile $internalProfile): static
+    {
+        if (!$this->internalProfiles->contains($internalProfile)) {
+            $this->internalProfiles->add($internalProfile);
+            $internalProfile->setSector($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInternalProfile(InternalProfile $internalProfile): static
+    {
+        if ($this->internalProfiles->removeElement($internalProfile)) {
+            // set the owning side to null (unless already changed)
+            if ($internalProfile->getSector() === $this) {
+                $internalProfile->setSector(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ExternalProfile>
+     */
+    public function getExternalProfiles(): Collection
+    {
+        return $this->externalProfiles;
+    }
+
+    public function addExternalProfile(ExternalProfile $externalProfile): static
+    {
+        if (!$this->externalProfiles->contains($externalProfile)) {
+            $this->externalProfiles->add($externalProfile);
+            $externalProfile->setSector($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExternalProfile(ExternalProfile $externalProfile): static
+    {
+        if ($this->externalProfiles->removeElement($externalProfile)) {
+            // set the owning side to null (unless already changed)
+            if ($externalProfile->getSector() === $this) {
+                $externalProfile->setSector(null);
             }
         }
 

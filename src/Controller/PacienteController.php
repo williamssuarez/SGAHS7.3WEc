@@ -160,24 +160,30 @@ final class PacienteController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                // dejar que el servicio procese el form
+            // GUARD: If this is an AJAX request from our Stimulus controller, DO NOT SAVE.
+            // Skip this block and let it fall through to the render() method at the bottom.
+            if ($request->headers->get('X-Requested-With') !== 'XMLHttpRequest') {
 
-                $patientProcessor->processFormSubmission($paciente, $form->get('foto')->getData());
+                try {
+                    // dejar que el servicio procese el form
 
-                $auditService->persistEditionAndFlushAudit(
-                    $paciente,
-                    AuditTipos::PATIENT_EDIT,
-                    $paciente,
-                    null
-                );
+                    $patientProcessor->processFormSubmission($paciente, $form->get('foto')->getData());
 
-                $this->addFlash('success', 'Registro Editado.');
-                return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()], Response::HTTP_SEE_OTHER);
+                    $auditService->persistEditionAndFlushAudit(
+                        $paciente,
+                        AuditTipos::PATIENT_EDIT,
+                        $paciente,
+                        null
+                    );
 
-            } catch (BusinessRuleException $e) {
-                //Obtener el mensaje especifico y mostrar el error
-                $form->addError(new FormError($e->getMessage()));
+                    $this->addFlash('success', 'Registro Editado.');
+                    return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()], Response::HTTP_SEE_OTHER);
+
+                } catch (BusinessRuleException $e) {
+                    //Obtener el mensaje especifico y mostrar el error
+                    $form->addError(new FormError($e->getMessage()));
+                }
+
             }
         }
 

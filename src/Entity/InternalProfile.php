@@ -61,6 +61,9 @@ class InternalProfile
     #[ORM\OneToMany(targetEntity: Audit::class, mappedBy: 'internalProfile')]
     private Collection $audits;
 
+    #[ORM\ManyToOne(inversedBy: 'internalProfiles')]
+    private ?Sector $sector = null;
+
     public function __construct()
     {
         $this->especialidades = new ArrayCollection();
@@ -278,6 +281,18 @@ class InternalProfile
                 $audit->setInternalProfile(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSector(): ?Sector
+    {
+        return $this->sector;
+    }
+
+    public function setSector(?Sector $sector): static
+    {
+        $this->sector = $sector;
 
         return $this;
     }

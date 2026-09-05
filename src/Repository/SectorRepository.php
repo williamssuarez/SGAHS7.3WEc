@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Parroquia;
 use App\Entity\Sector;
 use App\Entity\StatusRecord;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -48,5 +49,13 @@ class SectorRepository extends ServiceEntityRepository
         ;
 
         return $query->getQuery()->getResult();
+    }
+
+    public function getByParroquiaQueryBuilder(?Parroquia $parroquia)
+    {
+        $qb = $this->createQueryBuilder('s');
+        return $parroquia
+            ? $qb->where('s.parroquia = :parroquia')->setParameter('parroquia', $parroquia)
+            : $qb->where('1 = 0');
     }
 }

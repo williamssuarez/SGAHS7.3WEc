@@ -3,7 +3,7 @@
 {% block body %}
     {{ form_start(form, {
         'attr': {
-            'data-controller': 'submit-once',
+            'data-controller': 'submit-once cascading-location',
             'data-action': 'submit->submit-once#disable'
         }
     }) }}
@@ -102,6 +102,56 @@
                 </div>
                 <div class="col-md-12">
                     {{form_widget( form.sexo ) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-group">
+                <div class="col-md-12">
+                    {{form_label( form.location.estado ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                </div>
+                <div class="col-md-12">
+                    {{form_widget( form.location.estado ) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-group">
+                <div class="col-md-12">
+                    {{form_label( form.location.municipio ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                </div>
+                <div class="col-md-12">
+                    {{form_widget( form.location.municipio ) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-group">
+                <div class="col-md-12">
+                    {{form_label( form.location.parroquia ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                </div>
+                <div class="col-md-12">
+                    {{form_widget( form.location.parroquia ) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-group">
+                <div class="col-md-12">
+                    {{form_label( form.location.sector ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                </div>
+                <div class="col-md-12">
+                    {{form_widget( form.location.sector ) }}
                 </div>
             </div>
         </div>

@@ -15,7 +15,7 @@
     <div class="container-fluid px-0">
         {{ form_start(form, {
             'attr': {
-                'data-controller': 'submit-once',
+                'data-controller': 'submit-once cascading-location',
                 'data-action': 'submit->submit-once#disable'
             }
         }) }}
@@ -97,10 +97,10 @@
                                 <div class="col-sm-6">
                                     <small class="text-muted text-uppercase fw-bold d-block mb-1">{{ form_label( form.telefono ) }}</small>
                                     <div class="row">
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             {{form_widget( form.telefono.prefix ) }}
                                         </div>
-                                        <div class="col-md-9">
+                                        <div class="col-md-8">
                                             {{form_widget( form.telefono.number ) }}
                                         </div>
                                     </div>
@@ -121,6 +121,22 @@
                                 <div class="col-12"><hr class="text-muted my-2"></div>
 
                                 {# Address #}
+                                <div class="col-6">
+                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.location.estado ) }}</small>
+                                    {{form_widget( form.location.estado ) }}
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.location.municipio ) }}</small>
+                                    {{form_widget( form.location.municipio ) }}
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.location.parroquia ) }}</small>
+                                    {{form_widget( form.location.parroquia ) }}
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.location.sector ) }}</small>
+                                    {{form_widget( form.location.sector ) }}
+                                </div>
                                 <div class="col-12">
                                     <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.direccion ) }}</small>
                                     {{form_widget( form.direccion ) }}

@@ -60,7 +60,14 @@
                     {# Account Details #}
                     <div class="col-sm-6">
                         <small class="text-muted text-uppercase fw-bold d-block mb-1">Correo Electrónico</small>
-                        <p class="fs-5 mb-0"><i class="bi bi-envelope text-primary me-2"></i> {{ user.email }}</p>
+                        <p class="fs-5 mb-0"><i class="bi bi-envelope text-primary me-2"></i>
+                            {{ user.email }}
+                            {% if user.isVerified %}
+                                <i class="bi bi-check-circle-fill" style="color: #138b00"></i>
+                            {% else %}
+                                <i class="bi bi-x-circle-fill" style="color: #8b0000"></i>
+                            {% endif %}
+                        </p>
                     </div>
                     <div class="col-sm-6">
                         <small class="text-muted text-uppercase fw-bold d-block mb-1">Teléfono</small>
@@ -102,6 +109,7 @@
                         <small class="text-muted text-uppercase fw-bold d-block mb-1">Dirección de Residencia</small>
                         <p class="fs-5 mb-0">
                             <i class="bi bi-geo-alt text-primary me-2"></i>
+                            {{ profile.sector.displayFullLocation }}
                             {{ profile.direccion|default('No se ha proporcionado una dirección de residencia.') }}
                         </p>
                     </div>

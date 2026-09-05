@@ -38,7 +38,14 @@
             <tbody>
             {% for user in users %}
                 <tr class="align-middle">
-                    <td>{{ user.email }}</td>
+                    <td>
+                        {{ user.email }}
+                        {% if user.isVerified %}
+                            <i class="bi bi-check-circle-fill" style="color: #138b00"></i>
+                        {% else %}
+                            <i class="bi bi-x-circle-fill" style="color: #8b0000"></i>
+                        {% endif %}
+                    </td>
                     <td>{{ user.externalNameorNothing }}</td>
                     <td>{{ user.status|status_badge }}</td>
                     <td>

@@ -419,7 +419,7 @@ cardHeaders.forEach((cardHeader) => {
 
 //ALL DOMCONTENTLOADED EVENTS GO HERE
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('IT LOADS CORRECTLY SO IDK WHATS WRONG');
+    //console.log('IT LOADS CORRECTLY SO IDK WHATS WRONG');
 
     //fullcalendar
     var calendarEl = document.getElementById('calendar');

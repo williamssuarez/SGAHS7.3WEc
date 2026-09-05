@@ -63,6 +63,9 @@ class ExternalProfile
     #[ORM\OneToMany(targetEntity: Audit::class, mappedBy: 'externalProfile')]
     private Collection $audits;
 
+    #[ORM\ManyToOne(inversedBy: 'externalProfiles')]
+    private ?Sector $sector = null;
+
     public function __construct()
     {
         $this->uuid = Uuid::v4();
@@ -266,6 +269,18 @@ class ExternalProfile
                 $audit->setExternalProfile(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSector(): ?Sector
+    {
+        return $this->sector;
+    }
+
+    public function setSector(?Sector $sector): static
+    {
+        $this->sector = $sector;
 
         return $this;
     }

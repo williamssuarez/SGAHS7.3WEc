@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Estado;
 use App\Entity\Municipio;
 use App\Entity\StatusRecord;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -48,5 +49,13 @@ class MunicipioRepository extends ServiceEntityRepository
         ;
 
         return $query->getQuery()->getResult();
+    }
+
+    public function getByEstadoQueryBuilder(?Estado $estado)
+    {
+        $qb = $this->createQueryBuilder('m');
+        return $estado
+            ? $qb->where('m.estado = :estado')->setParameter('estado', $estado)
+            : $qb->where('1 = 0');
     }
 }

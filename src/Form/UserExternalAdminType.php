@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\ExternalProfile;
 use App\Entity\User;
 use App\Enum\SangreTipos;
+use App\Form\Type\LocationSelectorType;
 use App\Form\Type\PhoneType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -57,6 +58,9 @@ class UserExternalAdminType extends AbstractType
             ->add('telefono', PhoneType::class, [ // This will use the entity's 'telefono' property
                 'label' => 'Teléfono',
                 //'mapped' => false,
+            ])
+            ->add('location', LocationSelectorType::class, [
+                'label' => false,
             ])
             ->add('direccion', TextareaType::class, [
                 'label' => 'Direccion',

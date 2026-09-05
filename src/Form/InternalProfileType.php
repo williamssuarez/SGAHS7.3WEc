@@ -6,6 +6,7 @@ use App\Entity\Especialidades;
 use App\Entity\InternalProfile;
 use App\Entity\Reacciones;
 use App\Entity\User;
+use App\Form\Type\LocationSelectorType;
 use App\Form\Type\PhoneType;
 use App\Repository\EspecialidadesRepository;
 use App\Repository\ReaccionesRepository;
@@ -55,6 +56,9 @@ class InternalProfileType extends AbstractType
             ->add('telefono', PhoneType::class, [ // This will use the entity's 'telefono' property
                 'label' => 'Teléfono',
                 //'mapped' => false,
+            ])
+            ->add('location', LocationSelectorType::class, [
+                'label' => false,
             ])
             ->add('direccion', TextareaType::class, [
                 'label' => 'Direccion',

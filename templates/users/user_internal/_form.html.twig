@@ -1,6 +1,6 @@
 {{ form_start(form, {
     'attr': {
-        'data-controller': 'submit-once medication-status',
+        'data-controller': 'submit-once cascading-location',
         'data-action': 'submit->submit-once#disable'
     }
 }) }}
@@ -105,15 +105,6 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        {{form_label( form.internalProfile.direccion ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        {{form_widget( form.internalProfile.direccion ) }}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
                         {{form_label( form.internalProfile.telefono ) }}
                         <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
                         <div class="row">
@@ -124,6 +115,51 @@
                                 {{form_widget( form.internalProfile.telefono.number ) }}
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.internalProfile.location.estado ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.internalProfile.location.estado ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.internalProfile.location.municipio ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.internalProfile.location.municipio ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.internalProfile.location.parroquia ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.internalProfile.location.parroquia ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.internalProfile.location.sector ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.internalProfile.location.sector ) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{form_label( form.internalProfile.direccion ) }}
+                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+                        {{form_widget( form.internalProfile.direccion ) }}
                     </div>
                 </div>
             </div>

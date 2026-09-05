@@ -49,7 +49,7 @@ readonly class ExternalProfileProcessor
         }
 
         //verificar paciente en tabla pacientes
-        $paciente = $this->entityManager->getRepository(Paciente::class)->findOneBy([
+        /*$paciente = $this->entityManager->getRepository(Paciente::class)->findOneBy([
             'tipoDocumento' => $profile->getTipoDocumento(),
             'cedula' => $profile->getNroDocumento(),
             'status' => $this->entityManager->getRepository(StatusRecord::class)->getActive(),
@@ -103,7 +103,7 @@ readonly class ExternalProfileProcessor
                 $newPatient,
                 null
             );
-        }
+        }*/
 
         //no errors
         $this->entityManager->persist($profile);

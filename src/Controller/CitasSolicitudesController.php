@@ -33,6 +33,11 @@ final class CitasSolicitudesController extends AbstractController
         $userObj = $entityManager->getRepository(User::class)->findOneBy(['email' => $userEmail, 'status' => $entityManager->getRepository(StatusRecord::class)->getActive()]);
         $paciente = $userObj->getExternalProfile()->getPaciente();
 
+        if (!$paciente) {
+            $this->addFlash('error', 'Antes de solicitar una cita, debe validar su informacion');
+            return $this->redirectToRoute('my_profile_show', ['uuid' => $userObj->getExternalProfile()->getUuid()], Response::HTTP_SEE_OTHER);
+        }
+
         return $this->render('citas_solicitudes/index.html.twig', [
             'entities' => $citasSolicitudesRepository->getActivesforTableByPaciente($paciente->getId()),
         ]);
@@ -68,7 +73,7 @@ final class CitasSolicitudesController extends AbstractController
     public function show(#[MapEntity(mapping: ['uuid' => 'uuid'])] CitasSolicitudes $citasSolicitude, EntityManagerInterface $entityManager): Response
     {
         if ($citasSolicitude->getStatus() != $entityManager->getRepository(StatusRecord::class)->getActive()){
-            $this->addFlash('error', 'Informacion no encontrada.');
+            $this->addFlash('danger', 'Informacion no encontrada.');
             return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_NOT_FOUND);
         }
 

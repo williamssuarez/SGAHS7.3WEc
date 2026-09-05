@@ -29,11 +29,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div id="photo-container">
-                                {% if paciente.foto %}
-                                    {% set full_photo_path = paciente_photo_path ~ paciente.foto %}
+                                {% if user.externalProfile.foto %}
+                                    {% set full_photo_path = paciente_photo_path ~ user.externalProfile.foto %}
                                     <img
                                         src="{{ asset(full_photo_path) | imagine_filter('patient_profile') }}"
-                                        alt="{{ paciente.nombre }} Profile Photo"
+                                        alt="{{ user.externalProfile.nombre }} Profile Photo"
                                         class="img-fluid"
                                         style="cursor: pointer; height: auto; border-radius: 0%; width: 100%;"
                                         data-original="{{ asset(full_photo_path) | imagine_filter('patient_viewer_full') }}"
@@ -46,8 +46,8 @@
                         <div class="col-md-6">
                             <div class="col-md-12">
                                 <h2>
-                                    {{ paciente.nombre }} {{ paciente.apellido }}
-                                    {% if paciente.sexo == 'M' %}
+                                    {{ user.externalProfile.nombre }} {{ user.externalProfile.apellido }}
+                                    {% if user.externalProfile.sexo == 'M' %}
                                         <i class="bi bi-gender-male" style="color: #2563EB"></i>
                                     {% else %}
                                         <i class="bi bi-gender-female" style="color: darkmagenta"></i>
@@ -55,16 +55,16 @@
                                 </h2>
 
                                 <h4>
-                                    {{ paciente.fechaNacimiento|calculate_age }} año(s) ( {{ paciente.fechaNacimiento|date('d-m-Y', false) }} )
+                                    {{ user.externalProfile.fechaNacimiento|calculate_age }} año(s) ( {{ user.externalProfile.fechaNacimiento|date('d-m-Y', false) }} )
                                 </h4>
 
                                 <h4>
-                                    <span class="badge rounded-pill text-bg-secondary">{{ paciente.tipoDocumento|title }} - {{ paciente.cedula|number_format(0, '', '.') }}</span>
+                                    <span class="badge rounded-pill text-bg-secondary">{{ user.externalProfile.tipoDocumento|title }} - {{ user.externalProfile.nroDocumento|number_format(0, '', '.') }}</span>
                                 </h4>
                                 <h4>
                                     <span class="badge rounded-pill text-bg-danger">
                                         <i class="fa-solid fa-droplet"></i>
-                                        {{ paciente.sangreTipo.readableText }}
+                                        {{ user.externalProfile.sangreTipo.readableText }}
                                     </span>
                                 </h4>
                             </div>
@@ -78,10 +78,10 @@
                                     <div id="collapseContact" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
                                         <div class="accordion-body">
                                             <h4>
-                                                <i class="bi bi-telephone" style="color: crimson"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ paciente.telefono }}
+                                                <i class="bi bi-telephone" style="color: crimson"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ user.externalProfile.telefono }}
                                             </h4>
                                             <h4>
-                                                <i class="bi bi-envelope-at" style="color: dodgerblue"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ paciente.correo }}
+                                                <i class="bi bi-envelope-at" style="color: dodgerblue"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ user.email }}
                                             </h4>
                                         </div>
                                     </div>
@@ -95,23 +95,26 @@
                                     </h2>
                                     <div id="collapseDirect" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
                                         <div class="accordion-body">
-                                            {{ paciente.direccion }}
+                                            {{ user.externalProfile.sector.displayFullLocation }}
+                                            {{ user.externalProfile.direccion }}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
-                                            <i class="bi bi-three-dots-vertical"></i> &nbsp; Mas Información
-                                        </button>
-                                    </h2>
-                                    <div id="collapseMoreInfo" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
-                                        <div class="accordion-body">
-                                            Registrado el <strong>{{ paciente.created|date('d-m-Y') }}</strong> <i>({{ paciente.created|time_ago }})</i> por <strong>{{ paciente.uidCreate|public_username|title }}</strong>
+                                {% if user.externalProfile.paciente is not null %}
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
+                                                <i class="bi bi-three-dots-vertical"></i> &nbsp; Mas Información
+                                            </button>
+                                        </h2>
+                                        <div id="collapseMoreInfo" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
+                                            <div class="accordion-body">
+                                                Registrado el <strong>{{ paciente.created|date('d-m-Y') }}</strong> <i>({{ paciente.created|time_ago }})</i> por <strong>{{ paciente.uidCreate|public_username|title }}</strong>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -120,10 +123,12 @@
         </div>
     </div>
 
-    <div class="col-md-12">
-        <div class="card card-primary card-outline mb-4">
+    {% if user.externalProfile.paciente is not null %}
+        <div class="col-md-12">
+            <div class="card card-primary card-outline mb-4">
 
-            {{ include('my_profile/_showPacienteTabsCompressed.html.twig') }}
+                {{ include('my_profile/_showPacienteTabsCompressed.html.twig') }}
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}

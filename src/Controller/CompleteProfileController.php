@@ -54,7 +54,7 @@ final class CompleteProfileController extends AbstractController
                 $externalProfileProcessor->processFormSubmission($profile);
 
                 $this->addFlash('success', '¡Perfil completado con éxito!');
-                return $this->redirectToRoute('app_dashboard', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('my_profile_show', ['uuid' => $profile->getUuid()], Response::HTTP_SEE_OTHER);
             } catch (BusinessRuleException $e) {
                 //Obtener el mensaje especifico y mostrar el error
                 $form->addError(new FormError($e->getMessage()));

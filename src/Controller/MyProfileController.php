@@ -53,34 +53,35 @@ final class MyProfileController extends AbstractController
         $paciente = $externalProfile->getPaciente();
 
         //vitales
-        $vitales = $entityManager->getRepository(Vitales::class)->getActivesforTable($paciente->getId());
+        $vitales = $paciente ? $entityManager->getRepository(Vitales::class)->getActivesforTable($paciente->getId()) : null;
 
         //prescripciones
-        $prescripcionesActivas = $entityManager->getRepository(Prescripciones::class)->getActivesforTableByState($paciente->getId(), PrescripcionesEstados::ACTIVE);
-        $prescripcionesInactivas = $entityManager->getRepository(Prescripciones::class)->getActivesforTableByNotState($paciente->getId(), PrescripcionesEstados::ACTIVE);
+        $prescripcionesActivas = $paciente ? $entityManager->getRepository(Prescripciones::class)->getActivesforTableByState($paciente->getId(), PrescripcionesEstados::ACTIVE) : null;
+        $prescripcionesInactivas = $paciente ? $entityManager->getRepository(Prescripciones::class)->getActivesforTableByNotState($paciente->getId(), PrescripcionesEstados::ACTIVE) : null;
 
         //alergias
-        $alergias = $entityManager->getRepository(Alergias::class)->getActivesforTable($paciente->getId());
+        $alergias = $paciente ? $entityManager->getRepository(Alergias::class)->getActivesforTable($paciente->getId()) : null;
 
         //condiciones
-        $condiciones = $entityManager->getRepository(PacienteCondiciones::class)->getActivesforTable($paciente->getId());
+        $condiciones = $paciente ? $entityManager->getRepository(PacienteCondiciones::class)->getActivesforTable($paciente->getId()) : null;
 
         //enfermedades
-        $enfermedades = $entityManager->getRepository(PacienteEnfermedades::class)->getActivesforTable($paciente->getId());
+        $enfermedades = $paciente ? $entityManager->getRepository(PacienteEnfermedades::class)->getActivesforTable($paciente->getId()) : null;
 
         //discapacidades
-        $discapacidades = $entityManager->getRepository(PacienteDiscapacidades::class)->getActivesforTable($paciente->getId());
+        $discapacidades = $paciente ? $entityManager->getRepository(PacienteDiscapacidades::class)->getActivesforTable($paciente->getId()) : null;
 
         //inmunizaciones
-        $inmunizaciones = $entityManager->getRepository(PacienteInmunizaciones::class)->getActivesforTable($paciente->getId());
+        $inmunizaciones = $paciente ? $entityManager->getRepository(PacienteInmunizaciones::class)->getActivesforTable($paciente->getId()) : null;
 
         //historial completo
-        $allHistory = $entityManager->getRepository(Audit::class)->findBy([
+        $allHistory = $paciente ? $entityManager->getRepository(Audit::class)->findBy([
             'paciente' => $paciente->getId(),
             'status' => $entityManager->getRepository(StatusRecord::class)->getActive()
-        ], ['id' => 'DESC']);
+        ], ['id' => 'DESC']) : null;
 
         return $this->render('my_profile/show.html.twig', [
+            'user' => $externalProfile->getWebUser(),
             'paciente' => $paciente,
             'vitales' => $vitales,
             'prescripcionesActivas' => $prescripcionesActivas,

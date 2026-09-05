@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Municipio;
 use App\Entity\Parroquia;
 use App\Entity\StatusRecord;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -48,5 +49,13 @@ class ParroquiaRepository extends ServiceEntityRepository
         ;
 
         return $query->getQuery()->getResult();
+    }
+
+    public function getByMunicipioQueryBuilder(?Municipio $municipio)
+    {
+        $qb = $this->createQueryBuilder('p');
+        return $municipio
+            ? $qb->where('p.municipio = :municipio')->setParameter('municipio', $municipio)
+            : $qb->where('1 = 0');
     }
 }

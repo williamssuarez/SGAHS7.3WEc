@@ -5,11 +5,10 @@ export default class extends Controller {
     static targets = ['estado', 'municipio', 'parroquia', 'sector'];
 
     connect() {
-        $(this.estadoTarget).on('select2:select', (e) => e.target.dispatchEvent(new Event('change')));
-        $(this.municipioTarget).on('select2:select', (e) => e.target.dispatchEvent(new Event('change')));
-        $(this.parroquiaTarget).on('select2:select', (e) => e.target.dispatchEvent(new Event('change')));
+        $(this.estadoTarget).on('select2:select', () => this.updateForm(this.estadoTarget, this.municipioTarget, 'Cargando municipios...'));
+        $(this.municipioTarget).on('select2:select', () => this.updateForm(this.municipioTarget, this.parroquiaTarget, 'Cargando parroquias...'));
+        $(this.parroquiaTarget).on('select2:select', () => this.updateForm(this.parroquiaTarget, this.sectorTarget, 'Cargando sectores...'));
 
-        // Ensure proper initial placeholders if editing an existing record is not yet implemented
         if (!this.estadoTarget.value) {
             this.disableAndReset(this.municipioTarget, 'Seleccione un Estado primero');
             this.disableAndReset(this.parroquiaTarget, 'Seleccione un Municipio primero');
@@ -17,73 +16,59 @@ export default class extends Controller {
         }
     }
 
-    async updateMunicipios(event) {
-        const estadoId = event.target.value;
-        this.disableAndReset(this.parroquiaTarget, 'Seleccione un Municipio primero');
-        this.disableAndReset(this.sectorTarget, 'Seleccione una Parroquia primero');
-
-        if (!estadoId) {
-            this.disableAndReset(this.municipioTarget, 'Seleccione un Estado primero');
-            return;
-        }
-
-        await this.fetchOptions(`/api/location/municipios/${estadoId}`, this.municipioTarget, 'Cargando municipios...');
-    }
-
-    async updateParroquias(event) {
-        const municipioId = event.target.value;
-        this.disableAndReset(this.sectorTarget, 'Seleccione una Parroquia primero');
-
-        if (!municipioId) {
+    async updateForm(sourceTarget, nextTarget, loadingMessage) {
+        // Cascade clearing depending on which parent was changed
+        if (sourceTarget === this.estadoTarget) {
             this.disableAndReset(this.parroquiaTarget, 'Seleccione un Municipio primero');
-            return;
-        }
-
-        await this.fetchOptions(`/api/location/parroquias/${municipioId}`, this.parroquiaTarget, 'Cargando parroquias...');
-    }
-
-    async updateSectores(event) {
-        const parroquiaId = event.target.value;
-
-        if (!parroquiaId) {
             this.disableAndReset(this.sectorTarget, 'Seleccione una Parroquia primero');
+        } else if (sourceTarget === this.municipioTarget) {
+            this.disableAndReset(this.sectorTarget, 'Seleccione una Parroquia primero');
+        }
+
+        if (!sourceTarget.value) {
+            this.disableAndReset(nextTarget, 'Selección inválida');
             return;
         }
 
-        await this.fetchOptions(`/api/location/sectores/${parroquiaId}`, this.sectorTarget, 'Cargando sectores...');
-    }
+        this.disableAndReset(nextTarget, loadingMessage);
 
-    async fetchOptions(url, targetSelect, loadingMessage) {
-        this.setLoading(targetSelect, loadingMessage);
+        const form = sourceTarget.closest('form');
+        const formData = new FormData(form);
 
         try {
-            const response = await fetch(url);
-            const items = await response.json();
-
-            targetSelect.innerHTML = '';
-            targetSelect.add(new Option('Seleccione una opción', '', true, true));
-
-            items.forEach(item => {
-                targetSelect.add(new Option(item.nombre, item.id));
+            // Submit form to itself to let Symfony natively generate the updated fields
+            const response = await fetch(form.action || window.location.href, {
+                method: form.getAttribute('method') || 'POST',
+                body: formData,
+                credentials: 'same-origin', // Ensures the PHPSESSID cookie is sent
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest' // Tells Symfony this is an AJAX call
+                }
             });
 
-            targetSelect.disabled = false;
-            $(targetSelect).trigger('change');
+            // Even if response.ok is false (422 validation error), we still extract the HTML
+            if (response.status === 422) {
+                console.log("Validation or CSRF error occurred.");
+            }
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Find the updated dropdown in the returned HTML by its ID
+            const newSelect = doc.getElementById(nextTarget.id);
+            if (newSelect) {
+                nextTarget.innerHTML = newSelect.innerHTML;
+                nextTarget.disabled = false;
+                $(nextTarget).trigger('change');
+            }
         } catch (error) {
-            this.disableAndReset(targetSelect, 'Error de conexión');
+            this.disableAndReset(nextTarget, 'Error de conexión');
         }
     }
 
     disableAndReset(selectElement, placeholder) {
         selectElement.innerHTML = '';
         selectElement.add(new Option(placeholder, '', true, true));
-        selectElement.disabled = true;
-        $(selectElement).trigger('change');
-    }
-
-    setLoading(selectElement, message) {
-        selectElement.innerHTML = '';
-        selectElement.add(new Option(message, '', true, true));
         selectElement.disabled = true;
         $(selectElement).trigger('change');
     }
