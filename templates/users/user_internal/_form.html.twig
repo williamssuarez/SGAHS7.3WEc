@@ -1,6 +1,6 @@
 {{ form_start(form, {
     'attr': {
-        'data-controller': 'submit-once cascading-location',
+        'data-controller': 'submit-once cascading-location role-toggle',
         'data-action': 'submit->submit-once#disable'
     }
 }) }}
@@ -91,7 +91,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" data-role-toggle-target="especialidadesContainer">
                 <div class="col-md-6">
                     <div class="mb-3">
                         {{form_label( form.internalProfile.especialidades ) }}

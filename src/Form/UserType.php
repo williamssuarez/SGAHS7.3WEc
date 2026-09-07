@@ -43,6 +43,7 @@ class UserType extends AbstractType
                 'attr' => [
                     'class' => 'srchSelect',
                     'data-placeholder' => 'Seleccione los roles...',
+                    'data-role-toggle-target' => 'rolesSelect'
                 ],
                 'choices' => [
                     'Administrador del Sistema' => User::ROLE_ADMIN,
@@ -84,6 +85,9 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'attr' => [
+                'data-controller' => 'role-toggle'
+            ]
         ]);
     }
 }

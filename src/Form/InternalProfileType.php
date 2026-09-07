@@ -99,10 +99,10 @@ class InternalProfileType extends AbstractType
                 ],
                 'choice_label' => 'nombre',
                 'multiple' => true,
+                'required' => false,
                 'attr' => [
                     'class' => 'srchSelect'
                 ],
-                'required' => true,
                 'query_builder' => function (EspecialidadesRepository $er) {
                     return $er->getActivesforSelect();
                 }
