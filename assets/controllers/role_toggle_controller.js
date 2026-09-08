@@ -19,13 +19,19 @@ export default class extends Controller {
             selectedRoles.includes('ROLE_ER_DOCTOR') ||
             selectedRoles.includes('ROLE_DOCTOR_QUIROFANO');
 
+        const especialidadesSelect = this.especialidadesContainerTarget.querySelector('select');
+
         if (isDoctor) {
             this.especialidadesContainerTarget.style.display = 'block';
+
+            if (especialidadesSelect) {
+                especialidadesSelect.setAttribute('required', 'required');
+            }
         } else {
             this.especialidadesContainerTarget.style.display = 'none';
 
-            const especialidadesSelect = this.especialidadesContainerTarget.querySelector('select');
             if (especialidadesSelect) {
+                especialidadesSelect.removeAttribute('required');
                 $(especialidadesSelect).val(null).trigger('change');
             }
         }

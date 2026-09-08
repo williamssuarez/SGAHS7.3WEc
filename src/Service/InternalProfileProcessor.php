@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\InternalProfile;
 use App\Entity\Paciente;
 use App\Entity\StatusRecord;
+use App\Entity\User;
 use App\Exception\BusinessRuleException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -51,6 +52,13 @@ readonly class InternalProfileProcessor
             throw new BusinessRuleException('Ya existe un usuario registrado con ese telefono, por favor verifique.');
         }
 
+        //Verificar si el doctor tiene especialidades
+        if (in_array('ROLE_DOCTOR', $profile->getWebUser()->getRoles())){
+            if ($profile->getEspecialidades()->count() <= 0){
+                throw new BusinessRuleException('El doctor debe estar asociado al menos a 1 especialidad, por favor verifique.');
+            }
+        }
+
         //Subida de archivo (checkear antes si usuario ya tiene foto)
         if ($avatarFile) {
             //search previos picture
@@ -75,7 +83,7 @@ readonly class InternalProfileProcessor
 
         //no errors
         $profile->getWebUser()->setPassword($this->userPasswordHasher->hashPassword($profile->getWebUser(), '12345678'));
-        
+
 
         $this->entityManager->persist($profile);
         $this->entityManager->flush();

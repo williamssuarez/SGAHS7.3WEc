@@ -59,6 +59,7 @@ class InternalProfileType extends AbstractType
             ])
             ->add('location', LocationSelectorType::class, [
                 'label' => false,
+                'required' => true,
             ])
             ->add('direccion', TextareaType::class, [
                 'label' => 'Direccion',
