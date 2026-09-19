@@ -41,11 +41,18 @@ class Especialidades
     #[ORM\OneToMany(targetEntity: Consulta::class, mappedBy: 'especialidad')]
     private Collection $consultas;
 
+    /**
+     * @var Collection<int, TurnoDoctor>
+     */
+    #[ORM\OneToMany(targetEntity: TurnoDoctor::class, mappedBy: 'especialidad')]
+    private Collection $turnoDoctores;
+
     public function __construct()
     {
         $this->citasSolicitudes = new ArrayCollection();
         $this->citas = new ArrayCollection();
         $this->consultas = new ArrayCollection();
+        $this->turnoDoctores = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -170,6 +177,36 @@ class Especialidades
             // set the owning side to null (unless already changed)
             if ($consulta->getEspecialidad() === $this) {
                 $consulta->setEspecialidad(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TurnoDoctor>
+     */
+    public function getTurnoDoctores(): Collection
+    {
+        return $this->turnoDoctores;
+    }
+
+    public function addTurnoDoctore(TurnoDoctor $turnoDoctore): static
+    {
+        if (!$this->turnoDoctores->contains($turnoDoctore)) {
+            $this->turnoDoctores->add($turnoDoctore);
+            $turnoDoctore->setEspecialidad($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTurnoDoctore(TurnoDoctor $turnoDoctore): static
+    {
+        if ($this->turnoDoctores->removeElement($turnoDoctore)) {
+            // set the owning side to null (unless already changed)
+            if ($turnoDoctore->getEspecialidad() === $this) {
+                $turnoDoctore->setEspecialidad(null);
             }
         }
 

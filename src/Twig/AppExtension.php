@@ -34,6 +34,7 @@ class AppExtension extends AbstractExtension
             new TwigFilter('filter_severity', $this->filterSeverity(...)),
             new TwigFilter('time_since', $this->getTimeSince(...)),
             new TwigFilter('status_badge', $this->formatStatusBadge(...), ['is_safe' => ['html']]),
+            new TwigFilter('user_badges', $this->getUserBadges(...)),
         ];
     }
 
@@ -342,5 +343,33 @@ class AppExtension extends AbstractExtension
             'CEXPREC'    => sprintf('<span class="badge bg-warning text-dark fs-6 shadow-sm"><i class="bi bi-key-fill"></i> %s</span>', $titulo),
             default      => sprintf('<span class="badge bg-light text-dark border fs-6 shadow-sm">%s</span>', $titulo),
         };
+    }
+
+    public function getUserBadges(array $roles): array
+    {
+        $badgeMap = [
+            'ROLE_ADMIN'            => ['label' => 'Administrador', 'class' => 'text-bg-dark'],
+            'ROLE_RECEPTIONIST'     => ['label' => 'Recepcionista', 'class' => 'text-bg-info'],
+            'ROLE_NURSE'            => ['label' => 'Enfermería',    'class' => 'text-bg-warning'],
+            'ROLE_DOCTOR'           => ['label' => 'Doctor',        'class' => 'text-bg-primary'],
+            'ROLE_ER_DOCTOR'        => ['label' => 'Emergencias',   'class' => 'text-bg-danger'],
+            'ROLE_DOCTOR_QUIROFANO' => ['label' => 'Cirujano',      'class' => 'text-bg-success'],
+        ];
+
+        $badges = [];
+
+        foreach ($roles as $role) {
+            if (isset($badgeMap[$role])) {
+                $badges[] = $badgeMap[$role];
+            }
+        }
+
+        // Optional: If they have no mapped roles, return a fallback
+        // (though internal users should always have at least one)
+        if (empty($badges)) {
+            $badges[] = ['label' => 'Usuario', 'class' => 'text-bg-secondary'];
+        }
+
+        return $badges;
     }
 }

@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}TurnoDoctor{% endblock %}
+
+{% block body %}
+    <h1>TurnoDoctor</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ turno_doctor.id }}</td>
+            </tr>
+            <tr>
+                <th>DayOfWeek</th>
+                <td>{{ turno_doctor.dayOfWeek }}</td>
+            </tr>
+            <tr>
+                <th>StartTime</th>
+                <td>{{ turno_doctor.startTime ? turno_doctor.startTime|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>EndTime</th>
+                <td>{{ turno_doctor.endTime ? turno_doctor.endTime|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>SlotDuration</th>
+                <td>{{ turno_doctor.slotDuration }}</td>
+            </tr>
+            <tr>
+                <th>IsActive</th>
+                <td>{{ turno_doctor.isActive ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>UidCreate</th>
+                <td>{{ turno_doctor.uidCreate }}</td>
+            </tr>
+            <tr>
+                <th>UidUpdate</th>
+                <td>{{ turno_doctor.uidUpdate }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ turno_doctor.created ? turno_doctor.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Updated</th>
+                <td>{{ turno_doctor.updated ? turno_doctor.updated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_turno_doctor_index') }}">back to list</a>
+
+    <a href="{{ path('app_turno_doctor_edit', {'id': turno_doctor.id}) }}">edit</a>
+
+    {{ include('turno_doctor/_delete_form.html.twig') }}
+{% endblock %}

@@ -1,0 +1,93 @@
+{{ form_start(form, {
+    'attr': {
+        'data-controller': 'submit-once cascading-doctor',
+        'data-action': 'submit->submit-once#disable'
+    }
+}) }}
+{{ include('base/_form_error_messages.html.twig') }}
+<div class="card-body">
+    <h5>Configurar Parametros de Turno:</h5>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{form_label( form.especialidad ) }}
+                <div class="input-group">
+                    {{form_widget( form.especialidad ) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{form_label( form.doctor ) }}
+                <div class="input-group">
+                    {{form_widget( form.doctor ) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.dayOfWeek ) }}
+                <div class="input-group">
+                    {{form_widget( form.dayOfWeek ) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.startTime ) }}
+                <div class="input-group">
+                    {{form_widget( form.startTime ) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.endTime ) }}
+                <div class="input-group">
+                    {{form_widget( form.endTime ) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mb-3">
+                {{form_label( form.slotDuration ) }}
+                <div class="input-group">
+                    {{form_widget( form.slotDuration ) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-footer">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between">
+                <a class="btn btn-primary" href="{{ path('app_turno_doctor_index') }}">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+
+                {#<div class="d-flex">
+                    <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
+                        {{ button_label|default('Guardar') }}
+                    </button>
+                </div>#}
+
+                <div class="d-flex">
+                    {# 3. Add the submitBtn target here! #}
+                    <button type="submit" class="btn btn-success"
+                            data-submit-once-target="submitButton"
+                            data-capacity-validator-target="submitBtn">
+                        {{ button_label|default('Guardar') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}

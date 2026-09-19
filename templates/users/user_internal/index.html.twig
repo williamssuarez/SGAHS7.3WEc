@@ -40,10 +40,13 @@
                 <tr class="align-middle">
                     <td>{{ user.email }}</td>
                     <td>
-                        {% set badge = user.badgeConfig %}
-                        <span class="badge rounded-pill {{ badge.class }}">
-                            {{ badge.label }}
-                        </span>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for badge in user.roles|user_badges %}
+                            <span class="badge rounded-pill {{ badge.class }}">
+                                {{ badge.label }}
+                            </span>
+                            {% endfor %}
+                        </div>
                     </td>
                     <td>{{ user.internalNameorNothing }}</td>
                     <td>

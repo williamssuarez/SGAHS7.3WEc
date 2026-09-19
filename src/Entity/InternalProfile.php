@@ -64,12 +64,19 @@ class InternalProfile
     #[ORM\ManyToOne(inversedBy: 'internalProfiles')]
     private ?Sector $sector = null;
 
+    /**
+     * @var Collection<int, TurnoDoctor>
+     */
+    #[ORM\OneToMany(targetEntity: TurnoDoctor::class, mappedBy: 'doctor')]
+    private Collection $turnoDoctores;
+
     public function __construct()
     {
         $this->especialidades = new ArrayCollection();
         $this->cirugias = new ArrayCollection();
         $this->anestesiologo = new ArrayCollection();
         $this->audits = new ArrayCollection();
+        $this->turnoDoctores = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -293,6 +300,36 @@ class InternalProfile
     public function setSector(?Sector $sector): static
     {
         $this->sector = $sector;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TurnoDoctor>
+     */
+    public function getTurnoDoctores(): Collection
+    {
+        return $this->turnoDoctores;
+    }
+
+    public function addTurnoDoctore(TurnoDoctor $turnoDoctore): static
+    {
+        if (!$this->turnoDoctores->contains($turnoDoctore)) {
+            $this->turnoDoctores->add($turnoDoctore);
+            $turnoDoctore->setDoctor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTurnoDoctore(TurnoDoctor $turnoDoctore): static
+    {
+        if ($this->turnoDoctores->removeElement($turnoDoctore)) {
+            // set the owning side to null (unless already changed)
+            if ($turnoDoctore->getDoctor() === $this) {
+                $turnoDoctore->setDoctor(null);
+            }
+        }
 
         return $this;
     }

@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nueva Configuracion de Cita{% endblock %}
+
+{% block titlewrap %}
+    Nueva Configuracion de Turno
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_turno_doctor_index') }}">Configuraciones de Turnos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nueva Configuracion de Turno</li>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="card card-primary card-outline mb-4">
+            {{ include('turno_doctor/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

@@ -139,23 +139,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return 'Paciente';
     }
 
-    public function getBadgeConfig(): array
-    {
-        // Check hierarchy manually or just check specific high-level roles
-        if (in_array('ROLE_ADMIN', $this->getRoles()) || in_array('ROLE_INTERNAL', $this->getRoles())) {
-            return [
-                'class' => 'text-bg-primary', // Blue for Staff
-                'label' => 'Personal Médico'
-            ];
-        }
-
-        // Default fallback for patients/externals
-        return [
-            'class' => 'text-bg-success', // Green for Patients
-            'label' => 'Paciente'
-        ];
-    }
-
     public function getId(): ?int
     {
         return $this->id;

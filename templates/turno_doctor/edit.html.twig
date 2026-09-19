@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit TurnoDoctor{% endblock %}
+
+{% block body %}
+    <h1>Edit TurnoDoctor</h1>
+
+    {{ include('turno_doctor/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_turno_doctor_index') }}">back to list</a>
+
+    {{ include('turno_doctor/_delete_form.html.twig') }}
+{% endblock %}

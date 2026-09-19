@@ -37,32 +37,36 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getActivesInternalsforTable()
     {
-        // 1. Get the Status ID (Since we are writing raw SQL, we need the ID, not the object)
-        $activeStatusId = $this->getEntityManager()
+        // Fetch the active status object
+        $activeStatus = $this->getEntityManager()
             ->getRepository(StatusRecord::class)
-            ->getActive()
-            ->getId();
+            ->getActive();
 
-        // 2. Setup the Mapping (Tell Doctrine how to map the raw SQL result back to your User entity)
-        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
-        $rsm->addRootEntityFromClassMetadata(\App\Entity\User::class, 'u');
+        $qb = $this->createQueryBuilder('u');
 
-        // 3. Write the Raw SQL with the ::text cast
-        // Note: 'app_user' is the table name in DB. Check if yours is 'user' or 'app_user'
-        $sql = "
-        SELECT u.* FROM app_user u
-        WHERE u.status_id = :sts
-        AND (u.roles::text LIKE :role_internal OR u.roles::text LIKE :role_admin)
-    ";
-
-        // 4. Create and Run the Query
-        $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
-
-        $query->setParameter('sts', $activeStatusId);
-        $query->setParameter('role_internal', '%"ROLE_INTERNAL"%');
-        $query->setParameter('role_admin', '%"ROLE_ADMIN"%');
-
-        return $query->getResult();
+        return $qb
+            ->where('u.status = :status')
+            ->setParameter('status', $activeStatus)
+            // Group all the OR conditions cleanly using Doctrine's Expr class
+            ->andWhere(
+                $qb->expr()->orX(
+                    'CAST(u.roles AS text) LIKE :role_admin',
+                    'CAST(u.roles AS text) LIKE :role_receptionist',
+                    'CAST(u.roles AS text) LIKE :role_nurse',
+                    'CAST(u.roles AS text) LIKE :role_doctor',
+                    'CAST(u.roles AS text) LIKE :role_er_doctor',
+                    'CAST(u.roles AS text) LIKE :role_doctor_quirofano'
+                )
+            )
+            ->setParameter('role_admin', '%"ROLE_ADMIN"%')
+            ->setParameter('role_receptionist', '%"ROLE_RECEPTIONIST"%')
+            ->setParameter('role_nurse', '%"ROLE_NURSE"%')
+            ->setParameter('role_doctor', '%"ROLE_DOCTOR"%')
+            ->setParameter('role_er_doctor', '%"ROLE_ER_DOCTOR"%')
+            ->setParameter('role_doctor_quirofano', '%"ROLE_DOCTOR_QUIROFANO"%')
+            ->orderBy('u.id', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
     public function getActivesDoctorsforTable()
