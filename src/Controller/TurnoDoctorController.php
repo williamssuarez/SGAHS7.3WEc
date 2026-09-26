@@ -7,6 +7,7 @@ use App\Form\TurnoDoctorType;
 use App\Repository\TurnoDoctorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -31,6 +32,7 @@ final class TurnoDoctorController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($request->headers->get('X-Requested-With') !== 'XMLHttpRequest') {
+                $turnoDoctor->setIsActive(true);
                 $entityManager->persist($turnoDoctor);
                 $entityManager->flush();
 
@@ -60,15 +62,44 @@ final class TurnoDoctorController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            if ($request->headers->get('X-Requested-With') !== 'XMLHttpRequest') {
+                $entityManager->flush();
 
-            return $this->redirectToRoute('app_turno_doctor_index', [], Response::HTTP_SEE_OTHER);
+                $this->addFlash('success', 'Turno modificado.');
+                return $this->redirectToRoute('app_turno_doctor_index', [], Response::HTTP_SEE_OTHER);
+            }
         }
 
         return $this->render('turno_doctor/edit.html.twig', [
             'turno_doctor' => $turnoDoctor,
             'form' => $form,
         ]);
+    }
+
+    #[Route('/turnos/json', name: 'app_turno_doctor_json', methods: ['GET'])]
+    public function getTurnosJson(TurnoDoctorRepository $repo): JsonResponse
+    {
+        $turnos = $repo->findBy(['isActive' => true]);
+        $events = [];
+
+        foreach ($turnos as $turno) {
+
+            // Generate a consistent hex color from the specialty name
+            $hash = md5($turno->getEspecialidad()->getNombre());
+            $color = '#' . substr($hash, 0, 6);
+
+            $events[] = [
+                'title' => $turno->getDoctor()->getNombreCompleto() . ' (' . $turno->getEspecialidad()->getNombre() . ')',
+                // FullCalendar maps Sunday=0, Monday=1. If your DB uses ISO (Monday=1, Sunday=7), map Sunday to 0.
+                'daysOfWeek' => [$turno->getDayOfWeek() === 7 ? 0 : $turno->getDayOfWeek()],
+                'startTime' => $turno->getStartTime()->format('H:i'),
+                'endTime' => $turno->getEndTime()->format('H:i'),
+                'url' => $this->generateUrl('app_turno_doctor_edit', ['id' => $turno->getId()]),
+                'color' => $color,
+            ];
+        }
+
+        return new JsonResponse($events);
     }
 
     #[Route('/{id}', name: 'app_turno_doctor_delete', methods: ['POST'])]

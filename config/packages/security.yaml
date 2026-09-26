@@ -86,6 +86,7 @@ security:
         - { path: ^/citas/configuraciones, roles: ROLE_ADMIN }
         - { path: ^/citas/estadisticas, roles: ROLE_ADMIN }
         - { path: ^/citas/estadisticas, roles: ROLE_ADMIN }
+        - { path: ^/turno, roles: ROLE_ADMIN }
         - { path: ^/cirugia/agenda, roles: ROLE_ADMIN_QUIROFANO }
 
 when@test:

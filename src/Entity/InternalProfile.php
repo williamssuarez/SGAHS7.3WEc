@@ -108,6 +108,11 @@ class InternalProfile
         return $this;
     }
 
+    public function getNombreCompleto(): ?string
+    {
+        return $this->nombre . ' ' . $this->apellido;
+    }
+
     public function getTelefono(): ?string
     {
         return $this->telefono;

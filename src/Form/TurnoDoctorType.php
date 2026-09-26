@@ -141,47 +141,6 @@ class TurnoDoctorType extends AbstractType
         });
     }
 
-    /*protected function addElements(FormInterface $form, ?Especialidades $especialidad)
-    {
-        $form->add('doctor', EntityType::class, [
-            'class' => InternalProfile::class,
-            'choice_label' => fn (InternalProfile $p) => $p->getNombre() . ' ' . $p->getApellido(),
-            'choice_value' => 'id',
-            'required' => true,
-            'placeholder' => $especialidad ? 'Seleccione un Doctor' : 'Seleccione una Especialidad primero',
-            'attr' => [
-                'disabled' => $especialidad === null,
-                'data-cascading-doctor-target' => 'doctor',
-                'class' => 'srchSelect'
-            ],
-            // Utilizes the custom repository method you added earlier
-            'query_builder' => fn (InternalProfileRepository $er) => $er->getDoctorsByEspecialidadQueryBuilder($especialidad)
-        ]);
-    }
-
-    public function onPreSetData(FormEvent $event)
-    {
-        $turno = $event->getData();
-        $form = $event->getForm();
-
-        $especialidad = $turno ? $turno->getEspecialidad() : null;
-
-        $this->addElements($form, $especialidad);
-    }
-
-    public function onPreSubmit(FormEvent $event)
-    {
-        $data = $event->getData();
-        $form = $event->getForm();
-
-        if (!$data) return;
-
-        $especialidadId = $data['especialidad'] ?? null;
-        $especialidad = $especialidadId ? $this->em->getRepository(Especialidades::class)->find($especialidadId) : null;
-
-        $this->addElements($form, $especialidad);
-    }*/
-
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

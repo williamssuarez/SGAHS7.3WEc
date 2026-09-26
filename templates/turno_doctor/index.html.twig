@@ -20,35 +20,64 @@
         {% endfor %}
     {% endfor %}
     <div class="card card-primary card-outline mb-4">
-        <div class="card-header">
-            <h3 class="card-title">Configuraciones de Turnos Registradas</h3>
+        <div class="card-header p-0 border-bottom-0">
+            <ul class="nav nav-tabs" id="turnoTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="pill" href="#tab-table">Vista de Lista</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="#tab-calendar">Cuadrícula Semanal</a>
+                </li>
+            </ul>
         </div>
 
         <div class="card-body">
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>Especialidad</th>
-                    <th>Doctor</th>
-                    <th>Inicio-Fin</th>
-                    <th>Duracion</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in entities %}
-                    <tr class="align-middle">
-                        <td>{{ entity.specialty.nombre }}</td>
-                        <td>{{ entity.doctor.nombre }}</td>
-                        <td>{{ entity.startTime|date('H:i', false) }} - {{ entity.endTime|date('H:i', false) }}</td>
-                        <td>{{ entity.slotDuration }} minutos</td>
-                        <td>
-                            <a class="btn btn-success" href="{{ path('app_turno_doctor_edit', {'id': entity.id}) }}">Editar</a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            <div class="tab-content">
+                <!-- TAB 1: DATATABLE -->
+                <div class="tab-pane fade show active" id="tab-table">
+                    <table class="table table-striped dtHere">
+                        <thead>
+                        <tr>
+                            <th>Especialidad</th>
+                            <th>Doctor</th>
+                            <th>Día</th>
+                            <th>Inicio-Fin</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% set days = {1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado', 7: 'Domingo'} %}
+                        {% for entity in entities %}
+                            <tr class="align-middle">
+                                <td>{{ entity.especialidad.nombre }}</td>
+                                <td>{{ entity.doctor.nombre }} {{ entity.doctor.apellido }}</td>
+                                <td>{{ days[entity.dayOfWeek] }}</td>
+                                <td>{{ entity.startTime|date('H:i', false) }} - {{ entity.endTime|date('H:i', false) }}</td>
+                                <td>
+                                    {% if entity.isActive %}
+                                        Turno Activo <i class="bi bi-check-circle-fill" style="color: #138b00"></i>
+                                    {% else %}
+                                        Turno Inactivo <i class="bi bi-x-circle-fill" style="color: #8b0000"></i>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a class="btn btn-sm btn-success" href="{{ path('app_turno_doctor_edit', {'id': entity.id}) }}">Editar</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TAB 2: FULLCALENDAR -->
+                <div class="tab-pane fade" id="tab-calendar">
+                    <div data-controller="shift-calendar"
+                         data-shift-calendar-events-value="{{ path('app_turno_doctor_json') }}">
+                        <div data-shift-calendar-target="calendar"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="card-footer clearfix">

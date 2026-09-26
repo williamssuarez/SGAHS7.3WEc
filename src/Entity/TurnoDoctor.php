@@ -7,13 +7,29 @@ use App\Repository\TurnoDoctorRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\LogEntry;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: TurnoDoctorRepository::class)]
 #[Gedmo\Loggable(logEntryClass: LogEntry::class)]
+#[Assert\Callback(callback: 'validateDates')]
+#[ORM\HasLifecycleCallbacks]
 class TurnoDoctor
 {
     use SoftDeletetableTrait;
+
+    #[Assert\Callback]
+    public function validateDates(ExecutionContextInterface $context): void
+    {
+        if ($this->startTime !== null && $this->endTime !== null) {
+            if ($this->endTime < $this->startTime) {
+                $context->buildViolation('La hora de finalización no puede ser anterior al inicio.')
+                    ->atPath('fechaFin')
+                    ->addViolation();
+            }
+        }
+    }
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
