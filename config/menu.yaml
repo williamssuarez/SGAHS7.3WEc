@@ -12,6 +12,7 @@ parameters:
                         - { title: Usuarios Internos, route: app_user_internal_index, icon: 'bi bi-person-lines-fill text-info' }
                         - { title: Usuarios Externos, route: app_user_external_index, icon: 'bi bi-person-lines-fill text-info' }
                         - { title: Auditoria, route: app_auditoria_index, icon: 'bi bi-person-lines-fill text-info' }
+                        - { title: Base de datos, route: app_database_index, icon: 'bi bi-database-fill text-info' }
                         - { title: Estados, route: app_estado_index, icon: 'bi bi-geo-alt-fill text-info' }
                 -   title: Alergias
                     icon: 'bi bi-virus text-success'
@@ -118,3 +119,7 @@ parameters:
                     children:
                         - { title: Pizarra, route: app_cirugia_pizarra, icon: 'fa-solid fa-bed-pulse text-info' }
                         - { title: Agenda, route: app_cirugia_agenda, icon: 'fa-solid fa-bed-pulse text-info' }
+                -   title: Todas
+                    icon: 'fa-solid fa-magnifying-glass-plus text-info'
+                    children:
+                        - { title: Historial de Cirugias, route: app_cirugia, icon: 'fa-solid fa-magnifying-glass-plus text-info' }

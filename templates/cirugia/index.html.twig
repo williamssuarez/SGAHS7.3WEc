@@ -1,20 +1,69 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello CirugiaController!{% endblock %}
+{% block title %}Historial de Cirugías{% endblock %}
+
+{% block titlewrap %}
+    Historial Quirúrgico Global
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item active" aria-current="page">Cirugías</li>
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-journal-medical text-info"></i> Registro Histórico de Cirugías</h5>
+            <a href="{{ path('app_cirugia_programar') }}" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg"></i> Programar Nueva
+            </a>
+        </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/pc/Documents/PhpStorm 2021/SGAHS7.3WEc/src/Controller/CirugiaController.php</code></li>
-        <li>Your template at <code>C:/Users/pc/Documents/PhpStorm 2021/SGAHS7.3WEc/templates/cirugia/index.html.twig</code></li>
-    </ul>
-</div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle dtHere">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Fecha y Hora</th>
+                            <th>Paciente</th>
+                            <th>Cédula</th>
+                            <th>Procedimiento</th>
+                            <th>Quirófano</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cirugia in cirugias %}
+                            <tr>
+                                <td>
+                                    <span class="d-none">{{ cirugia.fechaHoraProgramada|date('Y-m-d H:i') }}</span>
+                                    <div class="fw-bold">{{ cirugia.fechaHoraProgramada|date('d/m/Y') }}</div>
+                                    <small class="text-muted">{{ cirugia.fechaHoraProgramada|date('h:i A') }}</small>
+                                </td>
+                                <td>
+                                    {{ cirugia.paciente.nombre }} {{ cirugia.paciente.apellido }}
+                                </td>
+                                <td>{{ cirugia.paciente.cedula }}</td>
+                                <td>
+                                    {{ cirugia.procedimientoPropuesto }}
+                                    <br><small class="text-muted">Dr(a). {{ cirugia.cirujanoPrincipal.nombre }}</small>
+                                </td>
+                                <td>{{ cirugia.quirofano ? cirugia.quirofano.nombre : '<span class="text-muted">N/A</span>'|raw }}</td>
+                                <td>
+                                    {% set badge = cirugia.cirugiaEstadosBadgeConfig %}
+                                    <span class="badge {{ badge.class }} shadow-sm px-2 py-1">{{ badge.label }}</span>
+                                </td>
+                                <td>
+                                    <a class="btn btn-sm btn-outline-primary" href="{{ path('app_cirugia_show', {'id': cirugia.id}) }}" title="Ver Detalles">
+                                        <i class="bi bi-eye-fill"></i> Detalles
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}

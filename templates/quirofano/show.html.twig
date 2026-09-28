@@ -1,46 +1,111 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Quirofano{% endblock %}
+{% block title %}Perfil de Quirófano{% endblock %}
+
+{% block titlewrap %}
+    Detalle de Quirófano
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_quirofano_index') }}">Quirófanos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ quirofano.nombre }}</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Quirofano</h1>
+    <div class="row g-4">
+        {# COLUMNA IZQUIERDA: DETALLES #}
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="display-1 text-secondary mb-3">
+                        <i class="bi bi-door-open"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ quirofano.nombre }}</h3>
+                    <p class="text-muted mb-4">Sala Quirúrgica #{{ quirofano.id }}</p>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ quirofano.id }}</td>
-            </tr>
-            <tr>
-                <th>Nombre</th>
-                <td>{{ quirofano.nombre }}</td>
-            </tr>
-            <tr>
-                <th>Estado</th>
-                <td>{{ quirofano.estado }}</td>
-            </tr>
-            <tr>
-                <th>UidCreate</th>
-                <td>{{ quirofano.uidCreate }}</td>
-            </tr>
-            <tr>
-                <th>UidUpdate</th>
-                <td>{{ quirofano.uidUpdate }}</td>
-            </tr>
-            <tr>
-                <th>Created</th>
-                <td>{{ quirofano.created ? quirofano.created|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Updated</th>
-                <td>{{ quirofano.updated ? quirofano.updated|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+                    {% set isMaintenance = (quirofano.estado == 'maintenance') %}
+                    {% set badgeClass = isMaintenance ? 'bg-warning text-dark' : 'bg-success' %}
+                    {% set badgeText = isMaintenance ? 'EN MANTENIMIENTO' : 'ACTIVO' %}
 
-    <a href="{{ path('app_quirofano_index') }}">back to list</a>
+                    <div class="mb-4">
+                        <span class="badge {{ badgeClass }} p-2 fs-6 w-100">{{ badgeText }}</span>
+                    </div>
 
-    <a href="{{ path('app_quirofano_edit', {'id': quirofano.id}) }}">edit</a>
+                    <div class="d-grid gap-2">
+                        <a href="{{ path('app_quirofano_edit', {'id': quirofano.id}) }}" class="btn btn-primary">
+                            <i class="bi bi-pencil-square"></i> Editar Quirófano
+                        </a>
 
-    {{ include('quirofano/_delete_form.html.twig') }}
+                        <form method="post" action="{{ path('app_quirofano_delete', {'id': quirofano.id}) }}" onsubmit="return confirm('¿Está seguro de que desea eliminar este quirófano?');" class="d-grid mt-2">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ quirofano.id) }}">
+                            <button class="btn btn-outline-danger"><i class="bi bi-trash"></i> Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# COLUMNA DERECHA: PRÓXIMAS CIRUGÍAS #}
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-calendar-event text-primary me-2"></i> Próximas Cirugías Programadas
+                    </h5>
+                    <a href="{{ path('app_cirugia_agenda') }}" class="btn btn-sm btn-outline-secondary">Ver Agenda General</a>
+                </div>
+                <div class="card-body">
+                    {#{% set today = date() %}#}
+                    {#{% set upcomingSurgeries = quirofano.cirugias|filter(c => c.fechaHoraProgramada >= today and c.estado.value in ['programada', 'pre_op', 'trans_op', 'post_op'])|sort((a, b) => a.fechaHoraProgramada <=> b.fechaHoraProgramada) %}#}
+                    {% set upcomingSurgeries = quirofano.cirugias %}
+
+                    {% if upcomingSurgeries is empty %}
+                        <div class="text-center text-muted py-5">
+                            <i class="bi bi-calendar-check display-4 mb-3 d-block opacity-50"></i>
+                            <p class="mb-0">No hay cirugías próximas programadas para esta sala.</p>
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fecha y Hora</th>
+                                        <th>Paciente</th>
+                                        <th>Cirujano</th>
+                                        <th>Estado</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for cirugia in upcomingSurgeries|slice(0, 10) %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold">{{ cirugia.fechaHoraProgramada|date('d/m/Y') }}</div>
+                                                <small class="text-muted">{{ cirugia.fechaHoraProgramada|date('h:i A') }}</small>
+                                            </td>
+                                            <td>{{ cirugia.paciente.nombre }} {{ cirugia.paciente.apellido }}</td>
+                                            <td>Dr(a). {{ cirugia.cirujanoPrincipal.nombre }}</td>
+                                            <td>
+                                                <span class="badge {{ cirugia.cirugiaEstadosBadgeConfig.class }}">{{ cirugia.cirugiaEstadosBadgeConfig.label|upper }}</span>
+                                            </td>
+                                            <td>
+                                                <a href="{{ path('app_cirugia_ver', {'id': cirugia.id}) }}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if upcomingSurgeries|length > 10 %}
+                            <div class="text-center mt-3">
+                                <small class="text-muted">Mostrando las próximas 10 cirugías. Revisa la Agenda para ver más.</small>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

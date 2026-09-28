@@ -18,16 +18,30 @@ class QuirofanoType extends AbstractType
     {
         $builder
             ->add('nombre', TextType::class, [
-                'label' => 'Nombre de Quirofano',
+                'label' => 'Nombre del Quirófano',
                 'label_attr' => [
-                    'class' => 'form-label'
+                    'class' => 'form-label fw-bold'
                 ],
                 'attr' => [
-                    'class' => 'form-control'
+                    'class' => 'form-control',
+                    'placeholder' => 'Ej: Quirófano 1'
                 ],
                 'constraints' => [
                     new NotBlank(message: 'Debe ingresar un nombre'),
                 ]
+            ])
+            ->add('estado', ChoiceType::class, [
+                'label' => 'Estado Operativo',
+                'label_attr' => [
+                    'class' => 'form-label fw-bold'
+                ],
+                'choices' => [
+                    'Disponible' => 'available',
+                    'En Mantenimiento' => 'maintenance',
+                ],
+                'attr' => [
+                    'class' => 'form-select noSrchSelect'
+                ],
             ])
         ;
     }

@@ -19,22 +19,25 @@
             <tr class="text-info">
                 <th>Hora Programada</th>
                 <th>Paciente</th>
+                <th>Quirófano</th>
                 <th>Procedimiento</th>
                 <th>Estado Actual</th>
             </tr>
             </thead>
             <tbody>
             {% for cirugia in surgeries %}
-                <tr>
+                {% set isFinalizada = (cirugia.estado.value == 'finalizada' or cirugia.estado.value == 'cancelada') %}
+                <tr class="{{ isFinalizada ? 'opacity-50 text-muted' : '' }}">
                     <td class="fw-bold">{{ cirugia.fechaHoraProgramada|date('H:i', false) }}</td>
                     <td>
                         {# Privacy Standard: First Initial + Last Name #}
                         {{ cirugia.paciente.nombre|first|upper }}. {{ cirugia.paciente.apellido }}
                     </td>
+                    <td>{{ cirugia.quirofano ? cirugia.quirofano.nombre : 'Por Asignar' }}</td>
                     <td>{{ cirugia.procedimientoPropuesto }}</td>
                     <td>
                         {% set badge = cirugia.cirugiaEstadosBadgeConfig %}
-                        <span class="badge {{ badge.class }} p-3 w-100 text-center">
+                        <span class="badge {{ badge.class }} p-3 w-100 text-center shadow-sm">
                             {{ badge.label }}
                         </span>
                     </td>

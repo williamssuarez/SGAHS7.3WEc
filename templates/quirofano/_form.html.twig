@@ -5,9 +5,20 @@
     }
 }) }}
 <div class="card-body">
-    <div class="mb-3">
-        {{form_label( form.nombre ) }}
-        {{form_widget( form.nombre ) }}
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            {{form_label( form.nombre ) }}
+            {{form_widget( form.nombre ) }}
+            {{form_errors( form.nombre ) }}
+        </div>
+        
+        {% if form.estado is defined %}
+        <div class="col-md-6 mb-3">
+            {{form_label( form.estado ) }}
+            {{form_widget( form.estado ) }}
+            {{form_errors( form.estado ) }}
+        </div>
+        {% endif %}
     </div>
 </div>
 

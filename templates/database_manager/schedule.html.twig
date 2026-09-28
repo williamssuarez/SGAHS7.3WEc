@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Programación de Respaldos Automáticos{% endblock %}
+
+{% block titlewrap %}
+    Respaldos Automáticos
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_database_index') }}">Base de Datos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Programación</li>
+{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Configurar Ejecución en Segundo Plano</h3>
+                </div>
+
+                <div class="card-body">
+                    {% if last_run %}
+                        <div class="alert alert-info">
+                            <i class="bi bi-clock-history"></i> <strong>Última ejecución automática:</strong> 
+                            {{ last_run|date('d/m/Y h:i:s A', 'America/Caracas') }}
+                        </div>
+                    {% endif %}
+
+                    {{ form_start(form) }}
+                        <div class="mb-3 form-check form-switch">
+                            {{ form_widget(form.enabled, {'attr': {'class': 'form-check-input', 'role': 'switch'}}) }}
+                            {{ form_label(form.enabled, null, {'label_attr': {'class': 'form-check-label fw-bold text-primary'}}) }}
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.frequency) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.hour) }}
+                            </div>
+                        </div>
+
+                        <div class="row" id="conditional-fields">
+                            <div class="col-md-6 mb-3" id="field-day-of-week">
+                                {{ form_row(form.day_of_week) }}
+                            </div>
+                            <div class="col-md-6 mb-3" id="field-day-of-month">
+                                {{ form_row(form.day_of_month) }}
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{{ path('app_database_index') }}" class="btn btn-secondary">Cancelar</a>
+                            <button class="btn btn-success" type="submit">
+                                <i class="bi bi-save"></i> Guardar Programación
+                            </button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+            
+            <div class="callout callout-warning mt-4">
+                <h5><i class="bi bi-info-circle"></i> Importante: Requisito del Servidor</h5>
+                <p>Para que los respaldos automáticos funcionen, el servidor debe tener configurado un Cron Job general (o Tarea Programada en Windows) que ejecute el siguiente comando <strong>cada hora</strong> o cada minuto:</p>
+                <code>php bin/console app:database:cron</code>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const freqSelectId = '{{ form.frequency.vars.id }}';
+            const fieldDayOfWeek = document.getElementById('field-day-of-week');
+            const fieldDayOfMonth = document.getElementById('field-day-of-month');
+
+            function toggleFields() {
+                let freq;
+                if (typeof $ !== 'undefined' && $('#' + freqSelectId).data('select2')) {
+                    freq = $('#' + freqSelectId).val();
+                } else {
+                    freq = document.getElementById(freqSelectId).value;
+                }
+                
+                fieldDayOfWeek.style.display = freq === 'weekly' ? 'block' : 'none';
+                fieldDayOfMonth.style.display = freq === 'monthly' ? 'block' : 'none';
+            }
+
+            if (typeof $ !== 'undefined') {
+                $('#' + freqSelectId).on('change', toggleFields);
+            }
+            document.getElementById(freqSelectId).addEventListener('change', toggleFields);
+            
+            toggleFields();
+        });
+    </script>
+{% endblock %}

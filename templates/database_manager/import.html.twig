@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Restaurar Base de Datos{% endblock %}
+
+{% block titlewrap %}
+    Restaurar Respaldo
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_database_index') }}">Base de Datos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Restaurar</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card card-warning card-outline">
+                <div class="card-header">
+                    <h3 class="card-title text-danger"><i class="bi bi-exclamation-triangle-fill"></i> Autorización Requerida</h3>
+                </div>
+
+                <div class="card-body">
+                    <p class="text-muted">
+                        Está a punto de restaurar la base de datos desde el archivo <strong>{{ filename }}</strong>.<br>
+                        Esta acción sobrescribirá todos los datos actuales del sistema. Por seguridad, debe confirmar su contraseña de administrador y registrar el motivo de esta acción.
+                    </p>
+
+                    {{ form_start(form, {
+                        'attr': {
+                            'data-controller': 'confirm-submit',
+                            'data-action': 'submit->confirm-submit#confirm',
+                            'data-confirm-submit-title-value': 'Confirmar Restauración',
+                            'data-confirm-submit-text-value': 'ATENCIÓN: Se perderán los datos posteriores a la fecha del respaldo. Esta acción sobrescribirá la base de datos actual.',
+                            'data-confirm-submit-icon-value': 'warning',
+                            'data-confirm-submit-confirm-button-text-value': 'Sí, restaurar',
+                            'data-confirm-submit-loading-text-value': 'Restaurando base de datos...'
+                        }
+                    }) }}
+                        {{ form_row(form.password) }}
+                        {{ form_row(form.reason) }}
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button class="btn btn-warning" type="submit">
+                                Confirmar Restauración
+                            </button>
+                            <a href="{{ path('app_database_index') }}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,20 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nuevo Quirofano{% endblock %}
+{% block title %}Nuevo Quirófano{% endblock %}
 
 {% block titlewrap %}
-    Nuevo Quirofano
+    Nuevo Quirófano
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_quirofano_index') }}">Quirofanos</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Nuevo Quirofano</li>
+    <li class="breadcrumb-item"><a href="{{ path('app_quirofano_index') }}">Quirófanos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Nuevo Quirófano</li>
 {% endblock %}
 
 {% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('quirofano/_form.html.twig') }}
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card card-primary card-outline mb-4 shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-door-open-fill text-primary"></i> Registrar Nueva Sala</h5>
+                </div>
+                {{ include('quirofano/_form.html.twig', {'button_label': 'Registrar Quirófano'}) }}
+            </div>
         </div>
     </div>
 {% endblock %}

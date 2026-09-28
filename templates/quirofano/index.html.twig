@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Quirofano{% endblock %}
+{% block title %}Panel de Quirófanos{% endblock %}
 
 {% block titlewrap %}
-    Quirofano
+    Panel de Quirófanos
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item active" aria-current="page">Quirofano</li>
+    <li class="breadcrumb-item active" aria-current="page">Quirófanos</li>
 {% endblock %}
 
 {% block body %}
@@ -19,40 +19,80 @@
             </div>
         {% endfor %}
     {% endfor %}
-    <div class="card card-primary card-outline mb-4">
-        <div class="card-header">
-            <h3 class="card-title">Quirofanos Registrados</h3>
-        </div>
 
-        <div class="card-body">
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in entities %}
-                    <tr class="align-middle">
-                        <td>{{ entity.nombre }}</td>
-                        <td>
-                            <a class="btn btn-secondary" href="{{ path('app_quirofano_show', {'id': entity.id}) }}">
-                                <i class="bi bi-search"></i> Detalles
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-dark fw-bold mb-0">Estado Actual de las Salas</h2>
+        <a href="{{ path('app_quirofano_new') }}" class="btn btn-primary shadow-sm">
+            <i class="bi bi-plus-lg"></i> Nuevo Quirófano
+        </a>
+    </div>
+
+    <div class="row g-4">
+        {% for entity in entities %}
+            {% set stat = stats[entity.id] %}
+            
+            {# Determine the visual state of the room #}
+            {% set isMaintenance = (entity.estado == 'maintenance') %}
+            {% set inUse = stat.inUse %}
+            
+            {% set badgeClass = 'bg-success' %}
+            {% set badgeText = 'DISPONIBLE' %}
+            {% set borderClass = 'border-success' %}
+            
+            {% if isMaintenance %}
+                {% set badgeClass = 'bg-warning text-dark' %}
+                {% set badgeText = 'EN MANTENIMIENTO' %}
+                {% set borderClass = 'border-warning' %}
+            {% elseif inUse %}
+                {% set badgeClass = 'bg-danger' %}
+                {% set badgeText = 'EN USO' %}
+                {% set borderClass = 'border-danger' %}
+            {% endif %}
+
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0 border-top border-4 {{ borderClass }}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h4 class="card-title fw-bold mb-0">
+                                <i class="bi bi-door-open-fill text-secondary me-1"></i> {{ entity.nombre }}
+                            </h4>
+                            <span class="badge {{ badgeClass }} px-2 py-1">{{ badgeText }}</span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="bg-light rounded p-2 me-3 text-center" style="width: 50px;">
+                                    <h5 class="mb-0 fw-bold text-primary">{{ stat.countToday }}</h5>
+                                </div>
+                                <div>
+                                    <span class="d-block fw-bold">Cirugías para hoy</span>
+                                    <small class="text-muted">Total programado</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-auto">
+                            <a class="btn btn-outline-primary btn-sm flex-fill" href="{{ path('app_quirofano_show', {'id': entity.id}) }}">
+                                <i class="bi bi-clipboard-data"></i> Ver Panel
                             </a>
-                            <a class="btn btn-success" href="{{ path('app_quirofano_edit', {'id': entity.id}) }}">
-                                <i class="bi bi-pencil-square"></i> Editar
+                            <a class="btn btn-outline-secondary btn-sm" href="{{ path('app_quirofano_edit', {'id': entity.id}) }}">
+                                <i class="bi bi-gear-fill"></i>
                             </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="card-footer clearfix">
-            <a href="{{ path('app_quirofano_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
-        </div>
-
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-light text-center py-5 shadow-sm">
+                    <i class="bi bi-door-closed display-4 text-muted mb-3 d-block"></i>
+                    <h4>No hay quirófanos registrados</h4>
+                    <p class="text-muted">Comienza agregando tu primera sala quirúrgica.</p>
+                    <a href="{{ path('app_quirofano_new') }}" class="btn btn-primary mt-2">
+                        Registrar Quirófano
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}

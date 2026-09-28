@@ -9,8 +9,12 @@
             <button class="nav-link" id="tabMedicaciones" data-bs-toggle="tab" data-bs-target="#tabMedicaciones-pane" type="button" role="tab" aria-controls="tabMedicaciones-pane" aria-selected="false">
                 <i class="bi bi-capsule-pill"></i> Medicaciones
             </button>
-        </li>\
-
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tabCirugias" data-bs-toggle="tab" data-bs-target="#tabCirugias-pane" type="button" role="tab" aria-controls="tabCirugias-pane" aria-selected="false">
+                <i class="bi bi-heart-pulse"></i> Historial Quirúrgico
+            </button>
+        </li>
         {# --- TAB DROPDOWN --- #}
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
@@ -70,6 +74,9 @@
         </div>
         <div class="tab-pane fade" id="tabMedicaciones-pane" role="tabpanel" aria-labelledby="tabMedicaciones" tabindex="0">
             {{ include('paciente/tabs/paciente_prescripciones.html.twig') }}
+        </div>
+        <div class="tab-pane fade" id="tabCirugias-pane" role="tabpanel" aria-labelledby="tabCirugias" tabindex="0">
+            {{ include('paciente/tabs/paciente_cirugias.html.twig') }}
         </div>
         <div class="tab-pane fade" id="tabAlergias-pane" role="tabpanel" aria-labelledby="tabAlergias" tabindex="0">
             {{ include('paciente/tabs/paciente_alergias.html.twig') }}

@@ -58,6 +58,9 @@ enum AuditTipos: string
     case EXTERNAL_USER_ADMIN_EDIT = 'external_user_admin_edit';
     case EXTERNAL_USER_ADMIN_BLOCK = 'external_user_admin_block';
     case EXTERNAL_USER_ADMIN_UNBLOCK = 'external_user_admin_unblock';
+    case SYSTEM_DATABASE_BACKUP = 'system_database_backup';
+    case SYSTEM_DATABASE_BACKUP_AUTO = 'system_database_backup_auto';
+    case SYSTEM_DATABASE_IMPORT = 'system_database_import';
 
     /**
      * Retorna un texto amigable para el usuario final.
@@ -114,6 +117,9 @@ enum AuditTipos: string
             self::EXTERNAL_USER_ADMIN_EDIT => 'Edicion de datos de usuario externo por administrador',
             self::EXTERNAL_USER_ADMIN_BLOCK => 'Bloqueo de cuenta de usuario externo por administrador',
             self::EXTERNAL_USER_ADMIN_UNBLOCK => 'Desbloqueo de cuenta de usuario externo por administrador',
+            self::SYSTEM_DATABASE_BACKUP => 'Sistema: Respaldo de Base de Datos',
+            self::SYSTEM_DATABASE_BACKUP_AUTO => 'Sistema: Respaldo Automático Programado',
+            self::SYSTEM_DATABASE_IMPORT => 'Sistema: Importación de Base de Datos',
         };
     }
 

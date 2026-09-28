@@ -18,6 +18,7 @@ use App\Form\CirugiaType;
 use App\Form\ConsumoQuirurgicoType;
 use App\Form\ProtocoloOperatorioType;
 use App\Repository\CirugiaRepository;
+use App\Repository\StatusRecordRepository;
 use App\Service\AuditService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,10 +30,15 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CirugiaController extends AbstractController
 {
     #[Route('/', name: 'app_cirugia')]
-    public function index(): Response
+    public function index(CirugiaRepository $cirugiaRepository, StatusRecordRepository $statusRecordRepository): Response
     {
+        // Traer todas las cirugías, ordenadas de las más recientes a las más antiguas
+        $cirugias = $cirugiaRepository->findBy([
+            'status' => $statusRecordRepository->getActive()
+        ], ['fechaHoraProgramada' => 'DESC']);
+
         return $this->render('cirugia/index.html.twig', [
-            'controller_name' => 'CirugiaController',
+            'cirugias' => $cirugias,
         ]);
     }
 
@@ -188,6 +194,14 @@ final class CirugiaController extends AbstractController
     }
 
     // 1. SHOW DETAILS
+    #[Route('/{id}', name: 'app_cirugia_show', methods: ['GET'])]
+    public function show(Cirugia $cirugia): Response
+    {
+        return $this->render('cirugia/show.html.twig', [
+            'cirugia' => $cirugia,
+        ]);
+    }
+
     #[Route('/{id}/ver', name: 'app_cirugia_ver', methods: ['GET'])]
     public function ver(Cirugia $cirugia): Response
     {

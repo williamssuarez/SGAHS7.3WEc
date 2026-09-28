@@ -1,13 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Quirofano{% endblock %}
+{% block title %}Editar Quirófano{% endblock %}
+
+{% block titlewrap %}
+    Editar Quirófano
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_quirofano_index') }}">Quirófanos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar Quirófano</li>
+{% endblock %}
 
 {% block body %}
-    <h1>Edit Quirofano</h1>
-
-    {{ include('quirofano/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_quirofano_index') }}">back to list</a>
-
-    {{ include('quirofano/_delete_form.html.twig') }}
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card card-primary card-outline mb-4 shadow-sm border-0">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-pencil-square text-primary"></i> Modificar Datos de {{ entity.nombre }}</h5>
+                </div>
+                {{ include('quirofano/_form.html.twig', {'button_label': 'Guardar Cambios'}) }}
+            </div>
+        </div>
+    </div>
 {% endblock %}
