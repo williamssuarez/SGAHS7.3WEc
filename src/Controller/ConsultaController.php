@@ -75,7 +75,19 @@ final class ConsultaController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            
+            $checkConsulta = $entityManager->getRepository(Consulta::class)->findOneBy([
+                'status' => $entityManager->getRepository(StatusRecord::class)->getActive(),
+                'estadoConsulta' => ConsultaEstados::PENDING,
+                'paciente' => $consultum->getPaciente(),
+            ]);
+            if ($checkConsulta) {
+                $this->addFlash('error', 'Este paciente ya se encuentra en la sala de espera.');
+                return $this->redirectToRoute('app_consulta_pendientes_index', [], Response::HTTP_SEE_OTHER);
+            }
 
+            $user = $entityManager->getRepository(User::class)->find($this->getUser());
+            $consultum->setDoctor($user->getInternalProfile());
             $consultum->setEstadoConsulta(ConsultaEstados::PENDING);
             $entityManager->persist($consultum);
 
@@ -108,6 +120,8 @@ final class ConsultaController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $user = $entityManager->getRepository(User::class)->find($this->getUser());
+
             $checkConsulta = $entityManager->getRepository(Consulta::class)->findOneBy([
                 'status' => $entityManager->getRepository(StatusRecord::class)->getActive(),
                 'estadoConsulta' => ConsultaEstados::ACTIVE,
@@ -118,6 +132,17 @@ final class ConsultaController extends AbstractController
                 return $this->redirectToRoute('app_consulta_activas_index', [], Response::HTTP_SEE_OTHER);
             }
 
+            $checkDoctorConsulta = $entityManager->getRepository(Consulta::class)->findOneBy([
+                'status' => $entityManager->getRepository(StatusRecord::class)->getActive(),
+                'estadoConsulta' => ConsultaEstados::ACTIVE,
+                'doctor' => $user->getInternalProfile(),
+            ]);
+            if ($checkDoctorConsulta) {
+                $this->addFlash('error', 'No puedes iniciar una nueva consulta porque ya tienes otra en progreso. Por favor, finalízala primero.');
+                return $this->redirectToRoute('app_consulta_activas_index', [], Response::HTTP_SEE_OTHER);
+            }
+
+            $consultum->setDoctor($user->getInternalProfile());
             $consultum->setEstadoConsulta(ConsultaEstados::ACTIVE);
             $entityManager->persist($consultum);
 
@@ -226,6 +251,17 @@ final class ConsultaController extends AbstractController
         if ($checkConsulta) {
             $this->addFlash('error', 'Este paciente ya tiene una consulta en progreso.');
             return $this->redirectToRoute('app_consulta_activas_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        $user = $em->getRepository(User::class)->find($this->getUser());
+        $checkDoctorConsulta = $em->getRepository(Consulta::class)->findOneBy([
+            'status' => $em->getRepository(StatusRecord::class)->getActive(),
+            'estadoConsulta' => ConsultaEstados::ACTIVE,
+            'doctor' => $user->getInternalProfile(),
+        ]);
+        if ($checkDoctorConsulta) {
+            $this->addFlash('error', 'No puedes iniciar una nueva consulta porque ya tienes otra en progreso. Por favor, finalízala primero.');
+            return $this->redirectToRoute('app_consulta_pendientes_index', [], Response::HTTP_SEE_OTHER);
         }
 
         $consulta->setEstadoConsulta(ConsultaEstados::ACTIVE);

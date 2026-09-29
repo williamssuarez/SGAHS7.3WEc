@@ -145,6 +145,7 @@ final class CitasController extends AbstractController
         $consulta->setTipoConsulta(ConsultaTipos::CT_GENERAL);
         $consulta->setEstadoConsulta(ConsultaEstados::PENDING);
         $consulta->setEspecialidad($cita->getEspecialidad());
+        $consulta->setDoctor($cita->getDoctor());
 
         // 4. Link them together!
         $cita->setConsulta($consulta);

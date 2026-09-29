@@ -7,91 +7,119 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    {#<li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Home</a></li>#}
     <li class="breadcrumb-item active" aria-current="page">Consultas</li>
 {% endblock %}
 
 {% block body %}
     {% for label, messages in app.flashes %}
         {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+            <div class="alert alert-{{ label }} alert-dismissible fade show shadow-sm" role="alert">
                 <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
     {% endfor %}
-    <div class="card card-primary card-outline mb-4">
-        <div class="card-header">
-            <h3 class="card-title">Consultas Registradas</h3>
-        </div>
-
-        <div class="card-body">
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>Paciente</th>
-                    <th>Tipo de Consulta</th>
-                    <th>Estado</th>
-                    <th>Inicio</th>
-                    <th>Final</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in entities %}
-                    <tr class="align-middle">
-                        <td>{{ entity.paciente.nombre }} {{ entity.paciente.apellido }}</td>
-                        <td>
-                            {% set badge = entity.consultaTiposBadgeConfig %}
-                            <span class="badge rounded-pill {{ badge.class }}">
-                                {{ badge.label }}
-                            </span>
-                        </td>
-                        <td>
-                            {% set badge = entity.consultaEstadosBadgeConfig %}
-                            <span class="badge rounded-pill {{ badge.class }}">
-                                {{ badge.label }}
-                            </span>
-                        </td>
-                        <td>{{ entity.fechaInicio|date('d/m/Y H:i') }}</td>
-                        <td>{{ entity.fechaFin ? entity.fechaFin|date('d/m/Y H:i') : '' }}</td>
-                        <td>
-                            <a class="btn btn-secondary" href="{{ path('app_consulta_show', {'id': entity.id}) }}">
-                                <i class="bi bi-search"></i> Detalles
-                            </a>
-                            {% if entity.estadoConsulta.value == 'pending' %}
-                                <a class="btn btn-danger" href="{{ path('app_consulta_cancel', {'id': entity.id}) }}">
-                                    <i class="fa-regular fa-circle-xmark"></i> Cancelar
-                                </a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="card-footer clearfix">
-            <div class="btn-group">
-                <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-plus-circle-fill"></i> Nueva Consulta
+    
+    <div class="card border-0 shadow-sm mb-4 bg-transparent">
+        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center mb-3">
+            <h3 class="card-title fw-bold text-secondary mb-0"><i class="fa-solid fa-person-shelter me-2"></i> Tablero de Pacientes</h3>
+            
+            <div class="btn-group shadow-sm">
+                <button type="button" class="btn btn-success dropdown-toggle fw-bold" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-plus-circle-fill me-1"></i> Nueva Consulta Extra
                 </button>
-                <ul class="dropdown-menu" style="">
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
                     <li>
-                        <a class="dropdown-item" href="{{ path('app_consulta_new_active') }}">
-                            <i class="fa-solid fa-plus-circle"></i> Nueva Consulta Activa
+                        <a class="dropdown-item py-2" href="{{ path('app_consulta_new_active') }}">
+                            <i class="fa-solid fa-play text-primary me-2"></i> Iniciar Ahora
                         </a>
                     </li>
+                    <li><hr class="dropdown-divider"></li>
                     <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="{{ path('app_consulta_new_pending') }}">
-                            <i class="fa-solid fa-exclamation-circle"></i> Nueva Consulta Pendiente
+                        <a class="dropdown-item py-2" href="{{ path('app_consulta_new_pending') }}">
+                            <i class="fa-solid fa-clock text-warning me-2"></i> Poner en Espera
                         </a>
                     </li>
                 </ul>
             </div>
         </div>
+
+        <div class="card-body p-0">
+            {% if entities is empty %}
+                <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+                    <div class="text-muted mb-3"><i class="fa-regular fa-face-smile-wink fa-4x"></i></div>
+                    <h4 class="text-secondary fw-bold">No hay pacientes en fila</h4>
+                    <p class="text-muted">Parece que estas al dia. Tomate un cafe o inicia una nueva consulta extra.</p>
+                </div>
+            {% else %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                    {% for entity in entities %}
+                        <div class="col">
+                            <div class="card h-100 border-0 shadow-sm rounded-4 hover-shadow transition-all">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3 border-bottom pb-3">
+                                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                            <i class="fa-solid fa-user fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="fw-bold mb-0 text-dark">{{ entity.paciente.nombre }} {{ entity.paciente.apellido }}</h5>
+                                            <small class="text-muted">CI: {{ entity.paciente.cedula|default('N/A') }}</small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <p class="mb-1 text-muted small fw-bold text-uppercase">Informacion de Llegada</p>
+                                        <div class="d-flex align-items-center text-dark">
+                                            <i class="fa-regular fa-clock me-2 text-warning"></i>
+                                            <span class="fw-medium">Llego hace {{ entity.fechaInicio|time_ago }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        {% if entity.estadoConsulta.value == 'pending' %}
+                                            <span class="badge bg-warning text-dark border"><i class="fa-solid fa-hourglass-half"></i> Esperando</span>
+                                        {% elseif entity.estadoConsulta.value == 'active' %}
+                                            <span class="badge bg-success"><i class="fa-solid fa-check-circle"></i> En Curso</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary"><i class="fa-solid fa-check-double"></i> Finalizada</span>
+                                        {% endif %}
+                                        
+                                        <span class="badge bg-light text-dark border ms-1">
+                                            {{ entity.consultaTiposBadgeConfig ? entity.consultaTiposBadgeConfig.label : entity.tipoConsulta.value }}
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="d-flex gap-2 mt-auto">
+                                        <a href="{{ path('app_consulta_show', {'id': entity.id}) }}" class="btn btn-primary flex-grow-1 fw-bold">
+                                            {% if entity.estadoConsulta.value == 'pending' %}
+                                                <i class="fa-solid fa-bullhorn"></i> Llamar Paciente
+                                            {% else %}
+                                                <i class="fa-regular fa-folder-open"></i> Abrir Historial
+                                            {% endif %}
+                                        </a>
+                                        
+                                        {% if entity.estadoConsulta.value == 'pending' %}
+                                            <a href="{{ path('app_consulta_cancel', {'id': entity.id}) }}" class="btn btn-outline-danger" title="Cancelar">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
     </div>
+    
+    <style>
+        .hover-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        }
+        .transition-all {
+            transition: all .3s ease;
+        }
+    </style>
 {% endblock %}

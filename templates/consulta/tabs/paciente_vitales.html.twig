@@ -130,7 +130,7 @@
     </thead>
     <tbody>
     {% for entity in vitales %}
-        <tr>
+        <tr class="{{ entity.consulta and entity.consulta.id == consultum.id ? 'table-success' : '' }}">
             <td>
                 {{ loop.index }}
             </td>

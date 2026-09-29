@@ -14,7 +14,12 @@
 {% block body %}
     <div class="col-md-6">
         <div class="card card-primary card-outline mb-4">
-            {{ form_start(form) }}
+            {{ form_start(form, {
+                'attr': {
+                    'data-controller': 'submit-once',
+                    'data-action': 'submit->submit-once#disable'
+                }
+            }) }}
             {{ include('base/_form_error_messages.html.twig') }}
             <div class="card-body">
                 <div class="mb-3">
@@ -63,7 +68,7 @@
                             </a>
 
                             <div class="d-flex">
-                                <button class="btn btn-success">
+                                <button class="btn btn-success" data-submit-once-target="submitButton">
                                     {{ button_label|default('Cancelar Consulta') }}
                                 </button>
                             </div>

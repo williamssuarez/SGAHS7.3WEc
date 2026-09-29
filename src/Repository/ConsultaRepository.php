@@ -56,10 +56,11 @@ class ConsultaRepository extends ServiceEntityRepository
         $specialties = $doctorProfile->getEspecialidades();
 
         return $this->createQueryBuilder('u')
-            ->where('u.especialidad IN (:specialties)')
+            ->where('u.doctor = :doctor OR (u.doctor IS NULL AND u.especialidad IN (:specialties))')
             ->andWhere('u.estadoConsulta = :state')
             ->andWhere('u.status = :sts')
 
+            ->setParameter('doctor', $doctorProfile)
             ->setParameter('specialties', $specialties)
             ->setParameter('state', $state)
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())

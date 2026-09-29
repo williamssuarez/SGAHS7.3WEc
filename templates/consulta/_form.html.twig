@@ -1,14 +1,21 @@
-{{ form_start(form) }}
+{{ form_start(form, {
+    'attr': {
+        'data-controller': 'submit-once',
+        'data-action': 'submit->submit-once#disable'
+    }
+}) }}
 {{ include('base/_form_error_messages.html.twig') }}
 <div class="card-body">
     <div class="mb-3">
         {{form_label( form.tipoConsulta ) }}
         {{form_widget( form.tipoConsulta ) }}
     </div>
+    {% if form.fechaInicio is defined %}
     <div class="mb-3">
         {{form_label( form.fechaInicio ) }}
         {{form_widget( form.fechaInicio ) }}
     </div>
+    {% endif %}
     <div class="mb-3">
         {{form_label( form.paciente ) }}
         {{form_widget( form.paciente ) }}
@@ -24,7 +31,7 @@
                 </a>
 
                 <div class="d-flex">
-                    <button class="btn btn-success">
+                    <button class="btn btn-success" data-submit-once-target="submitButton">
                         {{ button_label|default('Guardar') }}
                     </button>
                 </div>

@@ -22,7 +22,27 @@
     {% endfor %}
     <div class="row">
         <div class="col-md-12">
-            <div class="card card-primary card-outline">
+                        <div class="card card-primary card-outline">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">Espacio de Trabajo: {{ paciente.nombre }} {{ paciente.apellido }}</h3>
+                    <div>
+                        {% if consultum.estadoConsulta.value == 'active' %}
+                            <form action="{{ path('app_consulta_finalizar', {'id': consultum.id}) }}" method="POST" class="d-inline" data-controller="confirm-finalizar" data-action="submit->confirm-finalizar#confirm" data-confirm-finalizar-title-value="¿Desea Cerrar y Finalizar la Consulta?" data-confirm-finalizar-text-value="Una vez finalizada, pasara a formar parte del historial." data-confirm-finalizar-confirm-button-text-value="Si, finalizar">
+                                <button type="submit" class="btn btn-success fw-bold shadow-sm">
+                                    <i class="bi bi-check-circle-fill"></i> Finalizar Consulta
+                                </button>
+                            </form>
+                        {% elseif consultum.estadoConsulta.value == 'pending' %}
+                            <form action="{{ path('app_consulta_iniciar', {'id': consultum.id}) }}" method="POST" class="d-inline" data-controller="confirm-finalizar" data-action="submit->confirm-finalizar#confirm" data-confirm-finalizar-title-value="¿Desea Iniciar la Consulta?" data-confirm-finalizar-text-value="Una vez iniciada, debe ser terminada." data-confirm-finalizar-confirm-button-text-value="Si, iniciar consulta">
+                                <button type="submit" class="btn btn-primary fw-bold shadow-sm">
+                                    <i class="bi bi-play-circle-fill"></i> Iniciar Consulta
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="badge bg-secondary">Consulta Finalizada</span>
+                        {% endif %}
+                    </div>
+                </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
@@ -126,43 +146,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {% if consultum.estadoConsulta.value == 'active' %}
-                                <br>
-                                <br>
-                                <div class="col-md-12">
-                                    <form action="{{ path('app_consulta_finalizar', {'id': consultum.id}) }}"
-                                          method="POST"
-                                          data-controller="confirm-finalizar"
-                                          data-action="submit->confirm-finalizar#confirm"
-                                          data-confirm-finalizar-title-value="¿Desea cerrar y finalizar la Consulta?"
-                                          data-confirm-finalizar-text-value="Una vez cerrada, esta consulta será de solo lectura. Para nuevos cambios, deberá abrir una nueva consulta."
-                                          data-confirm-finalizar-confirm-button-text-value="Sí, cerrar consulta"
-                                          class="d-inline">
 
-                                        <button type="submit" class="btn btn-success form-control">
-                                            <i class="bi bi-check-circle-fill"></i> Cerrar y Finalizar Consulta
-                                        </button>
-                                    </form>
-                                </div>
-                            {% elseif consultum.estadoConsulta.value == 'pending' %}
-                                <br>
-                                <br>
-                                <div class="col-md-12">
-                                    <form action="{{ path('app_consulta_iniciar', {'id': consultum.id}) }}"
-                                          method="POST"
-                                          data-controller="confirm-finalizar"
-                                          data-action="submit->confirm-finalizar#confirm"
-                                          data-confirm-finalizar-title-value="¿Desea Iniciar la Consulta?"
-                                          data-confirm-finalizar-text-value="Una vez iniciada, no podra ser cancelada y debe ser terminada."
-                                          data-confirm-finalizar-confirm-button-text-value="Sí, iniciar consulta"
-                                          class="d-inline">
-
-                                        <button type="submit" class="btn btn-primary form-control">
-                                            <i class="bi bi-check-circle-fill"></i> Iniciar Consulta
-                                        </button>
-                                    </form>
-                                </div>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -177,3 +161,5 @@
         </div>
     </div>
 {% endblock %}
+
+

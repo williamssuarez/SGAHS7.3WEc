@@ -63,6 +63,13 @@ class Consulta
     #[ORM\ManyToOne(inversedBy: 'consultas')]
     private ?Especialidades $especialidad = null;
 
+    #[ORM\ManyToOne(targetEntity: InternalProfile::class)]
+    #[Gedmo\Versioned]
+    private ?InternalProfile $doctor = null;
+
+    #[ORM\OneToOne(targetEntity: Citas::class, mappedBy: 'consulta', cascade: ['persist', 'remove'])]
+    private ?Citas $cita = null;
+
     /**
      * @var Collection<int, Cirugia>
      */
@@ -308,6 +315,40 @@ class Consulta
                 $cirugia->setConsultaOrigen(null);
             }
         }
+
+        return $this;
+    }
+
+
+    public function getDoctor(): ?InternalProfile
+    {
+        return $this->doctor;
+    }
+
+    public function setDoctor(?InternalProfile $doctor): static
+    {
+        $this->doctor = $doctor;
+        return $this;
+    }
+
+    public function getCita(): ?Citas
+    {
+        return $this->cita;
+    }
+
+    public function setCita(?Citas $cita): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($cita === null && $this->cita !== null) {
+            $this->cita->setConsulta(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($cita !== null && $cita->getConsulta() !== $this) {
+            $cita->setConsulta($this);
+        }
+
+        $this->cita = $cita;
 
         return $this;
     }

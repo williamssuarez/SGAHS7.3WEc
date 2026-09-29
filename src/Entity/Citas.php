@@ -42,7 +42,7 @@ class Citas
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?CitasSolicitudes $solicitud = null;
 
-    #[ORM\OneToOne(targetEntity: Consulta::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Consulta::class, inversedBy: 'cita', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
     private ?Consulta $consulta = null;
 
