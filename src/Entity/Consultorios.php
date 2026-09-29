@@ -39,9 +39,6 @@ class Consultorios
     #[ORM\OneToMany(targetEntity: Citas::class, mappedBy: 'consultorio')]
     private Collection $citas;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $cedula = null;
-
     public function __construct()
     {
         $this->citasConfiguraciones = new ArrayCollection();
@@ -142,18 +139,6 @@ class Consultorios
                 $cita->setConsultorio(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getCedula(): ?string
-    {
-        return $this->cedula;
-    }
-
-    public function setCedula(?string $cedula): static
-    {
-        $this->cedula = $cedula;
 
         return $this;
     }

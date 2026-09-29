@@ -1,12 +1,18 @@
 {{ form_start(form, {
     'attr': {
-        'data-controller': 'submit-once cascading-doctor',
-        'data-action': 'submit->submit-once#disable'
+        'data-controller': 'submit-once cascading-doctor shift-validator',
+        'data-action': 'submit->submit-once#disable',
+        'data-shift-validator-api-url-value': path('app_turno_doctor_validate_conflict'),
+        'data-shift-validator-exclude-id-value': form.vars.data.id|default('')
     }
 }) }}
 {{ include('base/_form_error_messages.html.twig') }}
 <div class="card-body">
     <h5>Configurar Parametros de Turno:</h5>
+
+    <div class="alert d-none mb-3" role="alert" data-shift-validator-target="feedbackContainer">
+        <span data-shift-validator-target="feedbackText"></span>
+    </div>
 
     <div class="row">
         <div class="col-md-6">
@@ -22,7 +28,10 @@
             <div class="mb-3">
                 {{form_label( form.doctor ) }}
                 <div class="input-group">
-                    {{form_widget( form.doctor ) }}
+                    {{form_widget( form.doctor, { 'attr': {
+                        'data-shift-validator-target': 'doctor',
+                        'data-action': 'change->shift-validator#calculate'
+                    } } ) }}
                 </div>
             </div>
         </div>
@@ -33,7 +42,10 @@
             <div class="mb-2">
                 {{form_label( form.dayOfWeek ) }}
                 <div class="input-group">
-                    {{form_widget( form.dayOfWeek ) }}
+                    {{form_widget( form.dayOfWeek, { 'attr': {
+                        'data-shift-validator-target': 'dayOfWeek',
+                        'data-action': 'change->shift-validator#calculate'
+                    } } ) }}
                 </div>
             </div>
         </div>
@@ -41,7 +53,10 @@
             <div class="mb-3">
                 {{form_label( form.startTime ) }}
                 <div class="input-group">
-                    {{form_widget( form.startTime ) }}
+                    {{form_widget( form.startTime, { 'attr': {
+                        'data-shift-validator-target': 'startTime',
+                        'data-action': 'change->shift-validator#calculate'
+                    } } ) }}
                 </div>
             </div>
         </div>
@@ -49,15 +64,21 @@
             <div class="mb-3">
                 {{form_label( form.endTime ) }}
                 <div class="input-group">
-                    {{form_widget( form.endTime ) }}
+                    {{form_widget( form.endTime, { 'attr': {
+                        'data-shift-validator-target': 'endTime',
+                        'data-action': 'change->shift-validator#calculate'
+                    } } ) }}
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="mb-4">
-                {{form_label( form.slotDuration ) }}
+                {{form_label( form.consultorio ) }}
                 <div class="input-group">
-                    {{form_widget( form.slotDuration ) }}
+                    {{form_widget( form.consultorio, { 'attr': {
+                        'data-shift-validator-target': 'consultorio',
+                        'data-action': 'change->shift-validator#calculate'
+                    } } ) }}
                 </div>
             </div>
         </div>
@@ -72,17 +93,8 @@
                     <i class="bi bi-arrow-left"></i> Volver
                 </a>
 
-                {#<div class="d-flex">
-                    <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
-                        {{ button_label|default('Guardar') }}
-                    </button>
-                </div>#}
-
                 <div class="d-flex">
-                    {# 3. Add the submitBtn target here! #}
-                    <button type="submit" class="btn btn-success"
-                            data-submit-once-target="submitButton"
-                            data-capacity-validator-target="submitBtn">
+                    <button type="submit" class="btn btn-success" data-submit-once-target="submitButton" data-shift-validator-target="submitButton">
                         {{ button_label|default('Guardar') }}
                     </button>
                 </div>

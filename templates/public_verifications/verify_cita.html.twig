@@ -3,59 +3,79 @@
 {% block title %}Verificar Cita{% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-md-6">
-            <div class="mb-3">
-                <h3>Especialidad Solicitada</h3>
-                <h4>
-                    <span class="badge rounded-pill text-bg-dark">
-                        {{ cita.solicitud.especialidad.nombre }}
-                    </span>
-                </h4>
+    {% set mesesEspanol = {
+        'Jan': 'Ene', 'Feb': 'Feb', 'Mar': 'Mar', 'Apr': 'Abr', 'May': 'May', 'Jun': 'Jun',
+        'Jul': 'Jul', 'Aug': 'Ago', 'Sep': 'Sep', 'Oct': 'Oct', 'Nov': 'Nov', 'Dec': 'Dic'
+    } %}
+
+    {# Sección del Paciente #}
+    <div class="p-4 bg-light border-bottom text-center">
+        <h6 class="text-uppercase text-muted mb-1 fw-bold letter-spacing-1">Paciente</h6>
+        <h3 class="fw-bold text-dark mb-1">{{ cita.solicitud.paciente.nombre }} {{ cita.solicitud.paciente.apellido }}</h3>
+        <p class="text-muted mb-0">{{ cita.solicitud.paciente.tipoDocumento }} - {{ cita.solicitud.paciente.cedula|number_format(0, ',', '.') }}</p>
+    </div>
+
+    {# Sección Fecha y Hora #}
+    <div class="p-4 text-center">
+        <h6 class="text-uppercase text-muted mb-2 fw-bold">Fecha de Cita</h6>
+        <div class="d-flex justify-content-center align-items-center gap-3">
+            <div class="text-end border-end pe-3 border-2">
+                <h1 class="display-4 fw-bold text-primary mb-0">{{ cita.fecha|date('d', false) }}</h1>
+                <span class="text-uppercase fw-bold text-muted">{{ mesesEspanol[cita.fecha|date('M', false)] }} {{ cita.fecha|date('Y', false) }}</span>
+            </div>
+            <div class="text-start">
+                <h4 class="mb-0 fw-bold">{{ cita.horaInicio|date('h:i A', false) }}</h4>
+                <span class="text-muted">al {{ cita.horaFin|date('h:i A', false) }}</span>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="mb-3">
-                <h3>Estado de Solicitud</h3>
-                <h4>
-                    {% set badge = cita.solicitud.citasSolicitudesEstadosBadgeConfig %}
-                    <span class="badge rounded-pill {{ badge.class }}">
-                        {{ badge.label }}
-                    </span>
-                </h4>
+
+        <div class="mt-4">
+            {% set badge = cita.solicitud.citasSolicitudesEstadosBadgeConfig %}
+            <span class="badge rounded-pill {{ badge.class }} fs-6 px-4 py-2 border shadow-sm">
+                <i class="fa-solid fa-circle-info me-1"></i> Estado: {{ badge.label }}
+            </span>
+        </div>
+    </div>
+
+    {# Sección Detalles Clínicos #}
+    <div class="p-4 bg-light border-top">
+        <div class="d-flex align-items-center mb-3">
+            <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                <i class="fa-solid fa-stethoscope fs-4"></i>
+            </div>
+            <div>
+                <h6 class="text-muted mb-0">Especialidad</h6>
+                <h5 class="fw-bold mb-0">{{ cita.solicitud.especialidad.nombre }}</h5>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center mb-3">
+            <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                <i class="fa-solid fa-user-doctor fs-4"></i>
+            </div>
+            <div>
+                <h6 class="text-muted mb-0">Doctor Asignado</h6>
+                <h5 class="fw-bold mb-0">{{ cita.doctor ? 'Dr(a). ' ~ cita.doctor.nombre ~ ' ' ~ cita.doctor.apellido : 'Por asignar' }}</h5>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center">
+            <div class="bg-danger bg-opacity-10 text-danger rounded-circle p-3 me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                <i class="fa-solid fa-door-open fs-4"></i>
+            </div>
+            <div>
+                <h6 class="text-muted mb-0">Consultorio</h6>
+                <h5 class="fw-bold mb-0">{{ cita.consultorio.nombre }}</h5>
+                <small class="text-muted">{{ cita.consultorio.ubicacion }}</small>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="mb-3">
-                <h3>Fecha de Solicitud</h3>
-                <h4>
-                    <span class="badge rounded-pill text-bg-dark">
-                        {{ cita.solicitud.created|date('d/m/Y') }} <i>({{ cita.solicitud.created|time_ago }})</i>
-                    </span>
-                </h4>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="mb-3">
-                <h3>Cita Asignada para</h3>
-                <h4>
-                    {{ cita.fecha|date('d/m/Y', false) }} desde las {{ cita.horaInicio|date('H:i', false) }} hasta las {{ cita.horaFin|date('H:i', false) }}
-                </h4>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="mb-3">
-                <h3>Doctor</h3>
-                <h4>
-                    {{ cita.consultorio.nombre }} ({{ cita.consultorio.ubicacion }})
-                </h4>
-            </div>
-        </div>
+    {# Sección Pie Informativo #}
+    <div class="p-3 bg-white border-top text-center">
+        <small class="text-muted">
+            Solicitada el {{ cita.solicitud.created|date('d/m/Y') }}
+            <i>({{ cita.solicitud.created|time_ago }})</i>
+        </small>
     </div>
 {% endblock %}

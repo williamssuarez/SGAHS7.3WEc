@@ -35,7 +35,10 @@ class ScheduleAppointmentsCommand extends Command
 
         // 1. Get Active Configurations
         $activeStatus = $this->statusRepo->getActive();
-        $configs = $this->configRepo->findBy(['status' => $activeStatus]);
+        $configs = $this->configRepo->findBy([
+            'status' => $activeStatus,
+            'isActive' => true
+        ]);
 
         if (empty($configs)) {
             $io->warning('No se encontraron configuraciones de citas activas.');

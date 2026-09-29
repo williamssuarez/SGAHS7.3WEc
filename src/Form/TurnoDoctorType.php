@@ -90,19 +90,20 @@ class TurnoDoctorType extends AbstractType
                 ],
                 'required' => true,
             ])
-            ->add('slotDuration', NumberType::class, [
-                'label' => 'Duracion promedio por cita (en minutos)',
+            ->add('consultorio', EntityType::class, [
+                'class' => \App\Entity\Consultorios::class,
+                'label' => 'Consultorio',
                 'label_attr' => [
-                    'class' => 'form-label number-only'
+                    'class' => 'form-label'
                 ],
+                'choice_label' => 'nombre',
                 'attr' => [
-                    'class' => 'form-control number-only',
-                    'maxLength' => 4,
+                    'class' => 'srchSelect'
                 ],
                 'required' => true,
-                'constraints' => [
-                    new NotBlank(message: 'Debe ingresar la duracion promedio por cita.'),
-                ]
+                'query_builder' => function (\App\Repository\ConsultoriosRepository $er) {
+                    return $er->getActivesforSelect();
+                }
             ])
         ;
 
@@ -110,6 +111,10 @@ class TurnoDoctorType extends AbstractType
         $formModifier = function (FormInterface $form, ?Especialidades $especialidad = null) {
             $form->add('doctor', EntityType::class, [
                 'class' => InternalProfile::class,
+                'label' => 'Doctor',
+                'label_attr' => [
+                    'class' => 'form-label'
+                ],
                 'choice_label' => fn (InternalProfile $p) => $p->getNombre() . ' ' . $p->getApellido(),
                 'choice_value' => 'id',
                 'placeholder' => $especialidad ? 'Seleccione un Doctor' : 'Seleccione una Especialidad primero',

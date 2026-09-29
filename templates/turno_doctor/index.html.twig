@@ -40,6 +40,7 @@
                         <tr>
                             <th>Especialidad</th>
                             <th>Doctor</th>
+                            <th>Consultorio</th>
                             <th>Día</th>
                             <th>Inicio-Fin</th>
                             <th>Estado</th>
@@ -52,6 +53,7 @@
                             <tr class="align-middle">
                                 <td>{{ entity.especialidad.nombre }}</td>
                                 <td>{{ entity.doctor.nombre }} {{ entity.doctor.apellido }}</td>
+                                <td>{{ entity.consultorio.nombre }}</td>
                                 <td>{{ days[entity.dayOfWeek] }}</td>
                                 <td>{{ entity.startTime|date('H:i', false) }} - {{ entity.endTime|date('H:i', false) }}</td>
                                 <td>
@@ -62,7 +64,25 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <a class="btn btn-sm btn-success" href="{{ path('app_turno_doctor_edit', {'id': entity.id}) }}">Editar</a>
+                                    <div class="d-flex gap-2">
+                                        <a class="btn btn-sm btn-success" href="{{ path('app_turno_doctor_edit', {'id': entity.id}) }}" title="Editar"><i class="bi bi-pencil-fill"></i></a>
+                                        
+                                        <!-- Toggle Button -->
+                                        <form method="post" action="{{ path('app_turno_doctor_toggle_active', {'id': entity.id}) }}" data-controller="confirm-submit" data-action="submit->confirm-submit#confirm" data-confirm-submit-title-value="{{ entity.isActive ? '¿Desactivar este turno?' : '¿Activar este turno?' }}" data-confirm-submit-text-value="{{ entity.isActive ? 'El turno dejará de estar disponible para agendar.' : 'Se verificará que no choque con otros turnos activos.' }}" data-confirm-submit-icon-value="{{ entity.isActive ? 'warning' : 'question' }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ entity.id) }}">
+                                            <button type="submit" class="btn btn-sm btn-{{ entity.isActive ? 'warning' : 'info' }}" title="{{ entity.isActive ? 'Desactivar Turno' : 'Activar Turno' }}">
+                                                <i class="bi bi-power"></i>
+                                            </button>
+                                        </form>
+
+                                        <!-- Delete Button (Only visible if inactive) -->
+                                        {% if not entity.isActive %}
+                                            <form method="post" action="{{ path('app_turno_doctor_delete', {'id': entity.id}) }}" data-controller="confirm-submit" data-action="submit->confirm-submit#confirm" data-confirm-submit-title-value="¿Eliminar este turno?" data-confirm-submit-text-value="El turno pasará a la papelera." data-confirm-submit-icon-value="error" data-confirm-submit-confirm-button-text-value="Sí, Eliminar">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entity.id) }}">
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Turno"><i class="bi bi-trash-fill"></i></button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}

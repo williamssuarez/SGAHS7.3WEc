@@ -118,14 +118,13 @@ class CitasRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('c')
             ->select('e.nombre AS specialtyName', 'COUNT(c.id) AS totalAssigned')
             ->join('c.especialidad', 'e')
-            // Assuming you filter by the appointment date:
             ->andWhere('c.fecha between :start AND :end')
-            // Optional: You might want to exclude canceled appointments so you only see actual capacity
-            // ->andWhere('c.estado != :canceledState')
+            ->andWhere('c.estadoCita != :canceledState')
             ->setParameter('start', $startDate)
             ->setParameter('end', $endDate)
+            ->setParameter('canceledState', \App\Enum\CitasEstados::CANCELED)
             ->groupBy('e.id')
-            ->orderBy('totalAssigned', 'DESC') // Sort by most demanded
+            ->orderBy('totalAssigned', 'DESC')
             ->getQuery()
             ->getArrayResult();
     }

@@ -36,8 +36,8 @@
                         <select name="state" class="form-control noSrchSelect">
                             <option value="expected" {{ currentState == 'expected' ? 'selected' }}>Pendientes</option>
                             <option value="checked_in" {{ currentState == 'checked_in' ? 'selected' }}>En Espera</option>
-                            <option value="finalized" {{ currentState == 'finalized' ? 'selected' }}>Finalizadas</option>
-                            <option value="canceled" {{ currentState == 'cancelled' ? 'selected' }}>Canceladas</option>
+                            <option value="completed" {{ currentState == 'completed' ? 'selected' }}>Finalizadas</option>
+                            <option value="canceled" {{ currentState == 'canceled' ? 'selected' }}>Canceladas</option>
                             <option value="all" {{ currentState == 'all' ? 'selected' }}>Todas las Citas</option>
                         </select>
                     </div>
@@ -60,6 +60,7 @@
                 <thead>
                 <tr>
                     <th>Especialidad</th>
+                    <th>Doctor</th>
                     <th>Consultorio</th>
                     <th>Paciente</th>
                     <th>Fecha</th>
@@ -72,6 +73,7 @@
                 {% for entity in entities %}
                     <tr class="align-middle">
                         <td>{{ entity.especialidad.nombre }}</td>
+                        <td>{{ entity.doctor ? 'Dr(a). ' ~ entity.doctor.nombre ~ ' ' ~ entity.doctor.apellido : 'N/A' }}</td>
                         <td>{{ entity.consultorio.nombre }}</td>
                         <td>{{ entity.paciente.nombre }} {{ entity.paciente.apellido }}</td>
                         <td>{{ entity.fecha|date('d/m/Y', false) }}</td>

@@ -34,7 +34,7 @@ final class CitasEstadisticasController extends AbstractController
             $statesConfig = [
                 'expected' => ['label' => 'Pendientes', 'color' => '#ffc107'], // Yellow
                 'checked_in' => ['label' => 'En Espera', 'color' => '#17a2b8'], // Blue
-                'finalized' => ['label' => 'Finalizadas', 'color' => '#28a745'], // Green
+                'completed' => ['label' => 'Finalizadas', 'color' => '#28a745'], // Green
                 'canceled' => ['label' => 'Canceladas', 'color' => '#dc3545'], // Red
             ];
 

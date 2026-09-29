@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\CitasSolicitudes;
 use App\Entity\Citas;
 use App\Entity\CitasConfiguraciones;
+use App\Entity\TurnoDoctor;
 use App\Enum\CitasEstados;
 use App\Enum\CitasSolicitudesEstados;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,10 +24,6 @@ readonly class AppointmentScheduler
 
         if (empty($requests)) return 0;
 
-        // Fetch the allowed days (e.g., [1, 5] for Monday and Friday)
-        $allowedDays = $config->getDiasSemana();
-        if (empty($allowedDays)) return 0; // Failsafe if the config is broken
-
         // 2. Calculate scores and sort
         foreach ($requests as $request) {
             $request->setScorePrioridad($this->calculateScore($request, $config));
@@ -44,16 +41,16 @@ readonly class AppointmentScheduler
 
             $currentDayOfWeek = (int) $currentDate->format('N');
 
-            if (in_array($currentDayOfWeek, $allowedDays)) {
+            // Find valid slots for this day from active doctors
+            $slots = $this->generateSlots($config, $currentDayOfWeek);
 
-                // NEW: Fetch all existing appointments for this specific day from the DB
-                // This prevents double-booking from previous cron runs and checks other specialties
+            if (!empty($slots)) {
+                // Fetch all existing appointments for this specific day from the DB
                 $existingCitas = $this->em->getRepository(Citas::class)->findBy([
                     'fecha' => $currentDate,
-                    'estadoCita' => CitasEstados::EXPECTED // Only check against active appointments
+                    'estadoCita' => CitasEstados::EXPECTED
                 ]);
 
-                $slots = $this->generateSlots($config);
                 $newCitasThisRun = []; // Keep track of what we schedule right now in memory
 
                 $dailyAssigned = 0;
@@ -84,6 +81,7 @@ readonly class AppointmentScheduler
                         $cita->setPaciente($request->getPaciente());
                         $cita->setEspecialidad($config->getEspecialidad());
                         $cita->setConsultorio($slot['office']);
+                        $cita->setDoctor($slot['doctor']);
                         $cita->setFecha(clone $currentDate);
                         $cita->setHoraInicio($slot['start']);
                         $cita->setHoraFin($slot['end']);
@@ -119,30 +117,44 @@ readonly class AppointmentScheduler
         return $assignedCount;
     }
 
-    private function generateSlots(CitasConfiguraciones $config): array
+    private function generateSlots(CitasConfiguraciones $config, int $dayOfWeek): array
     {
         $slots = [];
-        $currentTime = \DateTime::createFromFormat('H:i:s', $config->getHoraInicio()->format('H:i:s'));
-        $endTime = \DateTime::createFromFormat('H:i:s', $config->getHoraFin()->format('H:i:s'));
+        
+        $turnos = $this->em->getRepository(TurnoDoctor::class)->findBy([
+            'especialidad' => $config->getEspecialidad(),
+            'dayOfWeek' => $dayOfWeek,
+            'isActive' => true,
+            'status' => $this->em->getRepository(\App\Entity\StatusRecord::class)->getActive()
+        ]);
+        
+        if (empty($turnos)) {
+            return $slots;
+        }
 
         $duration = $config->getDuracionCita();
         $receso = $config->isTieneTiempoReceso() ? $config->getTiempoReceso() : 0;
         $totalSlotTime = $duration + $receso;
 
-        while ($currentTime < $endTime) {
-            $slotEnd = (clone $currentTime)->modify("+$duration minutes");
+        foreach ($turnos as $turno) {
+            $currentTime = \DateTime::createFromFormat('H:i:s', $turno->getStartTime()->format('H:i:s'));
+            $endTime = \DateTime::createFromFormat('H:i:s', $turno->getEndTime()->format('H:i:s'));
 
-            // No programar si ya no queda tiempo en el dia
-            if ($slotEnd > $endTime) break;
+            while ($currentTime < $endTime) {
+                $slotEnd = (clone $currentTime)->modify("+$duration minutes");
 
-            foreach ($config->getConsultorio() as $office) {
+                // No programar si ya no queda tiempo en el turno
+                if ($slotEnd > $endTime) break;
+
                 $slots[] = [
                     'start' => clone $currentTime,
                     'end' => clone $slotEnd,
-                    'office' => $office
+                    'office' => $turno->getConsultorio(),
+                    'doctor' => $turno->getDoctor()
                 ];
+                
+                $currentTime->modify("+$totalSlotTime minutes");
             }
-            $currentTime->modify("+$totalSlotTime minutes");
         }
 
         return $slots;
@@ -183,11 +195,15 @@ readonly class AppointmentScheduler
             $overlap = $this->isTimeOverlap($slot['start'], $slot['end'], $cita->getHoraInicio(), $cita->getHoraFin());
 
             if ($overlap) {
-                // 1. Check Office Conflict: Is the office already booked at this time?
+                // 1. Check Doctor Conflict: Is the doctor already booked?
+                if ($cita->getDoctor() === $slot['doctor']) {
+                    return true;
+                }
+                // 2. Check Office Conflict: Is the office already booked?
                 if ($cita->getConsultorio() === $slot['office']) {
                     return true;
                 }
-                // 2. Check Patient Conflict: Is the patient already booked elsewhere at this time?
+                // 3. Check Patient Conflict: Is the patient already booked elsewhere?
                 if ($cita->getPaciente() === $paciente) {
                     return true;
                 }

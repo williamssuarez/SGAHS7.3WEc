@@ -29,12 +29,10 @@
                 <thead>
                 <tr>
                     <th>Especialidad</th>
-                    <th>Doctores</th>
-                    <th>Inicio-Fin</th>
-                    <th>Pacientes Maximos</th>
-                    <th>Prioridad de Edad</th>
-                    <th>Duracion Cita</th>
-                    <th>Receso</th>
+                    <th>Descripción</th>
+                    <th>Pacientes Máx.</th>
+                    <th>Duración Cita</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
                 </thead>
@@ -42,20 +40,36 @@
                 {% for entity in entities %}
                     <tr class="align-middle">
                         <td>{{ entity.especialidad.nombre }}</td>
-                        <td>
-                            <ul>
-                                {% for consultorios in entity.consultorio %}
-                                    <li>{{ consultorios.nombre }}</li>
-                                {% endfor %}
-                            </ul>
-                        </td>
-                        <td>{{ entity.horaInicio|date('H:i', false) }} - {{ entity.horaFin|date('H:i', false) }}</td>
+                        <td>{{ entity.descripcion|default('--') }}</td>
                         <td>{{ entity.maxPacientesDia }}</td>
-                        <td>{{ entity.edadPrioridad ? entity.edadPrioridad ~ ' años': '--' }}</td>
-                        <td>{{ entity.duracionCita }} minutos</td>
-                        <td>{{ entity.tiempoReceso ? entity.tiempoReceso ~ ' minutos': '--' }}</td>
+                        <td>{{ entity.duracionCita }} min</td>
                         <td>
-                            <a class="btn btn-success" href="{{ path('app_citas_configuraciones_edit', {'id': entity.id}) }}">Editar</a>
+                            {% if entity.isActive %}
+                                <span class="badge text-bg-success">Activo</span>
+                            {% else %}
+                                <span class="badge text-bg-danger">Inactivo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a class="btn btn-sm btn-success" href="{{ path('app_citas_configuraciones_edit', {'id': entity.id}) }}" title="Editar"><i class="bi bi-pencil-fill"></i></a>
+                                
+                                <!-- Toggle Button -->
+                                <form method="post" action="{{ path('app_citas_configuraciones_toggle_active', {'id': entity.id}) }}" data-controller="confirm-submit" data-action="submit->confirm-submit#confirm" data-confirm-submit-title-value="{{ entity.isActive ? '¿Desactivar esta configuración?' : '¿Activar esta configuración?' }}" data-confirm-submit-text-value="{{ entity.isActive ? 'Las nuevas solicitudes de cita no la usarán.' : 'Se verificará que no exista otra configuración activa para la misma especialidad.' }}" data-confirm-submit-icon-value="{{ entity.isActive ? 'warning' : 'question' }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ entity.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-{{ entity.isActive ? 'warning' : 'info' }}" title="{{ entity.isActive ? 'Desactivar Configuración' : 'Activar Configuración' }}">
+                                        <i class="bi bi-power"></i>
+                                    </button>
+                                </form>
+
+                                <!-- Delete Button (Only visible if inactive) -->
+                                {% if not entity.isActive %}
+                                    <form method="post" action="{{ path('app_citas_configuraciones_delete', {'id': entity.id}) }}" data-controller="confirm-submit" data-action="submit->confirm-submit#confirm" data-confirm-submit-title-value="¿Eliminar esta configuración?" data-confirm-submit-text-value="Pasará a la papelera permanentemente." data-confirm-submit-icon-value="error" data-confirm-submit-confirm-button-text-value="Sí, Eliminar">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entity.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Configuración"><i class="bi bi-trash-fill"></i></button>
+                                    </form>
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}

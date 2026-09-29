@@ -1,63 +1,48 @@
 {{ form_start(form, {
     'attr': {
-        'data-controller': 'submit-once capacity-validator',
-        'data-action': 'submit->submit-once#disable'
+        'data-controller': 'submit-once config-validator',
+        'data-action': 'submit->submit-once#disable',
+        'data-config-validator-api-url-value': path('app_citas_configuraciones_validate_capacity')
     }
 }) }}
 {{ include('base/_form_error_messages.html.twig') }}
 <div class="card-body">
     <h5>Configurar Parametros de Cita:</h5>
 
-    {# 2. The dynamic feedback alert (placed right below the header) #}
-    <div data-capacity-validator-target="feedbackContainer" class="alert d-none shadow-sm mb-4">
-        <span data-capacity-validator-target="feedbackText"></span>
+    <div class="alert d-none mb-3" role="alert" data-config-validator-target="feedbackContainer">
+        <span data-config-validator-target="feedbackText"></span>
     </div>
 
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <div class="mb-3">
                 {{form_label( form.especialidad ) }}
                 <div class="input-group">
-                    {{form_widget( form.especialidad ) }}
+                    {{form_widget( form.especialidad, { 'attr': {
+                        'data-config-validator-target': 'especialidad',
+                        'data-action': 'change->config-validator#calculate'
+                    } } ) }}
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="mb-3">
-                {{form_label( form.consultorio ) }}
-                <div class="input-group">
-                    {{form_widget( form.consultorio ) }}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-4">
-            <div class="mb-3">
-                {{form_label( form.horaInicio ) }}
-                <div class="input-group">
-                    {{form_widget( form.horaInicio ) }}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="mb-3">
-                {{form_label( form.horaFin ) }}
-                <div class="input-group">
-                    {{form_widget( form.horaFin ) }}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="mb-3">
                 {{form_label( form.maxPacientesDia ) }}
                 <div class="input-group">
-                    {{form_widget( form.maxPacientesDia ) }}
+                    {{form_widget( form.maxPacientesDia, { 'attr': {
+                        'data-config-validator-target': 'maxPacientesDia',
+                        'data-action': 'change->config-validator#calculate keyup->config-validator#calculate'
+                    } } ) }}
                 </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="mb-3">
+                {{form_label( form.descripcion ) }}
+                {{form_widget( form.descripcion ) }}
             </div>
         </div>
     </div>
@@ -67,7 +52,10 @@
             <div class="mb-3">
                 {{form_label( form.duracionCita ) }}
                 <div class="input-group">
-                    {{form_widget( form.duracionCita ) }}
+                    {{form_widget( form.duracionCita, { 'attr': {
+                        'data-config-validator-target': 'duracionCita',
+                        'data-action': 'change->config-validator#calculate keyup->config-validator#calculate'
+                    } } ) }}
                 </div>
             </div>
         </div>
@@ -75,7 +63,9 @@
             <div class="mb-3">
                 {{form_label( form.tieneTiempoReceso ) }}
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                {{form_widget( form.tieneTiempoReceso ) }}
+                {{form_widget( form.tieneTiempoReceso, { 'attr': {
+                    'data-action': 'change->conditional-field#toggle change->config-validator#calculate'
+                } } ) }}
             </div>
         </div>
         <div class="col-md-4">
@@ -83,7 +73,10 @@
                 <div class="mb-3">
                     {{form_label( form.tiempoReceso ) }}
                     <div class="input-group">
-                        {{form_widget( form.tiempoReceso ) }}
+                        {{form_widget( form.tiempoReceso, { 'attr': {
+                            'data-config-validator-target': 'tiempoReceso',
+                            'data-action': 'change->config-validator#calculate keyup->config-validator#calculate'
+                        } } ) }}
                     </div>
                 </div>
             </div>
@@ -91,22 +84,14 @@
     </div>
 
     <div class="row" data-controller="conditional-field">
-        <div class="col-md-4">
-            <div class="mb-3">
-                {{form_label( form.diasSemana ) }}
-                <div class="input-group">
-                    {{form_widget( form.diasSemana ) }}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="mb-3">
                 {{form_label( form.tieneEdadPrioridad ) }}
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 {{form_widget( form.tieneEdadPrioridad ) }}
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div data-conditional-field-target="container" class="d-none mb-3">
                 <div class="mb-3">
                     {{form_label( form.edadPrioridad ) }}
@@ -127,17 +112,8 @@
                     <i class="bi bi-arrow-left"></i> Volver
                 </a>
 
-                {#<div class="d-flex">
-                    <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
-                        {{ button_label|default('Guardar') }}
-                    </button>
-                </div>#}
-
                 <div class="d-flex">
-                    {# 3. Add the submitBtn target here! #}
-                    <button type="submit" class="btn btn-success"
-                            data-submit-once-target="submitButton"
-                            data-capacity-validator-target="submitBtn">
+                    <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
                         {{ button_label|default('Guardar') }}
                     </button>
                 </div>

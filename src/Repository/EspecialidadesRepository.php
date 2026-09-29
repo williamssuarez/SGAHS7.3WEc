@@ -43,12 +43,17 @@ class EspecialidadesRepository extends ServiceEntityRepository
             ->distinct()
             ->select('u')
 
-            ->leftJoin('u.citasConfiguraciones', 'c')
+            ->join('App\Entity\CitasConfiguraciones', 'c', 'WITH', 'c.especialidad = u')
+            ->join('c.status', 'cs')
 
             ->where('u.status = :sts')
+            ->andWhere('c.isActive = :active')
+            ->andWhere('cs.codigo = :actrecord')
             ->addOrderBy('u.nombre', 'ASC')
 
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('active', true)
+            ->setParameter('actrecord', 'ACTRECORD')
         ;
 
         return $query;

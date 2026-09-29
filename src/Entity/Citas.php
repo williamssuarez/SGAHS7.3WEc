@@ -21,6 +21,9 @@ class Citas
     #[ORM\ManyToOne(inversedBy: 'citas')]
     private ?Paciente $paciente = null;
 
+    #[ORM\ManyToOne]
+    private ?InternalProfile $doctor = null;
+
     #[ORM\ManyToOne(inversedBy: 'citas')]
     private ?Especialidades $especialidad = null;
 
@@ -75,6 +78,18 @@ class Citas
     public function setPaciente(?Paciente $paciente): static
     {
         $this->paciente = $paciente;
+
+        return $this;
+    }
+
+    public function getDoctor(): ?InternalProfile
+    {
+        return $this->doctor;
+    }
+
+    public function setDoctor(?InternalProfile $doctor): static
+    {
+        $this->doctor = $doctor;
 
         return $this;
     }

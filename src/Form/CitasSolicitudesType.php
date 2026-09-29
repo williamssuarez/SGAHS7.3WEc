@@ -29,7 +29,7 @@ class CitasSolicitudesType extends AbstractType
                 ],
                 'required' => true,
                 'query_builder' => function (EspecialidadesRepository $er) {
-                    return $er->getActivesforSelect();
+                    return $er->getActivesWithConfigforSelect();
                 }
             ])
             ->add('motivoConsulta', TextareaType::class, [

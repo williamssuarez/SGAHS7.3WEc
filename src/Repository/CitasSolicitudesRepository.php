@@ -75,9 +75,13 @@ class CitasSolicitudesRepository extends ServiceEntityRepository
             ->select('e.nombre AS specialtyName', 'COUNT(s.id) AS totalRequests')
             ->join('s.especialidad', 'e')
             ->andWhere('s.created between :start AND :end')
-
+            ->andWhere('s.estadoSolicitud NOT IN (:excluded)')
             ->setParameter('start', $startDate)
             ->setParameter('end', $endDate)
+            ->setParameter('excluded', [
+                \App\Enum\CitasSolicitudesEstados::CANCELED,
+                \App\Enum\CitasSolicitudesEstados::REJECTED
+            ])
             ->groupBy('e.id')
             ->getQuery()
             ->getArrayResult();

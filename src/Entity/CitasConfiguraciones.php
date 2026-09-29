@@ -14,10 +14,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CitasConfiguracionesRepository::class)]
 #[Assert\Callback(callback: 'validateEdadPrioridad')]
-#[Assert\Callback(callback: 'validateCapacity')]
-#[Assert\Callback(callback: 'validateDates')]
 #[ORM\HasLifecycleCallbacks]
-#[UniqueEntity(fields: ['especialidad'], message: 'Esta especialidad ya tiene una configuración activa.')]
+#[\App\Validator\OneActiveConfigPerSpecialty]
 class CitasConfiguraciones
 {
     use SoftDeletetableTrait;
@@ -26,20 +24,15 @@ class CitasConfiguraciones
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(targetEntity: Especialidades::class)]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Especialidades $especialidad = null;
 
-    /**
-     * @var Collection<int, Consultorios>
-     */
-    #[ORM\ManyToMany(targetEntity: Consultorios::class, inversedBy: 'citasConfiguraciones')]
-    private Collection $consultorio;
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private ?bool $isActive = false;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTime $horaInicio = null;
-
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTime $horaFin = null;
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $descripcion = null;
 
     #[ORM\Column]
     private ?int $maxPacientesDia = null;
@@ -53,9 +46,6 @@ class CitasConfiguraciones
     #[ORM\Column]
     private ?int $duracionCita = null;
 
-    #[ORM\Column(type: Types::ARRAY)]
-    private array $diasSemana = [];
-
     #[ORM\Column]
     private ?bool $tieneTiempoReceso = null;
 
@@ -64,7 +54,6 @@ class CitasConfiguraciones
 
     public function __construct()
     {
-        $this->consultorio = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -84,50 +73,26 @@ class CitasConfiguraciones
         return $this;
     }
 
-    /**
-     * @return Collection<int, Consultorios>
-     */
-    public function getConsultorio(): Collection
+    public function isActive(): ?bool
     {
-        return $this->consultorio;
+        return $this->isActive;
     }
 
-    public function addConsultorio(Consultorios $consultorio): static
+    public function setIsActive(bool $isActive): static
     {
-        if (!$this->consultorio->contains($consultorio)) {
-            $this->consultorio->add($consultorio);
-        }
+        $this->isActive = $isActive;
 
         return $this;
     }
 
-    public function removeConsultorio(Consultorios $consultorio): static
+    public function getDescripcion(): ?string
     {
-        $this->consultorio->removeElement($consultorio);
-
-        return $this;
+        return $this->descripcion;
     }
 
-    public function getHoraInicio(): ?\DateTime
+    public function setDescripcion(?string $descripcion): static
     {
-        return $this->horaInicio;
-    }
-
-    public function setHoraInicio(\DateTime $horaInicio): static
-    {
-        $this->horaInicio = $horaInicio;
-
-        return $this;
-    }
-
-    public function getHoraFin(): ?\DateTime
-    {
-        return $this->horaFin;
-    }
-
-    public function setHoraFin(\DateTime $horaFin): static
-    {
-        $this->horaFin = $horaFin;
+        $this->descripcion = $descripcion;
 
         return $this;
     }
@@ -188,65 +153,6 @@ class CitasConfiguraciones
                 ->atPath('edadPrioridad')
                 ->addViolation();
         }
-    }
-
-    #[Assert\Callback]
-    public function validateCapacity(ExecutionContextInterface $context, $payload): void
-    {
-        if (!$this->horaInicio || !$this->horaFin || !$this->duracionCita || $this->consultorio->isEmpty()) {
-            return;
-        }
-
-        // 1. Total minutes available
-        $interval = $this->horaInicio->diff($this->horaFin);
-        $totalMinutes = ($interval->h * 60) + $interval->i;
-
-        // 2. Determine actual "Block" size per patient
-        // If they don't have a break, we treat it as 0
-        $receso = ($this->isTieneTiempoReceso() && $this->getTiempoReceso())
-            ? $this->getTiempoReceso()
-            : 0;
-
-        $minutosPorPaciente = $this->duracionCita + $receso;
-
-        if ($minutosPorPaciente <= 0) return;
-
-        // 3. Calculate Capacity
-        $slotsPerOffice = floor($totalMinutes / $minutosPorPaciente);
-        $totalCapacity = $slotsPerOffice * count($this->consultorio);
-
-        // 4. Validation
-        if ($this->maxPacientesDia > $totalCapacity) {
-            $context->buildViolation('Capacidad insuficiente. Incluyendo el receso, cada cita ocupa {{ block }} minutos. El límite real para esta configuración es de {{ limit }} pacientes.')
-                ->setParameter('{{ block }}', (string)$minutosPorPaciente)
-                ->setParameter('{{ limit }}', (string)$totalCapacity)
-                ->atPath('maxPacientesDia')
-                ->addViolation();
-        }
-    }
-
-    #[Assert\Callback]
-    public function validateDates(ExecutionContextInterface $context): void
-    {
-        if ($this->horaInicio !== null && $this->horaFin !== null) {
-            if ($this->horaFin < $this->horaInicio) {
-                $context->buildViolation('La hora de finalización no puede ser anterior al inicio.')
-                    ->atPath('fechaFin')
-                    ->addViolation();
-            }
-        }
-    }
-
-    public function getDiasSemana(): array
-    {
-        return $this->diasSemana;
-    }
-
-    public function setDiasSemana(array $diasSemana): static
-    {
-        $this->diasSemana = $diasSemana;
-
-        return $this;
     }
 
     public function isTieneTiempoReceso(): ?bool

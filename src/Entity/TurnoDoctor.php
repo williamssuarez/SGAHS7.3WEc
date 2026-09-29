@@ -10,10 +10,12 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\LogEntry;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use App\Validator\NoShiftOverlap;
 
 #[ORM\Entity(repositoryClass: TurnoDoctorRepository::class)]
 #[Gedmo\Loggable(logEntryClass: LogEntry::class)]
 #[Assert\Callback(callback: 'validateDates')]
+#[NoShiftOverlap]
 #[ORM\HasLifecycleCallbacks]
 class TurnoDoctor
 {
@@ -43,8 +45,9 @@ class TurnoDoctor
     #[ORM\Column(type: Types::SMALLINT)]
     private ?int $dayOfWeek = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $slotDuration = null;
+    #[ORM\ManyToOne(inversedBy: 'turnoDoctores')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Consultorios $consultorio = null;
 
     #[ORM\Column]
     private ?bool $isActive = null;
@@ -88,14 +91,14 @@ class TurnoDoctor
         return $this;
     }
 
-    public function getSlotDuration(): ?int
+    public function getConsultorio(): ?Consultorios
     {
-        return $this->slotDuration;
+        return $this->consultorio;
     }
 
-    public function setSlotDuration(int $slotDuration): static
+    public function setConsultorio(?Consultorios $consultorio): static
     {
-        $this->slotDuration = $slotDuration;
+        $this->consultorio = $consultorio;
 
         return $this;
     }
