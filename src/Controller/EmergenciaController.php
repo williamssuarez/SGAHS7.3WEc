@@ -404,6 +404,28 @@ final class EmergenciaController extends AbstractController
             $specialty = $form->get('specialty')->getData();
 
             if ($sendToConsultation) {
+                if (!$emergencia->getPaciente()) {
+                    $this->addFlash('danger', '¡Debe identificar y vincular al paciente (crear su perfil) antes de poder derivarlo a consulta externa!');
+                    return $this->redirectToRoute('app_emergencia_index');
+                }
+
+                $doctor = $form->get('doctor')->getData();
+                if (!$doctor) {
+                    $this->addFlash('danger', 'Debe seleccionar un médico con turno activo para derivar la consulta.');
+                    return $this->redirectToRoute('app_emergencia_triage_new', ['id' => $emergencia->getId()]);
+                }
+
+                $consulta = new \App\Entity\Consulta();
+                $consulta->setPaciente($emergencia->getPaciente());
+                $consulta->setDoctor($doctor);
+                $consulta->setEspecialidad($specialty);
+                $consulta->setFechaInicio(new \DateTime());
+                $consulta->setEstadoConsulta(\App\Enum\ConsultaEstados::PENDING);
+                $consulta->setTipoConsulta(\App\Enum\ConsultaTipos::CT_ESPECIALIDAD);
+                $consulta->setObservacion("ALERTA: Paciente derivado desde triaje de Emergencias. Prioridad de atención requerida.");
+
+                $em->persist($consulta);
+
                 $emergencia->setEstado(EmergenciasEstados::DERIVED_CONSULTATION);
 
                 $em->persist($triage);
@@ -423,7 +445,7 @@ final class EmergenciaController extends AbstractController
                     ])
                 );
                 $hub->publish($update);
-                $this->addFlash('success', 'Paciente enviado a consulta externa de ' . $specialty);
+                $this->addFlash('success', 'Paciente enviado a consulta externa con el Dr. ' . $doctor->getApellido());
             } else {
                 $emergencia->setEstado(EmergenciasEstados::WAITING_BED);
 

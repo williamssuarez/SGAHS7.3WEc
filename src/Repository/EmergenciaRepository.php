@@ -27,11 +27,11 @@ class EmergenciaRepository extends ServiceEntityRepository
 
             ->where('u.status = :sts')
             ->andWhere('u.paciente = :paciente')
-            ->andWhere('u.estado != :state')
+            ->andWhere('u.estado NOT IN (:states)')
 
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
             ->setParameter('paciente', $patientId)
-            ->setParameter('state', EmergenciasEstados::DISCHARGED)
+            ->setParameter('states', [EmergenciasEstados::DISCHARGED, EmergenciasEstados::DERIVED_CONSULTATION])
         ;
 
         return $query->getQuery()->getOneOrNullResult();

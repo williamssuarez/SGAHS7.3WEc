@@ -20,8 +20,14 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+use Doctrine\ORM\EntityManagerInterface;
+
 class EmergenciaTriageType extends AbstractType
 {
+    public function __construct(private EntityManagerInterface $em)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -163,13 +169,49 @@ class EmergenciaTriageType extends AbstractType
                 ],
                 'placeholder' => 'Seleccione especialidad...',
                 'attr' => [
-                    'class' => 'srchSelect'
+                    'class' => 'srchSelect',
+                    'data-cascading-doctor-target' => 'especialidad'
                 ],
                 'query_builder' => function (EspecialidadesRepository $er) {
                     return $er->getActivesforSelect();
                 }
             ])
         ;
+
+        $formModifier = function (\Symfony\Component\Form\FormInterface $form, ?Especialidades $especialidad = null) {
+            $form->add('doctor', EntityType::class, [
+                'mapped' => false,
+                'class' => \App\Entity\InternalProfile::class,
+                'label' => 'Doctor (Turno Activo)',
+                'label_attr' => [
+                    'class' => 'form-label fw-bold'
+                ],
+                'choice_label' => fn (\App\Entity\InternalProfile $p) => $p->getNombre() . ' ' . $p->getApellido(),
+                'choice_value' => 'id',
+                'placeholder' => $especialidad ? 'Seleccione un Doctor' : 'Seleccione una Especialidad primero',
+                'attr' => [
+                    'disabled' => $especialidad === null,
+                    'data-cascading-doctor-target' => 'doctor',
+                    'class' => 'srchSelect'
+                ],
+                'query_builder' => fn (\App\Repository\InternalProfileRepository $er) => $er->getDoctorsByEspecialidadAndActiveShiftQueryBuilder($especialidad)
+            ]);
+        };
+
+        $builder->addEventListener(\Symfony\Component\Form\FormEvents::PRE_SET_DATA, function (\Symfony\Component\Form\FormEvent $event) use ($formModifier) {
+            // New triage form doesn't have an initial specialty
+            $formModifier($event->getForm(), null);
+        });
+
+        $builder->addEventListener(\Symfony\Component\Form\FormEvents::PRE_SUBMIT, function (\Symfony\Component\Form\FormEvent $event) use ($formModifier) {
+            $data = $event->getData();
+            if (!$data) return;
+
+            $especialidadId = $data['specialty'] ?? null;
+            $especialidad = $especialidadId ? $this->em->getRepository(Especialidades::class)->find($especialidadId) : null;
+
+            $formModifier($event->getForm(), $especialidad);
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void

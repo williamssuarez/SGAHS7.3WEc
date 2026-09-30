@@ -67,4 +67,36 @@ class InternalProfileRepository extends ServiceEntityRepository
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
             ->orderBy('ip.nombre', 'ASC');
     }
+
+    public function getDoctorsByEspecialidadAndActiveShiftQueryBuilder(?Especialidades $especialidad)
+    {
+        $qb = $this->createQueryBuilder('ip');
+
+        if (!$especialidad) {
+            return $qb->where('1 = 0');
+        }
+
+        $now = new \DateTime('now', new \DateTimeZone('America/Caracas'));
+        $dayOfWeek = (int) $now->format('N'); // 1 (Mon) - 7 (Sun)
+
+        return $qb
+            ->join('ip.especialidades', 'e')
+            ->join('ip.webUser', 'u')
+            ->join('ip.turnoDoctores', 't')
+            ->where('e = :especialidad')
+            ->andWhere('t.dayOfWeek = :day')
+            ->andWhere('t.startTime <= :time')
+            ->andWhere('t.endTime >= :time')
+            ->andWhere('t.status = :sts')
+            ->andWhere('CAST(u.roles AS text) LIKE :role1 OR CAST(u.roles AS text) LIKE :role2 OR CAST(u.roles AS text) LIKE :role3')
+            ->andWhere('u.status = :sts')
+            ->setParameter('especialidad', $especialidad)
+            ->setParameter('day', $dayOfWeek)
+            ->setParameter('time', $now)
+            ->setParameter('role1', '%"ROLE_DOCTOR"%')
+            ->setParameter('role2', '%"ROLE_ER_DOCTOR"%')
+            ->setParameter('role3', '%"ROLE_DOCTOR_QUIROFANO"%')
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->orderBy('ip.nombre', 'ASC');
+    }
 }

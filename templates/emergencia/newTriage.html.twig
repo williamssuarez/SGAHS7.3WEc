@@ -12,6 +12,14 @@
 {% endblock %}
 
 {% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
     <div class="col-md-12">
         <div class="card card-primary card-outline mb-4">
             {{ include('emergencia/forms/_triage_form.html.twig') }}

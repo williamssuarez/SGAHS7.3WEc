@@ -1,6 +1,6 @@
 {{ form_start(form, {
     'attr': {
-        'data-controller': 'submit-once triage-routing',
+        'data-controller': 'submit-once triage-routing cascading-doctor',
         'data-action': 'submit->submit-once#disable'
     }
 }) }}
@@ -131,9 +131,13 @@
             </div>
 
             <div class="row d-none" data-triage-routing-target="specialtySection">
-                <div class="col-md-12">
+                <div class="col-md-6">
                     {{ form_label(form.specialty) }}
                     {{ form_widget(form.specialty) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_label(form.doctor) }}
+                    {{ form_widget(form.doctor) }}
                 </div>
             </div>
         </div>
