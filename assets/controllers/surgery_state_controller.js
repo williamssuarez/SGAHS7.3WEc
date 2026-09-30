@@ -21,6 +21,7 @@ export default class extends Controller {
 
         if (result.isConfirmed) {
             // Disable button to prevent double clicks
+            button.dataset.originalHtml = button.innerHTML;
             button.disabled = true;
             button.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Procesando...';
 
@@ -34,16 +35,24 @@ export default class extends Controller {
                     body: JSON.stringify({ estado: nextState })
                 });
 
+                const responseData = await response.json();
+
                 if (response.ok) {
-                    // Success! Reload the page to reflect the new state in the Grid
-                    window.location.reload();
+                    if (responseData.redirect_url) {
+                        window.location.href = responseData.redirect_url;
+                    } else {
+                        // Success! Reload the page to reflect the new state in the Grid
+                        window.location.reload();
+                    }
                 } else {
-                    Swal.fire('Error', 'No se pudo actualizar el estado.', 'error');
+                    Swal.fire('Error', responseData.message || 'No se pudo actualizar el estado.', 'error');
                     button.disabled = false;
+                    button.innerHTML = button.dataset.originalHtml || 'Intentar de nuevo';
                 }
             } catch (error) {
                 Swal.fire('Error', 'Error de conexión.', 'error');
                 button.disabled = false;
+                button.innerHTML = button.dataset.originalHtml || 'Intentar de nuevo';
             }
         }
     }

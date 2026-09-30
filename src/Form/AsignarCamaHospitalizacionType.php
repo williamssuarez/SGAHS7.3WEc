@@ -33,9 +33,11 @@ class AsignarCamaHospitalizacionType extends AbstractType
                         ->addOrderBy('c.codigo', 'ASC');
                 },
                 'group_by' => function(HospitalizacionCama $cama) {
-                    return $cama->getHabitacion()->getNombre();
+                    return $cama->getHabitacion()->getArea()->getNombre();
                 },
-                'choice_label' => 'codigo',
+                'choice_label' => function(HospitalizacionCama $cama) {
+                    return 'Habitación: ' . $cama->getHabitacion()->getNombre() . ' - Cama: ' . $cama->getCodigo();
+                },
                 'attr' => ['class' => 'form-select']
             ]);
         ;

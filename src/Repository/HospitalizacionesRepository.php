@@ -66,4 +66,34 @@ class HospitalizacionesRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getActivesforTableByDateOnly(\DateTime $startDate, \DateTime $endDate)
+    {
+        return $this->createQueryBuilder('h')
+            ->where('h.status = :sts')
+            ->andWhere('h.fechaIngreso >= :start')
+            ->andWhere('h.fechaIngreso <= :end')
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->orderBy('h.fechaIngreso', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getActivesforTableByStateAndDate($state, \DateTime $startDate, \DateTime $endDate)
+    {
+        return $this->createQueryBuilder('h')
+            ->where('h.status = :sts')
+            ->andWhere('h.estado = :state')
+            ->andWhere('h.fechaIngreso >= :start')
+            ->andWhere('h.fechaIngreso <= :end')
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('state', $state)
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->orderBy('h.fechaIngreso', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

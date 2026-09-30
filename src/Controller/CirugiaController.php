@@ -25,20 +25,38 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use App\Entity\MainConfiguration;
 
 #[Route('/cirugia')]
 final class CirugiaController extends AbstractController
 {
-    #[Route('/', name: 'app_cirugia')]
-    public function index(CirugiaRepository $cirugiaRepository, StatusRecordRepository $statusRecordRepository): Response
+    #[Route('/', name: 'app_cirugia', methods: ['GET', 'POST'])]
+    public function index(Request $request, CirugiaRepository $cirugiaRepository, StatusRecordRepository $statusRecordRepository): Response
     {
-        // Traer todas las cirugías, ordenadas de las más recientes a las más antiguas
-        $cirugias = $cirugiaRepository->findBy([
-            'status' => $statusRecordRepository->getActive()
-        ], ['fechaHoraProgramada' => 'DESC']);
+        $startDate = new \DateTime($request->request->get('start_date', 'today'));
+        $endDate = new \DateTime($request->request->get('end_date', 'today'));
+        
+        $estadoReq = $request->request->get('estado_filtro', 'TODAS');
+        $estadoFilter = null;
+        if ($estadoReq !== 'TODAS') {
+            $estadoFilter = \App\Enum\CirugiaEstados::tryFrom($estadoReq);
+        }
+
+        $cirugias = $cirugiaRepository->getHistoricalCirugiasByDate(
+            $startDate,
+            $endDate,
+            $statusRecordRepository->getActive(),
+            $estadoFilter
+        );
 
         return $this->render('cirugia/index.html.twig', [
             'cirugias' => $cirugias,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d'),
+            'estadoFiltro' => $estadoReq,
+            'estadosDisponibles' => \App\Enum\CirugiaEstados::cases()
         ]);
     }
 
@@ -130,6 +148,12 @@ final class CirugiaController extends AbstractController
         $now = new \DateTime();
 
         if ($nextState) {
+            if (!$cirugia->getQuirofano()) {
+                return $this->json([
+                    'success' => false, 
+                    'message' => 'Debe editar el registro y asignar un Quirófano antes de avanzar la cirugía.'
+                ], 400);
+            }
 
             switch ($nextState){
                 case 'pre_op':
@@ -172,6 +196,13 @@ final class CirugiaController extends AbstractController
                     );
                     break;
                 case 'finalizada':
+                    if (!$cirugia->getProtocoloOperatorio()) {
+                        return $this->json([
+                            'success' => false, 
+                            'message' => 'Debe redactar y guardar el Protocolo Operatorio antes de finalizar la cirugía.'
+                        ], 400);
+                    }
+                    
                     $cirugia->setEstado(CirugiaEstados::FINALIZADA);
                     $cirugia->setHoraSalidaSala($now);
 
@@ -187,7 +218,13 @@ final class CirugiaController extends AbstractController
             }
 
             $em->flush();
-            return $this->json(['success' => true]);
+            
+            $responseData = ['success' => true];
+            if ($nextState === 'finalizada') {
+                $responseData['redirect_url'] = $this->generateUrl('app_cirugia_show', ['id' => $cirugia->getId()]);
+            }
+            
+            return $this->json($responseData);
         }
 
         return $this->json(['success' => false], 400);
@@ -206,6 +243,11 @@ final class CirugiaController extends AbstractController
     public function ver(Cirugia $cirugia): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN_QUIROFANO');
+
+        if ($cirugia->getEstado() === CirugiaEstados::FINALIZADA || $cirugia->getEstado() === CirugiaEstados::CANCELADA) {
+            $this->addFlash('info', 'Esta cirugía ya no está activa. Redirigiendo al expediente quirúrgico.');
+            return $this->redirectToRoute('app_cirugia_show', ['id' => $cirugia->getId()]);
+        }
 
         $consumo = new ConsumoQuirurgico();
         $consumoForm = $this->createForm(ConsumoQuirurgicoType::class, $consumo);
@@ -389,5 +431,33 @@ final class CirugiaController extends AbstractController
 
         // Redirect back to the pending list
         return $this->redirectToRoute('app_cirugia_agenda');
+    }
+    
+    #[Route('/{id}/pdf', name: 'app_cirugia_pdf', methods: ['GET'])]
+    public function generatePdf(Cirugia $cirugia, EntityManagerInterface $entityManager): Response
+    {
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Helvetica');
+        $pdfOptions->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($pdfOptions);
+
+        $html = $this->renderView('cirugia/pdf/expediente_pdf.html.twig', [
+            'entity' => $cirugia,
+            'mainConfig' => $entityManager->getRepository(MainConfiguration::class)->find(1),
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return new Response(
+            $dompdf->output(),
+            Response::HTTP_OK,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="expediente_cirugia_' . $cirugia->getId() . '.pdf"'
+            ]
+        );
     }
 }

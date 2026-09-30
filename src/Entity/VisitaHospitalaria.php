@@ -34,6 +34,9 @@ class VisitaHospitalaria
     #[ORM\Column(length: 255)]
     private ?string $estado = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $identificacionVisitante = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -107,6 +110,18 @@ class VisitaHospitalaria
     public function setEstado(string $estado): static
     {
         $this->estado = $estado;
+
+        return $this;
+    }
+
+    public function getIdentificacionVisitante(): ?string
+    {
+        return $this->identificacionVisitante;
+    }
+
+    public function setIdentificacionVisitante(string $identificacionVisitante): static
+    {
+        $this->identificacionVisitante = $identificacionVisitante;
 
         return $this;
     }

@@ -74,7 +74,9 @@ final class AreaController extends AbstractController
     public function delete(Request $request, Area $area, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$area->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($area);
+            $status = $entityManager->getRepository(\App\Entity\StatusRecord::class)->getRemove();
+            $area->setStatus($status);
+            $entityManager->persist($area);
             $entityManager->flush();
         }
 

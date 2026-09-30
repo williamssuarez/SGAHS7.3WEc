@@ -59,7 +59,7 @@
                                     </td>
                                     <td>
                                         <strong>{{ hospitalizacion.paciente.nombre }} {{ hospitalizacion.paciente.apellido }}</strong><br>
-                                        <small class="text-muted">CI: {{ hospitalizacion.paciente.cedula }}</small>
+                                        <small class="text-muted">{{ hospitalizacion.paciente.tipoDocumento }} - {{ hospitalizacion.paciente.cedula|number_format(0, ',', '.') }}</small>
                                     </td>
                                     <td>
                                         {% if hospitalizacion.emergencia %}
@@ -83,6 +83,7 @@
                                         <button class="btn btn-primary shadow-sm"
                                                 data-controller="assign-bed"
                                                 data-assign-bed-url-value="{{ path('app_hospitalizacion_assign_bed', {id: hospitalizacion.id}) }}"
+                                                data-assign-bed-reload-value="true"
                                                 data-action="click->assign-bed#openModal">
                                             <i class="bi bi-door-open-fill"></i> Asignar Cama
                                         </button>

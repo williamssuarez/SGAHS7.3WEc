@@ -49,7 +49,11 @@
                         <i class="bi bi-person-badge text-info"></i>
                         <strong>Médico Tratante:</strong>
                             {% if entity.estado.value == 'discharged' %}
-                                Dr(a). {{ entity.medicoTratante.internalProfile.nombre }}
+                                {% if entity.medicoTratante %}
+                                    Dr(a). {{ entity.medicoTratante.internalProfile.nombre }}
+                                {% else %}
+                                    <span class="text-muted fst-italic">Sin asignar</span>
+                                {% endif %}
                             {% else %}
                                 {% if entity.medicoTratante %}
                                     <button class="btn btn-sm btn-outline-primary shadow-sm"
@@ -97,7 +101,8 @@
                         </div>
 
                         <div class="modal-body p-4">
-                            <form data-assign-doctor-target="form" data-action="submit->assign-doctor#submitForm">
+                            <form data-assign-doctor-target="form" data-controller="submit-once" data-action="submit->assign-doctor#submitForm submit->submit-once#disable">
+                                <input type="hidden" data-assign-doctor-target="csrf" value="{{ csrf_token('asignar_medico') }}">
                                 <div class="mb-4">
                                     {# We manually render the field to attach the Stimulus target to it #}
                                     {{ form_label(asignarMedicoForm.medico) }}
@@ -110,7 +115,7 @@
 
                                 <div class="text-end">
                                     <button type="button" class="btn btn-light me-2" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="submit" class="btn btn-primary fw-bold px-4">
+                                    <button type="submit" class="btn btn-primary fw-bold px-4" data-submit-once-target="submitButton">
                                         <i class="bi bi-check-lg"></i> Guardar Asignación
                                     </button>
                                 </div>
@@ -462,7 +467,7 @@
                                                         {{ form_widget(vitalsForm.frecuenciaRespiratoria, {'attr': {'placeholder': 'RPM'}}) }}
                                                     </div>
                                                     <div class="col-md-2">
-                                                        <label class="fw-bold text-warning small">Temperatura (°C)</label>
+                                                        <label class="fw-bold text-warning small">Temperatura (C)</label>
                                                         {{ form_widget(vitalsForm.temperatura, {'attr': {'placeholder': '37.5'}}) }}
                                                     </div>
                                                     <div class="col-md-1">
@@ -521,7 +526,7 @@
                                                 <td>{{ vital.frecuenciaCardiaca ?: '--' }} <small class="text-muted">lpm</small></td>
                                                 <td>{{ vital.frecuenciaRespiratoria ?: '--' }} <small class="text-muted">rpm</small></td>
                                                 <td class="{{ vital.temperatura > 37.5 ? 'text-danger fw-bold' : '' }}">
-                                                    {{ vital.temperatura ?: '--' }} <small class="text-muted">°C</small>
+                                                    {{ vital.temperatura ?: '--' }} <small class="text-muted">C</small>
                                                 </td>
                                                 <td>{{ vital.spo2 ?: '--' }} <small class="text-muted">%</small></td>
                                                 <td><small class="fst-italic">{{ vital.uidCreate|public_username }}</small></td>
@@ -555,8 +560,8 @@
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
-                    {{ form_start(altaForm) }}
-                    <div class="modal-body bg-light">
+                    {{ form_start(altaForm, {'attr': {'data-controller': 'submit-once', 'data-action': 'submit->submit-once#disable'}}) }}
+                    <div class="modal-body bg-light" data-controller="discharge-routing">
                         <div class="alert alert-warning">
                             <i class="bi bi-exclamation-triangle-fill"></i> <strong>Atención:</strong>
                             Esta acción finalizará la estancia del paciente y liberará la cama <strong>{{ entity.camaActual.codigo }}</strong> inmediatamente.
@@ -568,14 +573,38 @@
                         <div class="mb-3">
                             {{ form_row(altaForm.diagnosticoEgreso) }}
                         </div>
-                        <div class="mb-3">
+
+                        {# DYNAMIC: TRANSFER SECTION #}
+                        <div class="alert alert-warning border rounded mb-3 d-none text-start" data-discharge-routing-target="transferSection">
+                            <h6><i class="fa-solid fa-truck-medical"></i> Datos de Traslado</h6>
+                            <div class="mb-2">
+                                {{ form_row(altaForm.hospitalDestino) }}
+                            </div>
+                            <div>
+                                {{ form_row(altaForm.motivoTraslado) }}
+                            </div>
+                        </div>
+
+                        {# DYNAMIC: DECEASED SECTION #}
+                        <div class="alert alert-dark border rounded mb-3 d-none text-start" data-discharge-routing-target="deceasedSection">
+                            <h6><i class="fa-solid fa-skull"></i> Datos de Fallecimiento</h6>
+                            <div>
+                                {{ form_row(altaForm.fechaMuerte) }}
+                            </div>
+                        </div>
+
+                        {# DYNAMIC: INSTRUCTIONS SECTION #}
+                        <div class="mb-3" data-discharge-routing-target="instructionsSection">
                             {{ form_row(altaForm.indicacionesAlta) }}
                         </div>
+
+                        {# Fake target for admissionSection since the JS expects it (it is reused from emergencies) #}
+                        <div class="d-none" data-discharge-routing-target="admissionSection"></div>
                     </div>
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-success shadow-sm" {#onclick="return confirm('¿Confirma que desea dar de alta a este paciente?');"#}>
+                        <button type="submit" class="btn btn-success shadow-sm" data-submit-once-target="submitButton">
                             <i class="bi bi-check-circle-fill"></i> Confirmar Alta y Liberar Cama
                         </button>
                     </div>
@@ -585,3 +614,6 @@
         </div>
     {% endif %}
 {% endblock %}
+
+
+

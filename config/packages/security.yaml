@@ -89,7 +89,11 @@ security:
         - { path: ^/turno, roles: ROLE_ADMIN }
         - { path: ^/consulta, roles: ROLE_DOCTOR }
         - { path: ^/emergencia, roles: ROLE_DOCTOR }
-        - { path: ^/cirugia/agenda, roles: ROLE_ADMIN_QUIROFANO }
+        - { path: ^/hospitalizacion, roles: ROLE_DOCTOR }
+        - { path: ^/visita, roles: ROLE_DOCTOR }
+        - { path: ^/horario, roles: ROLE_DOCTOR }
+        - { path: ^/cirugia, roles: ROLE_ADMIN_QUIROFANO }
+        - { path: ^/quirofano, roles: ROLE_ADMIN_QUIROFANO }
 
 when@test:
     security:

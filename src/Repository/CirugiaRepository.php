@@ -38,28 +38,26 @@ class CirugiaRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-//    /**
-//     * @return Cirugia[] Returns an array of Cirugia objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getHistoricalCirugiasByDate(\DateTime $start, \DateTime $end, \App\Entity\StatusRecord $status, ?\App\Enum\CirugiaEstados $estado = null): array
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->select('c', 'p', 'q', 'm') // Eager load
+            ->join('c.paciente', 'p')
+            ->leftJoin('c.quirofano', 'q')
+            ->leftJoin('c.cirujanoPrincipal', 'm')
+            ->where('c.status = :sts')
+            ->andWhere('c.fechaHoraProgramada >= :start')
+            ->andWhere('c.fechaHoraProgramada <= :end')
+            ->setParameter('sts', $status)
+            ->setParameter('start', $start->format('Y-m-d 00:00:00'))
+            ->setParameter('end', $end->format('Y-m-d 23:59:59'))
+            ->orderBy('c.fechaHoraProgramada', 'DESC');
 
-//    public function findOneBySomeField($value): ?Cirugia
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($estado !== null) {
+            $qb->andWhere('c.estado = :estado')
+               ->setParameter('estado', $estado);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

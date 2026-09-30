@@ -1,11 +1,58 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nueva Visita{% endblock %}
+{% block title %}Registrar Visitante{% endblock %}
 
 {% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('visita_hospitalaria/_form.html.twig') }}
+    <div class="container-fluid px-4 mt-3">
+        <h2 class="mb-4 fw-bold text-dark">Registrar Visitante</h2>
+
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card shadow-sm border-top border-primary border-4 mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-person-lines-fill text-primary"></i> Datos del Paciente a Visitar</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center border" style="width: 60px; height: 60px;">
+                                    <i class="bi bi-person-fill text-secondary fs-3"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="mb-1 fw-bold">{{ entity.hospitalizacion.paciente.nombre }} {{ entity.hospitalizacion.paciente.apellido }}</h5>
+                                <p class="mb-0 text-muted">{{ entity.hospitalizacion.paciente.tipoDocumento }} - {{ entity.hospitalizacion.paciente.cedula|number_format(0, ',', '.') }}</p>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="mb-2">
+                            <strong><i class="bi bi-geo-alt-fill text-danger"></i> Ubicación:</strong><br>
+                            {{ entity.hospitalizacion.camaActual.habitacion.area.nombre }} - Habitación {{ entity.hospitalizacion.camaActual.habitacion.nombre }}
+                        </div>
+                        <div class="mb-2">
+                            <strong><i class="bi bi-hospital text-info"></i> Cama:</strong><br>
+                            <span class="badge bg-info text-dark fs-6">{{ entity.hospitalizacion.camaActual.codigo }}</span>
+                        </div>
+                        <div class="mb-2">
+                            <strong><i class="bi bi-person-badge text-success"></i> Médico Tratante:</strong><br>
+                            {% if entity.hospitalizacion.medicoTratante %}
+                                Dr(a). {{ entity.hospitalizacion.medicoTratante.internalProfile.nombre }} {{ entity.hospitalizacion.medicoTratante.internalProfile.apellido }}
+                            {% else %}
+                                <span class="text-muted fst-italic">Sin asignar</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-7">
+                <div class="card shadow-sm border-0 mb-4">
+                    {{ include('visita_hospitalaria/_form.html.twig') }}
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
+

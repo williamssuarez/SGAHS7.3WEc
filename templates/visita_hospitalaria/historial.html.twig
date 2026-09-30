@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historial de Visitas{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+            <h2 class="text-dark fw-bold"><i class="bi bi-clock-history"></i> Historial de Visitas</h2>
+            <a href="{{ path('app_visita_hospitalaria_index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a Visitas Activas
+            </a>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body bg-light rounded">
+                <form method="post" class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-muted">Desde</label>
+                        <input type="date" name="start_date" class="form-control" value="{{ startDate }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-muted">Hasta</label>
+                        <input type="date" name="end_date" class="form-control" value="{{ endDate }}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-funnel-fill"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-top border-info border-4 mb-4">
+            <div class="card-body p-0">
+                <table class="table table-hover align-middle mb-0 dtHere">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Visitante</th>
+                        <th>Parentesco</th>
+                        <th>Visitando a (Paciente)</th>
+                        <th>Ubicación</th>
+                        <th>Hora Entrada</th>
+                        <th>Hora Salida</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for visita in visits %}
+                        <tr>
+                            <td>
+                                <strong>{{ visita.nombreVisitante }}</strong><br>
+                                <small class="text-muted">CI: {{ visita.identificacionVisitante|number_format(0, ',', '.') }}</small>
+                            </td>
+                            <td><span class="badge bg-secondary">{{ visita.parentesco }}</span></td>
+                            <td>{{ visita.hospitalizacion.paciente.nombre }} {{ visita.hospitalizacion.paciente.apellido }}</td>
+                            <td>
+                                {{ visita.hospitalizacion.camaActual.habitacion.area.nombre }}<br>
+                                <strong>Hab: {{ visita.hospitalizacion.camaActual.habitacion.nombre }}</strong>
+                            </td>
+                            <td>
+                                <span class="text-success"><i class="bi bi-box-arrow-in-right"></i> {{ visita.fechaHoraEntrada|date('d/m/Y H:i') }}</span>
+                            </td>
+                            <td>
+                                <span class="text-danger"><i class="bi bi-box-arrow-left"></i> {{ visita.fechaHoraSalida ? visita.fechaHoraSalida|date('d/m/Y H:i') : 'N/A' }}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

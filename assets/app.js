@@ -165,49 +165,50 @@ $(document).ready(function () {
         responsive: true,
     });
 
+    // Helper to init select2 fixing modal focus issues and width bugs
+    function initSelect2($elements, extraOptions = {}) {
+        $elements.each(function() {
+            let $el = $(this);
+            let options = {
+                theme: "bootstrap-5",
+                width: $el.data('width') ? $el.data('width') : $el.hasClass('w-100') ? '100%' : 'style',
+                placeholder: $el.data('placeholder'),
+                language: "es"
+            };
+            
+            // Fix for modals!
+            let $modal = $el.closest('.modal');
+            if ($modal.length) {
+                options.dropdownParent = $modal;
+            }
+
+            Object.assign(options, extraOptions);
+            $el.select2(options);
+        });
+    }
+
     //Select 2 with ajax search
-    $('.ajaxSrchSelect').select2({
-        theme: "bootstrap-5", // Use the installed Bootstrap 5 theme
-        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-        placeholder: $(this).data('placeholder'),
-        language: "es",
+    initSelect2($('.ajaxSrchSelect'), {
         ajax: {
-            url: '/paciente/autocomplete-paciente', // Match the route name/path
+            url: '/paciente/autocomplete-paciente',
             dataType: 'json',
-            delay: 250, // Wait 250ms after typing stops before sending request
+            delay: 250,
             data: function (params) {
-                return {
-                    q: params.term // search term
-                };
+                return { q: params.term };
             },
             processResults: function (data) {
-                return {
-                    results: data.results
-                };
+                return { results: data.results };
             },
             cache: true
         },
-        minimumInputLength: 3, // Only search after 3 characters
+        minimumInputLength: 3
     });
 
     //Select 2 with search
-    $('.srchSelect').select2({
-        theme: "bootstrap-5", // Use the installed Bootstrap 5 theme
-        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-        placeholder: $(this).data('placeholder'),
-        language: "es"
-        // search is available by default
-    });
+    initSelect2($('.srchSelect'));
 
     //Select 2 without search
-    $('.noSrchSelect').select2({
-        theme: "bootstrap-5", // Use the installed Bootstrap 5 theme bruh
-        width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
-        placeholder: $(this).data('placeholder'),
-        // 💡 This option hides the search box
-        minimumResultsForSearch: Infinity,
-        language: "es"
-    });
+    initSelect2($('.noSrchSelect'), { minimumResultsForSearch: Infinity });
 
     //make inputs number only
     $('.number-only').on('keypress keyup blur', function (e) {

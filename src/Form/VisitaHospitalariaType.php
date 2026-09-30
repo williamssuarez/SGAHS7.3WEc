@@ -14,6 +14,10 @@ class VisitaHospitalariaType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('identificacionVisitante', TextType::class, [
+                'label' => 'Cédula / Documento de Identidad',
+                'attr' => ['class' => 'form-control number-only', 'placeholder' => 'Ej: 12.345.678'],
+            ])
             ->add('nombreVisitante', TextType::class, [
                 'label' => 'Nombre Completo del Visitante',
                 'attr' => ['placeholder' => 'Nombres y Apellidos', 'class' => 'form-control']
@@ -29,7 +33,7 @@ class VisitaHospitalariaType extends AbstractType
                     'Amigo(a)' => 'Amigo/a',
                     'Representante Legal' => 'Representante',
                 ],
-                'attr' => ['class' => 'form-select']
+                'attr' => ['class' => 'form-select srchSelect']
             ]);
     }
 

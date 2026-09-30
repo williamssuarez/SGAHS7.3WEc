@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import * as bootstrap from 'bootstrap'; // Add this if you get a Bootstrap error!
 
 export default class extends Controller {
-    static targets = ["modal", "form", "select"]
+    static targets = ["modal", "form", "select", "csrf"]
     static values = { updateUrl: String }
 
     connect() {
@@ -45,6 +45,7 @@ export default class extends Controller {
         // Prepare data as FormData
         const formData = new FormData();
         formData.append('medico_id', medicoId);
+        formData.append('_token', this.csrfTarget.value);
 
         try {
             const response = await fetch(url, {

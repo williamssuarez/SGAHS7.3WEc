@@ -57,7 +57,7 @@
                                         {% set borderColor = badgeConfig.class|replace({'text-bg-': 'border-'}) %}
                                         {% set isInactive = (cirugia.estado.value in ['finalizada', 'cancelada']) %}
 
-                                        <div class="col-md-4 col-xl-3 {{ isInactive ? 'opacity-50' : '' }}">
+                                        <div class="col-md-4 col-xl-3">
                                             {# THE SURGERY CARD #}
                                             <div class="card h-100 border-start border-4 {{ borderColor }} {{ isInactive ? 'bg-light' : '' }}">
                                                 <div class="card-body">
@@ -128,8 +128,8 @@
                                                                 <i class="bi bi-clipboard-heart"></i> Ver Detalles
                                                             </a>
                                                         {% else %}
-                                                            <a class="btn btn-primary btn-sm fw-bold" href="{{ path('app_cirugia_ver', {'id': cirugia.id}) }}">
-                                                                <i class="bi bi-clipboard-heart"></i> Ver Detalles
+                                                            <a class="btn btn-primary btn-sm fw-bold" href="{{ path('app_cirugia_show', {'id': cirugia.id}) }}">
+                                                                <i class="bi bi-clipboard-heart"></i> Ver Detalles Históricos
                                                             </a>
                                                         {% endif %}
 

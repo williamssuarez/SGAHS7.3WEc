@@ -8,6 +8,15 @@
 {% endblock %}
 
 {% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
     <div class="container-fluid px-4">
 
         {# --- HEADER & ACTIONS --- #}
@@ -18,16 +27,16 @@
                 </h2>
                 <p class="text-muted mb-0">
                     Paciente: <a href="{{ path('app_paciente_show', {'id': cirugia.paciente.id}) }}"><strong>{{ cirugia.paciente.nombre }} {{ cirugia.paciente.apellido }}</strong></a>
-                    (CI: {{ cirugia.paciente.cedula }})
+                    {{ cirugia.paciente.tipoDocumento }} - {{ cirugia.paciente.cedula|number_format(0, ',', '.') }}
                 </p>
             </div>
             <div class="d-flex gap-2">
                 <a href="{{ path('app_cirugia') }}" class="btn btn-outline-secondary shadow-sm">
                     <i class="bi bi-arrow-left"></i> Volver al Historial
                 </a>
-                <button class="btn btn-outline-dark shadow-sm" onclick="window.print()">
+                <a href="{{ path('app_cirugia_pdf', {'id': cirugia.id}) }}" target="_blank" class="btn btn-outline-dark shadow-sm">
                     <i class="bi bi-printer"></i> Imprimir Expediente
-                </button>
+                </a>
             </div>
         </div>
 

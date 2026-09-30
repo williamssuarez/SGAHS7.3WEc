@@ -4,7 +4,10 @@ import $ from 'jquery';
 import 'select2';
 
 export default class extends Controller {
-    static values = { url: String }
+    static values = { 
+        url: String,
+        reload: { type: Boolean, default: false }
+    }
 
     async openModal(event) {
         event.preventDefault();
@@ -66,6 +69,10 @@ export default class extends Controller {
                         timer: 2000,
                         showConfirmButton: false
                     });
+                    
+                    if (this.reloadValue) {
+                        window.location.reload();
+                    }
                 }
             });
 

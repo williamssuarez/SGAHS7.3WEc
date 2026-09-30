@@ -28,28 +28,49 @@ final class VisitaHospitalariaController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_visita_hospitalaria_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/historial', name: 'app_visita_hospitalaria_historial', methods: ['GET', 'POST'])]
+    public function historial(Request $request, VisitaHospitalariaRepository $visitaRepo, EntityManagerInterface $em): Response
     {
-        $visitaHospitalarium = new VisitaHospitalaria();
-        $form = $this->createForm(VisitaHospitalariaType::class, $visitaHospitalarium);
-        $form->handleRequest($request);
+        $startDate = new \DateTime($request->request->get('start_date', 'today'));
+        $endDate = new \DateTime($request->request->get('end_date', 'today'));
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($visitaHospitalarium);
-            $entityManager->flush();
+        $status = $em->getRepository(StatusRecord::class)->getActive();
+        $visits = $visitaRepo->getHistoricalVisitsByDate($startDate, $endDate, $status);
 
-            return $this->redirectToRoute('app_visita_hospitalaria_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('visita_hospitalaria/new.html.twig', [
-            'visita_hospitalarium' => $visitaHospitalarium,
-            'form' => $form,
+        return $this->render('visita_hospitalaria/historial.html.twig', [
+            'visits' => $visits,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d'),
         ]);
     }
 
+    #[Route('/pre-registrar', name: 'app_visitas_pre_registrar', methods: ['POST'])]
+    public function preRegistrar(Request $request, EntityManagerInterface $em): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_RECEPTIONIST');
+        
+        $pacienteId = $request->request->get('paciente_id');
+        if (!$pacienteId) {
+            $this->addFlash('danger', 'Debe seleccionar un paciente válido.');
+            return $this->redirectToRoute('app_visita_hospitalaria_index');
+        }
+
+        $hospitalizacion = $em->getRepository(Hospitalizaciones::class)->findOneBy([
+            'paciente' => $pacienteId,
+            'estado' => HospitalizacionEstados::ADMITTED,
+            'status' => $em->getRepository(StatusRecord::class)->getActive()
+        ]);
+
+        if (!$hospitalizacion) {
+            $this->addFlash('danger', 'El paciente seleccionado no se encuentra hospitalizado actualmente.');
+            return $this->redirectToRoute('app_visita_hospitalaria_index');
+        }
+
+        return $this->redirectToRoute('app_visitas_registrar', ['id' => $hospitalizacion->getId()]);
+    }
+
     #[Route('/{id}/registrar-visita', name: 'app_visitas_registrar', methods: ['GET', 'POST'])]
-    public function registrarVisita(Request $request, Hospitalizaciones $hospitalizacion, EntityManagerInterface $em): Response
+    public function registrarVisita(Request $request, Hospitalizaciones $hospitalizacion, EntityManagerInterface $em, \App\Repository\HorarioVisitasRepository $horarioRepository): Response
     {
         $this->denyAccessUnlessGranted('ROLE_RECEPTIONIST');
 
@@ -67,22 +88,22 @@ final class VisitaHospitalariaController extends AbstractController
         }
 
         // 3. CHECK: Are we within visiting hours?
-        // (Assuming you have a service or repository method to check the HorarioVisitas table)
         $area = $hospitalizacion->getCamaActual()->getHabitacion()->getArea();
-        /* $isWithinHours = $horarioService->checkIfVisitingHours($area, new \DateTime());
+        $isWithinHours = $horarioRepository->isAreaOpenForVisits($area, new \DateTime());
+        
         if (!$isWithinHours) {
             $this->addFlash('warning', 'Fuera de horario de visitas para el área de ' . $area->getNombre());
-            return $this->redirectToRoute('app_recepcion_dashboard');
+            return $this->redirectToRoute('app_visita_hospitalaria_index');
         }
-        */
 
         $visitaHospitalarium = new VisitaHospitalaria();
+        $visitaHospitalarium->setHospitalizacion($hospitalizacion);
+        
         $form = $this->createForm(VisitaHospitalariaType::class, $visitaHospitalarium);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $visitaHospitalarium->setEstado('ACTIVA');
-            $visitaHospitalarium->setHospitalizacion($hospitalizacion);
             $visitaHospitalarium->setFechaHoraEntrada(new \DateTime());
             $em->persist($visitaHospitalarium);
             $em->flush();
@@ -156,7 +177,9 @@ final class VisitaHospitalariaController extends AbstractController
     public function delete(Request $request, VisitaHospitalaria $visitaHospitalarium, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$visitaHospitalarium->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($visitaHospitalarium);
+            $status = $entityManager->getRepository(StatusRecord::class)->getRemove();
+            $visitaHospitalarium->setStatus($status);
+            $entityManager->persist($visitaHospitalarium);
             $entityManager->flush();
         }
 

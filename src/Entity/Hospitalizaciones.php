@@ -96,6 +96,15 @@ class Hospitalizaciones
     #[ORM\OneToMany(targetEntity: Audit::class, mappedBy: 'hospitalizacion')]
     private Collection $audits;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $hospitalDestino = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $motivoTraslado = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $fechaMuerte = null;
+
     public function __construct()
     {
         $this->evolucionHospitalarias = new ArrayCollection();
@@ -443,6 +452,42 @@ class Hospitalizaciones
                 $audit->setHospitalizacion(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getHospitalDestino(): ?string
+    {
+        return $this->hospitalDestino;
+    }
+
+    public function setHospitalDestino(?string $hospitalDestino): static
+    {
+        $this->hospitalDestino = $hospitalDestino;
+
+        return $this;
+    }
+
+    public function getMotivoTraslado(): ?string
+    {
+        return $this->motivoTraslado;
+    }
+
+    public function setMotivoTraslado(?string $motivoTraslado): static
+    {
+        $this->motivoTraslado = $motivoTraslado;
+
+        return $this;
+    }
+
+    public function getFechaMuerte(): ?\DateTime
+    {
+        return $this->fechaMuerte;
+    }
+
+    public function setFechaMuerte(?\DateTime $fechaMuerte): static
+    {
+        $this->fechaMuerte = $fechaMuerte;
 
         return $this;
     }

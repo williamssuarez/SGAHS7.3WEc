@@ -21,7 +21,7 @@ class HorarioVisitasType extends AbstractType
                 'class' => Area::class,
                 'choice_label' => 'nombre',
                 'label' => 'Área / Piso',
-                'attr' => ['class' => 'form-select']
+                'attr' => ['class' => 'form-select noSrchSelect']
             ])
             ->add('diaSemana', ChoiceType::class, [
                 'label' => 'Día de la Semana',
@@ -34,7 +34,7 @@ class HorarioVisitasType extends AbstractType
                     'Sábado' => 6,
                     'Domingo' => 7,
                 ],
-                'attr' => ['class' => 'form-select']
+                'attr' => ['class' => 'form-select noSrchSelect']
             ])
             ->add('horaInicio', TimeType::class, [
                 'label' => 'Hora de Inicio',

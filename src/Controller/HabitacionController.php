@@ -74,7 +74,9 @@ final class HabitacionController extends AbstractController
     public function delete(Request $request, Habitacion $habitacion, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$habitacion->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($habitacion);
+            $status = $entityManager->getRepository(\App\Entity\StatusRecord::class)->getRemove();
+            $habitacion->setStatus($status);
+            $entityManager->persist($habitacion);
             $entityManager->flush();
         }
 

@@ -2,10 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\Audit;
+use App\Entity\Hospitalizaciones;
 use App\Entity\Emergencia;
 use App\Entity\EvolucionHospitalaria;
-use App\Entity\Hospitalizaciones;
 use App\Entity\IndicacionMedica;
 use App\Entity\KardexEnfermeria;
 use App\Entity\SignosVitalesHospitalarios;
@@ -35,8 +34,37 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 #[Route('/hospitalizacion')]
-class HospitalizacionController extends AbstractController
+final class HospitalizacionController extends AbstractController
 {
+    #[Route('/', name: 'app_hospitalizacion_index', methods: ['GET'])]
+    public function index(Request $request, HospitalizacionesRepository $hospitalizacionRepository): Response
+    {
+        $today = new \DateTime('now');
+
+        $startDate = $request->query->get('startDate')
+            ? new \DateTime($request->query->get('startDate'))
+            : clone $today->setTime(0, 0, 0);
+
+        $endDate = $request->query->get('endDate')
+            ? new \DateTime($request->query->get('endDate'))
+            : clone $today->setTime(23, 59, 59);
+
+        $state = $request->query->get('state', 'all');
+
+        if ($state == 'all') {
+            $entities = $hospitalizacionRepository->getActivesforTableByDateOnly($startDate, $endDate);
+        } else {
+            $entities = $hospitalizacionRepository->getActivesforTableByStateAndDate($state, $startDate, $endDate);
+        }
+
+        return $this->render('hospitalizaciones/index.html.twig', [
+            'entities' => $entities,
+            'currentState' => $state,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d'),
+        ]);
+    }
+
     #[Route('/admisiones', name: 'app_hospitalizacion_admisiones', methods: ['GET'])]
     public function admisiones(HospitalizacionesRepository $hospitalizacionRepository): Response
     {
@@ -80,6 +108,13 @@ class HospitalizacionController extends AbstractController
     #[Route('/{id}/asignar-medico-ajax', name: 'app_hospitalizacion_asignar_medico_ajax', methods: ['POST'])]
     public function asignarMedicoAjax(Request $request, Hospitalizaciones $hospitalizacion, UserRepository $userRepo, EntityManagerInterface $em): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_NURSE');
+
+        $submittedToken = $request->request->get('_token');
+        if (!$this->isCsrfTokenValid('asignar_medico', $submittedToken)) {
+            return $this->json(['success' => false, 'message' => 'Token de seguridad inválido: ' . print_r($submittedToken, true)], 403);
+        }
+
         $medicoId = $request->request->get('medico_id');
 
         if (!$medicoId) {
@@ -165,6 +200,10 @@ class HospitalizacionController extends AbstractController
     #[Route('/{id}/dar-alta', name: 'app_hospitalizacion_dar_alta', methods: ['POST'])]
     public function darAlta(Request $request, Hospitalizaciones $hospitalizacion, EntityManagerInterface $em, AuditService $auditService): Response
     {
+        if (!$hospitalizacion->getMedicoTratante()) {
+            $this->addFlash('danger', 'Debe asignar un médico tratante antes de dar de alta al paciente.');
+            return $this->redirectToRoute('app_hospitalizacion_expediente', ['id' => $hospitalizacion->getId()]);
+        }
 
         // Prevent discharging someone twice
         if ($hospitalizacion->getEstado() === HospitalizacionEstados::DISCHARGED) {
@@ -417,3 +456,5 @@ class HospitalizacionController extends AbstractController
         ]);
     }
 }
+
+

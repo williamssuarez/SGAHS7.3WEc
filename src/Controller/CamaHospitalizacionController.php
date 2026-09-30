@@ -170,7 +170,9 @@ final class CamaHospitalizacionController extends AbstractController
     public function delete(Request $request, HospitalizacionCama $cama, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$cama->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($cama);
+            $status = $entityManager->getRepository(\App\Entity\StatusRecord::class)->getRemove();
+            $cama->setStatus($status);
+            $entityManager->persist($cama);
             $entityManager->flush();
         }
 

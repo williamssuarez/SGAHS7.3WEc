@@ -37,15 +37,18 @@
                     <td><strong>{{ entity.created|date('d-m-Y H:i') }}</strong> <i>({{ entity.created|time_ago }})</i></td>
                     <td>
                         {% if entity.emergencia  %}
-                        <a class="btn btn-sm btn-primary" href="{{ path('app_emergencia_show_record', {'id': entity.emergencia.id}) }}" target="_blank">
-                            <i class="bi bi-list-columns"></i> Ver Expediente
-                        </a>
+                            <a class="btn btn-sm btn-primary" href="{{ path('app_emergencia_show_record', {'id': entity.emergencia.id}) }}" target="_blank">
+                                <i class="bi bi-list-columns"></i> Ver Expediente
+                            </a>
                         {% elseif entity.hospitalizacion %}
                             <a class="btn btn-sm btn-primary" href="{{ path('app_hospitalizacion_expediente', {'id': entity.hospitalizacion.id}) }}" target="_blank">
                                 <i class="bi bi-list-columns"></i> Ver Expediente
                             </a>
+                        {% elseif entity.cirugia and entity.cirugia.estado == constant('App\\Enum\\CirugiaEstados::FINALIZADA') %}
+                            <a class="btn btn-sm btn-primary" href="{{ path('app_cirugia_show', {'id': entity.cirugia.id}) }}" target="_blank">
+                                <i class="bi bi-list-columns"></i> Ver Expediente Quirúrgico
+                            </a>
                         {% endif %}
-
                     </td>
                 </tr>
             {% endfor %}

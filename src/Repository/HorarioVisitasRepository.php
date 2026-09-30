@@ -16,28 +16,28 @@ class HorarioVisitasRepository extends ServiceEntityRepository
         parent::__construct($registry, HorarioVisitas::class);
     }
 
-    //    /**
-    //     * @return HorarioVisitas[] Returns an array of HorarioVisitas objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('h')
-    //            ->andWhere('h.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('h.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Checks if a given area is open for visits at the provided time.
+     */
+    public function isAreaOpenForVisits(\App\Entity\Area $area, \DateTimeInterface $currentTime): bool
+    {
+        // 1 (for Monday) through 7 (for Sunday)
+        $currentDay = (int) $currentTime->format('N');
+        // Extract just the time part for comparison (HH:mm:ss)
+        $timeString = $currentTime->format('H:i:s');
 
-    //    public function findOneBySomeField($value): ?HorarioVisitas
-    //    {
-    //        return $this->createQueryBuilder('h')
-    //            ->andWhere('h.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $result = $this->createQueryBuilder('h')
+            ->select('count(h.id)')
+            ->where('h.area = :area')
+            ->andWhere('h.diaSemana = :day')
+            ->andWhere('h.horaInicio <= :time')
+            ->andWhere('h.horaFin >= :time')
+            ->setParameter('area', $area)
+            ->setParameter('day', $currentDay)
+            ->setParameter('time', $timeString)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $result > 0;
+    }
 }

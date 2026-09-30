@@ -52,7 +52,7 @@
 
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
+                            <table class="table table-hover align-middle mb-0 dtHere">
                                 <thead class="table-light">
                                 <tr>
                                     <th style="width: 15%">Ubicación</th>
@@ -74,7 +74,7 @@
                                         </td>
                                         <td>
                                             <strong>{{ hospitalizacion.paciente.nombre }} {{ hospitalizacion.paciente.apellido }}</strong><br>
-                                            <small class="text-muted">CI: {{ hospitalizacion.paciente.cedula }}</small>
+                                            <small class="text-muted">{{ hospitalizacion.paciente.tipoDocumento }} - {{ hospitalizacion.paciente.cedula|number_format(0, ',', '.') }}</small>
                                         </td>
                                         <td>
                                             <div class="text-truncate" style="max-width: 200px;" title="{{ hospitalizacion.diagnosticoIngreso }}">
@@ -150,6 +150,7 @@
                                             'data-assign-doctor-target': 'select'
                                         }
                                     }) }}
+                                    <input type="hidden" data-assign-doctor-target="csrf" value="{{ csrf_token('asignar_medico') }}">
                                 </div>
 
                                 <div class="text-end">
