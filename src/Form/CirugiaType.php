@@ -18,12 +18,23 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
+
 class CirugiaType extends AbstractType
 {
     public function __construct(private EntityManagerInterface $entityManager) {}
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $isNew = $options['data'] && $options['data']->getId() === null;
+        $dateConstraints = [];
+        if ($isNew) {
+            $dateConstraints[] = new GreaterThanOrEqual([
+                'value' => 'today',
+                'message' => 'No se puede programar una cirugía para una fecha pasada.'
+            ]);
+        }
+
         $builder
             ->add('paciente', EntityType::class, [
                 'class' => Paciente::class,
@@ -35,10 +46,28 @@ class CirugiaType extends AbstractType
             ])
             ->add('cirujanoPrincipal', EntityType::class, [
                 'class' => InternalProfile::class,
+                'query_builder' => function(\App\Repository\InternalProfileRepository $er) {
+                    return $er->getStaffByRoleQueryBuilder(\App\Entity\User::ROLE_SURGEON, \App\Entity\User::ROLE_ADMIN_QUIROFANO);
+                },
                 'choice_label' => function(InternalProfile $profile) {
-                    return 'Dr(a). ' . $profile->getNombre();
+                    return $profile->getNombre() . ' ' . $profile->getApellido();
                 },
                 'label' => 'Cirujano Principal',
+                'placeholder' => '--- Asignar luego ---',
+                'required' => false,
+                'attr' => ['class' => 'form-select srchSelect']
+            ])
+            ->add('anestesiologo', EntityType::class, [
+                'class' => InternalProfile::class,
+                'query_builder' => function(\App\Repository\InternalProfileRepository $er) {
+                    return $er->getStaffByRoleQueryBuilder(\App\Entity\User::ROLE_ANESTHESIOLOGIST, \App\Entity\User::ROLE_ADMIN_QUIROFANO);
+                },
+                'choice_label' => function(InternalProfile $profile) {
+                    return $profile->getNombre() . ' ' . $profile->getApellido();
+                },
+                'label' => 'Anestesiólogo',
+                'placeholder' => '--- Asignar luego ---',
+                'required' => false,
                 'attr' => ['class' => 'form-select srchSelect']
             ])
             ->add('procedimientoPropuesto', TextType::class, [
@@ -52,7 +81,8 @@ class CirugiaType extends AbstractType
             ->add('fechaHoraProgramada', DateTimeType::class, [
                 'widget' => 'single_text',
                 'label' => 'Fecha y Hora Programada',
-                'attr' => ['class' => 'form-control']
+                'attr' => ['class' => 'form-control'],
+                'constraints' => $dateConstraints
             ])
             ->add('lateralidad', ChoiceType::class, [
                 'label' => 'Lateralidad',

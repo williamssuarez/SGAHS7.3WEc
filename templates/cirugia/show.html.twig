@@ -106,7 +106,11 @@
                                             </tr>
                                             <tr>
                                                 <th class="text-muted">Cirujano Principal:</th>
-                                                <td>Dr(a). {{ cirugia.cirujanoPrincipal.nombre }}</td>
+                                                <td>{{ cirugia.cirujanoPrincipal ? 'Dr(a). ' ~ cirugia.cirujanoPrincipal.nombre ~ ' ' ~ cirugia.cirujanoPrincipal.apellido : '<span class="text-danger fst-italic">No asignado</span>'|raw }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted">Anestesiólogo:</th>
+                                                <td>{{ cirugia.anestesiologo ? 'Dr(a). ' ~ cirugia.anestesiologo.nombre ~ ' ' ~ cirugia.anestesiologo.apellido : '<span class="text-danger fst-italic">No asignado</span>'|raw }}</td>
                                             </tr>
                                             <tr>
                                                 <th class="text-muted">Quirófano:</th>
@@ -144,6 +148,12 @@
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                                 <span><i class="bi bi-calendar-check text-primary"></i> Programada:</span>
                                                 <strong>{{ cirugia.fechaHoraProgramada|date('d/m/Y H:i A', false) }}</strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <span><i class="bi bi-door-open-fill text-info"></i> Entrada a Sala:</span>
+                                                <strong class="{{ cirugia.horaIngresoSala ? '' : 'text-muted' }}">
+                                                    {{ cirugia.horaIngresoSala ? cirugia.horaIngresoSala|date('H:i A') : '--:--' }}
+                                                </strong>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                                 <span><i class="bi bi-play-circle text-warning"></i> Anestesia:</span>

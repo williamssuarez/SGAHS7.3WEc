@@ -51,9 +51,9 @@
     </tr>
     <tr>
         <th>Cirujano Principal:</th>
-        <td>{{ entity.cirujanoPrincipal ? 'Dr(a). ' ~ entity.cirujanoPrincipal.nombre ~ ' ' ~ entity.cirujanoPrincipal.apellido : 'N/A' }}</td>
+        <td>{{ entity.cirujanoPrincipal ? entity.cirujanoPrincipal.nombre ~ ' ' ~ entity.cirujanoPrincipal.apellido : 'N/A' }}</td>
         <th>Anestesiólogo:</th>
-        <td>{{ entity.anestesiologo ? 'Dr(a). ' ~ entity.anestesiologo.nombre ~ ' ' ~ entity.anestesiologo.apellido : 'N/A' }}</td>
+        <td>{{ entity.anestesiologo ? entity.anestesiologo.nombre ~ ' ' ~ entity.anestesiologo.apellido : 'N/A' }}</td>
     </tr>
     <tr>
         <th>Fecha Programada:</th>

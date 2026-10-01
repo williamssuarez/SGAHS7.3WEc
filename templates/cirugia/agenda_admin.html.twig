@@ -24,7 +24,7 @@
             {% for roomName, surgeries in grid %}
                 {% set isRoomOccupied = false %}
                 {% for cirugia in surgeries %}
-                    {% if cirugia.estado.value in ['pre_op', 'trans_op', 'post_op'] %}
+                    {% if cirugia.estado.value in ['en_sala', 'pre_op', 'trans_op', 'post_op'] %}
                         {% set isRoomOccupied = true %}
                     {% endif %}
                 {% endfor %}
@@ -52,7 +52,7 @@
                             {% else %}
                                 <div class="row g-3">
                                     {% for cirugia in surgeries %}
-                                        
+
                                         {% set badgeConfig = cirugia.cirugiaEstadosBadgeConfig %}
                                         {% set borderColor = badgeConfig.class|replace({'text-bg-': 'border-'}) %}
                                         {% set isInactive = (cirugia.estado.value in ['finalizada', 'cancelada']) %}
@@ -69,7 +69,10 @@
                                                     <p class="small text-muted mb-2">{{ cirugia.procedimientoPropuesto }}</p>
 
                                                     <div class="small mb-3">
-                                                        <div><i class="bi bi-person-fill text-secondary"></i> Dr(a). {{ cirugia.cirujanoPrincipal.nombre }}</div>
+                                                        <div>
+                                                            <i class="bi bi-person-fill text-secondary"></i>
+                                                            {{ cirugia.cirujanoPrincipal ? 'Dr(a). ' ~ cirugia.cirujanoPrincipal.nombre ~ ' ' ~ cirugia.cirujanoPrincipal.apellido : '<span class="text-danger fst-italic">Cirujano por asignar</span>'|raw }}
+                                                        </div>
                                                     </div>
 
                                                     {# THE ACTION BUTTONS (Powered by Stimulus) #}
@@ -78,11 +81,35 @@
                                                          data-surgery-state-id-value="{{ cirugia.id }}">
 
                                                         {% if cirugia.estado.value == 'programada' %}
+                                                            <button class="btn btn-info btn-sm fw-bold text-white" data-action="click->surgery-state#advance" data-next-state="en_sala">
+                                                                <i class="bi bi-door-open-fill"></i> Marcar Entrada a Sala
+                                                            </button>
+                                                            <a class="btn btn-primary btn-sm fw-bold" href="{{ path('app_cirugia_ver', {'id': cirugia.id}) }}">
+                                                                <i class="bi bi-clipboard-heart"></i> Ver Detalles
+                                                            </a>
+                                                            <a class="btn btn-primary btn-sm fw-bold" href="{{ path('app_cirugia_editar', {'id': cirugia.id}) }}">
+                                                                <i class="bi bi-pencil-square"></i> Editar
+                                                            </a>
+                                                            <form action="{{ path('app_cirugia_cancelar', {'id': cirugia.id}) }}"
+                                                                  method="POST"
+                                                                  data-controller="cancel-appointment"
+                                                                  data-action="submit->cancel-appointment#confirm"
+                                                                  data-cancel-appointment-patient-name-value="{{ cirugia.paciente.nombre }} {{ cirugia.paciente.apellido }}"
+                                                                  class="form">
+
+                                                                <button type="submit" class="btn btn-danger btn-sm fw-bold">
+                                                                    <i class="bi bi-person-x-fill"></i> Cancelar Cirugia
+                                                                </button>
+                                                            </form>
+                                                        {% elseif cirugia.estado.value == 'en_sala' %}
                                                             <button class="btn btn-warning btn-sm fw-bold" data-action="click->surgery-state#advance" data-next-state="pre_op">
                                                                 <i class="bi bi-play-circle"></i> Iniciar Anestesia (Pre-Op)
                                                             </button>
                                                             <a class="btn btn-primary btn-sm fw-bold" href="{{ path('app_cirugia_ver', {'id': cirugia.id}) }}">
                                                                 <i class="bi bi-clipboard-heart"></i> Ver Detalles
+                                                            </a>
+                                                            <a class="btn btn-primary btn-sm fw-bold" href="{{ path('app_cirugia_editar', {'id': cirugia.id}) }}">
+                                                                <i class="bi bi-pencil-square"></i> Editar
                                                             </a>
                                                             <form action="{{ path('app_cirugia_cancelar', {'id': cirugia.id}) }}"
                                                                   method="POST"
@@ -101,6 +128,9 @@
                                                             </button>
                                                             <a class="btn btn-primary btn-sm fw-bold" href="{{ path('app_cirugia_ver', {'id': cirugia.id}) }}">
                                                                 <i class="bi bi-clipboard-heart"></i> Ver Detalles
+                                                            </a>
+                                                            <a class="btn btn-outline-secondary btn-sm fw-bold" href="{{ path('app_cirugia_editar', {'id': cirugia.id}) }}">
+                                                                <i class="bi bi-pencil-square"></i> Editar
                                                             </a>
                                                             <form action="{{ path('app_cirugia_cancelar', {'id': cirugia.id}) }}"
                                                                   method="POST"

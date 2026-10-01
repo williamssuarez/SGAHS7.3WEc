@@ -76,6 +76,7 @@ parameters:
             children:
                 -   title: Configuraciones
                     icon: 'bi bi-gear text-warning'
+                    roles: 'ROLE_ADMIN'
                     children:
                         - { title: Zonas, route: app_zona_cama_index, icon: 'bi bi-gear text-warning' }
                         - { title: Camas, route: app_cama_index, icon: 'bi bi-gear text-warning' }
@@ -90,6 +91,7 @@ parameters:
             children:
                 -   title: Configuraciones
                     icon: 'bi bi-gear text-warning'
+                    roles: 'ROLE_ADMIN'
                     children:
                         - { title: Areas, route: app_area_index, icon: 'bi bi-gear text-warning' }
                         - { title: Habitaciones, route: app_habitacion_index, icon: 'bi bi-gear text-warning' }
@@ -107,10 +109,11 @@ parameters:
                         - { title: Visitas, route: app_visita_hospitalaria_index, icon: 'bi bi-calendar-fill text-info' }
         -   title: Quirofano
             icon: 'fa-solid fa-circle-h text-warning'
-            roles: 'ROLE_DOCTOR_QUIROFANO'
+            roles: 'ROLE_OR'
             children:
                 -   title: Configuraciones
                     icon: 'bi bi-gear text-warning'
+                    roles: 'ROLE_ADMIN_QUIROFANO'
                     children:
                         - { title: Quirofano, route: app_quirofano_index, icon: 'bi bi-gear text-warning' }
                         - { title: Articulos, route: app_articulo_index, icon: 'bi bi-gear text-warning' }

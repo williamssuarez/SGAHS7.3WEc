@@ -6,6 +6,7 @@ use App\Entity\Alergias;
 use App\Entity\Audit;
 use App\Entity\Citas;
 use App\Entity\Consulta;
+use App\Entity\InternalProfile;
 use App\Entity\PacienteCondiciones;
 use App\Entity\PacienteDiscapacidades;
 use App\Entity\PacienteEnfermedades;
@@ -75,7 +76,7 @@ final class ConsultaController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
+
             $checkConsulta = $entityManager->getRepository(Consulta::class)->findOneBy([
                 'status' => $entityManager->getRepository(StatusRecord::class)->getActive(),
                 'estadoConsulta' => ConsultaEstados::PENDING,

@@ -6,6 +6,7 @@ namespace App\Enum;
 enum CirugiaEstados: string
 {
     case PROGRAMADA = 'programada'; // En agenda
+    case EN_SALA = 'en_sala';       // Paciente entró al quirófano
     case PRE_OP = 'pre_op';         // Preparación / Anestesia
     case TRANS_OP = 'trans_op';     // Cirugía en curso
     case POST_OP = 'post_op';       // URPA / Recuperación
@@ -16,6 +17,7 @@ enum CirugiaEstados: string
     {
         return match($this) {
             self::PROGRAMADA => 'Programada',
+            self::EN_SALA => 'En Sala (Ingreso)',
             self::PRE_OP => 'Pre-Operatorio',
             self::TRANS_OP => 'Trans-Operatorio',
             self::POST_OP => 'Recuperación (URPA)',

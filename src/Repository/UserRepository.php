@@ -53,17 +53,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                     'CAST(u.roles AS text) LIKE :role_admin',
                     'CAST(u.roles AS text) LIKE :role_receptionist',
                     'CAST(u.roles AS text) LIKE :role_nurse',
+                    'CAST(u.roles AS text) LIKE :role_er_nurse',
                     'CAST(u.roles AS text) LIKE :role_doctor',
                     'CAST(u.roles AS text) LIKE :role_er_doctor',
-                    'CAST(u.roles AS text) LIKE :role_doctor_quirofano'
+                    'CAST(u.roles AS text) LIKE :role_anesthesiologist',
+                    'CAST(u.roles AS text) LIKE :role_surgeon',
+                    'CAST(u.roles AS text) LIKE :role_admin_quirofano'
                 )
             )
             ->setParameter('role_admin', '%"ROLE_ADMIN"%')
             ->setParameter('role_receptionist', '%"ROLE_RECEPTIONIST"%')
             ->setParameter('role_nurse', '%"ROLE_NURSE"%')
+            ->setParameter('role_er_nurse', '%"ROLE_ER_NURSE"%')
             ->setParameter('role_doctor', '%"ROLE_DOCTOR"%')
             ->setParameter('role_er_doctor', '%"ROLE_ER_DOCTOR"%')
-            ->setParameter('role_doctor_quirofano', '%"ROLE_DOCTOR_QUIROFANO"%')
+            ->setParameter('role_anesthesiologist', '%"ROLE_ANESTHESIOLOGIST"%')
+            ->setParameter('role_surgeon', '%"ROLE_SURGEON"%')
+            ->setParameter('role_admin_quirofano', '%"ROLE_ADMIN_QUIROFANO"%')
             ->orderBy('u.id', 'DESC')
             ->getQuery()
             ->getResult();

@@ -30,6 +30,10 @@
                     <i class="bi bi-arrow-left"></i> Volver
                 </a>
                 {% if cirugia.estado.value == 'programada' %}
+                    <button class="btn btn-info btn-sm fw-bold text-white" data-action="click->surgery-state#advance" data-next-state="en_sala">
+                        <i class="bi bi-door-open-fill"></i> Marcar Entrada a Sala
+                    </button>
+                {% elseif cirugia.estado.value == 'en_sala' %}
                     <button class="btn btn-warning btn-sm fw-bold" data-action="click->surgery-state#advance" data-next-state="pre_op">
                         <i class="bi bi-play-circle"></i> Iniciar Anestesia (Pre-Op)
                     </button>
@@ -47,7 +51,7 @@
                     </button>
                 {% endif %}
                 {# Only show Edit if the surgery hasn't started #}
-                {% if cirugia.estado.value in ['programada', 'pre_op'] %}
+                {% if cirugia.estado.value in ['programada', 'en_sala', 'pre_op'] %}
                     <a href="{{ path('app_cirugia_editar', {'id': cirugia.id}) }}" class="btn btn-primary shadow-sm">
                         <i class="bi bi-pencil-square"></i> Editar Logística
                     </a>
@@ -174,6 +178,12 @@
                                                 <strong>{{ cirugia.fechaHoraProgramada|date('d/m/Y H:i A', false) }}</strong>
                                             </li>
                                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <span><i class="bi bi-door-open-fill text-info"></i> Entrada a Sala:</span>
+                                                <strong class="{{ cirugia.horaIngresoSala ? '' : 'text-muted' }}">
+                                                    {{ cirugia.horaIngresoSala ? cirugia.horaIngresoSala|date('H:i A') : '--:--' }}
+                                                </strong>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                                 <span><i class="bi bi-play-circle text-warning"></i> Anestesia:</span>
                                                 <strong class="{{ cirugia.horaInicioAnestesia ? '' : 'text-muted' }}">
                                                     {{ cirugia.horaInicioAnestesia ? cirugia.horaInicioAnestesia|date('H:i A') : '--:--' }}
@@ -224,9 +234,11 @@
                                         }}
 
                                         {# The Hybrid Toggle #}
-                                        <div class="form-check form-switch mb-4 p-3 bg-white border rounded shadow-sm">
-                                            {{ form_label(consumoForm.aportadoPorPaciente) }}
-                                            {{ form_widget(consumoForm.aportadoPorPaciente) }}
+                                        <div class="mb-4 p-3 bg-white border rounded shadow-sm">
+                                            <div class="form-check form-switch m-0">
+                                                {{ form_widget(consumoForm.aportadoPorPaciente) }}
+                                                {{ form_label(consumoForm.aportadoPorPaciente) }}
+                                            </div>
                                         </div>
 
                                         {# The dynamic sections controlled by JS #}

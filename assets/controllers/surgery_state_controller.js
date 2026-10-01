@@ -9,17 +9,40 @@ export default class extends Controller {
         const button = event.currentTarget;
         const nextState = button.dataset.nextState;
 
-        // Use your trusted SweetAlert pattern!
-        const result = await Swal.fire({
-            title: '¿Confirmar avance?',
-            text: 'Se registrará la hora actual en el expediente quirúrgico.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, registrar hora',
-            cancelButtonText: 'Cancelar'
-        });
+        let isConfirmed = false;
+        let isAdmitir = false;
 
-        if (result.isConfirmed) {
+        if (nextState === 'finalizada') {
+            const result = await Swal.fire({
+                title: '¿Confirmar Finalización?',
+                text: 'La cirugía ha concluido. ¿El paciente será dado de alta o pasará a hospitalización?',
+                icon: 'question',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: '<i class="bi bi-house"></i> Alta Ambulatoria',
+                denyButtonText: '<i class="bi bi-hospital"></i> Trasladar a Planta',
+                cancelButtonText: 'Cancelar'
+            });
+            
+            if (result.isConfirmed) {
+                isConfirmed = true;
+            } else if (result.isDenied) {
+                isConfirmed = true;
+                isAdmitir = true;
+            }
+        } else {
+            const result = await Swal.fire({
+                title: '¿Confirmar avance?',
+                text: 'Se registrará la hora actual en el expediente quirúrgico.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, registrar hora',
+                cancelButtonText: 'Cancelar'
+            });
+            isConfirmed = result.isConfirmed;
+        }
+
+        if (isConfirmed) {
             // Disable button to prevent double clicks
             button.dataset.originalHtml = button.innerHTML;
             button.disabled = true;
@@ -32,7 +55,10 @@ export default class extends Controller {
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: JSON.stringify({ estado: nextState })
+                    body: JSON.stringify({ 
+                        estado: nextState,
+                        admitir_hospitalizacion: isAdmitir 
+                    })
                 });
 
                 const responseData = await response.json();

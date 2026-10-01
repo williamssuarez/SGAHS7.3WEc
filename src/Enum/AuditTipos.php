@@ -44,8 +44,10 @@ enum AuditTipos: string
     case EMERGENCY_DISCHARGE_DECEASED = 'emergency_discharge_deceased';
     case EMERGENCY_DISCHARGE_SENT_HOME = 'emergency_discharge_sent_home';
     case EMERGENCY_DISCHARGE_LEFT = 'emergency_discharge_left';
+    case HOSPITALIZATION_CREATED = 'hospitalization_created';
     case HOSPITALIZATION_DISCHARGE = 'hospitalization_discharge';
     case SURGERY_PROGRAMMED = 'surgery_programmed';
+    case SURGERY_EN_SALA = 'surgery_en_sala';
     case SURGERY_PRE_OP = 'surgery_pre_op';
     case SURGERY_TRANS_OP = 'surgery_trans_op';
     case SURGERY_POST_OP = 'surgery_post_op';
@@ -103,8 +105,10 @@ enum AuditTipos: string
             self::EMERGENCY_DISCHARGE_DECEASED => 'Alta de emergencia: Fallecimiento',
             self::EMERGENCY_DISCHARGE_SENT_HOME => 'Alta de emergencia: Alta Médica',
             self::EMERGENCY_DISCHARGE_LEFT => 'Alta de emergencia: Fuga/Retiro Voluntario',
+            self::HOSPITALIZATION_CREATED => 'Ingreso a Hospitalización',
             self::HOSPITALIZATION_DISCHARGE => 'Alta de hospitalizacion',
             self::SURGERY_PROGRAMMED => 'Cirugia Programada',
+            self::SURGERY_EN_SALA => 'Ingreso de paciente a Quirófano',
             self::SURGERY_PRE_OP => 'Cirugia en Pre-Operatorio',
             self::SURGERY_TRANS_OP => 'Cirugia en Trans-Operatorio',
             self::SURGERY_POST_OP => 'Cirugia en Post-Operatorio',

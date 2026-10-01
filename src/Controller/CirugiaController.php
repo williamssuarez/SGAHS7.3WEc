@@ -12,6 +12,7 @@ use App\Entity\ProtocoloOperatorio;
 use App\Entity\Quirofano;
 use App\Enum\AuditTipos;
 use App\Enum\CirugiaEstados;
+use App\Enum\HospitalizacionEstados;
 use App\Enum\CitasEstados;
 use App\Enum\TipoMovimientoInventario;
 use App\Form\CirugiaType;
@@ -37,7 +38,7 @@ final class CirugiaController extends AbstractController
     {
         $startDate = new \DateTime($request->request->get('start_date', 'today'));
         $endDate = new \DateTime($request->request->get('end_date', 'today'));
-        
+
         $estadoReq = $request->request->get('estado_filtro', 'TODAS');
         $estadoFilter = null;
         if ($estadoReq !== 'TODAS') {
@@ -150,12 +151,77 @@ final class CirugiaController extends AbstractController
         if ($nextState) {
             if (!$cirugia->getQuirofano()) {
                 return $this->json([
-                    'success' => false, 
+                    'success' => false,
                     'message' => 'Debe editar el registro y asignar un Quirófano antes de avanzar la cirugía.'
+                ], 400);
+            }
+            if (!$cirugia->getCirujanoPrincipal()) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Debe editar el registro y asignar al Cirujano Principal antes de iniciar el flujo.'
+                ], 400);
+            }
+            if (!$cirugia->getAnestesiologo()) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Debe editar el registro y asignar al Anestesiólogo antes de iniciar el flujo.'
+                ], 400);
+            }
+
+            $currentState = $cirugia->getEstado()->value;
+            $validNextStates = [
+                'programada' => 'en_sala',
+                'en_sala' => 'pre_op',
+                'pre_op' => 'trans_op',
+                'trans_op' => 'post_op',
+                'post_op' => 'finalizada'
+            ];
+
+            if (!isset($validNextStates[$currentState]) || $validNextStates[$currentState] !== $nextState) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Transición de estado inválida. La cirugía no puede avanzar a ese estado en este momento.'
                 ], 400);
             }
 
             switch ($nextState){
+                case 'en_sala':
+                    // Check if room is already occupied by another surgery
+                    $activeSurgeriesInRoom = $em->getRepository(Cirugia::class)->createQueryBuilder('c')
+                        ->where('c.quirofano = :room')
+                        ->andWhere('c.id != :currentId')
+                        ->andWhere('c.estado IN (:activeStates)')
+                        ->setParameter('room', $cirugia->getQuirofano())
+                        ->setParameter('currentId', $cirugia->getId())
+                        ->setParameter('activeStates', [
+                            CirugiaEstados::EN_SALA,
+                            CirugiaEstados::PRE_OP,
+                            CirugiaEstados::TRANS_OP,
+                            CirugiaEstados::POST_OP
+                        ])
+                        ->getQuery()
+                        ->getResult();
+
+                    if (count($activeSurgeriesInRoom) > 0) {
+                        return $this->json([
+                            'success' => false,
+                            'message' => 'No se puede ingresar al paciente. El ' . $cirugia->getQuirofano()->getNombre() . ' ya se encuentra ocupado por otra cirugía en curso.'
+                        ], 400);
+                    }
+
+                    $cirugia->setEstado(CirugiaEstados::EN_SALA);
+                    $cirugia->setHoraIngresoSala($now);
+
+                    $message = 'Paciente ingresado a Sala de Operaciones';
+                    $auditService->persistAudit(
+                        AuditTipos::SURGERY_EN_SALA,
+                        $message,
+                        $cirugia->getPaciente(),
+                        null,
+                        $cirugia
+                    );
+                    break;
+
                 case 'pre_op':
                     $cirugia->setEstado(CirugiaEstados::PRE_OP);
                     $cirugia->setHoraInicioAnestesia($now);
@@ -198,11 +264,11 @@ final class CirugiaController extends AbstractController
                 case 'finalizada':
                     if (!$cirugia->getProtocoloOperatorio()) {
                         return $this->json([
-                            'success' => false, 
+                            'success' => false,
                             'message' => 'Debe redactar y guardar el Protocolo Operatorio antes de finalizar la cirugía.'
                         ], 400);
                     }
-                    
+
                     $cirugia->setEstado(CirugiaEstados::FINALIZADA);
                     $cirugia->setHoraSalidaSala($now);
 
@@ -214,16 +280,33 @@ final class CirugiaController extends AbstractController
                         null,
                         $cirugia
                     );
+
+                    if ($data['admitir_hospitalizacion'] ?? false) {
+                        $hospitalizacion = new Hospitalizaciones();
+                        $hospitalizacion->setPaciente($cirugia->getPaciente());
+                        $hospitalizacion->setFechaIngreso($now);
+                        $hospitalizacion->setDiagnosticoIngreso('Postoperatorio: ' . $cirugia->getProcedimientoPropuesto());
+                        $hospitalizacion->setEstado(HospitalizacionEstados::PENDING_BED);
+
+                        $cirugia->setHospitalizacionOrigen($hospitalizacion);
+                        $em->persist($hospitalizacion);
+
+                        $auditService->persistAudit(
+                            AuditTipos::HOSPITALIZATION_CREATED,
+                            'Paciente admitido a hospitalización desde quirófano',
+                            $cirugia->getPaciente()
+                        );
+                    }
                     break;
             }
 
             $em->flush();
-            
+
             $responseData = ['success' => true];
             if ($nextState === 'finalizada') {
                 $responseData['redirect_url'] = $this->generateUrl('app_cirugia_show', ['id' => $cirugia->getId()]);
             }
-            
+
             return $this->json($responseData);
         }
 
@@ -378,7 +461,7 @@ final class CirugiaController extends AbstractController
         //$this->denyAccessUnlessGranted('ROLE_ADMIN_QUIROFANO');
 
         // Only allow editing if it hasn't started yet!
-        if (!in_array($cirugia->getEstado()->value, ['programada', 'pre_op'])) {
+        if (!in_array($cirugia->getEstado()->value, ['programada', 'en_sala', 'pre_op'])) {
             $this->addFlash('warning', 'No se puede editar la logística de una cirugía en curso o finalizada.');
             return $this->redirectToRoute('app_cirugia_agenda');
         }
@@ -432,7 +515,7 @@ final class CirugiaController extends AbstractController
         // Redirect back to the pending list
         return $this->redirectToRoute('app_cirugia_agenda');
     }
-    
+
     #[Route('/{id}/pdf', name: 'app_cirugia_pdf', methods: ['GET'])]
     public function generatePdf(Cirugia $cirugia, EntityManagerInterface $entityManager): Response
     {

@@ -20,14 +20,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use SoftDeletetableTrait;
 
+    // Base Roles
     public const ROLE_ADMIN = 'ROLE_ADMIN';
     public const ROLE_INTERNAL = 'ROLE_INTERNAL';
+    public const ROLE_EXTERNAL = 'ROLE_EXTERNAL';
+
+    // Base Staff Roles
     public const ROLE_RECEPTIONIST = 'ROLE_RECEPTIONIST';
     public const ROLE_NURSE = 'ROLE_NURSE';
     public const ROLE_DOCTOR = 'ROLE_DOCTOR';
+
+    // Module Access Roles
+    public const ROLE_ER = 'ROLE_ER';
+    public const ROLE_OR = 'ROLE_OR';
+    public const ROLE_HOSPITALIZATION = 'ROLE_HOSPITALIZATION';
+
+    // Specialized Staff Roles
     public const ROLE_ER_DOCTOR = 'ROLE_ER_DOCTOR';
-    public const ROLE_EXTERNAL = 'ROLE_EXTERNAL';
-    public const ROLE_DOCTOR_QUIROFANO = 'ROLE_DOCTOR_QUIROFANO';
+    public const ROLE_ER_NURSE = 'ROLE_ER_NURSE';
+    public const ROLE_ANESTHESIOLOGIST = 'ROLE_ANESTHESIOLOGIST';
+    public const ROLE_SURGEON = 'ROLE_SURGEON';
     public const ROLE_ADMIN_QUIROFANO = 'ROLE_ADMIN_QUIROFANO';
 
     #[ORM\Id]

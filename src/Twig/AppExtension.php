@@ -349,11 +349,14 @@ class AppExtension extends AbstractExtension
     {
         $badgeMap = [
             'ROLE_ADMIN'            => ['label' => 'Administrador', 'class' => 'text-bg-dark'],
-            'ROLE_RECEPTIONIST'     => ['label' => 'Recepcionista', 'class' => 'text-bg-info'],
+            'ROLE_RECEPTIONIST'     => ['label' => 'Admisión',      'class' => 'text-bg-info'],
             'ROLE_NURSE'            => ['label' => 'Enfermería',    'class' => 'text-bg-warning'],
+            'ROLE_ER_NURSE'         => ['label' => 'Enf. Emergencias','class' => 'text-bg-danger'],
             'ROLE_DOCTOR'           => ['label' => 'Doctor',        'class' => 'text-bg-primary'],
             'ROLE_ER_DOCTOR'        => ['label' => 'Emergencias',   'class' => 'text-bg-danger'],
-            'ROLE_DOCTOR_QUIROFANO' => ['label' => 'Cirujano',      'class' => 'text-bg-success'],
+            'ROLE_ANESTHESIOLOGIST' => ['label' => 'Anestesiólogo', 'class' => 'text-bg-secondary'],
+            'ROLE_SURGEON'          => ['label' => 'Cirujano',      'class' => 'text-bg-success'],
+            'ROLE_ADMIN_QUIROFANO'  => ['label' => 'Dir. Quirófano','class' => 'text-bg-dark'],
         ];
 
         $badges = [];

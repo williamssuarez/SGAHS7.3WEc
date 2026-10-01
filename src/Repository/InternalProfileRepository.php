@@ -58,12 +58,13 @@ class InternalProfileRepository extends ServiceEntityRepository
             ->join('ip.webUser', 'u')
             ->where('e = :especialidad')
             ->setParameter('especialidad', $especialidad)
-            // FIX: Explicitly cast the JSON column to text before applying LIKE
-            ->andWhere('CAST(u.roles AS text) LIKE :role1 OR CAST(u.roles AS text) LIKE :role2 OR CAST(u.roles AS text) LIKE :role3')
+            ->andWhere('CAST(u.roles AS text) LIKE :role1 OR CAST(u.roles AS text) LIKE :role2 OR CAST(u.roles AS text) LIKE :role3 OR CAST(u.roles AS text) LIKE :role4 OR CAST(u.roles AS text) LIKE :role5')
             ->andWhere('u.status = :sts')
             ->setParameter('role1', '%"ROLE_DOCTOR"%')
             ->setParameter('role2', '%"ROLE_ER_DOCTOR"%')
-            ->setParameter('role3', '%"ROLE_DOCTOR_QUIROFANO"%')
+            ->setParameter('role3', '%"ROLE_SURGEON"%')
+            ->setParameter('role4', '%"ROLE_ANESTHESIOLOGIST"%')
+            ->setParameter('role5', '%"ROLE_ADMIN_QUIROFANO"%')
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
             ->orderBy('ip.nombre', 'ASC');
     }
@@ -88,15 +89,36 @@ class InternalProfileRepository extends ServiceEntityRepository
             ->andWhere('t.startTime <= :time')
             ->andWhere('t.endTime >= :time')
             ->andWhere('t.status = :sts')
-            ->andWhere('CAST(u.roles AS text) LIKE :role1 OR CAST(u.roles AS text) LIKE :role2 OR CAST(u.roles AS text) LIKE :role3')
+            ->andWhere('CAST(u.roles AS text) LIKE :role1 OR CAST(u.roles AS text) LIKE :role2 OR CAST(u.roles AS text) LIKE :role3 OR CAST(u.roles AS text) LIKE :role4 OR CAST(u.roles AS text) LIKE :role5')
             ->andWhere('u.status = :sts')
             ->setParameter('especialidad', $especialidad)
             ->setParameter('day', $dayOfWeek)
             ->setParameter('time', $now)
             ->setParameter('role1', '%"ROLE_DOCTOR"%')
             ->setParameter('role2', '%"ROLE_ER_DOCTOR"%')
-            ->setParameter('role3', '%"ROLE_DOCTOR_QUIROFANO"%')
+            ->setParameter('role3', '%"ROLE_SURGEON"%')
+            ->setParameter('role4', '%"ROLE_ANESTHESIOLOGIST"%')
+            ->setParameter('role5', '%"ROLE_ADMIN_QUIROFANO"%')
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
             ->orderBy('ip.nombre', 'ASC');
+    }
+
+    public function getStaffByRoleQueryBuilder(string $role, string $fallbackRole = null)
+    {
+        $qb = $this->createQueryBuilder('ip')
+            ->join('ip.webUser', 'u')
+            ->where('u.status = :sts')
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive());
+
+        if ($fallbackRole) {
+            $qb->andWhere('CAST(u.roles AS text) LIKE :role OR CAST(u.roles AS text) LIKE :fallbackRole')
+               ->setParameter('role', '%"' . $role . '"%')
+               ->setParameter('fallbackRole', '%"' . $fallbackRole . '"%');
+        } else {
+            $qb->andWhere('CAST(u.roles AS text) LIKE :role')
+               ->setParameter('role', '%"' . $role . '"%');
+        }
+
+        return $qb->orderBy('ip.nombre', 'ASC');
     }
 }

@@ -38,7 +38,7 @@ class Cirugia
     private ?Quirofano $quirofano = null;
 
     #[ORM\ManyToOne(inversedBy: 'cirugias')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?InternalProfile $cirujanoPrincipal = null;
 
     #[ORM\ManyToOne(inversedBy: 'anestesiologo')]
@@ -314,6 +314,11 @@ class Cirugia
                 return [
                     'class' => 'text-bg-secondary',
                     'label' => CirugiaEstados::PROGRAMADA->getReadableText()
+                ];
+            case CirugiaEstados::EN_SALA:
+                return [
+                    'class' => 'text-bg-info',
+                    'label' => CirugiaEstados::EN_SALA->getReadableText()
                 ];
             case CirugiaEstados::PRE_OP:
                 return [
