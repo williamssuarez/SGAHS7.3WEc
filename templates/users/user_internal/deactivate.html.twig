@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Desactivar perfil de Usuario Interno{% endblock %}
+
+{% block titlewrap %}
+    Desactivar perfil de Usuario Interno
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_user_internal_index') }}">Usuarios</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ user.internalProfile.nombre|default('Usuario') }}</li>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-0">
+        {{ include('users/user_external/_admin_audit.html.twig', {'back_url': path('app_user_internal_index')}) }}
+    </div>
+{% endblock %}

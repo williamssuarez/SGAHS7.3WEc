@@ -25,6 +25,7 @@ readonly class CheckProfileSubscriber implements EventSubscriberInterface
 
         // Allow these routes to avoid an infinite redirect loop
         $allowList = [
+            'app_change_password',
             'app_profile_complete',
             'app_logout',
             'connect_google_start',
@@ -34,10 +35,16 @@ readonly class CheckProfileSubscriber implements EventSubscriberInterface
             'app_send_check_inbox',
             'app_account_blocked',
             'app_account_expired',
-            'app_verify_resend_email' // <-- Add this route!
+            'app_verify_resend_email'
         ];
 
         if ($user && !in_array($route, $allowList)) {
+
+            // 0. Check if the user is forced to change their password
+            if ($user->isMustChangePassword()) {
+                $event->setResponse(new RedirectResponse($this->router->generate('app_change_password')));
+                return; // Stop execution immediately
+            }
 
             // 1. Check if the account is administratively blocked
             if ($user->getStatus() && $user->getStatus()->getCodigo() === 'NLOKREC') {

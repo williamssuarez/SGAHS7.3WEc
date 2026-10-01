@@ -69,6 +69,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Gedmo\Versioned]
     private bool $isVerified = false;
 
+    #[ORM\Column(options: ['default' => false])]
+    #[Gedmo\Versioned]
+    private bool $mustChangePassword = false;
+
     /**
      * @var Collection<int, HistoriaPaciente>
      */
@@ -145,9 +149,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getDisplayRoleLabel(): string
     {
-        if (in_array('ROLE_ADMIN', $this->getRoles()) || in_array('ROLE_INTERNAL', $this->getRoles())) {
-            return 'Personal Médico'; // or 'Staff'
-        }
+        $roles = $this->getRoles();
+        
+        if (in_array('ROLE_ADMIN', $roles)) return 'Administrador de Sistema';
+        if (in_array('ROLE_ADMIN_QUIROFANO', $roles)) return 'Coordinador de Quirófano';
+        if (in_array('ROLE_OR', $roles)) return 'Personal de Quirófano';
+        if (in_array('ROLE_SURGEON', $roles)) return 'Cirujano/a';
+        if (in_array('ROLE_ANESTHESIOLOGIST', $roles)) return 'Anestesiólogo/a';
+        if (in_array('ROLE_ADMISSION', $roles)) return 'Personal de Admisión';
+        if (in_array('ROLE_EMERGENCY', $roles)) return 'Personal de Emergencias';
+        if (in_array('ROLE_HOSPITALIZATION', $roles)) return 'Personal de Hospitalización';
+        if (in_array('ROLE_INTERNAL', $roles)) return 'Personal Médico';
+        
         return 'Paciente';
     }
 
@@ -240,6 +253,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function isMustChangePassword(): bool
+    {
+        return $this->mustChangePassword;
+    }
+
+    public function setMustChangePassword(bool $mustChangePassword): static
+    {
+        $this->mustChangePassword = $mustChangePassword;
 
         return $this;
     }

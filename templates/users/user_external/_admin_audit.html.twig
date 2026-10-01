@@ -30,7 +30,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between">
-                            <a href="{{ path('app_user_external_index') }}" class="btn btn-outline-secondary shadow-sm px-4">
+                            <a href="{{ back_url|default(path('app_user_external_index')) }}" class="btn btn-outline-secondary shadow-sm px-4">
                                 <i class="bi bi-arrow-left"></i> Volver a la lista
                             </a>
 

@@ -8,22 +8,16 @@
                 {# Profile Picture #}
                 {% if user.avatarUrl is empty %}
                     {% set final_src = asset('build/assets/img/user2-160x160.jpg') %}
-                    {% set original_src = asset('build/assets/img/user2-160x160.jpg') %}
                 {% elseif user.avatarUrl starts with 'http' %}
-                    {# It is a Google/External URL, leave this trash as it is #}
                     {% set final_src = user.avatarUrl %}
-                    {% set original_src = user.avatarUrl %}
                 {% else %}
-                    {# It is a Local File, apply filters and services  #}
-                    {% set full_photo_path = external_user_photo_path ~ user.avatarUrl %}
+                    {% set full_photo_path = paciente_photo_path ~ user.avatarUrl %}
                     {% set final_src = asset(full_photo_path) | imagine_filter('patient_profile') %}
-                    {% set original_src = asset(full_photo_path) | imagine_filter('patient_viewer_full') %}
                 {% endif %}
                 {% set avatar = final_src %}
 
                 <div class="mb-4">
                     <img
-                        {#src="{{ asset('uploads/profiles/' ~ profile.foto) }}"#}
                         src="{{ asset(avatar) }}"
                         class="rounded-circle img-thumbnail shadow-sm"
                         alt="Foto de Perfil"
@@ -35,17 +29,25 @@
 
                 <div class="d-flex justify-content-center gap-2 mb-4">
                     {{ user.status|status_badge }}
-                    {% if profile.sangreTipo %}
-                        <span class="badge bg-danger fs-6"><i class="bi bi-droplet-fill"></i> {{ profile.sangreTipo.readableText }}</span>
-                    {% endif %}
+                </div>
+                
+                <div class="d-flex flex-wrap justify-content-center gap-1 mb-4">
+                    {% for badge in user.roles|user_badges %}
+                        <span class="badge rounded-pill {{ badge.class }}">
+                            {{ badge.label }}
+                        </span>
+                    {% endfor %}
                 </div>
 
             </div>
+            
+            {% if show_edit_button|default(false) %}
             <div class="card-footer bg-white text-center">
-                <a href="{{ path('app_user_external_edit', {'id': user.id}) }}" class="btn btn-primary shadow-sm w-100">
+                <a href="{{ path('app_user_internal_edit', {'id': user.id}) }}" class="btn btn-primary shadow-sm w-100">
                     <i class="bi bi-pencil-square"></i> Editar Perfil
                 </a>
             </div>
+            {% endif %}
         </div>
     </div>
 
@@ -79,33 +81,19 @@
 
                     <div class="col-12"><hr class="text-muted my-2"></div>
 
-                    {# Demographics #}
-                    <div class="col-sm-6">
-                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Fecha de Nacimiento</small>
-                        <p class="fs-5 mb-0">
-                            <i class="bi bi-calendar text-primary me-2"></i>
-                            {% if profile.fechaNacimiento %}
-                                {{ profile.fechaNacimiento|date('d/m/Y', false) }}
-                                <span class="text-muted fs-6 fst-italic">({{ date('now').diff(date(profile.fechaNacimiento)).y }} años)</span>
-                            {% else %}
-                                No registrada
-                            {% endif %}
-                        </p>
+                    {# Especialidades #}
+                    {% if profile.especialidades is defined and profile.especialidades|length > 0 %}
+                    <div class="col-12">
+                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Especialidades Médicas</small>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            {% for especialidad in profile.especialidades %}
+                                <span class="badge bg-info text-dark fs-6"><i class="bi bi-star-fill text-warning me-1"></i> {{ especialidad.nombre }}</span>
+                            {% endfor %}
+                        </div>
                     </div>
-                    <div class="col-sm-6">
-                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Sexo Biológico</small>
-                        <p class="fs-5 mb-0">
-                            {% if profile.sexo == 'M' or profile.sexo == 'Masculino' %}
-                                <i class="bi bi-gender-male text-primary me-2"></i> Masculino
-                            {% elseif profile.sexo == 'F' or profile.sexo == 'Femenino' %}
-                                <i class="bi bi-gender-female text-danger me-2"></i> Femenino
-                            {% else %}
-                                <i class="bi bi-gender-ambiguous text-secondary me-2"></i> {{ profile.sexo|default('No registrado') }}
-                            {% endif %}
-                        </p>
-                    </div>
-
+                    
                     <div class="col-12"><hr class="text-muted my-2"></div>
+                    {% endif %}
 
                     {# Address #}
                     <div class="col-12">

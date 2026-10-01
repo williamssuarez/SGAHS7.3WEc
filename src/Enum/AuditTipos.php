@@ -60,6 +60,10 @@ enum AuditTipos: string
     case EXTERNAL_USER_ADMIN_EDIT = 'external_user_admin_edit';
     case EXTERNAL_USER_ADMIN_BLOCK = 'external_user_admin_block';
     case EXTERNAL_USER_ADMIN_UNBLOCK = 'external_user_admin_unblock';
+    case INTERNAL_USER_ADMIN_DEACTIVATE = 'internal_user_admin_deactivate';
+    case INTERNAL_USER_ADMIN_REACTIVATE = 'internal_user_admin_reactivate';
+    case INTERNAL_USER_ADMIN_RESET_PASSWORD = 'internal_user_admin_reset_password';
+    case USER_PASSWORD_CHANGED_MANDATORY = 'user_password_changed_mandatory';
     case SYSTEM_DATABASE_BACKUP = 'system_database_backup';
     case SYSTEM_DATABASE_BACKUP_AUTO = 'system_database_backup_auto';
     case SYSTEM_DATABASE_IMPORT = 'system_database_import';
@@ -121,6 +125,10 @@ enum AuditTipos: string
             self::EXTERNAL_USER_ADMIN_EDIT => 'Edicion de datos de usuario externo por administrador',
             self::EXTERNAL_USER_ADMIN_BLOCK => 'Bloqueo de cuenta de usuario externo por administrador',
             self::EXTERNAL_USER_ADMIN_UNBLOCK => 'Desbloqueo de cuenta de usuario externo por administrador',
+            self::INTERNAL_USER_ADMIN_DEACTIVATE => 'Desactivación de cuenta de usuario interno por administrador',
+            self::INTERNAL_USER_ADMIN_REACTIVATE => 'Reactivación de cuenta de usuario interno por administrador',
+            self::INTERNAL_USER_ADMIN_RESET_PASSWORD => 'Reinicio de clave de usuario interno por administrador',
+            self::USER_PASSWORD_CHANGED_MANDATORY => 'Cambio obligatorio de contraseña de usuario',
             self::SYSTEM_DATABASE_BACKUP => 'Sistema: Respaldo de Base de Datos',
             self::SYSTEM_DATABASE_BACKUP_AUTO => 'Sistema: Respaldo Automático Programado',
             self::SYSTEM_DATABASE_IMPORT => 'Sistema: Importación de Base de Datos',

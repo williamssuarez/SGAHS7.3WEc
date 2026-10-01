@@ -37,16 +37,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function getActivesInternalsforTable()
     {
-        // Fetch the active status object
-        $activeStatus = $this->getEntityManager()
-            ->getRepository(StatusRecord::class)
-            ->getActive();
+        // Fetch the statuses
+        $statusRepo = $this->getEntityManager()->getRepository(StatusRecord::class);
+        $activeStatus = $statusRepo->getActive();
+        $lockedStatus = $statusRepo->getLockedUser();
 
         $qb = $this->createQueryBuilder('u');
 
         return $qb
-            ->where('u.status = :status')
-            ->setParameter('status', $activeStatus)
+            ->where('u.status IN (:statuses)')
+            ->setParameter('statuses', [$activeStatus, $lockedStatus])
             // Group all the OR conditions cleanly using Doctrine's Expr class
             ->andWhere(
                 $qb->expr()->orX(
