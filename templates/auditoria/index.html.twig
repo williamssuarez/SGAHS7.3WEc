@@ -60,35 +60,14 @@
     <br>
 
     <div class="card card-primary card-outline mb-4">
-        <div class="card-header">
-            <h3 class="card-title">Auditoria</h3>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title m-0">Auditoria</h3>
+            <span class="text-muted small ms-auto"><i class="bi bi-info-circle"></i> Puedes buscar por <strong>Detalles o Dirección IP</strong></span>
         </div>
 
         <div class="card-body">
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Tipo</th>
-                    <th>Detalles</th>
-                    <th>Direccion Ip</th>
-                    <th>Usuario</th>
-                    <th>Fecha</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in entities %}
-                    <tr class="align-middle">
-                        <td>{{ loop.index }}</td>
-                        <td>{{ entity.tipoAudit.getReadableText }}</td>
-                        <td>{{ entity.descripcion }}</td>
-                        <td>{{ entity.direccionIp }}</td>
-                        <td>{{ entity.uidCreate|public_username|title }}</td>
-                        <td><strong>{{ entity.created|date('d-m-Y H:i') }}</strong> <i>({{ entity.created|time_ago }})</i></td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            <div class="dtHereServer table-responsive" data-dt-config="{{ datatable_settings(datatable)|escape('html_attr') }}">Cargando registros...</div>
         </div>
     </div>
 {% endblock %}
+

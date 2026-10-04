@@ -1,0 +1,21 @@
+{% if column.name == 'id' %}
+    {{ row.id }}
+
+{% elseif column.name == 'tipoAudit' %}
+    {{ row.tipoAudit.getReadableText }}
+
+{% elseif column.name == 'descripcion' %}
+    {{ row.descripcion }}
+
+{% elseif column.name == 'direccionIp' %}
+    {{ row.direccionIp }}
+
+{% elseif column.name == 'usuario' %}
+    {{ row.uidCreate|public_username|title }}
+
+{% elseif column.name == 'fecha' %}
+    {{ row.created ? row.created|date('Y-m-d h:i A') : '' }}
+
+{% else %}
+    {{ value }}
+{% endif %}

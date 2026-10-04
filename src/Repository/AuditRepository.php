@@ -66,4 +66,38 @@ class AuditRepository extends ServiceEntityRepository
 
         return $query->getQuery()->getResult();
     }
+
+    public function createDataTablesDateOnlyQueryBuilder(\Doctrine\ORM\QueryBuilder $qb, \DateTime $from, \DateTime $to, $userId = null)
+    {
+        $qb->select('u')
+           ->from(\App\Entity\Audit::class, 'u')
+           ->where('u.status = :sts')
+           ->andWhere('u.created between :from AND :to')
+           ->setParameter('sts', $this->getEntityManager()->getRepository(\App\Entity\StatusRecord::class)->getActive())
+           ->setParameter('from', $from)
+           ->setParameter('to', $to);
+
+        if ($userId){
+            $qb->andWhere('u.uidCreate = :user')
+               ->setParameter('user', $userId);
+        }
+    }
+
+    public function createDataTablesStateQueryBuilder(\Doctrine\ORM\QueryBuilder $qb, $state, \DateTime $from, \DateTime $to, $userId = null)
+    {
+        $qb->select('u')
+           ->from(\App\Entity\Audit::class, 'u')
+           ->where('u.status = :sts')
+           ->andWhere('u.tipoAudit = :state')
+           ->andWhere('u.created between :from AND :to')
+           ->setParameter('sts', $this->getEntityManager()->getRepository(\App\Entity\StatusRecord::class)->getActive())
+           ->setParameter('state', $state)
+           ->setParameter('from', $from)
+           ->setParameter('to', $to);
+
+        if ($userId){
+            $qb->andWhere('u.uidCreate = :user')
+               ->setParameter('user', $userId);
+        }
+    }
 }

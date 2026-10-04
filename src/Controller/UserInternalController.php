@@ -31,7 +31,7 @@ final class UserInternalController extends AbstractController
     #[Route(name: 'app_user_internal_index', methods: ['GET', 'POST'])]
     public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
-        $table = $dataTableFactory->createFromType(UserInternalTableType::class)
+        $table = $dataTableFactory->createFromType(UserInternalTableType::class, [], ['pageLength' => 5])
             ->handleRequest($request);
 
         if ($table->isCallback()) {

@@ -46,7 +46,7 @@ security:
                 check_path: app_login
                 enable_csrf: true
             login_throttling:
-                max_attempts: 3
+                max_attempts: 4
                 interval: '15 minutes'
             logout:
                 path: app_logout
@@ -91,7 +91,7 @@ security:
         # Common Medical Records Access
         - { path: ^/paciente, roles: ROLE_INTERNAL }
         - { path: ^/historia/paciente, roles: ROLE_INTERNAL }
-        
+
         # Modules
         - { path: ^/consulta, roles: ROLE_DOCTOR }
         - { path: ^/visita, roles: ROLE_RECEPTIONIST }

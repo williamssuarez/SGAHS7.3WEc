@@ -38,7 +38,7 @@ final class UserExternalController extends AbstractController
     #[Route(name: 'app_user_external_index', methods: ['GET', 'POST'])]
     public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
-        $table = $dataTableFactory->createFromType(UserExternalTableType::class)
+        $table = $dataTableFactory->createFromType(UserExternalTableType::class, [], ['pageLength' => 5])
             ->handleRequest($request);
 
         if ($table->isCallback()) {

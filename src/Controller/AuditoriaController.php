@@ -20,10 +20,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/auditoria')]
 final class AuditoriaController extends AbstractController
 {
-    #[Route(name: 'app_auditoria_index', methods: ['GET'])]
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route(name: 'app_auditoria_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, EntityManagerInterface $entityManager, \Omines\DataTablesBundle\DataTableFactory $dataTableFactory): Response
     {
-        $auditRepository = $entityManager->getRepository(Audit::class);
         $userRepository = $entityManager->getRepository(User::class);
 
         // Default values: today and 'expected' state
@@ -40,10 +39,15 @@ final class AuditoriaController extends AbstractController
         $state = $request->query->get('state', AuditTipos::ALL->value);
         $userId = $request->query->get('user', null);
 
-        if ($state == 'all'){
-            $entities = $auditRepository->getActivesforTableByDateOnly($startDate, $endDate, $userId);
-        } else {
-            $entities = $auditRepository->getActivesforTableByState($state, $startDate, $endDate, $userId);
+        $table = $dataTableFactory->createFromType(\App\DataTable\Type\AuditoriaTableType::class, [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'state' => $state,
+            'userId' => $userId,
+        ], ['pageLength' => 5])->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
         }
 
         $usuarios = $userRepository->findBy([
@@ -53,7 +57,7 @@ final class AuditoriaController extends AbstractController
         $tipos = AuditTipos::cases();
 
         return $this->render('auditoria/index.html.twig', [
-            'entities' => $entities,
+            'datatable' => $table,
             'currentState' => $state,
             'currentUser' => $userId,
             'usuarios' => $usuarios,
@@ -63,3 +67,4 @@ final class AuditoriaController extends AbstractController
         ]);
     }
 }
+

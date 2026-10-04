@@ -63,7 +63,7 @@ final class PacienteController extends AbstractController
     #[Route(name: 'app_paciente_index', methods: ['GET', 'POST'])]
     public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
-        $table = $dataTableFactory->createFromType(PacienteTableType::class)
+        $table = $dataTableFactory->createFromType(PacienteTableType::class, [], ['pageLength' => 5])
             ->handleRequest($request);
 
         if ($table->isCallback()) {
