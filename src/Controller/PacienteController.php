@@ -33,6 +33,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use App\DataTable\Type\PacienteTableType;
+use Doctrine\ORM\QueryBuilder;
+use Omines\DataTablesBundle\DataTableFactory;
+use Omines\DataTablesBundle\Adapter\Doctrine\ORMAdapter;
+use Omines\DataTablesBundle\Column\TextColumn;
+use Omines\DataTablesBundle\Column\TwigColumn;
 
 #[Route('/paciente')]
 final class PacienteController extends AbstractController
@@ -54,11 +60,18 @@ final class PacienteController extends AbstractController
         return new JsonResponse(['results' => $results]);
     }
 
-    #[Route(name: 'app_paciente_index', methods: ['GET'])]
-    public function index(PacienteRepository $pacienteRepository): Response
+    #[Route(name: 'app_paciente_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
+        $table = $dataTableFactory->createFromType(PacienteTableType::class)
+            ->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
+        }
+
         return $this->render('paciente/index.html.twig', [
-            'pacientes' => $pacienteRepository->getActivesforTable(),
+            'datatable' => $table,
         ]);
     }
 

@@ -18,7 +18,7 @@ class MyInternalProfileController extends AbstractController
 
         if (!$user || !$user->getInternalProfile()) {
             $this->addFlash('error', 'No se encontró el perfil interno asociado a su cuenta.');
-            return $this->redirectToRoute('app_paciente_index');
+            return $this->redirectToRoute('app_index');
         }
 
         return $this->render('users/user_internal/my_profile.html.twig', [

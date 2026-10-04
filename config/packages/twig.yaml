@@ -6,6 +6,7 @@ twig:
         sidebar_menu: '%app_menu.sidebar%'
         paciente_photo_path: '%app.paciente_photo_path%'
         external_user_photo_path: '%app.external_user_photo_path%'
+        recaptcha_site_key: '%env(RECAPTCHA3_KEY)%'
 
 when@test:
     twig:

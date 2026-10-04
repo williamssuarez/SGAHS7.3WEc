@@ -29,6 +29,7 @@ import '@fortawesome/fontawesome-free/js/all';
 import 'admin-lte/dist/js/adminlte';
 import 'datatables.net-bs5';
 import 'datatables.net-responsive-bs5';
+import '../public/bundles/datatables/js/datatables.js';
 import 'select2';
 import {Sortable} from 'sortablejs';
 import 'jsvectormap';
@@ -163,6 +164,32 @@ $(document).ready(function () {
             zeroRecords: "No se encontraron resultados",
         },
         responsive: true,
+    });
+
+    $('.dtHereServer').each(function() {
+        var dtConfigStr = $(this).attr('data-dt-config');
+        if (dtConfigStr) {
+            var dtConfig = JSON.parse(dtConfigStr);
+            $(this).initDataTables(dtConfig, {
+                pageLength: 5,
+                lengthMenu: [[5, 10, 20, 50, -1], [5, 10, 20, 50, 'All']],
+                searching: true,
+                dom: "<'row mt-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                language: {
+                    decimal: "",
+                    emptyTable: "No hay datos disponibles en la tabla",
+                    info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    infoEmpty: "Mostrando 0 a 0 de 0 registros",
+                    infoFiltered: "(filtrado de _MAX_ registros totales)",
+                    lengthMenu: "Mostrar _MENU_ registros",
+                    loadingRecords: "Cargando...",
+                    processing: "Procesando...",
+                    search: "Buscar:",
+                    zeroRecords: "No se encontraron resultados",
+                },
+                responsive: true,
+            });
+        }
     });
 
     // Helper to init select2 fixing modal focus issues and width bugs

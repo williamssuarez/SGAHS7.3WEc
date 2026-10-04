@@ -21,86 +21,15 @@
     {% endfor %}
 
 <div class="card card-primary card-outline">
-    <div class="card-header">
-        <h3 class="card-title">Usuarios Registrados</h3>
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h3 class="card-title m-0">Usuarios Registrados</h3>
+        <span class="text-muted small ms-auto"><i class="bi bi-info-circle"></i> Puedes buscar por <strong>Nombre o Email</strong></span>
     </div>
 
     <div class="card-body">
-        <table class="table dtHere">
-            <thead>
-            <tr>
-                <th>Email</th>
-                <th>Tipo</th>
-                <th>Nombre</th>
-                <th>Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for user in users %}
-                <tr class="align-middle">
-                    <td>
-                        {{ user.email }}
-                        {% if user.status and user.status.codigo == 'NLOKREC' %}
-                            <span class="badge bg-danger ms-2"><i class="bi bi-person-fill-lock"></i> Desactivado</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <div class="d-flex flex-wrap gap-1">
-                            {% for badge in user.roles|user_badges %}
-                            <span class="badge rounded-pill {{ badge.class }}">
-                                {{ badge.label }}
-                            </span>
-                            {% endfor %}
-                        </div>
-                    </td>
-                    <td>{{ user.internalNameorNothing }}</td>
-                    <td>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-shield-fill-exclamation"></i> Acciones
-                            </button>
-                            <ul class="dropdown-menu" style="">
-                                <li>
-                                    <a class="dropdown-item" href="{{ path('app_user_internal_show', {'id': user.id}) }}">
-                                        <i class="bi bi-search"></i> Ver Detalles
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ path('app_user_internal_edit', {'id': user.id}) }}">
-                                        <i class="bi bi-pencil-square"></i> Editar
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                {% if user.status and user.status.codigo == 'NLOKREC' %}
-                                    <li>
-                                        <a class="dropdown-item" href="{{ path('app_user_internal_reactivate', {'id': user.id}) }}">
-                                            <i class="bi bi-person-fill-check"></i>
-                                            Activar Cuenta
-                                        </a>
-                                    </li>
-                                {% else %}
-                                    <li>
-                                        <a class="dropdown-item" href="{{ path('app_user_internal_deactivate', {'id': user.id}) }}">
-                                            <i class="bi bi-person-fill-lock"></i>
-                                            Desactivar Cuenta
-                                        </a>
-                                    </li>
-                                {% endif %}
-                                <li>
-                                    <a class="dropdown-item" href="{{ path('app_user_internal_reset_password', {'id': user.id}) }}">
-                                        <i class="bi bi-unlock-fill"></i>
-                                        Reiniciar Clave
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <div class="dtHereServer table-responsive" data-dt-config="{{ datatable_settings(datatable)|escape('html_attr') }}">
+            Cargando usuarios...
+        </div>
     </div>
 
     <br>

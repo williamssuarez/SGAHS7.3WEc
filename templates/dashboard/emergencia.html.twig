@@ -1,0 +1,127 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Emergencia{% endblock %}
+
+{% block titlewrap %}
+    Resumen Operativo de Emergencias
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid" 
+         data-controller="dashboard-charts"
+         data-dashboard-charts-endpoint-value="{{ path('api_dashboard_emergencia') }}">
+
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-danger">
+                    <div class="inner">
+                        <h3 data-dashboard-charts-target="card1">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                        </h3>
+                        <p>Esperando Triaje</p>
+                    </div>
+                    <i class="small-box-icon bi bi-exclamation-triangle-fill"></i>
+                    <a href="{{ path('app_emergencia_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-warning">
+                    <div class="inner">
+                        <h3 class="text-dark" data-dashboard-charts-target="card2">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                        </h3>
+                        <p class="text-dark">Esperando Cama</p>
+                    </div>
+                    <i class="small-box-icon bi bi-hourglass-split text-dark"></i>
+                    <a href="{{ path('app_emergencia_index') }}" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
+                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-info">
+                    <div class="inner">
+                        <h3 data-dashboard-charts-target="card3">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                        </h3>
+                        <p>En Atención</p>
+                    </div>
+                    <i class="small-box-icon bi bi-heart-pulse-fill"></i>
+                    <a href="{{ path('app_emergencia_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box text-bg-success">
+                    <div class="inner">
+                        <h3 data-dashboard-charts-target="card4">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                        </h3>
+                        <p>Altas / Finalizadas (Hoy)</p>
+                    </div>
+                    <i class="small-box-icon bi bi-check2-all"></i>
+                    <a href="{{ path('app_emergencia_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-lg-7">
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header border-0 bg-transparent">
+                        <h3 class="card-title fw-bold text-secondary">
+                            <i class="bi bi-graph-up-arrow text-danger me-2"></i>
+                            Ingresos de Emergencia (7 días)
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="position: relative; height: 320px; width: 100%;">
+                            <div data-dashboard-charts-target="barLoading" class="d-flex align-items-center justify-content-center h-100">
+                                <div class="spinner-border text-danger" role="status"></div>
+                            </div>
+                            <canvas data-dashboard-charts-target="barChart" class="d-none"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header border-0 bg-transparent">
+                        <h3 class="card-title fw-bold text-secondary">
+                            <i class="bi bi-pie-chart-fill text-warning me-2"></i>
+                            Distribución de Casos Activos
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div style="position: relative; height: 320px; width: 100%;">
+                            <div data-dashboard-charts-target="pieLoading" class="d-flex align-items-center justify-content-center h-100">
+                                <div class="spinner-border text-warning" role="status"></div>
+                            </div>
+                            <div data-dashboard-charts-target="pieEmpty" class="d-none align-items-center justify-content-center h-100">
+                                <div class="text-center text-muted">
+                                    <i class="bi bi-emoji-smile fs-1 mb-2"></i>
+                                    <p class="mb-0">No hay emergencias activas en este momento.</p>
+                                </div>
+                            </div>
+                            <canvas data-dashboard-charts-target="pieChart" class="d-none"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -7,6 +7,8 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Karser\Recaptcha3Bundle\Form\Recaptcha3Type;
+use Karser\Recaptcha3Bundle\Validator\Constraints\Recaptcha3;
 
 class ResetPasswordRequestFormType extends AbstractType
 {
@@ -19,6 +21,10 @@ class ResetPasswordRequestFormType extends AbstractType
                 'constraints' => [
                     new NotBlank(message: 'Please enter your email'),
                 ],
+            ])
+            ->add('captcha', Recaptcha3Type::class, [
+                'constraints' => new Recaptcha3(),
+                'action_name' => 'reset_password',
             ])
         ;
     }

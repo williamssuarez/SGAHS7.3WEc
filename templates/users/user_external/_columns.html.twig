@@ -1,0 +1,56 @@
+{% if column.name == 'email' %}
+    {{ row.email }}
+    {% if row.isVerified %}
+        <i class="bi bi-check-circle-fill" style="color: #138b00"></i>
+    {% else %}
+        <i class="bi bi-x-circle-fill" style="color: #8b0000"></i>
+    {% endif %}
+
+{% elseif column.name == 'nombre' %}
+    {{ row.externalNameorNothing }}
+
+{% elseif column.name == 'status' %}
+    {{ row.status|status_badge }}
+
+{% elseif column.name == 'acciones' %}
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-shield-fill-exclamation"></i> Acciones
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <a class="dropdown-item" href="{{ path('app_user_external_show', {'id': row.id}) }}">
+                    <i class="bi bi-search"></i> Ver Detalles
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ path('app_user_external_edit', {'id': row.id}) }}">
+                    <i class="bi bi-pencil-square"></i> Editar
+                </a>
+            </li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            {% if row.status and row.status.codigo == 'NLOKREC' %}
+                <li>
+                    <a class="dropdown-item" href="{{ path('app_user_external_unblock', {'id': row.id}) }}">
+                        <i class="bi bi-unlock-fill"></i> Desbloquear Cuenta
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a class="dropdown-item" href="{{ path('app_user_external_block', {'id': row.id}) }}">
+                        <i class="bi bi-lock-fill"></i> Bloquear Cuenta
+                    </a>
+                </li>
+            {% endif %}
+            <li>
+                <a class="dropdown-item" href="{{ path('app_user_external_force_reset', {'id': row.id}) }}">
+                    <i class="bi bi-unlock-fill"></i> Forzar Reinicio
+                </a>
+            </li>
+        </ul>
+    </div>
+{% else %}
+    {{ value }}
+{% endif %}

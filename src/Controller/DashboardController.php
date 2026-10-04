@@ -16,7 +16,7 @@ final class DashboardController extends AbstractController
     {
         $user = $entityManager->getRepository(User::class)->find($this->getUser());
         if ($user->getInternalProfile()){
-            return $this->redirectToRoute('app_paciente_index');
+            return $this->redirectToRoute('app_index');
         } else {
             return $this->redirectToRoute('app_citas_solicitudes_index');
         }

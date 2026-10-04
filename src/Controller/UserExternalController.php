@@ -23,8 +23,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Omines\DataTablesBundle\DataTableFactory;
+use App\DataTable\Type\UserExternalTableType;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
@@ -33,11 +35,18 @@ use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 #[Route('/user_external')]
 final class UserExternalController extends AbstractController
 {
-    #[Route(name: 'app_user_external_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    #[Route(name: 'app_user_external_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
+        $table = $dataTableFactory->createFromType(UserExternalTableType::class)
+            ->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
+        }
+
         return $this->render('users/user_external/index.html.twig', [
-            'users' => $userRepository->getAllExternalsforTable(),
+            'datatable' => $table,
         ]);
     }
 

@@ -1,0 +1,60 @@
+{% if column.name == 'email' %}
+    {{ row.email }}
+    {% if row.status and row.status.codigo == 'NLOKREC' %}
+        <span class="badge bg-danger ms-2"><i class="bi bi-person-fill-lock"></i> Desactivado</span>
+    {% endif %}
+
+{% elseif column.name == 'roles' %}
+    <div class="d-flex flex-wrap gap-1">
+        {% for badge in row.roles|user_badges %}
+            <span class="badge rounded-pill {{ badge.class }}">
+                {{ badge.label }}
+            </span>
+        {% endfor %}
+    </div>
+
+{% elseif column.name == 'nombre' %}
+    {{ row.internalNameorNothing }}
+
+{% elseif column.name == 'acciones' %}
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-shield-fill-exclamation"></i> Acciones
+        </button>
+        <ul class="dropdown-menu">
+            <li>
+                <a class="dropdown-item" href="{{ path('app_user_internal_show', {'id': row.id}) }}">
+                    <i class="bi bi-search"></i> Ver Detalles
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ path('app_user_internal_edit', {'id': row.id}) }}">
+                    <i class="bi bi-pencil-square"></i> Editar
+                </a>
+            </li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            {% if row.status and row.status.codigo == 'NLOKREC' %}
+                <li>
+                    <a class="dropdown-item" href="{{ path('app_user_internal_reactivate', {'id': row.id}) }}">
+                        <i class="bi bi-person-fill-check"></i> Activar Cuenta
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a class="dropdown-item" href="{{ path('app_user_internal_deactivate', {'id': row.id}) }}">
+                        <i class="bi bi-person-fill-lock"></i> Desactivar Cuenta
+                    </a>
+                </li>
+            {% endif %}
+            <li>
+                <a class="dropdown-item" href="{{ path('app_user_internal_reset_password', {'id': row.id}) }}">
+                    <i class="bi bi-unlock-fill"></i> Reiniciar Clave
+                </a>
+            </li>
+        </ul>
+    </div>
+{% else %}
+    {{ value }}
+{% endif %}

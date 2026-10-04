@@ -2,6 +2,11 @@
 parameters:
     app_menu.sidebar:
         -
+            title: Dashboard
+            icon: 'bi bi-speedometer2 text-primary'
+            roles: 'ROLE_INTERNAL'
+            route: app_index
+        -
             title: Configuraciones
             icon: 'bi bi-gear-fill text-warning'
             roles: 'ROLE_ADMIN'

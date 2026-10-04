@@ -46,6 +46,14 @@ class PacienteRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
+    public function createDataTablesQueryBuilder(\Doctrine\ORM\QueryBuilder $qb)
+    {
+        $qb->select('p')
+           ->from(Paciente::class, 'p')
+           ->where('p.status = :sts')
+           ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive());
+    }
+
     public function getPatientbyValueforCheck($field, $value, $id = null, $extraField = null, $extraValue = null)
     {
         $qb = $this->createQueryBuilder('u');

@@ -22,14 +22,24 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
+use Omines\DataTablesBundle\DataTableFactory;
+use App\DataTable\Type\UserInternalTableType;
+
 #[Route('/user_internal')]
 final class UserInternalController extends AbstractController
 {
-    #[Route(name: 'app_user_internal_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    #[Route(name: 'app_user_internal_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, DataTableFactory $dataTableFactory): Response
     {
+        $table = $dataTableFactory->createFromType(UserInternalTableType::class)
+            ->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
+        }
+
         return $this->render('users/user_internal/index.html.twig', [
-            'users' => $userRepository->getActivesInternalsforTable(),
+            'datatable' => $table,
         ]);
     }
 

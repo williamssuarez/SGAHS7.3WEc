@@ -1,0 +1,25 @@
+{% if column.name == 'foto' %}
+    {% if row.foto %}
+        <img
+            src="{{ asset(paciente_photo_path ~ row.foto) | imagine_filter('patient_thumb') }}"
+            alt="{{ row.nombre }} Thumbnail Photo"
+            style="cursor: pointer; max-width: 50px; height: auto; border-radius: 100%;"
+        >
+    {% else %}
+        <p class="m-0">---</p>
+    {% endif %}
+
+{% elseif column.name == 'cedula' %}
+    {{ row.tipoDocumento }}-{{ row.cedula|number_format(0, ',', '.') }}
+
+{% elseif column.name == 'acciones' %}
+    <a class="btn btn-secondary btn-sm" href="{{ path('app_paciente_show', {'id': row.id}) }}">
+        <i class="bi bi-search"></i> Detalles
+    </a>
+    <a class="btn btn-success btn-sm" href="{{ path('app_paciente_edit', {'id': row.id}) }}">
+        <i class="bi bi-pencil-square"></i> Editar
+    </a>
+
+{% else %}
+    {{ value }}
+{% endif %}
