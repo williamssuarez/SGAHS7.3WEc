@@ -1,0 +1,30 @@
+<turbo-frame id="estado_{{ estado.id }}_municipios">
+    <ul class="list-group list-group-flush mb-2 border-start border-2 border-secondary">
+        {% for municipio in estado.municipios %}
+            <li class="list-group-item border-0 py-1">
+                <details>
+                    <summary class="d-flex align-items-center justify-content-between" style="cursor: pointer; list-style: none;">
+                        <div>
+                            <i class="bi bi-chevron-right me-2 chevron-icon text-secondary transition-transform"></i>
+                            {{ municipio.nombre }}
+                        </div>
+                        <a href="{{ path('app_municipio_edit', {id: municipio.id}) }}" data-turbo-frame="_top" class="btn btn-sm text-secondary p-0 m-0" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                    </summary>
+                    <div class="ps-4 pt-1">
+                        <turbo-frame id="municipio_{{ municipio.id }}_parroquias" src="{{ path('app_ubicaciones_parroquias', {id: municipio.id}) }}" loading="lazy">
+                            <div class="text-muted small my-2"><i class="spinner-border spinner-border-sm me-2"></i> Cargando parroquias...</div>
+                        </turbo-frame>
+                    </div>
+                </details>
+            </li>
+        {% else %}
+            <li class="list-group-item border-0 py-1 text-muted small"><i class="bi bi-info-circle me-1"></i> Sin municipios registrados.</li>
+        {% endfor %}
+        <li class="list-group-item border-0 py-1 mt-2">
+            <form action="{{ path('app_ubicaciones_municipios', {id: estado.id}) }}" method="POST" class="d-flex w-50" data-turbo-frame="estado_{{ estado.id }}_municipios">
+                <input type="text" name="nombre" class="form-control form-control-sm me-2" placeholder="Nuevo Municipio" required>
+                <button type="submit" class="btn btn-sm btn-outline-primary" title="Añadir"><i class="bi bi-plus-lg"></i></button>
+            </form>
+        </li>
+    </ul>
+</turbo-frame>

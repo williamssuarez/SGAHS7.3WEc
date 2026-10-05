@@ -86,7 +86,7 @@ final class MunicipioController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Registro Editado.');
-            return $this->redirectToRoute('app_municipio_show', ['id' => $municipio->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_ubicaciones_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('municipio/edit.html.twig', [

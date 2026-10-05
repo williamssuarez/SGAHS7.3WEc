@@ -88,7 +88,7 @@ final class ParroquiaController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Registro Editado.');
-            return $this->redirectToRoute('app_parroquia_show', ['id' => $parroquium->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_ubicaciones_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('parroquia/edit.html.twig', [

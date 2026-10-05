@@ -61,7 +61,7 @@ final class EstadoController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Registro Editado.');
-            return $this->redirectToRoute('app_estado_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_ubicaciones_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('estado/edit.html.twig', [

@@ -62,7 +62,8 @@ final class SectorController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_parroquia_show', ['id' => $sector->getParroquia()->getId()], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Registro Editado.');
+            return $this->redirectToRoute('app_ubicaciones_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('sector/edit.html.twig', [

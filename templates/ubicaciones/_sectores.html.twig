@@ -1,0 +1,21 @@
+<turbo-frame id="parroquia_{{ parroquia.id }}_sectores">
+    <ul class="list-group list-group-flush mb-2 border-start border-2 border-success">
+        {% for sector in parroquia.sectores %}
+            <li class="list-group-item border-0 py-1 d-flex align-items-center justify-content-between">
+                <div>
+                    <i class="bi bi-geo-alt-fill me-2 text-success"></i>
+                    {{ sector.nombre }}
+                </div>
+                <a href="{{ path('app_sector_edit', {id: sector.id}) }}" data-turbo-frame="_top" class="btn btn-sm text-secondary p-0 m-0" title="Editar"><i class="bi bi-pencil-square"></i></a>
+            </li>
+        {% else %}
+            <li class="list-group-item border-0 py-1 text-muted small"><i class="bi bi-info-circle me-1"></i> Sin sectores registrados.</li>
+        {% endfor %}
+        <li class="list-group-item border-0 py-1 mt-2">
+            <form action="{{ path('app_ubicaciones_sectores', {id: parroquia.id}) }}" method="POST" class="d-flex w-50" data-turbo-frame="parroquia_{{ parroquia.id }}_sectores">
+                <input type="text" name="nombre" class="form-control form-control-sm me-2" placeholder="Nuevo Sector" required>
+                <button type="submit" class="btn btn-sm btn-outline-success" title="Añadir"><i class="bi bi-plus-lg"></i></button>
+            </form>
+        </li>
+    </ul>
+</turbo-frame>
