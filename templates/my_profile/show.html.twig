@@ -22,6 +22,14 @@
     <div class="alert alert-info text-start small">
         <i class="bi bi-exclamation-circle-fill"></i> Si cree que alguno de sus datos es incorrecto por favor solicite una cita medica para actualizarlos.
     </div>
+
+    {% if paciente is null %}
+        <div class="alert alert-warning text-start">
+            <i class="bi bi-shield-lock-fill"></i> Aún no has vinculado tu cuenta con tu historial clínico en el hospital. 
+            <a href="{{ path('my_profile_link', {'uuid': user.externalProfile.uuid}) }}" class="btn btn-sm btn-primary ms-3">Vincular Ahora</a>
+        </div>
+    {% endif %}
+
     <div class="row">
         <div class="col-md-12">
             <div class="card card-primary card-outline">

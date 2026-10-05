@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vincular Historial Clínico{% endblock %}
+
+{% block titlewrap %}
+    Vincular Historial Clínico
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('my_profile_show', {'uuid': externalProfile.uuid}) }}">Mi Perfil</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Vincular Historial Clínico</li>
+{% endblock %}
+
+{% block body %}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-6 mt-4">
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Vincular Registro Físico</h3>
+                </div>
+                <div class="card-body">
+                    <p>Para ver tu historial médico, debes vincular tu cuenta web con tu registro clínico en el hospital. Solicita tu <strong>Código de Vinculación Web</strong> en recepción.</p>
+
+                    {{ form_start(form, {
+                        'attr': {
+                            'data-controller': 'submit-once',
+                            'data-action': 'submit->submit-once#disable'
+                        }
+                    }) }}
+                        <div class="mb-3">
+                            {{ form_label(form.cedula) }}
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ form_widget(form.tipoDocumento) }}
+                                    {{ form_errors(form.tipoDocumento) }}
+                                </div>
+                                <div class="col-md-9">
+                                    {{ form_widget(form.cedula) }}
+                                    {{ form_errors(form.cedula) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            {{ form_label(form.codigo) }}
+                            {{ form_widget(form.codigo) }}
+                            {{ form_errors(form.codigo) }}
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
+                                <i class="bi bi-link"></i> Vincular Historial
+                            </button>
+                            <a href="{{ path('my_profile_show', {'uuid': externalProfile.uuid}) }}" class="btn btn-secondary">Cancelar</a>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

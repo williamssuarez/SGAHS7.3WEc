@@ -819,4 +819,62 @@ class Paciente
 
         return $this;
     }
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Gedmo\Versioned]
+    private ?string $codigoVinculacion = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Gedmo\Versioned]
+    private ?\DateTimeInterface $codigoVinculacionExpiresAt = null;
+
+    public function getCodigoVinculacion(): ?string
+    {
+        return $this->codigoVinculacion;
+    }
+
+    public function setCodigoVinculacion(?string $codigoVinculacion): static
+    {
+        $this->codigoVinculacion = $codigoVinculacion;
+
+        return $this;
+    }
+
+    public function getCodigoVinculacionExpiresAt(): ?\DateTimeInterface
+    {
+        return $this->codigoVinculacionExpiresAt;
+    }
+
+    public function setCodigoVinculacionExpiresAt(?\DateTimeInterface $codigoVinculacionExpiresAt): static
+    {
+        $this->codigoVinculacionExpiresAt = $codigoVinculacionExpiresAt;
+
+        return $this;
+    }
+
+    #[ORM\OneToOne(mappedBy: 'paciente', targetEntity: ExternalProfile::class)]
+    private ?ExternalProfile $externalProfile = null;
+
+    public function getExternalProfile(): ?ExternalProfile
+    {
+        return $this->externalProfile;
+    }
+
+    public function setExternalProfile(?ExternalProfile $externalProfile): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($externalProfile === null && $this->externalProfile !== null) {
+            $this->externalProfile->setPaciente(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($externalProfile !== null && $externalProfile->getPaciente() !== $this) {
+            $externalProfile->setPaciente($this);
+        }
+
+        $this->externalProfile = $externalProfile;
+
+        return $this;
+    }
 }
+

@@ -112,8 +112,33 @@
                                     </div>
                                 </div>
                             </div>
-                            <br>
-                            <br>
+                            <div class="col-md-12 mt-4 mb-4">
+                                <div class="card bg-light">
+                                    <div class="card-header border-0 pb-0">
+                                        <h3 class="card-title"><i class="bi bi-globe"></i> Acceso Web Externo</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if paciente.externalProfile %}
+                                            <div class="alert alert-success text-start mb-0">
+                                                <i class="bi bi-person-check-fill"></i> Este registro clínico ya se encuentra vinculado a la cuenta web de <strong>{{ paciente.externalProfile.nombre }} {{ paciente.externalProfile.apellido }}</strong>.
+                                            </div>
+                                        {% else %}
+                                            {% if paciente.codigoVinculacion and paciente.codigoVinculacionExpiresAt > date() %}
+                                                <p class="mb-2">Código activo: <strong style="font-size: 1.2rem; letter-spacing: 2px;">{{ paciente.codigoVinculacion }}</strong></p>
+                                                <p class="text-muted small mb-3"><i class="bi bi-clock-history"></i> Expira: {{ paciente.codigoVinculacionExpiresAt|date('Y-m-d H:i') }}</p>
+                                            {% else %}
+                                                <p class="text-muted mb-3">No hay un código activo para este paciente.</p>
+                                            {% endif %}
+                                            
+                                            <form method="post" action="{{ path('app_paciente_generate_link_code', {'id': paciente.id}) }}">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('generate_code' ~ paciente.id) }}">
+                                                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-arrow-repeat"></i> Generar Código de Vinculación</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="col-md-12">
                                 <a class="btn btn-success form-control" href="{{ path('app_paciente_edit', {'id': paciente.id }) }}">
                                     <i class="bi bi-pencil-square"></i> Editar

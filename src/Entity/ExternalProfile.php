@@ -39,7 +39,7 @@ class ExternalProfile
     #[ORM\OneToOne(mappedBy: 'externalProfile', cascade: ['persist', 'remove'])]
     private ?User $webUser = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'externalProfile', cascade: ['persist', 'remove'])]
     private ?Paciente $paciente = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
@@ -285,3 +285,4 @@ class ExternalProfile
         return $this;
     }
 }
+

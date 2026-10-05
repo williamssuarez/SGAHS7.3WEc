@@ -216,4 +216,34 @@ final class PacienteController extends AbstractController
 
         return $this->redirectToRoute('app_paciente_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}/generate-link-code', name: 'app_paciente_generate_link_code', methods: ['POST'])]
+    public function generateLinkCode(Request $request, Paciente $paciente, EntityManagerInterface $entityManager, \App\Service\AuditService $auditService): Response
+    {
+        if ($paciente->getExternalProfile() !== null) {
+            $this->addFlash('error', 'El paciente ya se encuentra vinculado a una cuenta web.');
+            return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()]);
+        }
+
+        $submittedToken = $request->request->get('_token');
+        if ($this->isCsrfTokenValid('generate_code' . $paciente->getId(), $submittedToken)) {
+            $codigo = strtoupper(substr(bin2hex(random_bytes(3)), 0, 6));
+            $paciente->setCodigoVinculacion($codigo);
+            $paciente->setCodigoVinculacionExpiresAt(new \DateTime('+48 hours'));
+
+            $auditService->persistAudit(
+                tipo: \App\Enum\AuditTipos::PATIENT_LINK_CODE_GENERATED,
+                mensaje: 'Se generó un código de vinculación web (validez 48h).',
+                paciente: $paciente,
+            );
+
+            $entityManager->flush();
+            $this->addFlash('success', 'Codigo de vinculacion generado: ' . $codigo);
+        } else {
+            $this->addFlash('error', 'Token invalido.');
+        }
+
+        return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()]);
+    }
 }
+

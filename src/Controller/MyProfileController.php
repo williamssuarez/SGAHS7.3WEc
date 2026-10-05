@@ -245,4 +245,53 @@ final class MyProfileController extends AbstractController
 
         return new JsonResponse('Eliminado con exito', Response::HTTP_OK);
     }
+
+    #[Route('/{uuid}/link', name: 'my_profile_link', methods: ['GET', 'POST'])]
+    public function linkProfile(Request $request, #[MapEntity(mapping: ['uuid' => 'uuid'])] ExternalProfile $externalProfile, \App\Repository\PacienteRepository $pacienteRepository, EntityManagerInterface $entityManager, \App\Service\AuditService $auditService): Response
+    {
+        if ($externalProfile->getPaciente() !== null) {
+            return $this->redirectToRoute('my_profile_show', ['uuid' => $externalProfile->getUuid()]);
+        }
+
+        $form = $this->createForm(\App\Form\PatientLinkType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+
+            $paciente = $pacienteRepository->findOneBy([
+                'tipoDocumento' => $data['tipoDocumento'],
+                'cedula' => $data['cedula'],
+                'codigoVinculacion' => strtoupper($data['codigo'])
+            ]);
+
+            if ($paciente && $paciente->getCodigoVinculacionExpiresAt() > new \DateTime()) {
+                $externalProfile->setPaciente($paciente);
+                $paciente->setCodigoVinculacion(null);
+                $paciente->setCodigoVinculacionExpiresAt(null);
+
+                $nombreWeb = $externalProfile->getNombre() . ' ' . $externalProfile->getApellido();
+
+                $auditService->persistAudit(
+                    tipo: \App\Enum\AuditTipos::PATIENT_WEB_LINKED,
+                    mensaje: "El paciente físico fue vinculado a la cuenta web de $nombreWeb exitosamente.",
+                    paciente: $paciente,
+                    externalProfile: $externalProfile
+                );
+
+                $entityManager->flush();
+
+                $this->addFlash('success', '¡Historial clínico vinculado exitosamente!');
+                return $this->redirectToRoute('my_profile_show', ['uuid' => $externalProfile->getUuid()]);
+            } else {
+                $this->addFlash('danger', 'Credenciales inválidas o el código ha expirado.');
+            }
+        }
+
+        return $this->render('my_profile/link.html.twig', [
+            'externalProfile' => $externalProfile,
+            'form' => $form->createView(),
+        ]);
+    }
 }
+
