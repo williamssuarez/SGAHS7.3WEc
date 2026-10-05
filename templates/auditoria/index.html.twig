@@ -1,73 +1,168 @@
-{% extends 'base.html.twig' %}
+﻿{% extends 'base.html.twig' %}
+
+
 
 {% block title %}Auditoria{% endblock %}
 
+
+
 {% block titlewrap %}
+
     Auditoria
+
 {% endblock %}
+
+
 
 {% block breadcrumb %}
+
     <li class="breadcrumb-item active" aria-current="page">Auditoria</li>
+
 {% endblock %}
 
+
+
 {% block body %}
+
     {% for label, messages in app.flashes %}
+
         {% for message in messages %}
+
             <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+
                 <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
             </div>
+
         {% endfor %}
+
     {% endfor %}
+
     <div class="card card-primary card-outline mb-4">
+
         <div class="card-body">
+
             <form method="get" action="{{ path('app_auditoria_index') }}" class="row g-3 mb-4">
+
                 <div class="row">
+
                     <div class="col-md-2">
+
                         <label>Desde</label>
+
                         <input type="date" name="startDate" value="{{ startDate }}" class="form-control">
+
                     </div>
+
                     <div class="col-md-2">
+
                         <label>Hasta</label>
+
                         <input type="date" name="endDate" value="{{ endDate }}" class="form-control">
+
                     </div>
+
                     <div class="col-md-3">
+
                         <label>Accion</label>
+
                         <select name="state" class="form-control srchSelect">
+
                             {% for state in tipos %}
+
                                 <option value="{{ state.value }}" {{ currentState == state.value ? 'selected' }}>{{ state.readableText }}</option>
+
                             {% endfor %}
+
                         </select>
+
                     </div>
+
                     <div class="col-md-3">
+
                         <label>Usuarios</label>
+
                         <select name="user" class="form-control srchSelect">
+
                             <option value="" {{ currentUser == '' ? 'selected' }}>Todos</option>
+
                             {% for usuario in usuarios %}
+
                                 <option value="{{ usuario.id }}" {{ currentUser == usuario.id ? 'selected' }}>{{ usuario.id|public_username_email|title }}</option>
+
                             {% endfor %}
+
                         </select>
+
                     </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary">Filtrar</button>
-                        <a href="{{ path('app_auditoria_index') }}" class="btn btn-secondary ms-2">Limpiar</a>
+
+                                        <div class="col-md-2 d-flex align-items-end gap-1">
+
+                        <button type="submit" class="btn btn-primary" title="Filtrar">
+
+                            <i class="bi bi-funnel-fill"></i>
+
+                        </button>
+
+                        <a href="{{ path('app_auditoria_index') }}" class="btn btn-secondary" title="Limpiar">
+
+                            <i class="bi bi-eraser-fill"></i>
+
+                        </a>
+
+                        <button type="submit" name="export" value="pdf" class="btn btn-outline-danger" formtarget="_blank" title="Exportar a PDF" data-controller="confirm-action" data-action="click->confirm-action#confirm" data-confirm-action-title-value="¿Generar Reporte PDF?" data-confirm-action-text-value="Solo se permiten exportar reportes de máximo 1000 registros a la vez por motivos de rendimiento. ¿Desea continuar?" data-confirm-action-icon-value="info" data-confirm-action-confirm-text-value="Generar PDF">
+
+                            <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+
+                        </button>
+
                     </div>
+
                 </div>
+
             </form>
+
         </div>
+
     </div>
+
+
 
     <br>
 
+
+
     <div class="card card-primary card-outline mb-4">
+
         <div class="card-header d-flex justify-content-between align-items-center">
+
             <h3 class="card-title m-0">Auditoria</h3>
-            <span class="text-muted small ms-auto"><i class="bi bi-info-circle"></i> Puedes buscar por <strong>Detalles o Dirección IP</strong></span>
+
+            <div class="text-end ms-auto"><span class="text-muted small d-block"><i class="bi bi-info-circle"></i> Puedes buscar por <strong>Detalles o Dirección IP</strong></span><span class="text-danger small d-block mt-1"><i class="bi bi-exclamation-triangle-fill"></i> El límite máximo para exportar reportes en PDF es de 1000 registros.</span></div>
+
         </div>
 
+
+
         <div class="card-body">
+
             <div class="dtHereServer table-responsive" data-dt-config="{{ datatable_settings(datatable)|escape('html_attr') }}">Cargando registros...</div>
+
         </div>
+
     </div>
+
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
 

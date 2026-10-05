@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Citas</title>
+    <style>
+        body { font-family: sans-serif; font-size: 12px; color: #333; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { margin: 0; font-size: 18px; color: #0056b3; }
+        .header p { margin: 5px 0; color: #555; }
+        .filters { margin-bottom: 20px; padding: 10px; background-color: #f8f9fa; border: 1px solid #ddd; }
+        .filters strong { color: #000; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; color: #333; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .badge { padding: 3px 6px; font-size: 10px; border-radius: 10px; color: #fff; display: inline-block; }
+        .bg-success { background-color: #28a745; }
+        .bg-primary { background-color: #007bff; }
+        .bg-warning { background-color: #ffc107; color: #000; }
+        .bg-danger { background-color: #dc3545; }
+        .bg-info { background-color: #17a2b8; }
+        .bg-secondary { background-color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SGAHS</h1>
+        <p>Reporte de Citas de Recepción</p>
+    </div>
+
+    <div class="filters">
+        <table style="border: none; margin: 0; padding: 0;">
+            <tr>
+                <td style="border: none; padding: 0;"><strong>Desde:</strong> {{ startDate }}</td>
+                <td style="border: none; padding: 0;"><strong>Hasta:</strong> {{ endDate }}</td>
+                <td style="border: none; padding: 0;">
+                    <strong>Filtro de Estado:</strong>
+                    {% if state == 'all' %}Todas{% endif %}
+                    {% if state == 'expected' %}Esperado{% endif %}
+                    {% if state == 'checked_in' %}Atendido{% endif %}
+                    {% if state == 'completed' %}Completado{% endif %}
+                    {% if state == 'canceled' %}Cancelado{% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td style="border: none; padding: 0; padding-top: 10px;"><strong>Generado por:</strong> {{ generatedBy.id|public_username|title }}</td>
+                <td style="border: none; padding: 0; padding-top: 10px;"><strong>Fecha de Generación:</strong> {{ generationDate|date('d/m/Y h:i A') }}</td>
+                <td style="border: none; padding: 0; padding-top: 10px;"></td>
+            </tr>
+        </table>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha/Hora</th>
+                <th>Paciente</th>
+                <th>Cédula</th>
+                <th>Especialidad</th>
+                <th>Médico</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cita in citas %}
+                <tr>
+                    <td>#{{ cita.id }}</td>
+                    <td>{{ cita.fecha ? cita.fecha|date('d/m/Y') : '' }} {{ cita.horaInicio ? cita.horaInicio|date('h:i A') : '' }}</td>
+                    <td>{{ cita.paciente ? cita.paciente.nombre ~ ' ' ~ cita.paciente.apellido : 'N/A' }}</td>
+                    <td>{{ cita.paciente and cita.paciente.cedula ? cita.paciente.tipoDocumento ~ '-' ~ cita.paciente.cedula|number_format(0, ',', '.') : 'N/A' }}</td>
+                    <td>{{ cita.especialidad ? cita.especialidad.nombre : 'N/A' }}</td>
+                    <td>{{ cita.doctor ? cita.doctor.nombre ~ ' ' ~ cita.doctor.apellido : 'N/A' }}</td>
+                    <td>
+                        {% set bg_class = 'bg-secondary' %}
+                        {% if cita.estadoCita.value == 'expected' %} {% set bg_class = 'bg-warning' %}
+                        {% elseif cita.estadoCita.value == 'checked_in' %} {% set bg_class = 'bg-primary' %}
+                        {% elseif cita.estadoCita.value == 'completed' %} {% set bg_class = 'bg-success' %}
+                        {% elseif cita.estadoCita.value == 'canceled' %} {% set bg_class = 'bg-danger' %}
+                        {% endif %}
+                        <span class="badge {{ bg_class }}">{{ cita.estadoCita.readableText }}</span>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

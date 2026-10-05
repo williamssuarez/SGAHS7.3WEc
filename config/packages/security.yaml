@@ -100,6 +100,7 @@ security:
         - { path: ^/hospitalizacion, roles: ROLE_HOSPITALIZATION }
         - { path: ^/cirugia, roles: ROLE_OR }
         - { path: ^/quirofano, roles: ROLE_ADMIN_QUIROFANO }
+        - { path: ^/inventario, roles: ROLE_ADMIN_QUIROFANO }
 
 when@test:
     security:

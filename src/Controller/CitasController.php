@@ -47,7 +47,7 @@ final class CitasController extends AbstractController
     }
 
     #[Route('/listado', name: 'app_citas_index_list', methods: ['GET', 'POST'])]
-    public function index(Request $request, \Omines\DataTablesBundle\DataTableFactory $dataTableFactory): Response
+    public function index(Request $request, \Doctrine\ORM\EntityManagerInterface $entityManager, \Omines\DataTablesBundle\DataTableFactory $dataTableFactory): Response
     {
         // Default values: today and 'expected' state
         $today = new \DateTime('now');
@@ -70,6 +70,10 @@ final class CitasController extends AbstractController
 
         if ($table->isCallback()) {
             return $table->getResponse();
+        }
+
+        if ($request->query->get('export') === 'pdf') {
+            return $this->generatePdfReport($request, $entityManager, $startDate, $endDate, $state);
         }
 
         return $this->render('citas/index.html.twig', [
@@ -170,6 +174,53 @@ final class CitasController extends AbstractController
 
         // Redirect back to the pending list
         return $this->redirectToRoute('app_citas_index_list');
+    }
+
+    private function generatePdfReport(Request $request, \Doctrine\ORM\EntityManagerInterface $entityManager, \DateTime $startDate, \DateTime $endDate, string $state): Response
+    {
+        $citas = [];
+        if ($state === 'all') {
+            $citas = $entityManager->getRepository(\App\Entity\Citas::class)->getActivesforTableByDateOnly($startDate, $endDate);
+        } else {
+            $citas = $entityManager->getRepository(\App\Entity\Citas::class)->getActivesforTableByState($state, $startDate, $endDate);
+        }
+
+        if (count($citas) > 1000) {
+            $this->addFlash('danger', sprintf('Demasiados registros para exportar (%d). El límite es 1000. Por favor, ajuste los filtros.', count($citas)));
+            $params = $request->query->all();
+            unset($params['export']);
+            return $this->redirectToRoute('app_citas_index_list', $params);
+        }
+
+        if (count($citas) === 0) {
+            $this->addFlash('warning', 'No hay registros para exportar con los filtros actuales.');
+            $params = $request->query->all();
+            unset($params['export']);
+            return $this->redirectToRoute('app_citas_index_list', $params);
+        }
+
+        $html = $this->renderView('citas/pdf_report.html.twig', [
+            'citas' => $citas,
+            'startDate' => $startDate->format('d/m/Y'),
+            'endDate' => $endDate->format('d/m/Y'),
+            'state' => $state,
+            'generatedBy' => $this->getUser(),
+            'generationDate' => new \DateTime('now', new \DateTimeZone('America/Caracas')),
+        ]);
+
+        $dompdf = new \Dompdf\Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+
+        return new Response(
+            $dompdf->output(),
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="reporte_citas.pdf"'
+            ]
+        );
     }
 }
 

@@ -34,16 +34,23 @@
                     <div class="col-md-3">
                         <label>Estado</label>
                         <select name="state" class="form-control noSrchSelect">
-                            <option value="expected" {{ currentState == 'expected' ? 'selected' }}>Pendientes</option>
-                            <option value="checked_in" {{ currentState == 'checked_in' ? 'selected' }}>En Espera</option>
-                            <option value="completed" {{ currentState == 'completed' ? 'selected' }}>Finalizadas</option>
-                            <option value="canceled" {{ currentState == 'canceled' ? 'selected' }}>Canceladas</option>
+                            <option value="expected" {{ currentState == 'expected' ? 'selected' }}>Esperado</option>
+                            <option value="checked_in" {{ currentState == 'checked_in' ? 'selected' }}>Atendido</option>
+                            <option value="completed" {{ currentState == 'completed' ? 'selected' }}>Completado</option>
+                            <option value="canceled" {{ currentState == 'canceled' ? 'selected' }}>Cancelado</option>
                             <option value="all" {{ currentState == 'all' ? 'selected' }}>Todas las Citas</option>
                         </select>
                     </div>
-                    <div class="col-md-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary">Filtrar</button>
-                        <a href="{{ path('app_citas_index_list') }}" class="btn btn-secondary ms-2">Limpiar</a>
+                    <div class="col-md-3 d-flex align-items-end gap-1">
+                        <button type="submit" class="btn btn-primary" title="Filtrar">
+                            <i class="bi bi-funnel-fill"></i>
+                        </button>
+                        <a href="{{ path('app_citas_index_list') }}" class="btn btn-secondary" title="Limpiar">
+                            <i class="bi bi-eraser-fill"></i>
+                        </a>
+                        <button type="submit" name="export" value="pdf" class="btn btn-outline-danger" formtarget="_blank" title="Exportar a PDF" data-controller="confirm-action" data-action="click->confirm-action#confirm" data-confirm-action-title-value="¿Generar Reporte PDF?" data-confirm-action-text-value="Solo se permiten exportar reportes de máximo 1000 registros a la vez por motivos de rendimiento. ¿Desea continuar?" data-confirm-action-icon-value="info" data-confirm-action-confirm-text-value="Generar PDF">
+                            <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+                        </button>
                     </div>
                 </div>
             </form>
