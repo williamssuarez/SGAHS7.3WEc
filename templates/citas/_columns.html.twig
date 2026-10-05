@@ -1,0 +1,62 @@
+{% if column.name == 'especialidad' %}
+    {{ row.especialidad.nombre }}
+
+{% elseif column.name == 'doctor' %}
+    {{ row.doctor ? 'Dr(a). ' ~ row.doctor.nombre ~ ' ' ~ row.doctor.apellido : 'N/A' }}
+
+{% elseif column.name == 'consultorio' %}
+    {{ row.consultorio.nombre }}
+
+{% elseif column.name == 'paciente' %}
+    {{ row.paciente.nombre }} {{ row.paciente.apellido }}
+
+{% elseif column.name == 'fecha' %}
+    {{ row.fecha|date('d/m/Y', false) }}
+
+{% elseif column.name == 'horario' %}
+    {{ row.horaInicio|date('H:i', false) }} - {{ row.horaFin|date('H:i', false) }}
+
+{% elseif column.name == 'estado' %}
+    {% set badge = row.citasEstadosBadgeConfig %}
+    <span class="badge rounded-pill {{ badge.class }}">
+        {{ badge.label }}
+    </span>
+
+{% elseif column.name == 'acciones' %}
+    <a class="btn btn-secondary" href="{{ path('app_citas_show', {'id': row.id}) }}">Detalles</a>
+    {% if row.estadoCita.value == 'expected' %}
+
+        {# 1. CHECK-IN BUTTON: Only visible if the appointment is TODAY #}
+        {% if row.fecha|date('Y-m-d', false) == 'now'|date('Y-m-d') %}
+            <form action="{{ path('app_citas_checkin', {'id': row.id}) }}"
+                  method="POST"
+                  data-controller="confirm-finalizar"
+                  data-action="submit->confirm-finalizar#confirm"
+                  data-confirm-finalizar-title-value="¿Confirmar Llegada?"
+                  data-confirm-finalizar-text-value="¿El paciente {{ row.paciente.nombre }} ya se encuentra en las instalaciones? Esto creará una consulta en la lista de espera del médico."
+                  data-confirm-finalizar-confirm-button-text-value="Sí, Ingresar"
+                  class="d-inline">
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-person-check-fill"></i> Anunciar Llegada
+                </button>
+            </form>
+        {% endif %}
+
+        {# 2. CANCEL BUTTON: Visible for any 'expected' appointment, future or present #}
+        <form action="{{ path('app_citas_canceled', {'id': row.id}) }}"
+              method="POST"
+              data-controller="cancel-appointment"
+              data-action="submit->cancel-appointment#confirm"
+              data-cancel-appointment-patient-name-value="{{ row.paciente.nombre }} {{ row.paciente.apellido }}"
+              class="d-inline">
+
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-person-x-fill"></i> Cancelar Cita
+            </button>
+        </form>
+
+    {% endif %}
+{% else %}
+    {{ value }}
+{% endif %}

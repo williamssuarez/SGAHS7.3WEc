@@ -1,0 +1,40 @@
+{% if column.name == 'ingreso' %}
+    {{ row.fechaIngreso|date('d/m/Y H:i A') }} ({{ row.fechaIngreso|time_ago }})
+
+{% elseif column.name == 'egreso' %}
+    {% if row.altaMedica %}
+        {{ row.altaMedica.fechaEgreso|date('d/m/Y H:i A') }} ({{ row.altaMedica.fechaEgreso|time_ago }})
+    {% else %}
+        <span class="badge text-danger fs-6">Sin Egreso</span>
+    {% endif %}
+
+{% elseif column.name == 'paciente' %}
+    {{ row.paciente ? row.paciente.nombre ~ ' ' ~ row.paciente.apellido : row.pacienteTemporal }}
+
+{% elseif column.name == 'prioridad' %}
+    {% if row.triage %}
+        {% set badge = row.triage.triageNivelesPrioridadBadgeConfig %}
+        <span class="badge {{ badge.class }} fs-6">{{ badge.label }}</span>
+    {% else %}
+        <span class="badge text-danger fs-6">Sin Triaje</span>
+    {% endif %}
+
+{% elseif column.name == 'condicionAlta' %}
+    {% if row.altaMedica %}
+        {% set badge = row.altaMedica.condicionAltaBadgeConfig %}
+        <span class="badge {{ badge.class }} fs-6">{{ badge.label }}</span>
+    {% else %}
+        <span class="badge text-danger fs-6">Sin Alta</span>
+    {% endif %}
+
+{% elseif column.name == 'diagnosticoFinal' %}
+    {{ row.altaMedica ? row.altaMedica.diagnosticoFinal : '--' }}
+
+{% elseif column.name == 'acciones' %}
+    <a class="btn btn-outline-primary btn-sm" href="{{ path('app_emergencia_show_record', {'id': row.id}) }}">
+        <i class="bi bi-file-earmark-medical"></i> Ver Expediente
+    </a>
+
+{% else %}
+    {{ value }}
+{% endif %}

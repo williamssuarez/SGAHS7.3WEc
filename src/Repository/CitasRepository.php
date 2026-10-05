@@ -128,4 +128,29 @@ class CitasRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
     }
+
+    public function createDataTablesStateQueryBuilder(\Doctrine\ORM\QueryBuilder $qb, $state, \DateTime $from, \DateTime $to)
+    {
+        $qb->select('u')
+           ->from(\App\Entity\Citas::class, 'u')
+           ->where('u.status = :sts')
+           ->andWhere('u.estadoCita = :state')
+           ->andWhere('u.fecha between :from AND :to')
+           ->setParameter('sts', $this->getEntityManager()->getRepository(\App\Entity\StatusRecord::class)->getActive())
+           ->setParameter('state', $state)
+           ->setParameter('from', $from)
+           ->setParameter('to', $to);
+    }
+
+    public function createDataTablesDateOnlyQueryBuilder(\Doctrine\ORM\QueryBuilder $qb, \DateTime $from, \DateTime $to)
+    {
+        $qb->select('u')
+           ->from(\App\Entity\Citas::class, 'u')
+           ->where('u.status = :sts')
+           ->andWhere('u.fecha between :from AND :to')
+           ->setParameter('sts', $this->getEntityManager()->getRepository(\App\Entity\StatusRecord::class)->getActive())
+           ->setParameter('from', $from)
+           ->setParameter('to', $to);
+    }
 }
+

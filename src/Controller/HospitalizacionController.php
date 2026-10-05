@@ -36,8 +36,8 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 #[Route('/hospitalizacion')]
 final class HospitalizacionController extends AbstractController
 {
-    #[Route('/', name: 'app_hospitalizacion_index', methods: ['GET'])]
-    public function index(Request $request, HospitalizacionesRepository $hospitalizacionRepository): Response
+    #[Route('/', name: 'app_hospitalizacion_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, \Omines\DataTablesBundle\DataTableFactory $dataTableFactory): Response
     {
         $today = new \DateTime('now');
 
@@ -51,14 +51,18 @@ final class HospitalizacionController extends AbstractController
 
         $state = $request->query->get('state', 'all');
 
-        if ($state == 'all') {
-            $entities = $hospitalizacionRepository->getActivesforTableByDateOnly($startDate, $endDate);
-        } else {
-            $entities = $hospitalizacionRepository->getActivesforTableByStateAndDate($state, $startDate, $endDate);
+        $table = $dataTableFactory->createFromType(\App\DataTable\Type\HospitalizacionTableType::class, [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'state' => $state,
+        ], ['pageLength' => 5])->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
         }
 
         return $this->render('hospitalizaciones/index.html.twig', [
-            'entities' => $entities,
+            'datatable' => $table,
             'currentState' => $state,
             'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y-m-d'),
@@ -456,5 +460,6 @@ final class HospitalizacionController extends AbstractController
         ]);
     }
 }
+
 
 

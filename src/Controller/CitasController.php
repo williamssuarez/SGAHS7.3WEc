@@ -23,59 +23,31 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CitasController extends AbstractController
 {
     #[Route('/expected', name: 'app_citas_index_expected', methods: ['GET'])]
-    public function indexExpected(CitasRepository $citasRepository): Response
+    public function indexExpected(): Response
     {
-        $now = new \DateTime('now');
-        $from = clone $now->setTime(0, 0, 0);
-        $to = clone $now->setTime(23, 59, 59);
-
-        return $this->render('citas/index.html.twig', [
-            'entities' => $citasRepository->getActivesforTableByState(CitasEstados::EXPECTED, $from, $to),
-            'stateType' => 'Pendientes'
-        ]);
+        return $this->redirectToRoute('app_citas_index_list', ['state' => 'expected']);
     }
 
     #[Route('/check-in', name: 'app_citas_index_checkin', methods: ['GET'])]
-    public function indexCheckIn(CitasRepository $citasRepository): Response
+    public function indexCheckIn(): Response
     {
-        $now = new \DateTime('+1 day');
-        $from = clone $now->setTime(0, 0, 0);
-        $to = clone $now->setTime(23, 59, 59);
-
-        return $this->render('citas/index.html.twig', [
-            'entities' => $citasRepository->getActivesforTableByState(CitasEstados::CHECKED_IN, $from, $to),
-            'stateType' => 'En Espera'
-        ]);
+        return $this->redirectToRoute('app_citas_index_list', ['state' => 'checked_in']);
     }
 
     #[Route('/complete', name: 'app_citas_index_complete', methods: ['GET'])]
-    public function indexCompleted(CitasRepository $citasRepository): Response
+    public function indexCompleted(): Response
     {
-        $now = new \DateTime('+1 day');
-        $from = clone $now->setTime(0, 0, 0);
-        $to = clone $now->setTime(23, 59, 59);
-
-        return $this->render('citas/index.html.twig', [
-            'entities' => $citasRepository->getActivesforTableByState(CitasEstados::COMPLETED, $from, $to),
-            'stateType' => 'Finalizadas'
-        ]);
+        return $this->redirectToRoute('app_citas_index_list', ['state' => 'completed']);
     }
 
     #[Route('/canceled', name: 'app_citas_index_canceled', methods: ['GET'])]
-    public function indexCanceled(CitasRepository $citasRepository): Response
+    public function indexCanceled(): Response
     {
-        $now = new \DateTime('+1 day');
-        $from = clone $now->setTime(0, 0, 0);
-        $to = clone $now->setTime(23, 59, 59);
-
-        return $this->render('citas/index.html.twig', [
-            'entities' => $citasRepository->getActivesforTableByState(CitasEstados::CANCELED, $from, $to),
-            'stateType' => 'Canceladas'
-        ]);
+        return $this->redirectToRoute('app_citas_index_list', ['state' => 'canceled']);
     }
 
-    #[Route('/listado', name: 'app_citas_index_list', methods: ['GET'])]
-    public function index(Request $request, CitasRepository $citasRepository): Response
+    #[Route('/listado', name: 'app_citas_index_list', methods: ['GET', 'POST'])]
+    public function index(Request $request, \Omines\DataTablesBundle\DataTableFactory $dataTableFactory): Response
     {
         // Default values: today and 'expected' state
         $today = new \DateTime('now');
@@ -88,16 +60,20 @@ final class CitasController extends AbstractController
             ? new \DateTime($request->query->get('endDate'))
             : clone $today->setTime(23, 59, 59);
 
-        $state = $request->query->get('state', CitasEstados::EXPECTED->value);
+        $state = $request->query->get('state', \App\Enum\CitasEstados::EXPECTED->value);
 
-        if ($state == 'all'){
-            $entities = $citasRepository->getActivesforTableByDateOnly($startDate, $endDate);
-        } else {
-            $entities = $citasRepository->getActivesforTableByState($state, $startDate, $endDate);
+        $table = $dataTableFactory->createFromType(\App\DataTable\Type\CitasTableType::class, [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'state' => $state,
+        ], ['pageLength' => 5])->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
         }
 
         return $this->render('citas/index.html.twig', [
-            'entities' => $entities,
+            'datatable' => $table,
             'currentState' => $state,
             'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y-m-d'),
@@ -196,3 +172,6 @@ final class CitasController extends AbstractController
         return $this->redirectToRoute('app_citas_index_list');
     }
 }
+
+
+

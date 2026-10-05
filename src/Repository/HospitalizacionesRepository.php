@@ -96,4 +96,32 @@ class HospitalizacionesRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function createDataTablesDateOnlyQueryBuilder(\Doctrine\ORM\QueryBuilder $qb, \DateTime $startDate, \DateTime $endDate)
+    {
+        $qb->select('h')
+           ->from(\App\Entity\Hospitalizaciones::class, 'h')
+           ->where('h.status = :sts')
+           ->andWhere('h.fechaIngreso >= :start')
+           ->andWhere('h.fechaIngreso <= :end')
+           ->setParameter('sts', $this->getEntityManager()->getRepository(\App\Entity\StatusRecord::class)->getActive())
+           ->setParameter('start', $startDate)
+           ->setParameter('end', $endDate);
+    }
+
+    public function createDataTablesStateQueryBuilder(\Doctrine\ORM\QueryBuilder $qb, $state, \DateTime $startDate, \DateTime $endDate)
+    {
+        $qb->select('h')
+           ->from(\App\Entity\Hospitalizaciones::class, 'h')
+           ->where('h.status = :sts')
+           ->andWhere('h.estado = :state')
+           ->andWhere('h.fechaIngreso >= :start')
+           ->andWhere('h.fechaIngreso <= :end')
+           ->setParameter('sts', $this->getEntityManager()->getRepository(\App\Entity\StatusRecord::class)->getActive())
+           ->setParameter('state', $state)
+           ->setParameter('start', $startDate)
+           ->setParameter('end', $endDate);
+    }
 }
+
+

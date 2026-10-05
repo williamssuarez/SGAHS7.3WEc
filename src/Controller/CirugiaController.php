@@ -34,26 +34,33 @@ use App\Entity\MainConfiguration;
 final class CirugiaController extends AbstractController
 {
     #[Route('/', name: 'app_cirugia', methods: ['GET', 'POST'])]
-    public function index(Request $request, CirugiaRepository $cirugiaRepository, StatusRecordRepository $statusRecordRepository): Response
+    public function index(Request $request, \Omines\DataTablesBundle\DataTableFactory $dataTableFactory): Response
     {
-        $startDate = new \DateTime($request->request->get('start_date', 'today'));
-        $endDate = new \DateTime($request->request->get('end_date', 'today'));
+        $startDate = $request->query->get('start_date')
+            ? new \DateTime($request->query->get('start_date'))
+            : new \DateTime('today');
+        $endDate = $request->query->get('end_date')
+            ? new \DateTime($request->query->get('end_date'))
+            : new \DateTime('today');
 
-        $estadoReq = $request->request->get('estado_filtro', 'TODAS');
+        $estadoReq = $request->query->get('estado_filtro', 'TODAS');
         $estadoFilter = null;
         if ($estadoReq !== 'TODAS') {
             $estadoFilter = \App\Enum\CirugiaEstados::tryFrom($estadoReq);
         }
 
-        $cirugias = $cirugiaRepository->getHistoricalCirugiasByDate(
-            $startDate,
-            $endDate,
-            $statusRecordRepository->getActive(),
-            $estadoFilter
-        );
+        $table = $dataTableFactory->createFromType(\App\DataTable\Type\CirugiaTableType::class, [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'estado' => $estadoFilter,
+        ], ['pageLength' => 5])->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
+        }
 
         return $this->render('cirugia/index.html.twig', [
-            'cirugias' => $cirugias,
+            'datatable' => $table,
             'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y-m-d'),
             'estadoFiltro' => $estadoReq,
@@ -544,3 +551,4 @@ final class CirugiaController extends AbstractController
         );
     }
 }
+

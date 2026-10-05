@@ -1,0 +1,23 @@
+{% if column.name == 'visitante' %}
+    <strong>{{ row.nombreVisitante }}</strong><br>
+    <small class="text-muted">CI: {{ row.identificacionVisitante|number_format(0, ',', '.') }}</small>
+
+{% elseif column.name == 'parentesco' %}
+    <span class="badge bg-secondary">{{ row.parentesco }}</span>
+
+{% elseif column.name == 'paciente' %}
+    {{ row.hospitalizacion.paciente.nombre }} {{ row.hospitalizacion.paciente.apellido }}
+
+{% elseif column.name == 'ubicacion' %}
+    {{ row.hospitalizacion.camaActual.habitacion.area.nombre }}<br>
+    <strong>Hab: {{ row.hospitalizacion.camaActual.habitacion.nombre }}</strong>
+
+{% elseif column.name == 'horaEntrada' %}
+    <span class="text-success"><i class="bi bi-box-arrow-in-right"></i> {{ row.fechaHoraEntrada|date('d/m/Y H:i') }}</span>
+
+{% elseif column.name == 'horaSalida' %}
+    <span class="text-danger"><i class="bi bi-box-arrow-left"></i> {{ row.fechaHoraSalida ? row.fechaHoraSalida|date('d/m/Y H:i') : 'N/A' }}</span>
+
+{% else %}
+    {{ value }}
+{% endif %}

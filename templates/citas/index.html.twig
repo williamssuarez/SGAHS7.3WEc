@@ -51,79 +51,10 @@
     </div>
 
     <div class="card card-primary card-outline mb-4">
-        <div class="card-header">
-            <h3 class="card-title">Citas</h3>
-        </div>
+        <div class="card-header d-flex justify-content-between align-items-center"><h3 class="card-title m-0">Citas</h3><span class="text-muted small ms-auto"><i class="bi bi-info-circle"></i> Puedes buscar por <strong>Especialidad, Doctor, Consultorio o Paciente</strong></span></div>
 
         <div class="card-body">
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>Especialidad</th>
-                    <th>Doctor</th>
-                    <th>Consultorio</th>
-                    <th>Paciente</th>
-                    <th>Fecha</th>
-                    <th>Inicio-Fin</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in entities %}
-                    <tr class="align-middle">
-                        <td>{{ entity.especialidad.nombre }}</td>
-                        <td>{{ entity.doctor ? 'Dr(a). ' ~ entity.doctor.nombre ~ ' ' ~ entity.doctor.apellido : 'N/A' }}</td>
-                        <td>{{ entity.consultorio.nombre }}</td>
-                        <td>{{ entity.paciente.nombre }} {{ entity.paciente.apellido }}</td>
-                        <td>{{ entity.fecha|date('d/m/Y', false) }}</td>
-                        <td>{{ entity.horaInicio|date('H:i', false) }} - {{ entity.horaFin|date('H:i', false) }}</td>
-                        <td>
-                            {% set badge = entity.citasEstadosBadgeConfig %}
-                            <span class="badge rounded-pill {{ badge.class }}">
-                                    {{ badge.label }}
-                            </span>
-                        </td>
-                        <td>
-                            <a class="btn btn-secondary" href="{{ path('app_citas_show', {'id': entity.id}) }}">Detalles</a>
-                            {% if entity.estadoCita.value == 'expected' %}
-
-                                {# 1. CHECK-IN BUTTON: Only visible if the appointment is TODAY #}
-                                {% if entity.fecha|date('Y-m-d', false) == 'now'|date('Y-m-d') %}
-                                    <form action="{{ path('app_citas_checkin', {'id': entity.id}) }}"
-                                          method="POST"
-                                          data-controller="confirm-finalizar"
-                                          data-action="submit->confirm-finalizar#confirm"
-                                          data-confirm-finalizar-title-value="¿Confirmar Llegada?"
-                                          data-confirm-finalizar-text-value="¿El paciente {{ entity.paciente.nombre }} ya se encuentra en las instalaciones? Esto creará una consulta en la lista de espera del médico."
-                                          data-confirm-finalizar-confirm-button-text-value="Sí, Ingresar"
-                                          class="d-inline">
-
-                                        <button type="submit" class="btn btn-success">
-                                            <i class="bi bi-person-check-fill"></i> Anunciar Llegada
-                                        </button>
-                                    </form>
-                                {% endif %}
-
-                                {# 2. CANCEL BUTTON: Visible for any 'expected' appointment, future or present #}
-                                <form action="{{ path('app_citas_canceled', {'id': entity.id}) }}"
-                                      method="POST"
-                                      data-controller="cancel-appointment"
-                                      data-action="submit->cancel-appointment#confirm"
-                                      data-cancel-appointment-patient-name-value="{{ entity.paciente.nombre }} {{ entity.paciente.apellido }}"
-                                      class="d-inline">
-
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-person-x-fill"></i> Cancelar Cita
-                                    </button>
-                                </form>
-
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            <div class="dtHereServer table-responsive" data-dt-config="{{ datatable_settings(datatable)|escape('html_attr') }}">Cargando registros...</div>
         </div>
 
         <div class="card-footer clearfix">
@@ -131,3 +62,5 @@
         </div>
     </div>
 {% endblock %}
+
+

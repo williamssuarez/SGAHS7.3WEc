@@ -37,4 +37,19 @@ class VisitaHospitalariaRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function createDataTablesDateOnlyQueryBuilder(\Doctrine\ORM\QueryBuilder $qb, \DateTime $start, \DateTime $end)
+    {
+        $qb->select('v')
+           ->from(\App\Entity\VisitaHospitalaria::class, 'v')
+           ->where('v.status = :sts')
+           ->andWhere('v.estado = :estado')
+           ->andWhere('v.fechaHoraEntrada >= :start')
+           ->andWhere('v.fechaHoraEntrada <= :end')
+           ->setParameter('sts', $this->getEntityManager()->getRepository(\App\Entity\StatusRecord::class)->getActive())
+           ->setParameter('estado', 'FINALIZADA')
+           ->setParameter('start', $start->format('Y-m-d 00:00:00'))
+           ->setParameter('end', $end->format('Y-m-d 23:59:59'));
+    }
 }
+

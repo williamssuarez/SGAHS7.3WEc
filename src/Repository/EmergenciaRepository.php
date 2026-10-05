@@ -80,4 +80,34 @@ class EmergenciaRepository extends ServiceEntityRepository
 
         return $query->getQuery()->getResult();
     }
+
+    public function createDataTablesDateOnlyQueryBuilder(\Doctrine\ORM\QueryBuilder $qb, \DateTime $from, \DateTime $to)
+    {
+        $qb->select('u')
+           ->from(\App\Entity\Emergencia::class, 'u')
+           ->where('u.status = :sts')
+           ->andWhere('u.fechaIngreso between :from AND :to')
+           ->andWhere('u.estado = :estado')
+           ->setParameter('sts', $this->getEntityManager()->getRepository(\App\Entity\StatusRecord::class)->getActive())
+           ->setParameter('from', $from)
+           ->setParameter('to', $to)
+           ->setParameter('estado', \App\Enum\EmergenciasEstados::DISCHARGED);
+    }
+
+    public function createDataTablesStateQueryBuilder(\Doctrine\ORM\QueryBuilder $qb, $state, \DateTime $from, \DateTime $to)
+    {
+        $qb->select('u')
+           ->from(\App\Entity\Emergencia::class, 'u')
+           ->innerJoin('u.altaMedica', 'a')
+           ->where('u.status = :sts')
+           ->andWhere('u.estado = :estado')
+           ->andWhere('a.condicionAlta = :state')
+           ->andWhere('u.fechaIngreso between :from AND :to')
+           ->setParameter('sts', $this->getEntityManager()->getRepository(\App\Entity\StatusRecord::class)->getActive())
+           ->setParameter('estado', \App\Enum\EmergenciasEstados::DISCHARGED)
+           ->setParameter('state', $state)
+           ->setParameter('from', $from)
+           ->setParameter('to', $to);
+    }
 }
+

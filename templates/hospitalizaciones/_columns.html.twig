@@ -1,0 +1,37 @@
+{% if column.name == 'id' %}
+    <strong>#{{ row.id }}</strong>
+
+{% elseif column.name == 'fechaIngreso' %}
+    {{ row.fechaIngreso|date('d/m/Y H:i A') }}<br>
+    {% if row.fechaEgreso %}
+        <small class="text-muted">Alta: {{ row.fechaEgreso|date('d/m/Y H:i A') }}</small>
+    {% endif %}
+
+{% elseif column.name == 'paciente' %}
+    <strong>{{ row.paciente.nombre }} {{ row.paciente.apellido }}</strong><br>
+    <small class="text-muted">{{ row.paciente.tipoDocumento }} - {{ row.paciente.cedula|number_format(0, ',', '.') }}</small>
+
+{% elseif column.name == 'medicoTratante' %}
+    {% if row.medicoTratante %}
+        Dr(a). {{ row.medicoTratante.internalProfile.nombre }}
+    {% else %}
+        <span class="text-muted fst-italic">Sin asignar</span>
+    {% endif %}
+
+{% elseif column.name == 'estado' %}
+    {% if row.estado.value == 'discharged' %}
+        <span class="badge bg-secondary"><i class="bi bi-check-all"></i> Alta Medica</span>
+    {% elseif row.estado.value == 'pending_bed' %}
+        <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Pendiente</span>
+    {% else %}
+        <span class="badge bg-success"><i class="bi bi-heart-pulse"></i> Ingresado</span>
+    {% endif %}
+
+{% elseif column.name == 'accion' %}
+    <a href="{{ path('app_hospitalizacion_expediente', {'id': row.id}) }}" class="btn btn-outline-primary btn-sm shadow-sm">
+        <i class="bi bi-folder2-open"></i> Ver Expediente
+    </a>
+
+{% else %}
+    {{ value }}
+{% endif %}

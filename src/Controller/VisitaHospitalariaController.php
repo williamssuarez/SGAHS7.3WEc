@@ -29,16 +29,26 @@ final class VisitaHospitalariaController extends AbstractController
     }
 
     #[Route('/historial', name: 'app_visita_hospitalaria_historial', methods: ['GET', 'POST'])]
-    public function historial(Request $request, VisitaHospitalariaRepository $visitaRepo, EntityManagerInterface $em): Response
+    public function historial(Request $request, \Omines\DataTablesBundle\DataTableFactory $dataTableFactory): Response
     {
-        $startDate = new \DateTime($request->request->get('start_date', 'today'));
-        $endDate = new \DateTime($request->request->get('end_date', 'today'));
+        $startDate = $request->query->get('start_date')
+            ? new \DateTime($request->query->get('start_date'))
+            : new \DateTime('today');
+        $endDate = $request->query->get('end_date')
+            ? new \DateTime($request->query->get('end_date'))
+            : new \DateTime('today');
 
-        $status = $em->getRepository(StatusRecord::class)->getActive();
-        $visits = $visitaRepo->getHistoricalVisitsByDate($startDate, $endDate, $status);
+        $table = $dataTableFactory->createFromType(\App\DataTable\Type\VisitaHospitalariaTableType::class, [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ], ['pageLength' => 5])->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
+        }
 
         return $this->render('visita_hospitalaria/historial.html.twig', [
-            'visits' => $visits,
+            'datatable' => $table,
             'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y-m-d'),
         ]);
@@ -69,7 +79,7 @@ final class VisitaHospitalariaController extends AbstractController
         return $this->redirectToRoute('app_visitas_registrar', ['id' => $hospitalizacion->getId()]);
     }
 
-    #[Route('/{id}/registrar-visita', name: 'app_visitas_registrar', methods: ['GET', 'POST'])]
+    #[Route('/{id<\d+>}/registrar-visita', name: 'app_visitas_registrar', methods: ['GET', 'POST'])]
     public function registrarVisita(Request $request, Hospitalizaciones $hospitalizacion, EntityManagerInterface $em, \App\Repository\HorarioVisitasRepository $horarioRepository): Response
     {
         $this->denyAccessUnlessGranted('ROLE_RECEPTIONIST');
@@ -118,7 +128,7 @@ final class VisitaHospitalariaController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/marcar-salida', name: 'app_visitas_marcar_salida', methods: ['POST'])]
+    #[Route('/{id<\d+>}/marcar-salida', name: 'app_visitas_marcar_salida', methods: ['POST'])]
     public function marcarSalida(Request $request, VisitaHospitalaria $visita, EntityManagerInterface $em): Response
     {
         // 1. Security Check
@@ -147,7 +157,7 @@ final class VisitaHospitalariaController extends AbstractController
         return $this->redirectToRoute('app_visita_hospitalaria_index');
     }
 
-    #[Route('/{id}', name: 'app_visita_hospitalaria_show', methods: ['GET'])]
+    #[Route('/{id<\d+>}', name: 'app_visita_hospitalaria_show', methods: ['GET'])]
     public function show(VisitaHospitalaria $visitaHospitalarium): Response
     {
         return $this->render('visita_hospitalaria/show.html.twig', [
@@ -155,7 +165,7 @@ final class VisitaHospitalariaController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_visita_hospitalaria_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id<\d+>}/edit', name: 'app_visita_hospitalaria_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, VisitaHospitalaria $visitaHospitalarium, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(VisitaHospitalariaType::class, $visitaHospitalarium);
@@ -173,7 +183,7 @@ final class VisitaHospitalariaController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_visita_hospitalaria_delete', methods: ['POST'])]
+    #[Route('/{id<\d+>}', name: 'app_visita_hospitalaria_delete', methods: ['POST'])]
     public function delete(Request $request, VisitaHospitalaria $visitaHospitalarium, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$visitaHospitalarium->getId(), $request->getPayload()->getString('_token'))) {
@@ -186,3 +196,6 @@ final class VisitaHospitalariaController extends AbstractController
         return $this->redirectToRoute('app_visita_hospitalaria_index', [], Response::HTTP_SEE_OTHER);
     }
 }
+
+
+

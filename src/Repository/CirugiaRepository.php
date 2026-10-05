@@ -60,4 +60,22 @@ class CirugiaRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function createDataTablesQueryBuilder(\Doctrine\ORM\QueryBuilder $qb, \DateTime $start, \DateTime $end, ?\App\Enum\CirugiaEstados $estado = null)
+    {
+        $qb->select('c')
+           ->from(\App\Entity\Cirugia::class, 'c')
+           ->where('c.status = :sts')
+           ->andWhere('c.fechaHoraProgramada >= :start')
+           ->andWhere('c.fechaHoraProgramada <= :end')
+           ->setParameter('sts', $this->getEntityManager()->getRepository(\App\Entity\StatusRecord::class)->getActive())
+           ->setParameter('start', $start->format('Y-m-d 00:00:00'))
+           ->setParameter('end', $end->format('Y-m-d 23:59:59'));
+
+        if ($estado !== null) {
+            $qb->andWhere('c.estado = :estado')
+               ->setParameter('estado', $estado);
+        }
+    }
 }
+

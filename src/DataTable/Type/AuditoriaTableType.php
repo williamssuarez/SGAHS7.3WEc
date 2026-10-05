@@ -28,6 +28,8 @@ class AuditoriaTableType implements DataTableTypeInterface
                 'template' => 'auditoria/_columns.html.twig',
                 'className' => 'align-middle',
                 'field' => 'u.id',
+                'searchable' => false,
+                'globalSearchable' => false,
             ])
             ->add('tipoAudit', TwigColumn::class, [
                 'label' => 'Tipo',

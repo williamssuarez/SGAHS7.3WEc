@@ -75,8 +75,8 @@ final class EmergenciaController extends AbstractController
         ]);
     }
 
-    #[Route('/listado', name: 'app_emergencia_listado', methods: ['GET'])]
-    public function listado(Request $request, EmergenciaRepository $emergenciaRepository): Response
+    #[Route('/listado', name: 'app_emergencia_listado', methods: ['GET', 'POST'])]
+    public function listado(Request $request, \Omines\DataTablesBundle\DataTableFactory $dataTableFactory): Response
     {
         // Default values: today and 'expected' state
         $today = new \DateTime('now');
@@ -89,16 +89,20 @@ final class EmergenciaController extends AbstractController
             ? new \DateTime($request->query->get('endDate'))
             : clone $today->setTime(23, 59, 59);
 
-        $state = $request->query->get('state', EmergenciasCondicionAlta::SENT_HOME->value);
+        $state = $request->query->get('state', \App\Enum\EmergenciasCondicionAlta::SENT_HOME->value);
 
-        if ($state == 'all'){
-            $entities = $emergenciaRepository->getActivesforTableByDateOnly($startDate, $endDate);
-        } else {
-            $entities = $emergenciaRepository->getActivesforTableByState($state, $startDate, $endDate);
+        $table = $dataTableFactory->createFromType(\App\DataTable\Type\EmergenciaTableType::class, [
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'state' => $state,
+        ], ['pageLength' => 5])->handleRequest($request);
+
+        if ($table->isCallback()) {
+            return $table->getResponse();
         }
 
         return $this->render('emergencia/listado.html.twig', [
-            'entities' => $entities,
+            'datatable' => $table,
             'currentState' => $state,
             'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y-m-d'),
@@ -733,3 +737,4 @@ final class EmergenciaController extends AbstractController
         ]);
     }
 }
+

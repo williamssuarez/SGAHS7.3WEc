@@ -1,4 +1,4 @@
-﻿{% extends 'base.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Historial de Hospitalizaciones{% endblock %}
 
@@ -21,12 +21,8 @@
     {% endfor %}
     <div class="container-fluid px-4">
         <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
-            <h2 class="text-dark fw-bold">
-                <i class="bi bi-clock-history"></i> Historial General de Hospitalizaciones
-            </h2>
-            <span class="badge bg-secondary fs-6 rounded-pill">
-            {{ entities|length }} Registros
-        </span>
+            <h2 class="text-dark fw-bold m-0"><i class="bi bi-clock-history"></i> Historial General de Hospitalizaciones</h2>
+            
         </div>
 
         <form method="get" action="{{ path('app_hospitalizacion_index') }}" class="row g-3 mb-4">
@@ -56,73 +52,21 @@
             </div>
         </form>
 
-        <div class="card shadow-sm border-top border-primary border-4">
+        <div class="card shadow-sm border-top border-primary border-4"><div class="card-header d-flex justify-content-between align-items-center"><h3 class="card-title m-0">Resultados</h3><span class="text-muted small ms-auto"><i class="bi bi-info-circle"></i> Puedes buscar por <strong>Paciente o Medico Tratante</strong></span></div>
             <div class="card-body p-0">
-                {% if entities is empty %}
-                    <div class="text-center p-5">
-                        <i class="bi bi-folder-x text-muted display-1 mb-3"></i>
-                        <h4 class="text-muted">No hay hospitalizaciones registradas</h4>
-                        <p class="text-muted">El historial histórico está vacío.</p>
-                    </div>
-                {% else %}
+                
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0 dtHere">
-                            <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Fecha Ingreso</th>
-                                <th>Paciente</th>
-                                <th>Médico Tratante</th>
-                                <th>Estado</th>
-                                <th class="text-end">Acción</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for hospitalizacion in entities %}
-                                <tr>
-                                    <td>
-                                        <strong>#{{ hospitalizacion.id }}</strong>
-                                    </td>
-                                    <td>
-                                        {{ hospitalizacion.fechaIngreso|date('d/m/Y H:i A') }}<br>
-                                        {% if hospitalizacion.fechaEgreso %}
-                                            <small class="text-muted">Alta: {{ hospitalizacion.fechaEgreso|date('d/m/Y H:i A') }}</small>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <strong>{{ hospitalizacion.paciente.nombre }} {{ hospitalizacion.paciente.apellido }}</strong><br>
-                                        <small class="text-muted">{{ hospitalizacion.paciente.tipoDocumento }} - {{ hospitalizacion.paciente.cedula|number_format(0, ',', '.') }}</small>
-                                    </td>
-                                    <td>
-                                        {% if hospitalizacion.medicoTratante %}
-                                            Dr(a). {{ hospitalizacion.medicoTratante.internalProfile.nombre }}
-                                        {% else %}
-                                            <span class="text-muted fst-italic">Sin asignar</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if hospitalizacion.estado.value == 'discharged' %}
-                                            <span class="badge bg-secondary"><i class="bi bi-check-all"></i> Alta Médica</span>
-                                        {% elseif hospitalizacion.estado.value == 'pending_bed' %}
-                                            <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Pendiente</span>
-                                        {% else %}
-                                            <span class="badge bg-success"><i class="bi bi-heart-pulse"></i> Ingresado</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-end">
-                                        <a href="{{ path('app_hospitalizacion_expediente', {'id': hospitalizacion.id}) }}" class="btn btn-outline-primary btn-sm shadow-sm">
-                                            <i class="bi bi-folder2-open"></i> Ver Expediente
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                        <div class="dtHereServer table-responsive" data-dt-config="{{ datatable_settings(datatable)|escape('html_attr') }}">Cargando registros...</div>
                     </div>
-                {% endif %}
+                
             </div>
         </div>
     </div>
 {% endblock %}
+
+
+
+
+
 
 

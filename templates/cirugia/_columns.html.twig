@@ -1,0 +1,30 @@
+{% if column.name == 'fechaHora' %}
+    <span class="d-none">{{ row.fechaHoraProgramada|date('Y-m-d H:i') }}</span>
+    <div class="fw-bold">{{ row.fechaHoraProgramada|date('d/m/Y') }}</div>
+    <small class="text-muted">{{ row.fechaHoraProgramada|date('h:i A') }}</small>
+
+{% elseif column.name == 'paciente' %}
+    {{ row.paciente.nombre }} {{ row.paciente.apellido }}
+
+{% elseif column.name == 'cedula' %}
+    {{ row.paciente.tipoDocumento }} - {{ row.paciente.cedula|number_format(0, ',', '.') }}
+
+{% elseif column.name == 'procedimiento' %}
+    {{ row.procedimientoPropuesto }}
+    <br><small class="text-muted">Dr(a). {{ row.cirujanoPrincipal.nombre }}</small>
+
+{% elseif column.name == 'quirofano' %}
+    {{ row.quirofano ? row.quirofano.nombre : '<span class="text-muted">N/A</span>'|raw }}
+
+{% elseif column.name == 'estado' %}
+    {% set badge = row.cirugiaEstadosBadgeConfig %}
+    <span class="badge {{ badge.class }} shadow-sm px-2 py-1">{{ badge.label }}</span>
+
+{% elseif column.name == 'acciones' %}
+    <a class="btn btn-sm btn-outline-primary" href="{{ path('app_cirugia_show', {'id': row.id}) }}" title="Ver Detalles">
+        <i class="bi bi-eye-fill"></i> Detalles
+    </a>
+
+{% else %}
+    {{ value }}
+{% endif %}
