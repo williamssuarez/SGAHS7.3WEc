@@ -73,6 +73,10 @@ class Paciente
     #[Gedmo\Versioned]
     private ?bool $fallecido = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Gedmo\Versioned]
+    private ?\DateTimeInterface $fechaFallecimiento = null;
+
     #[ORM\Column(length: 255)]
     #[Gedmo\Versioned]
     private ?string $tipoDocumento = null;
@@ -348,6 +352,18 @@ class Paciente
     public function setSexo(string $sexo): static
     {
         $this->sexo = $sexo;
+
+        return $this;
+    }
+
+    public function getFechaFallecimiento(): ?\DateTimeInterface
+    {
+        return $this->fechaFallecimiento;
+    }
+
+    public function setFechaFallecimiento(?\DateTimeInterface $fechaFallecimiento): static
+    {
+        $this->fechaFallecimiento = $fechaFallecimiento;
 
         return $this;
     }

@@ -18,10 +18,25 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CamaController extends AbstractController
 {
     #[Route(name: 'app_cama_index', methods: ['GET'])]
-    public function index(CamaRepository $camaRepository): Response
+    public function index(CamaRepository $camaRepository, \App\Repository\ZonaCamaRepository $zonaCamaRepository): Response
     {
+        $zonas = $zonaCamaRepository->getActivesforTable();
+        $camas = $camaRepository->getActivesforTable();
+
+        $camasAgrupadas = [];
+        foreach ($zonas as $zona) {
+            $camasAgrupadas[$zona->getId()] = [];
+        }
+
+        foreach ($camas as $cama) {
+            if ($cama->getZona() && isset($camasAgrupadas[$cama->getZona()->getId()])) {
+                $camasAgrupadas[$cama->getZona()->getId()][] = $cama;
+            }
+        }
+
         return $this->render('cama/index.html.twig', [
-            'entities' => $camaRepository->getActivesforTable(),
+            'zonas' => $zonas,
+            'camasAgrupadas' => $camasAgrupadas,
         ]);
     }
 

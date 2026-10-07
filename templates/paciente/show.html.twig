@@ -20,6 +20,37 @@
             </div>
         {% endfor %}
     {% endfor %}
+    
+    {% if paciente.fallecido %}
+        <div class="alert alert-danger shadow-sm border-danger border-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="alert-heading fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-2"></i> ALERTA CLÍNICA</h4>
+                    <p class="mb-0 fs-5">
+                        Este paciente fue registrado como fallecido
+                        {% if paciente.fechaFallecimiento %}
+                            el <strong>{{ paciente.fechaFallecimiento|date('d/m/Y h:i A') }}</strong>.
+                        {% else %}
+                            en un proceso clínico.
+                        {% endif %}
+                    </p>
+                </div>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <form action="{{ path('app_paciente_anular_fallecimiento', {'id': paciente.id}) }}" 
+                          method="POST" 
+                          data-controller="revoke-death" 
+                          data-action="submit->revoke-death#confirm" 
+                          data-revoke-death-patient-name-value="{{ paciente.nombre ~ ' ' ~ paciente.apellido }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('revoke_death' ~ paciente.id) }}">
+                        <button type="submit" class="btn btn-outline-danger fw-bold">
+                            <i class="bi bi-arrow-counterclockwise"></i> Revocar por Error
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
     <div class="row">
         <div class="col-md-12">
             <div class="card card-primary card-outline">
@@ -140,9 +171,15 @@
                             </div>
                             
                             <div class="col-md-12">
-                                <a class="btn btn-success form-control" href="{{ path('app_paciente_edit', {'id': paciente.id }) }}">
-                                    <i class="bi bi-pencil-square"></i> Editar
-                                </a>
+                                {% if not paciente.fallecido %}
+                                    <a class="btn btn-success form-control" href="{{ path('app_paciente_edit', {'id': paciente.id }) }}">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-secondary form-control" disabled>
+                                        <i class="bi bi-pencil-square"></i> Editar (Paciente Fallecido)
+                                    </button>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

@@ -69,6 +69,7 @@ enum AuditTipos: string
     case SYSTEM_DATABASE_IMPORT = 'system_database_import';
     case PATIENT_LINK_CODE_GENERATED = 'patient_link_code_generated';
     case PATIENT_WEB_LINKED = 'patient_web_linked';
+    case DEATH_STATUS_REVOKED = 'death_status_revoked';
 
     /**
      * Retorna un texto amigable para el usuario final.
@@ -136,6 +137,7 @@ enum AuditTipos: string
             self::SYSTEM_DATABASE_IMPORT => 'Sistema: Importación de Base de Datos',
             self::PATIENT_LINK_CODE_GENERATED => 'Generación de Código Web',
             self::PATIENT_WEB_LINKED => 'Vinculación de Cuenta Web',
+            self::DEATH_STATUS_REVOKED => 'Revocación de Estado de Fallecimiento',
         };
     }
 

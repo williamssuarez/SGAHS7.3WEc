@@ -12,6 +12,7 @@ use App\Entity\VisitaHospitalaria;
 use App\Enum\AuditTipos;
 use App\Enum\CamaEstados;
 use App\Enum\EmergenciasEstados;
+use App\Enum\HospitalizacionCondicionAlta;
 use App\Enum\HospitalizacionEstados;
 use App\Enum\IndicacionMedicaEstado;
 use App\Form\AltaHospitalariaType;
@@ -223,6 +224,13 @@ final class HospitalizacionController extends AbstractController
             // 1. Update Hospitalization metadata
             $hospitalizacion->setEstado(HospitalizacionEstados::DISCHARGED);
             $hospitalizacion->setFechaEgreso(new \DateTime());
+
+            if ($hospitalizacion->getCondicionAlta() === HospitalizacionCondicionAlta::DECEASED) {
+                $paciente = $hospitalizacion->getPaciente();
+                $paciente->setFallecido(true);
+                $paciente->setFechaFallecimiento($hospitalizacion->getFechaMuerte());
+                $em->persist($paciente);
+            }
 
             // If you used the unmapped field for instructions, you'd save it here,
             // perhaps appending it to the diagnostic text or saving to a specific column.

@@ -96,6 +96,12 @@ class PacienteRepository extends ServiceEntityRepository
                 )
             )
             ->andWhere('p.status = :sts')
+            ->andWhere(
+                $qb->expr()->orX(
+                    'p.fallecido = false',
+                    'p.fallecido IS NULL'
+                )
+            )
             ->setParameter('search', '%' . $search . '%')
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
 

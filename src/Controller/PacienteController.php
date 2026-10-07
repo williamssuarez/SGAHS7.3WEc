@@ -169,6 +169,11 @@ final class PacienteController extends AbstractController
             return $this->redirectToRoute('app_paciente_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        if ($paciente->isFallecido()) {
+            $this->addFlash('danger', 'No se puede editar un paciente que ha fallecido.');
+            return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()]);
+        }
+
         $form = $this->createForm(PacienteType::class, $paciente);
         $form->handleRequest($request);
 
@@ -204,6 +209,30 @@ final class PacienteController extends AbstractController
             'paciente' => $paciente,
             'form' => $form,
         ]);
+    }
+
+    #[Route('/{id}/anular-fallecimiento', name: 'app_paciente_anular_fallecimiento', methods: ['POST'])]
+    public function anularFallecimiento(Request $request, Paciente $paciente, EntityManagerInterface $entityManager, \App\Service\AuditService $auditService): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        if ($this->isCsrfTokenValid('revoke_death'.$paciente->getId(), $request->getPayload()->getString('_token'))) {
+            $motivo = $request->getPayload()->getString('motivo_revocacion', 'Sin motivo especificado.');
+
+            $paciente->setFallecido(false);
+            $paciente->setFechaFallecimiento(null);
+
+            $auditService->persistAudit(
+                tipo: \App\Enum\AuditTipos::DEATH_STATUS_REVOKED,
+                mensaje: 'Se revoco el estado de defuncion por error de carga. Motivo: ' . $motivo,
+                paciente: $paciente
+            );
+
+            $entityManager->flush();
+            $this->addFlash('success', 'El estado de fallecimiento ha sido revocado exitosamente.');
+        }
+
+        return $this->redirectToRoute('app_paciente_show', ['id' => $paciente->getId()], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}', name: 'app_paciente_delete', methods: ['POST'])]

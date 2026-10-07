@@ -648,6 +648,10 @@ final class EmergenciaController extends AbstractController
                     break;
 
                 case EmergenciasCondicionAlta::DECEASED:
+                    $paciente = $emergencia->getPaciente();
+                    $paciente->setFallecido(true);
+                    $paciente->setFechaFallecimiento($alta->getFechaMuerte());
+                    $em->persist($paciente);
                     // Wipe irrelevant data
                     $alta->setHospitalDestino(null);
                     $alta->setMotivoTraslado(null);

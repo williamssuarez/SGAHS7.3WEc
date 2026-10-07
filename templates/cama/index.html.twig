@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Camas{% endblock %}
+{% block title %}Hospital Bed Map{% endblock %}
 
 {% block titlewrap %}
-    Camas
+    Dashboard de Camas
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item active" aria-current="page">Camas</li>
+    <li class="breadcrumb-item active" aria-current="page">Dashboard de Camas</li>
 {% endblock %}
 
 {% block body %}
@@ -19,117 +19,149 @@
             </div>
         {% endfor %}
     {% endfor %}
+
     <div class="card card-primary card-outline mb-4">
-        <div class="card-header">
-            <h3 class="card-title">Camas</h3>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0">Mapa de Camas por Zona</h3>
+            <div class="card-tools">
+                <a href="{{ path('app_zona_cama_index') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-geo"></i> Gestor de Zonas</a>
+                <a href="{{ path('app_cama_new') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle"></i> Nueva Cama</a>
+            </div>
         </div>
-
+        
         <div class="card-body">
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>Codigo</th>
-                    <th>Zona</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in entities %}
-                    <tr class="align-middle">
-                        <td>{{ entity.codigo }}</td>
-                        <td>{{ entity.zona }}</td>
-                        <td>
-                            {% set badge = entity.estadosBadgeConfig %}
-                            <span class="badge rounded-pill {{ badge.class }}">
-                                    {{ badge.label }}
-                            </span>
-                        </td>
-                        <td>
-                            {#<a class="btn btn-secondary" href="{{ path('app_cama_show', {'id': entity.id}) }}">Detalles</a>#}
-                            {% if entity.estado.value != 'ocupied' %}
-                                <a class="btn btn-success" href="{{ path('app_cama_edit', {'id': entity.id}) }}">Editar</a>
-
-                                {% if entity.estado.value == 'available' %}
-                                    <form action="{{ path('app_cama_cleaning', {'id': entity.id}) }}"
-                                          method="POST"
-                                          data-controller="confirm-finalizar"
-                                          data-action="submit->confirm-finalizar#confirm"
-                                          data-confirm-finalizar-title-value="¿Solicitar Limpieza?"
-                                          data-confirm-finalizar-text-value="¿Desea solicitar la limpieza? Esto no permitirá que sea elegible para emergencias."
-                                          data-confirm-finalizar-confirm-button-text-value="Sí, solicitar limpieza"
-                                          class="d-inline">
-
-                                        <button type="submit" class="btn btn-warning">
-                                            <i class="fa-solid fa-broom"></i> Solicitar Limpieza
-                                        </button>
-                                    </form>
-                                    <form action="{{ path('app_cama_maintenance', {'id': entity.id}) }}"
-                                          method="POST"
-                                          data-controller="confirm-finalizar"
-                                          data-action="submit->confirm-finalizar#confirm"
-                                          data-confirm-finalizar-title-value="¿Mandar a Mantenimiento?"
-                                          data-confirm-finalizar-text-value="¿Desea mandar la cama a mantenimiento? Esto no permitirá que sea elegible para emergencias."
-                                          data-confirm-finalizar-confirm-button-text-value="Sí, mandar a Mantenimiento"
-                                          class="d-inline">
-
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="bi bi-x-circle"></i> Mandar a Mantenimiento
-                                        </button>
-                                    </form>
-                                {% elseif entity.estado.value == 'cleaning' %}
-                                    <form action="{{ path('app_cama_finish_cleaning', {'id': entity.id}) }}"
-                                          method="POST"
-                                          data-controller="confirm-finalizar"
-                                          data-action="submit->confirm-finalizar#confirm"
-                                          data-confirm-finalizar-title-value="¿Finalizar la Limpieza?"
-                                          data-confirm-finalizar-text-value="Si la cama ya esta limpia puede finalizar la limpieza y la cama estará disponible para que sea elegible para emergencias."
-                                          data-confirm-finalizar-confirm-button-text-value="Sí, finalizar"
-                                          class="d-inline">
-
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="fa-solid fa-broom"></i> Finalizar Limpieza
-                                        </button>
-                                    </form>
-                                    <form action="{{ path('app_cama_maintenance', {'id': entity.id}) }}"
-                                          method="POST"
-                                          data-controller="confirm-finalizar"
-                                          data-action="submit->confirm-finalizar#confirm"
-                                          data-confirm-finalizar-title-value="¿Mandar a Mantenimiento?"
-                                          data-confirm-finalizar-text-value="¿Desea mandar la cama a mantenimiento? Esto no permitirá que sea elegible para emergencias."
-                                          data-confirm-finalizar-confirm-button-text-value="Sí, mandar a Mantenimiento"
-                                          class="d-inline">
-
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="bi bi-x-circle"></i> Mandar a Mantenimiento
-                                        </button>
-                                    </form>
-                                {% elseif entity.estado.value == 'maintenance' %}
-                                    <form action="{{ path('app_cama_reactivate', {'id': entity.id}) }}"
-                                          method="POST"
-                                          data-controller="confirm-finalizar"
-                                          data-action="submit->confirm-finalizar#confirm"
-                                          data-confirm-finalizar-title-value="¿Reactivar la Cama?"
-                                          data-confirm-finalizar-text-value="La cama estará disponible para que sea elegible para emergencias."
-                                          data-confirm-finalizar-confirm-button-text-value="Sí, reactivar"
-                                          class="d-inline">
-
-                                        <button type="submit" class="btn btn-success">
-                                            <i class="fa-solid fa-screwdriver"></i> Reactivar Cama
-                                        </button>
-                                    </form>
-                                {% endif %}
-
-                            {% endif %}
-                        </td>
-                    </tr>
+            <!-- Nav Tabs -->
+            <ul class="nav nav-tabs" id="zonaTabs" role="tablist">
+                {% for zona in zonas %}
+                    {% set ocupadas = 0 %}
+                    {% set total_zona = camasAgrupadas[zona.id]|length %}
+                    {% for cama in camasAgrupadas[zona.id] %}
+                        {% if cama.estado.value == 'ocupied' %}
+                            {% set ocupadas = ocupadas + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% set porcentaje = 0 %}
+                    {% if zona.capacidadMaxima > 0 %}
+                        {% set porcentaje = (ocupadas / zona.capacidadMaxima) * 100 %}
+                    {% endif %}
+                    
+                    {% set badgeColor = 'bg-success' %}
+                    {% if porcentaje > 80 %}
+                        {% set badgeColor = 'bg-danger' %}
+                    {% elseif porcentaje > 50 %}
+                        {% set badgeColor = 'bg-warning text-dark' %}
+                    {% endif %}
+                    
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link {% if loop.first %}active{% endif %}" id="tab-{{ zona.id }}" data-bs-toggle="tab" data-bs-target="#content-{{ zona.id }}" type="button" role="tab" aria-controls="content-{{ zona.id }}" aria-selected="{{ loop.first ? 'true' : 'false' }}">
+                            {{ zona.nombre }}
+                            <span class="badge rounded-pill {{ badgeColor }} ms-1" title="Ocupación: {{ ocupadas }} de {{ zona.capacidadMaxima }}">{{ ocupadas }}/{{ zona.capacidadMaxima }}</span>
+                        </button>
+                    </li>
                 {% endfor %}
-                </tbody>
-            </table>
-        </div>
+            </ul>
 
-        <div class="card-footer clearfix">
-            <a href="{{ path('app_cama_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+            <!-- Tab Contents -->
+            <div class="tab-content pt-4" id="zonaTabsContent">
+                {% for zona in zonas %}
+                    <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="content-{{ zona.id }}" role="tabpanel" aria-labelledby="tab-{{ zona.id }}">
+                        
+                        <div class="row g-3">
+                            {% for entity in camasAgrupadas[zona.id] %}
+                                {% set badge = entity.estadosBadgeConfig %}
+                                <div class="col-xl-3 col-lg-4 col-md-6">
+                                    <div class="card h-100 border shadow-sm">
+                                        <div class="card-header {{ badge.class }} text-white d-flex justify-content-between align-items-center py-2">
+                                            <h5 class="card-title mb-0 fw-bold">
+                                                <i class="bi bi-hospital me-1"></i> {{ entity.codigo }}
+                                            </h5>
+                                            <span class="badge bg-white text-dark">{{ badge.label }}</span>
+                                        </div>
+                                        <div class="card-body text-center p-3">
+                                            {# Visual Icon based on state #}
+                                            {% if entity.estado.value == 'available' %}
+                                                <i class="fa-solid fa-bed text-success" style="font-size: 3rem;"></i>
+                                            {% elseif entity.estado.value == 'ocupied' %}
+                                                <i class="fa-solid fa-bed-pulse text-primary" style="font-size: 3rem;"></i>
+                                            {% elseif entity.estado.value == 'cleaning' %}
+                                                <i class="fa-solid fa-broom text-warning" style="font-size: 3rem;"></i>
+                                            {% elseif entity.estado.value == 'maintenance' %}
+                                                <i class="fa-solid fa-screwdriver-wrench text-danger" style="font-size: 3rem;"></i>
+                                            {% endif %}
+                                            
+                                            {% if entity.estado.value == 'ocupied' %}
+                                                <p class="mt-2 mb-0 small fw-bold">Paciente Asignado</p>
+                                            {% else %}
+                                                <p class="mt-2 mb-0 small text-muted">Sin paciente</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="card-footer bg-light p-2 text-center border-top-0">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Acciones
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow">
+                                                    {% if entity.estado.value != 'ocupied' %}
+                                                        <li><a class="dropdown-item" href="{{ path('app_cama_edit', {'id': entity.id}) }}"><i class="bi bi-pencil-square me-2"></i> Editar</a></li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        
+                                                        {% if entity.estado.value == 'available' %}
+                                                            <li>
+                                                                <form action="{{ path('app_cama_cleaning', {'id': entity.id}) }}" method="POST" data-controller="confirm-finalizar" data-action="submit->confirm-finalizar#confirm" data-confirm-finalizar-title-value="¿Solicitar Limpieza?" data-confirm-finalizar-text-value="Esto no permitirá que sea elegible para emergencias." data-confirm-finalizar-confirm-button-text-value="Sí, solicitar" class="dropdown-item p-0">
+                                                                    <button type="submit" class="btn btn-link text-warning text-decoration-none w-100 text-start px-3 py-1"><i class="fa-solid fa-broom me-2"></i> Solicitar Limpieza</button>
+                                                                </form>
+                                                            </li>
+                                                            <li>
+                                                                <form action="{{ path('app_cama_maintenance', {'id': entity.id}) }}" method="POST" data-controller="confirm-finalizar" data-action="submit->confirm-finalizar#confirm" data-confirm-finalizar-title-value="¿Mandar a Mantenimiento?" data-confirm-finalizar-text-value="Esto no permitirá que sea elegible para emergencias." data-confirm-finalizar-confirm-button-text-value="Sí, mantenimiento" class="dropdown-item p-0">
+                                                                    <button type="submit" class="btn btn-link text-danger text-decoration-none w-100 text-start px-3 py-1"><i class="bi bi-tools me-2"></i> Mantenimiento</button>
+                                                                </form>
+                                                            </li>
+                                                        {% elseif entity.estado.value == 'cleaning' %}
+                                                            <li>
+                                                                <form action="{{ path('app_cama_finish_cleaning', {'id': entity.id}) }}" method="POST" data-controller="confirm-finalizar" data-action="submit->confirm-finalizar#confirm" data-confirm-finalizar-title-value="¿Finalizar Limpieza?" data-confirm-finalizar-text-value="La cama estará disponible nuevamente." data-confirm-finalizar-confirm-button-text-value="Sí, finalizar" class="dropdown-item p-0">
+                                                                    <button type="submit" class="btn btn-link text-success text-decoration-none w-100 text-start px-3 py-1"><i class="fa-solid fa-check-circle me-2"></i> Finalizar Limpieza</button>
+                                                                </form>
+                                                            </li>
+                                                            <li>
+                                                                <form action="{{ path('app_cama_maintenance', {'id': entity.id}) }}" method="POST" data-controller="confirm-finalizar" data-action="submit->confirm-finalizar#confirm" data-confirm-finalizar-title-value="¿Mandar a Mantenimiento?" data-confirm-finalizar-text-value="Esto no permitirá que sea elegible para emergencias." data-confirm-finalizar-confirm-button-text-value="Sí, mantenimiento" class="dropdown-item p-0">
+                                                                    <button type="submit" class="btn btn-link text-danger text-decoration-none w-100 text-start px-3 py-1"><i class="bi bi-tools me-2"></i> Mantenimiento</button>
+                                                                </form>
+                                                            </li>
+                                                        {% elseif entity.estado.value == 'maintenance' %}
+                                                            <li>
+                                                                <form action="{{ path('app_cama_reactivate', {'id': entity.id}) }}" method="POST" data-controller="confirm-finalizar" data-action="submit->confirm-finalizar#confirm" data-confirm-finalizar-title-value="¿Reactivar Cama?" data-confirm-finalizar-text-value="La cama estará disponible." data-confirm-finalizar-confirm-button-text-value="Sí, reactivar" class="dropdown-item p-0">
+                                                                    <button type="submit" class="btn btn-link text-success text-decoration-none w-100 text-start px-3 py-1"><i class="fa-solid fa-screwdriver me-2"></i> Reactivar Cama</button>
+                                                                </form>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <li><span class="dropdown-item text-muted"><i class="bi bi-lock me-2"></i> Bloqueada (Ocupada)</span></li>
+                                                    {% endif %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="col-12">
+                                    <div class="alert alert-light border text-center p-4">
+                                        <i class="bi bi-hospital fs-1 text-muted mb-3"></i>
+                                        <h5>No hay camas activas registradas en esta zona</h5>
+                                        <p class="text-muted">Añade camas a esta zona para que aparezcan aquí.</p>
+                                        <a href="{{ path('app_cama_new') }}" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Nueva Cama</a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> No hay zonas activas registradas en el sistema. <a href="{{ path('app_zona_cama_new') }}">Crear una zona</a>.
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 {% endblock %}

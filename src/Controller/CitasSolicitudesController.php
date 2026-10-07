@@ -40,12 +40,21 @@ final class CitasSolicitudesController extends AbstractController
 
         return $this->render('citas_solicitudes/index.html.twig', [
             'entities' => $citasSolicitudesRepository->getActivesforTableByPaciente($paciente->getId()),
+            'paciente' => $paciente,
         ]);
     }
 
     #[Route('/new', name: 'app_citas_solicitudes_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $userObj = $entityManager->getRepository(User::class)->findOneBy(['email' => $this->getUser()->getUserIdentifier()]);
+        $paciente = $userObj->getExternalProfile()->getPaciente();
+
+        if ($paciente && $paciente->isFallecido()) {
+            $this->addFlash('danger', 'Por políticas de seguridad, este perfil se encuentra inactivo para solicitudes de nuevas citas médicas debido a notificación de fallecimiento.');
+            return $this->redirectToRoute('app_citas_solicitudes_index', [], Response::HTTP_SEE_OTHER);
+        }
+
         $citasSolicitude = new CitasSolicitudes();
         $form = $this->createForm(CitasSolicitudesType::class, $citasSolicitude);
         $form->handleRequest($request);

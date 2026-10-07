@@ -21,8 +21,11 @@
         {% endfor %}
     {% endfor %}
     <div class="card card-primary card-outline mb-4">
-        <div class="card-header">
-            <h3 class="card-title">Zonas Registrados</h3>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0">Zonas Registradas</h3>
+            <div class="card-tools">
+                <a href="{{ path('app_cama_index') }}" class="btn btn-outline-info btn-sm"><i class="bi bi-map"></i> Ver Mapa de Camas</a>
+            </div>
         </div>
 
         <div class="card-body">

@@ -25,6 +25,12 @@
         </div>
 
         <div class="card-body">
+            {% if paciente and paciente.fallecido %}
+                <div class="alert alert-warning mb-3 shadow-sm">
+                    <i class="bi bi-exclamation-triangle-fill"></i> El titular de esta cuenta fue registrado como fallecido. Podrá consultar el histórico clínico, pero la solicitud de nuevas citas médicas está desactivada.
+                </div>
+            {% endif %}
+
             <table class="table table-striped dtHere">
                 <thead>
                 <tr>
@@ -75,7 +81,9 @@
         </div>
 
         <div class="card-footer clearfix">
-            <a href="{{ path('app_citas_solicitudes_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+            {% if not paciente.fallecido %}
+                <a href="{{ path('app_citas_solicitudes_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
+            {% endif %}
         </div>
     </div>
 
