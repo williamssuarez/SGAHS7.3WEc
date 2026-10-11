@@ -11,6 +11,7 @@
 /vendor/
 /migrations/
 /public/uploads/pacientes/files
+/scratch/
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
