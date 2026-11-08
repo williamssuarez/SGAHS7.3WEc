@@ -4,30 +4,33 @@
     {% for item in items %}
 
         {# ---------------------------------------------------------------- #}
-        {# 0. SECURITY CHECK (New Addition)                                #}
+        {# 0. SECURITY CHECK                                                #}
         {# ---------------------------------------------------------------- #}
         {# If 'roles' is not defined, we assume it's public/shared.         #}
-        {# If 'roles' IS defined, we check against the user_internal's permissions.  #}
+        {# If 'roles' IS defined, we check against the user's permissions.  #}
         {# ---------------------------------------------------------------- #}
 
         {% if item.roles is not defined or is_granted(item.roles) %}
             {# ---------------------------------------------------------------- #}
-            {# 1. CALCULATE ALL DESCENDANT ROUTES (RE-ENHANCED Iterative Approach) #}
+            {# 1. CALCULATE ALL DESCENDANT ROUTES (Including active_routes)     #}
 
-            {% set descendant_routes = item.route is defined ? [item.route] : [] %}
+            {% set descendant_routes = [] %}
+            {% if item.active_routes is defined %}
+                {% set descendant_routes = item.active_routes %}
+            {% elseif item.route is defined %}
+                {% set descendant_routes = [item.route] %}
+            {% endif %}
 
-            {# Only run this complex check if the item is a parent with children #}
+            {# Only run this check if the item is a parent with children #}
             {% if item.children is defined %}
-                {# Use an array stack to manage deep children for the active check #}
                 {% set stack = item.children %}
-
                 {% for child in stack %}
-                    {# If this node has a route, add it to the final list #}
-                    {% if child.route is defined %}
+                    {% if child.active_routes is defined %}
+                        {% set descendant_routes = descendant_routes|merge(child.active_routes) %}
+                    {% elseif child.route is defined %}
                         {% set descendant_routes = descendant_routes|merge([child.route]) %}
                     {% endif %}
 
-                    {# If this node has children, push them onto the stack to process next #}
                     {% if child.children is defined %}
                         {% set stack = stack|merge(child.children) %}
                     {% endif %}
@@ -35,8 +38,7 @@
             {% endif %}
             {# ---------------------------------------------------------------- #}
 
-            {# 2. Determine Activation Classes (Logic remains correct using the complete list) #}
-            {# This check now runs at every level with the complete list of its descendants #}
+            {# 2. Determine Activation Classes #}
             {% if item.children is defined %}
                 {% set active_class = is_tree_active(descendant_routes) %}
             {% else %}
@@ -46,9 +48,26 @@
 
             <li class="nav-item {{ item.children is defined ? 'has-treeview' : '' }} {{ active_class }}">
 
-                {# 3. The Link (Your final fix logic is here) #}
-                <a href="{% if item.route is defined %}{{ path(item.route) }}{% else %}#{% endif %}"
-                   class="nav-link {% if item.route is defined %}{{ is_active(item.route) }}{% endif %}">
+                {# 3. The Link #}
+                {% set target_url = '#' %}
+                {% if item.route is defined %}
+                    {% if item.route == 'app_my_profile' and app.user and app.user.externalProfile is defined and app.user.externalProfile is not null %}
+                        {% set target_url = path('my_profile_show', {'uuid': app.user.externalProfile.uuid}) %}
+                    {% else %}
+                        {% set target_url = path(item.route) %}
+                    {% endif %}
+                {% endif %}
+
+                {% set item_active = '' %}
+                {% if item.active_routes is defined %}
+                    {% set item_active = is_active(item.active_routes) %}
+                {% elseif item.route is defined %}
+                    {% set item_active = is_active(item.route) %}
+                {% endif %}
+
+                <a href="{{ target_url }}"
+                   class="nav-link {{ item_active }}"
+                   data-controller="apple-spring">
 
                     {% if item.icon is defined %}
                         <i class="nav-icon {{ item.icon }}"></i>
@@ -74,21 +93,18 @@
     {% endfor %}
 {% endmacro %}
 
-<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+<aside class="app-sidebar apple-sidebar shadow-sm">
     <!--begin::Sidebar Brand-->
-    <div class="sidebar-brand">
+    <div class="sidebar-brand apple-sidebar-brand">
         <!--begin::Brand Link-->
-        <a href="{{ path('app_dashboard') }}" class="brand-link">
-            <!--begin::Brand Image-->
-            <img
-                src="{{ asset('build/assets/img/AdminLTELogo.png') }}"
-                alt="AdminLTE Logo"
-                class="brand-image opacity-75 shadow"
-            />
-            <!--end::Brand Image-->
-            <!--begin::Brand Text-->
-            <span class="brand-text fw-light">SGAHS</span>
-            <!--end::Brand Text-->
+        <a href="{{ path('app_dashboard') }}" class="brand-link apple-brand-link" data-controller="apple-spring">
+            <div class="apple-brand-icon">
+                <i class="bi bi-heart-pulse-fill"></i>
+            </div>
+            <div class="apple-brand-copy">
+                <span class="brand-text apple-brand-title">SGAHS</span>
+                <span class="apple-brand-subtitle">Salud Hospitalaria</span>
+            </div>
         </a>
         <!--end::Brand Link-->
     </div>
@@ -103,8 +119,7 @@
                 role="menu"
                 data-accordion="false"
             >
-                <li class="nav-header">MODULOS DISPONIBLES</li>
-                {# --- CRITICAL CHANGE: Call the recursive macro --- #}
+                <li class="nav-header apple-nav-header"><span>Módulos del Sistema</span></li>
                 {{ macros.render_menu_items(sidebar_menu) }}
             </ul>
             <!--end::Sidebar Menu-->

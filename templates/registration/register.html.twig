@@ -1,48 +1,144 @@
 {% extends 'registerBase.html.twig' %}
 
+{% block title %}Crear Cuenta | SGAHS{% endblock %}
+
 {% block body %}
-    {% for flash_error in app.flashes('verify_email_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {# Mensajes Flash del Sistema #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="apple-alert apple-alert-{{ label == 'error' or label == 'danger' or label == 'verify_email_error' ? 'danger' : (label == 'success' ? 'success' : 'info') }} mb-3" role="alert">
+                <i class="bi bi-{{ label == 'error' or label == 'danger' or label == 'verify_email_error' ? 'exclamation-circle-fill' : (label == 'success' ? 'check-circle-fill' : 'info-circle-fill') }} flex-shrink-0"></i>
+                <div>{{ message }}</div>
+            </div>
+        {% endfor %}
     {% endfor %}
 
-    {{ form_errors(registrationForm) }}
+    {% if form_errors(registrationForm) %}
+        <div class="apple-alert apple-alert-danger mb-3" role="alert">
+            <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i>
+            <div>{{ form_errors(registrationForm) }}</div>
+        </div>
+    {% endif %}
 
-    {{ form_start(registrationForm) }}
-        {#<div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Full Name" />
-            <div class="input-group-text"><span class="bi bi-person"></span></div>
-        </div>#}
-        <div class="input-group mb-3">
-            {{ form_widget(registrationForm.email) }}
-            <div class="input-group-text">
-                <span class="bi bi-envelope"></span>
+    {{ form_start(registrationForm, {
+        'attr': {
+            'class': 'apple-auth-form',
+            'data-controller': 'submit-once',
+            'data-action': 'submit->submit-once#disable',
+            'data-submit-once-text-value': 'Registrando cuenta...'
+        }
+    }) }}
+
+        <!-- Campo Correo Electrónico -->
+        <div class="apple-form-group mb-3">
+            <label for="{{ registrationForm.email.vars.id }}" class="apple-input-label">Correo Electrónico</label>
+            <div class="apple-input-wrap">
+                <i class="bi bi-envelope-fill apple-input-icon"></i>
+                {{ form_widget(registrationForm.email, {
+                    'attr': {
+                        'class': 'apple-text-input',
+                        'placeholder': 'ejemplo@correo.com',
+                        'autocomplete': 'email'
+                    }
+                }) }}
             </div>
-        </div>
-        <div class="input-group mb-3">
-            {{ form_widget(registrationForm.plainPassword.first) }}
-            <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
-        </div>
-        <div class="input-group mb-3">
-            {{ form_widget(registrationForm.plainPassword.second) }}
-            <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
-        </div>
-        <!--begin::Row-->
-        <div class="row">
-            <div class="col-8">
-                <div class="form-check">
-                    {{ form_widget(registrationForm.agreeTerms) }}
-                    {{form_label( registrationForm.agreeTerms ) }}
+            {% if form_errors(registrationForm.email) %}
+                <div class="apple-field-error">
+                    <i class="bi bi-exclamation-circle"></i>
+                    {{ form_errors(registrationForm.email) }}
                 </div>
-            </div>
-            <!-- /.col -->
-            <div class="col-4">
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Registrar</button>
-                </div>
-            </div>
-            <!-- /.col -->
+            {% endif %}
         </div>
-        <!--end::Row-->
+
+        <!-- Campo Nueva Contraseña -->
+        <div class="apple-form-group mb-3" data-controller="password-toggle">
+            <label for="{{ registrationForm.plainPassword.first.vars.id }}" class="apple-input-label">Contraseña</label>
+            <div class="apple-input-wrap">
+                <i class="bi bi-lock-fill apple-input-icon"></i>
+                {{ form_widget(registrationForm.plainPassword.first, {
+                    'attr': {
+                        'class': 'apple-text-input',
+                        'placeholder': 'Mínimo 12 caracteres',
+                        'autocomplete': 'new-password',
+                        'data-password-toggle-target': 'input'
+                    }
+                }) }}
+                <button type="button" 
+                        class="apple-input-action-btn" 
+                        data-action="click->password-toggle#toggle" 
+                        aria-label="Mostrar u ocultar contraseña"
+                        tabindex="-1">
+                    <i class="bi bi-eye-fill" data-password-toggle-target="icon"></i>
+                </button>
+            </div>
+            {% if form_errors(registrationForm.plainPassword.first) %}
+                <div class="apple-field-error">
+                    <i class="bi bi-exclamation-circle"></i>
+                    {{ form_errors(registrationForm.plainPassword.first) }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Campo Confirmar Contraseña -->
+        <div class="apple-form-group mb-3" data-controller="password-toggle">
+            <label for="{{ registrationForm.plainPassword.second.vars.id }}" class="apple-input-label">Confirmar Contraseña</label>
+            <div class="apple-input-wrap">
+                <i class="bi bi-shield-lock-fill apple-input-icon"></i>
+                {{ form_widget(registrationForm.plainPassword.second, {
+                    'attr': {
+                        'class': 'apple-text-input',
+                        'placeholder': 'Repite tu contraseña',
+                        'autocomplete': 'new-password',
+                        'data-password-toggle-target': 'input'
+                    }
+                }) }}
+                <button type="button" 
+                        class="apple-input-action-btn" 
+                        data-action="click->password-toggle#toggle" 
+                        aria-label="Mostrar u ocultar contraseña"
+                        tabindex="-1">
+                    <i class="bi bi-eye-fill" data-password-toggle-target="icon"></i>
+                </button>
+            </div>
+            {% if form_errors(registrationForm.plainPassword.second) %}
+                <div class="apple-field-error">
+                    <i class="bi bi-exclamation-circle"></i>
+                    {{ form_errors(registrationForm.plainPassword.second) }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Checkbox Términos y Condiciones -->
+        <div class="apple-checkbox-group mb-4">
+            <label class="apple-checkbox-label">
+                {{ form_widget(registrationForm.agreeTerms, {
+                    'attr': {
+                        'class': 'apple-checkbox-input'
+                    }
+                }) }}
+                <span class="apple-checkbox-text">
+                    Acepto los términos de servicio y la política de privacidad de SGAHS.
+                </span>
+            </label>
+            {% if form_errors(registrationForm.agreeTerms) %}
+                <div class="apple-field-error">
+                    <i class="bi bi-exclamation-circle"></i>
+                    {{ form_errors(registrationForm.agreeTerms) }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Botón de Envío con submit_once -->
+        <div class="d-grid mb-2">
+            <button type="submit" 
+                    class="apple-btn btn-apple-primary btn-apple-lg w-100" 
+                    data-controller="apple-spring"
+                    data-submit-once-target="submitButton">
+                <i class="bi bi-person-plus-fill"></i>
+                <span>Crear Cuenta</span>
+            </button>
+        </div>
+
         {{ form_widget(registrationForm.captcha) }}
     {{ form_end(registrationForm) }}
 {% endblock %}

@@ -83,18 +83,42 @@ class PacienteRepository extends ServiceEntityRepository
         return $query->getQuery()->getOneOrNullResult();
     }
 
-    public function findByNombreLike(string $search, int $maxResults = 15): array
+    public function findByNombreLike(?string $search, int $maxResults = 15): array
     {
+        if ($search === null || trim($search) === '') {
+            return [];
+        }
+
+        $search = trim($search);
         $qb = $this->createQueryBuilder('p'); // 'p' for Paciente
 
+        // Dividir la búsqueda en palabras individuales para permitir buscar "Nombre Apellido"
+        $words = preg_split('/\s+/', $search, -1, PREG_SPLIT_NO_EMPTY);
+
+        foreach ($words as $i => $word) {
+            $wordLower = mb_strtolower($word, 'UTF-8');
+            $cleanDigits = preg_replace('/\D/', '', $word);
+
+            $paramWord = 'search_word_' . $i;
+
+            $orConditions = [
+                "LOWER(p.nombre) LIKE :$paramWord",
+                "LOWER(p.apellido) LIKE :$paramWord",
+            ];
+
+            $qb->setParameter($paramWord, '%' . $wordLower . '%');
+
+            // Si la palabra contiene números, permitir búsqueda en cédula (incluso si escribieron 30.525.051 o V-30525051)
+            if ($cleanDigits !== '') {
+                $paramCedula = 'search_cedula_' . $i;
+                $orConditions[] = "p.cedula LIKE :$paramCedula";
+                $qb->setParameter($paramCedula, '%' . $cleanDigits . '%');
+            }
+
+            $qb->andWhere($qb->expr()->orX(...$orConditions));
+        }
+
         return $qb
-            ->where(
-                $qb->expr()->orX(
-                    'p.nombre LIKE :search',
-                    'p.apellido LIKE :search',
-                    'p.cedula LIKE :search'
-                )
-            )
             ->andWhere('p.status = :sts')
             ->andWhere(
                 $qb->expr()->orX(
@@ -102,9 +126,7 @@ class PacienteRepository extends ServiceEntityRepository
                     'p.fallecido IS NULL'
                 )
             )
-            ->setParameter('search', '%' . $search . '%')
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
-
             ->orderBy('p.nombre', 'ASC')
             ->setMaxResults($maxResults)
             ->getQuery()

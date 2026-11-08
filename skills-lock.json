@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "docker-compose-patterns": {
+      "source": "docker/skills",
+      "sourceType": "github",
+      "skillPath": "skills/docker-compose-patterns/SKILL.md",
+      "computedHash": "14140693bc1c11a7b59d2b5528c1cb9cd7501697ceb919bf5e820c33b4faff01"
+    }
+  }
+}

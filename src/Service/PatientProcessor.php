@@ -21,6 +21,16 @@ readonly class PatientProcessor
      */
     public function processFormSubmission(Paciente $paciente, ?UploadedFile $fotoFile): void
     {
+        // Normalización de datos del paciente
+        if ($paciente->getNombre()) {
+            $paciente->setNombre(mb_convert_case(trim(preg_replace('/\s+/', ' ', $paciente->getNombre())), MB_CASE_TITLE, 'UTF-8'));
+        }
+        if ($paciente->getApellido()) {
+            $paciente->setApellido(mb_convert_case(trim(preg_replace('/\s+/', ' ', $paciente->getApellido())), MB_CASE_TITLE, 'UTF-8'));
+        }
+        if ($paciente->getCedula()) {
+            $paciente->setCedula(preg_replace('/\D/', '', (string) $paciente->getCedula()));
+        }
 
         //Verificar Cedula
         $ident = $paciente->getId() ? $paciente->getId() : null;

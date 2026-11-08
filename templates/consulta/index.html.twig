@@ -11,6 +11,8 @@
 {% endblock %}
 
 {% block body %}
+    {% set isPendingView = isPendingView ?? false %}
+
     {% for label, messages in app.flashes %}
         {% for message in messages %}
             <div class="alert alert-{{ label }} alert-dismissible fade show shadow-sm" role="alert">
@@ -19,12 +21,65 @@
             </div>
         {% endfor %}
     {% endfor %}
-    
+
+    {# --- 1. KPI SUMMARY BAR (Only on Pending / Daily Board) --- #}
+    {% if isPendingView %}
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm rounded-4 bg-white h-100">
+                    <div class="card-body p-3 d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; min-width: 48px;">
+                            <i class="fa-solid fa-hourglass-half fa-lg"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small fw-bold text-uppercase d-block">En Sala de Espera</span>
+                            <h4 class="fw-bold mb-0 text-dark">{{ entities|length }} <span class="fs-6 text-muted fw-normal">pacientes</span></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card border-0 shadow-sm rounded-4 bg-white h-100">
+                    <div class="card-body p-3 d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; min-width: 48px;">
+                            <i class="fa-solid fa-calendar-day fa-lg"></i>
+                        </div>
+                        <div>
+                            <span class="text-muted small fw-bold text-uppercase d-block">Citas Hoy por Llegar</span>
+                            <h4 class="fw-bold mb-0 text-dark">{{ citasProgramadas|length }} <span class="fs-6 text-muted fw-normal">pacientes</span></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {# --- 2. SALA DE ESPERA (Pacientes Anunciados / En fila) --- #}
     <div class="card border-0 shadow-sm mb-4 bg-transparent">
-        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center mb-3">
-            <h3 class="card-title fw-bold text-secondary mb-0"><i class="fa-solid fa-person-shelter me-2"></i> Tablero de Pacientes</h3>
+        <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center mb-3 px-0">
+            <h3 class="card-title fw-bold text-secondary mb-0">
+                <i class="fa-solid fa-person-shelter me-2"></i>
+                {% if isPendingView %}
+                    Sala de Espera
+                {% else %}
+                    Tablero de Pacientes
+                {% endif %}
+            </h3>
             
-            <div class="btn-group shadow-sm">
+            <div class="d-flex align-items-center gap-2">
+                {% if isPendingView and (entities|length > 0 or citasProgramadas|length > 0) %}
+                    <button type="button" 
+                            class="btn btn-outline-danger fw-bold shadow-sm"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#modalBatchReassign"
+                            data-total-pacientes="{{ entities|length + citasProgramadas|length }}"
+                            data-origin-doctor-id="{{ doctorProfile ? doctorProfile.id : '' }}"
+                            data-especialidad-id="{{ doctorProfile and doctorProfile.especialidades.count > 0 ? doctorProfile.especialidades.first.id : (entities|length > 0 and entities|first.especialidad ? entities|first.especialidad.id : (citasProgramadas|length > 0 and citasProgramadas|first.especialidad ? citasProgramadas|first.especialidad.id : '')) }}">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i> Declarar Contingencia
+                    </button>
+                {% endif %}
+
+                <div class="btn-group shadow-sm">
                 <button type="button" class="btn btn-success dropdown-toggle fw-bold" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-plus-circle-fill me-1"></i> Nueva Consulta Extra
                 </button>
@@ -42,20 +97,29 @@
                     </li>
                 </ul>
             </div>
+            </div>
         </div>
 
         <div class="card-body p-0">
             {% if entities is empty %}
-                <div class="text-center py-5 bg-white rounded-4 shadow-sm">
-                    <div class="text-muted mb-3"><i class="fa-regular fa-face-smile-wink fa-4x"></i></div>
-                    <h4 class="text-secondary fw-bold">No hay pacientes en fila</h4>
-                    <p class="text-muted">Parece que estas al dia. Tomate un cafe o inicia una nueva consulta extra.</p>
-                </div>
+                {% if isPendingView %}
+                    <div class="text-center py-4 bg-white rounded-4 shadow-sm mb-4">
+                        <div class="text-success mb-2"><i class="fa-regular fa-circle-check fa-3x"></i></div>
+                        <h5 class="text-secondary fw-bold">No hay pacientes esperando en sala</h5>
+                        <p class="text-muted small mb-0">Los pacientes anunciados en recepción aparecerán aquí automáticamente.</p>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+                        <div class="text-muted mb-3"><i class="fa-regular fa-face-smile-wink fa-4x"></i></div>
+                        <h4 class="text-secondary fw-bold">No hay pacientes en fila</h4>
+                        <p class="text-muted">Parece que estás al día. Tómate un café o inicia una nueva consulta extra.</p>
+                    </div>
+                {% endif %}
             {% else %}
-                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 mb-4">
                     {% for entity in entities %}
                         <div class="col">
-                            <div class="card h-100 border-0 shadow-sm rounded-4 hover-shadow transition-all">
+                            <div class="card h-100 border-0 shadow-sm rounded-4 hover-shadow transition-all bg-white">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center mb-3 border-bottom pb-3">
                                         <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
@@ -68,10 +132,10 @@
                                     </div>
                                     
                                     <div class="mb-3">
-                                        <p class="mb-1 text-muted small fw-bold text-uppercase">Informacion de Llegada</p>
+                                        <p class="mb-1 text-muted small fw-bold text-uppercase">Información de Llegada</p>
                                         <div class="d-flex align-items-center text-dark">
                                             <i class="fa-regular fa-clock me-2 text-warning"></i>
-                                            <span class="fw-medium">Llego hace {{ entity.fechaInicio|time_ago }}</span>
+                                            <span class="fw-medium">Llegó hace {{ entity.fechaInicio|time_ago }}</span>
                                         </div>
                                     </div>
                                     
@@ -105,6 +169,18 @@
                                         </a>
                                         
                                         {% if entity.estadoConsulta.value == 'pending' %}
+                                            <button type="button" 
+                                                    class="btn btn-outline-warning" 
+                                                    title="Derivar a otro médico por emergencia"
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#modalReassignDoctor"
+                                                    data-action-url="{{ path('app_consulta_reassign', {'id': entity.id}) }}"
+                                                    data-paciente-nombre="{{ entity.paciente.nombre }} {{ entity.paciente.apellido }}"
+                                                    data-especialidad-id="{{ entity.especialidad ? entity.especialidad.id : '' }}"
+                                                    data-especialidad-nombre="{{ entity.especialidad ? entity.especialidad.nombre : 'General' }}"
+                                                    data-redirect-route="app_consulta_pendientes_index">
+                                                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                                            </button>
                                             <a href="{{ path('app_consulta_cancel', {'id': entity.id}) }}" class="btn btn-outline-danger" title="Cancelar">
                                                 <i class="fa-solid fa-xmark"></i>
                                             </a>
@@ -118,6 +194,143 @@
             {% endif %}
         </div>
     </div>
+
+    {# --- 3. AGENDA DE CITAS DE HOY (Pendientes por Llegar) --- #}
+    {% if isPendingView %}
+        <div class="card border-0 shadow-sm rounded-4 bg-white mb-5">
+            <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; min-width: 44px;">
+                        <i class="fa-solid fa-calendar-day fa-lg"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold text-dark mb-0">Citas Programadas para Hoy (Pendientes por Llegar)</h5>
+                        <small class="text-muted">Pacientes agendados para hoy que aún no han hecho check-in en recepción</small>
+                    </div>
+                </div>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-2 fw-bold fs-6">
+                    <i class="fa-solid fa-calendar-check me-1"></i> {{ citasProgramadas|length }} Citas
+                </span>
+            </div>
+            
+            <div class="card-body p-0">
+                {% if citasProgramadas is empty %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="fa-regular fa-calendar-check fa-3x mb-2 d-block opacity-25"></i>
+                        <h6 class="fw-bold text-secondary">No hay citas programadas pendientes para hoy</h6>
+                        <small class="text-muted">Todas las citas del día han anunciado su llegada o no hay más citas agendadas.</small>
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4 text-secondary small fw-bold text-uppercase">Horario</th>
+                                    <th class="text-secondary small fw-bold text-uppercase">Paciente</th>
+                                    <th class="text-secondary small fw-bold text-uppercase">Especialidad / Sala</th>
+                                    <th class="text-secondary small fw-bold text-uppercase">Motivo de Consulta</th>
+                                    <th class="pe-4 text-end text-secondary small fw-bold text-uppercase">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set currentHour = "now"|date('H:i:s') %}
+                                {% for cita in citasProgramadas %}
+                                    {% set isLate = (cita.horaInicio|date('H:i:s') < currentHour) %}
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center gap-1">
+                                                <strong class="text-dark fs-6">{{ cita.horaInicio|date('h:i A') }}</strong>
+                                                {% if cita.horaFin %}
+                                                    <span class="text-muted small">- {{ cita.horaFin|date('h:i A') }}</span>
+                                                {% endif %}
+                                            </div>
+                                            {% if isLate %}
+                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle mt-1 shadow-sm" title="La hora programada de la cita ya transcurrió">
+                                                    <i class="fa-solid fa-triangle-exclamation me-1"></i> Retrasado
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-info-subtle text-info border border-info-subtle mt-1 shadow-sm">
+                                                    <i class="fa-regular fa-clock me-1"></i> Por llegar
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold" style="width: 42px; height: 42px; min-width: 42px;">
+                                                    {{ cita.paciente.nombre|first|upper }}{{ cita.paciente.apellido|first|upper }}
+                                                </div>
+                                                <div>
+                                                    <a href="{{ path('app_paciente_show', {'id': cita.paciente.id}) }}" class="fw-bold text-dark text-decoration-none hover-primary d-block">
+                                                        {{ cita.paciente.nombre }} {{ cita.paciente.apellido }}
+                                                    </a>
+                                                    <div class="small text-muted d-flex align-items-center gap-2">
+                                                        <span>CI: {{ cita.paciente.cedula|default('N/A') }}</span>
+                                                        {% if cita.paciente.telefono %}
+                                                            <span>•</span>
+                                                            <a href="tel:{{ cita.paciente.telefono }}" class="text-decoration-none text-muted" title="Llamar al paciente">
+                                                                <i class="fa-solid fa-phone text-success small me-1"></i>{{ cita.paciente.telefono }}
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle">
+                                                {{ cita.especialidad ? cita.especialidad.nombre : 'General' }}
+                                            </span>
+                                            {% if cita.consultorio %}
+                                                <span class="badge bg-light text-dark border ms-1">
+                                                    <i class="fa-solid fa-door-open me-1"></i>{{ cita.consultorio.nombre }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="small text-muted text-truncate d-inline-block" style="max-width: 280px;" title="{{ cita.solicitud ? cita.solicitud.motivoConsulta : (cita.observaciones|default('Consulta médica programada')) }}">
+                                                {{ cita.solicitud ? cita.solicitud.motivoConsulta : (cita.observaciones|default('Consulta médica programada')) }}
+                                            </span>
+                                        </td>
+                                        <td class="pe-4 text-end">
+                                            <div class="d-inline-flex gap-2">
+                                                <a href="{{ path('app_citas_show', {'id': cita.id}) }}" class="btn btn-outline-secondary btn-sm" title="Ver detalles de la cita">
+                                                    <i class="fa-regular fa-eye"></i> Detalles
+                                                </a>
+                                                <button type="button" 
+                                                        class="btn btn-outline-warning btn-sm fw-bold"
+                                                        title="Reasignar médico a esta cita"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalReassignDoctor"
+                                                        data-action-url="{{ path('app_citas_reassign', {'id': cita.id}) }}"
+                                                        data-paciente-nombre="{{ cita.paciente.nombre }} {{ cita.paciente.apellido }}"
+                                                        data-especialidad-id="{{ cita.especialidad ? cita.especialidad.id : '' }}"
+                                                        data-especialidad-nombre="{{ cita.especialidad ? cita.especialidad.nombre : 'General' }}"
+                                                        data-redirect-route="app_consulta_pendientes_index">
+                                                    <i class="fa-solid fa-arrow-right-arrow-left me-1"></i> Reasignar
+                                                </button>
+                                                <form action="{{ path('app_citas_checkin', {'id': cita.id}) }}"
+                                                      method="POST"
+                                                      data-controller="confirm-finalizar"
+                                                      data-action="submit->confirm-finalizar#confirm"
+                                                      data-confirm-finalizar-title-value="¿Admitir a Sala de Espera?"
+                                                      data-confirm-finalizar-text-value="¿Confirmas el ingreso de {{ cita.paciente.nombre }} {{ cita.paciente.apellido }}? Se creará su consulta pendiente inmediatamente."
+                                                      data-confirm-finalizar-confirm-button-text-value="Sí, Admitir"
+                                                      class="d-inline">
+                                                    <input type="hidden" name="redirect" value="app_consulta_pendientes_index">
+                                                    <button type="submit" class="btn btn-success btn-sm fw-bold shadow-sm">
+                                                        <i class="fa-solid fa-user-check me-1"></i> Admitir
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
     
     <style>
         .hover-shadow:hover {
@@ -127,5 +340,11 @@
         .transition-all {
             transition: all .3s ease;
         }
+        .hover-primary:hover {
+            color: var(--bs-primary) !important;
+            text-decoration: underline !important;
+        }
     </style>
+
+    {% include 'citas/_reassign_reschedule_modals.html.twig' %}
 {% endblock %}

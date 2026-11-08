@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Cirugia;
+use App\Entity\Quirofano;
 use App\Entity\StatusRecord;
+use App\Enum\CirugiaEstados;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,25 +19,61 @@ class CirugiaRepository extends ServiceEntityRepository
         parent::__construct($registry, Cirugia::class);
     }
 
-    public function findDailySchedule(\DateTime $today)
+    public function findDailySchedule(\DateTimeInterface $today): array
     {
-        $from = clone $today->setTime(0, 0, 0);
-        $to = clone $today->setTime(23, 59, 59);
+        $from = (clone $today)->setTime(0, 0, 0);
+        $to = (clone $today)->setTime(23, 59, 59);
 
-        $qb = $this->createQueryBuilder('u');
+        $activeStates = [
+            CirugiaEstados::EN_SALA,
+            CirugiaEstados::PRE_OP,
+            CirugiaEstados::TRANS_OP,
+            CirugiaEstados::POST_OP,
+        ];
 
-        $query = $qb
-            ->select('u')
+        $qb = $this->createQueryBuilder('c');
 
-            ->where('u.status = :sts')
-            ->andWhere('u.fechaHoraProgramada between :from and :to')
-
+        return $qb
+            ->select('c', 'p', 'q', 'm')
+            ->leftJoin('c.paciente', 'p')
+            ->leftJoin('c.quirofano', 'q')
+            ->leftJoin('c.cirujanoPrincipal', 'm')
+            ->where('c.status = :sts')
+            ->andWhere('(c.fechaHoraProgramada BETWEEN :from AND :to) OR (c.fechaHoraProgramada < :from AND c.estado IN (:activeStates))')
             ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
             ->setParameter('from', $from)
             ->setParameter('to', $to)
-        ;
+            ->setParameter('activeStates', $activeStates)
+            ->orderBy('c.fechaHoraProgramada', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
-        return $query->getQuery()->getResult();
+    public function findActiveSurgeryInQuirofano(Quirofano $room, ?int $excludeCirugiaId = null): ?Cirugia
+    {
+        $activeStates = [
+            CirugiaEstados::EN_SALA,
+            CirugiaEstados::PRE_OP,
+            CirugiaEstados::TRANS_OP,
+            CirugiaEstados::POST_OP,
+        ];
+
+        $qb = $this->createQueryBuilder('c')
+            ->select('c', 'p')
+            ->leftJoin('c.paciente', 'p')
+            ->where('c.quirofano = :room')
+            ->andWhere('c.estado IN (:activeStates)')
+            ->andWhere('c.status = :sts')
+            ->setParameter('room', $room)
+            ->setParameter('activeStates', $activeStates)
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive());
+
+        if ($excludeCirugiaId !== null) {
+            $qb->andWhere('c.id != :currentId')
+               ->setParameter('currentId', $excludeCirugiaId);
+        }
+
+        return $qb->setMaxResults(1)->getQuery()->getOneOrNullResult();
     }
 
     public function getHistoricalCirugiasByDate(\DateTime $start, \DateTime $end, \App\Entity\StatusRecord $status, ?\App\Enum\CirugiaEstados $estado = null): array

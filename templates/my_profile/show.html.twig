@@ -11,132 +11,153 @@
 {% endblock %}
 
 {% block body %}
+<div class="apple-portal-container" data-controller="auto-animate">
     {% for label, messages in app.flashes %}
         {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+            <div class="alert alert-{{ label }} alert-dismissible fade show border-0 rounded-4 shadow-sm" role="alert">
                 <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
     {% endfor %}
-    <div class="alert alert-info text-start small">
-        <i class="bi bi-exclamation-circle-fill"></i> Si cree que alguno de sus datos es incorrecto por favor solicite una cita medica para actualizarlos.
+
+    <div class="alert alert-info text-start small border-0 rounded-4 shadow-sm mb-4">
+        <i class="bi bi-info-circle-fill me-1"></i> Si cree que alguno de sus datos es incorrecto o requiere actualización, por favor solicite una cita médica.
     </div>
 
     {% if paciente is null %}
-        <div class="alert alert-warning text-start">
-            <i class="bi bi-shield-lock-fill"></i> Aún no has vinculado tu cuenta con tu historial clínico en el hospital. 
-            <a href="{{ path('my_profile_link', {'uuid': user.externalProfile.uuid}) }}" class="btn btn-sm btn-primary ms-3">Vincular Ahora</a>
+        <div class="alert alert-warning text-start border-0 rounded-4 shadow-sm d-flex flex-wrap align-items-center justify-content-between p-3 mb-4">
+            <div>
+                <i class="bi bi-shield-lock-fill me-2 text-warning fs-5"></i> 
+                <strong>Cuenta pendiente de vinculación:</strong> Aún no has enlazado este usuario con tu historial clínico hospitalario.
+            </div>
+            <a href="{{ path('my_profile_link', {'uuid': user.externalProfile.uuid}) }}" class="btn btn-primary rounded-pill px-4 mt-2 mt-md-0 shadow-sm" data-controller="apple-spring">
+                <i class="bi bi-link-45deg me-1"></i> Vincular Ahora
+            </a>
         </div>
     {% endif %}
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card card-primary card-outline">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div id="photo-container">
-                                {% if user.externalProfile.foto %}
-                                    {% set full_photo_path = paciente_photo_path ~ user.externalProfile.foto %}
-                                    <img
-                                        src="{{ asset(full_photo_path) | imagine_filter('patient_profile') }}"
-                                        alt="{{ user.externalProfile.nombre }} Profile Photo"
-                                        class="img-fluid"
-                                        style="cursor: pointer; height: auto; border-radius: 0%; width: 100%;"
-                                        data-original="{{ asset(full_photo_path) | imagine_filter('patient_viewer_full') }}"
-                                    >
-                                {% else %}
-                                    <p>No hay foto de perfil cargada.</p>
-                                {% endif %}
-                            </div>
+    <!-- Tarjeta Principal de Identidad del Paciente (Apple Health Profile) -->
+    <div class="apple-card p-3 p-md-4 mb-4">
+        <div class="row g-4 align-items-center">
+            <!-- Columna Foto de Perfil -->
+            <div class="col-12 col-md-4 col-lg-3 text-center text-md-start">
+                <div class="apple-avatar-wrapper shadow-sm mx-auto mx-md-0" style="max-width: 180px;">
+                    {% if user.externalProfile.foto %}
+                        {% set full_photo_path = paciente_photo_path ~ user.externalProfile.foto %}
+                        <img
+                            src="{{ asset(full_photo_path) | imagine_filter('patient_profile') }}"
+                            alt="{{ user.externalProfile.nombre }} Profile Photo"
+                            class="img-fluid"
+                            style="cursor: pointer;"
+                            data-original="{{ asset(full_photo_path) | imagine_filter('patient_viewer_full') }}"
+                        >
+                    {% else %}
+                        <div class="apple-avatar-placeholder">
+                            <i class="bi bi-person-fill"></i>
                         </div>
-                        <div class="col-md-6">
-                            <div class="col-md-12">
-                                <h2>
-                                    {{ user.externalProfile.nombre }} {{ user.externalProfile.apellido }}
-                                    {% if user.externalProfile.sexo == 'M' %}
-                                        <i class="bi bi-gender-male" style="color: #2563EB"></i>
-                                    {% else %}
-                                        <i class="bi bi-gender-female" style="color: darkmagenta"></i>
-                                    {% endif %}
-                                </h2>
+                    {% endif %}
+                </div>
+            </div>
 
-                                <h4>
-                                    {{ user.externalProfile.fechaNacimiento|calculate_age }} año(s) ( {{ user.externalProfile.fechaNacimiento|date('d-m-Y', false) }} )
-                                </h4>
+            <!-- Columna Datos Principales -->
+            <div class="col-12 col-md-8 col-lg-9">
+                <div class="d-flex flex-wrap align-items-baseline gap-2 mb-1">
+                    <h2 class="apple-patient-name mb-0">
+                        {{ user.externalProfile.nombre }} {{ user.externalProfile.apellido }}
+                    </h2>
+                    {% if user.externalProfile.sexo == 'M' %}
+                        <i class="bi bi-gender-male fs-4 text-primary" title="Masculino"></i>
+                    {% else %}
+                        <i class="bi bi-gender-female fs-4 text-danger" title="Femenino"></i>
+                    {% endif %}
+                </div>
 
-                                <h4>
-                                    <span class="badge rounded-pill text-bg-secondary">{{ user.externalProfile.tipoDocumento|title }} - {{ user.externalProfile.nroDocumento|number_format(0, '', '.') }}</span>
-                                </h4>
-                                <h4>
-                                    <span class="badge rounded-pill text-bg-danger">
-                                        <i class="fa-solid fa-droplet"></i>
-                                        {{ user.externalProfile.sangreTipo.readableText }}
-                                    </span>
-                                </h4>
-                            </div>
-                            <div class="accordion" id="accordionExample">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContact" aria-expanded="false" aria-controls="collapseContact">
-                                            <i class="bi bi-telephone" style="color: crimson"></i> &nbsp;Información de Contacto
-                                        </button>
-                                    </h2>
-                                    <div id="collapseContact" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
-                                        <div class="accordion-body">
-                                            <h4>
-                                                <i class="bi bi-telephone" style="color: crimson"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ user.externalProfile.telefono }}
-                                            </h4>
-                                            <h4>
-                                                <i class="bi bi-envelope-at" style="color: dodgerblue"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ user.email }}
-                                            </h4>
-                                        </div>
+                <div class="apple-patient-meta mb-2">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    {{ user.externalProfile.fechaNacimiento|calculate_age }} años &middot; Nacimiento: {{ user.externalProfile.fechaNacimiento|date('d/m/Y', false) }}
+                </div>
+
+                <div class="apple-chip-group mb-3">
+                    <span class="apple-chip chip-primary">
+                        <i class="bi bi-person-vcard"></i>
+                        {{ user.externalProfile.tipoDocumento|title }} &middot; {{ user.externalProfile.nroDocumento|number_format(0, '', '.') }}
+                    </span>
+                    <span class="apple-chip chip-danger">
+                        <i class="fa-solid fa-droplet"></i>
+                        Grupo: {{ user.externalProfile.sangreTipo.readableText }}
+                    </span>
+                    {% if user.externalProfile.paciente is not null %}
+                        <span class="apple-chip text-success border-success-subtle bg-success-subtle">
+                            <i class="bi bi-check-circle-fill"></i> Expediente Vinculado
+                        </span>
+                    {% endif %}
+                </div>
+
+                <!-- Acordeón Desplegable Limpio -->
+                <div class="accordion apple-accordion mt-3" id="accordionProfileDetails">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContact" aria-expanded="false" aria-controls="collapseContact">
+                                <i class="bi bi-telephone text-primary me-2"></i> Información de Contacto
+                            </button>
+                        </h2>
+                        <div id="collapseContact" class="accordion-collapse collapse" data-bs-parent="#accordionProfileDetails">
+                            <div class="accordion-body">
+                                <div class="row g-2">
+                                    <div class="col-sm-6">
+                                        <div class="text-secondary small">Teléfono móvil</div>
+                                        <div class="fw-semibold"><i class="bi bi-phone text-muted me-1"></i> {{ user.externalProfile.telefono ? user.externalProfile.telefono : 'No registrado' }}</div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="text-secondary small">Correo electrónico</div>
+                                        <div class="fw-semibold"><i class="bi bi-envelope text-muted me-1"></i> {{ user.email }}</div>
                                     </div>
                                 </div>
-
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDirect" aria-expanded="false" aria-controls="collapseDirect">
-                                            <i class="bi bi-building-fill" style="color: forestgreen"></i> &nbsp;Dirección
-                                        </button>
-                                    </h2>
-                                    <div id="collapseDirect" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
-                                        <div class="accordion-body">
-                                            {{ user.externalProfile.sector.displayFullLocation }}
-                                            {{ user.externalProfile.direccion }}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {% if user.externalProfile.paciente is not null %}
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
-                                                <i class="bi bi-three-dots-vertical"></i> &nbsp; Mas Información
-                                            </button>
-                                        </h2>
-                                        <div id="collapseMoreInfo" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
-                                            <div class="accordion-body">
-                                                Registrado el <strong>{{ paciente.created|date('d-m-Y') }}</strong> <i>({{ paciente.created|time_ago }})</i> por <strong>{{ paciente.uidCreate|public_username|title }}</strong>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
                             </div>
                         </div>
                     </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDirect" aria-expanded="false" aria-controls="collapseDirect">
+                                <i class="bi bi-geo-alt text-success me-2"></i> Ubicación y Domicilio
+                            </button>
+                        </h2>
+                        <div id="collapseDirect" class="accordion-collapse collapse" data-bs-parent="#accordionProfileDetails">
+                            <div class="accordion-body">
+                                <div class="text-secondary small mb-1">Zona geográfica</div>
+                                <div class="fw-medium mb-2">{{ user.externalProfile.sector.displayFullLocation }}</div>
+                                <div class="text-secondary small mb-1">Dirección exacta</div>
+                                <div class="fw-semibold">{{ user.externalProfile.direccion }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if user.externalProfile.paciente is not null and paciente is not null %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
+                                    <i class="bi bi-hospital text-info me-2"></i> Datos de Registro Hospitalario
+                                </button>
+                            </h2>
+                            <div id="collapseMoreInfo" class="accordion-collapse collapse" data-bs-parent="#accordionProfileDetails">
+                                <div class="accordion-body text-secondary">
+                                    Expediente abierto el <strong>{{ paciente.created|date('d/m/Y') }}</strong> (hace {{ paciente.created|time_ago }}) por <strong>{{ paciente.uidCreate|public_username|title }}</strong>.
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Pestañas Clínicas y Administrativas del Paciente -->
     {% if user.externalProfile.paciente is not null %}
-        <div class="col-md-12">
-            <div class="card card-primary card-outline mb-4">
-
-                {{ include('my_profile/_showPacienteTabsCompressed.html.twig') }}
-            </div>
+        <div class="apple-card p-3 p-md-4 mb-4">
+            {{ include('my_profile/_showPacienteTabsCompressed.html.twig') }}
         </div>
     {% endif %}
+</div>
 {% endblock %}

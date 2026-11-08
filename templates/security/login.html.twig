@@ -1,53 +1,96 @@
 {% extends 'loginBase.html.twig' %}
 
+{% block title %}Iniciar Sesión | SGAHS{% endblock %}
+
 {% block body %}
-    <form method="post">
+    <form method="post" 
+          data-controller="submit-once" 
+          data-action="submit->submit-once#disable"
+          data-submit-once-text-value="Iniciando sesión..."
+          class="apple-auth-form">
+        {# Mensajes Flash del Sistema #}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="apple-alert apple-alert-{{ label == 'error' or label == 'danger' ? 'danger' : (label == 'success' ? 'success' : 'info') }} mb-3" role="alert">
+                    <i class="bi bi-{{ label == 'error' or label == 'danger' ? 'exclamation-circle-fill' : (label == 'success' ? 'check-circle-fill' : 'info-circle-fill') }} flex-shrink-0"></i>
+                    <div>{{ message }}</div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
         {% if error %}
-            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            <div class="apple-alert apple-alert-danger mb-3" role="alert">
+                <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i>
+                <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            </div>
         {% endif %}
 
         {% if app.user %}
-            {% if app.user.internalProfile %}
-                <div class="mb-3 alert alert-danger">
-                    Tienes sesion iniciada como {{ app.user.internalProfile.nombre }} {{ app.user.internalProfile.apellido }}, <a href="{{ path('app_logout') }}">Cerrar Sesion</a>
+            <div class="apple-alert apple-alert-info mb-3" role="alert">
+                <i class="bi bi-info-circle-fill flex-shrink-0"></i>
+                <div>
+                    {% if app.user.internalProfile %}
+                        Sesión iniciada como <strong>{{ app.user.internalProfile.nombre }} {{ app.user.internalProfile.apellido }}</strong>.
+                    {% elseif app.user.externalProfile %}
+                        Sesión iniciada como <strong>{{ app.user.externalProfile.nombre }} {{ app.user.externalProfile.apellido }}</strong>.
+                    {% else %}
+                        Sesión iniciada como <strong>{{ app.user.displayName }}</strong>.
+                    {% endif %}
+                    <a href="{{ path('app_logout') }}" class="alert-link ms-1">Cerrar sesión</a>
                 </div>
-            {% elseif app.user.externalProfile %}
-                Tienes sesion iniciada como {{ app.user.externalProfile.nombre }} {{ app.user.externalProfile.apellido }}, <a href="{{ path('app_logout') }}">Cerrar Sesion</a>
-            {% endif %}
+            </div>
         {% endif %}
-        <div class="input-group mb-3">
-            <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
-            {#<label for="username">Email</label>#}
-            <div class="input-group-text"><span class="bi bi-envelope"></span></div>
+
+        <!-- Campo Correo Electrónico -->
+        <div class="apple-form-group mb-3">
+            <label for="username" class="apple-input-label">Correo Electrónico</label>
+            <div class="apple-input-wrap">
+                <i class="bi bi-envelope-fill apple-input-icon"></i>
+                <input type="email" 
+                       value="{{ last_username }}" 
+                       name="_username" 
+                       id="username" 
+                       class="apple-text-input" 
+                       placeholder="ejemplo@correo.com"
+                       autocomplete="email" 
+                       required 
+                       autofocus>
+            </div>
         </div>
-        <div class="input-group mb-3">
-            <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+
+        <!-- Campo Contraseña con Toggle de Visibilidad -->
+        <div class="apple-form-group mb-4" data-controller="password-toggle">
+            <label for="password" class="apple-input-label">Contraseña</label>
+            <div class="apple-input-wrap">
+                <i class="bi bi-lock-fill apple-input-icon"></i>
+                <input type="password" 
+                       name="_password" 
+                       id="password" 
+                       class="apple-text-input" 
+                       placeholder="••••••••"
+                       autocomplete="current-password" 
+                       data-password-toggle-target="input"
+                       required>
+                <button type="button" 
+                        class="apple-input-action-btn" 
+                        data-action="click->password-toggle#toggle" 
+                        aria-label="Mostrar u ocultar contraseña"
+                        tabindex="-1">
+                    <i class="bi bi-eye-fill" data-password-toggle-target="icon"></i>
+                </button>
+            </div>
             <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
-            {#<label for="password">Password</label>#}
-            <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
         </div>
 
-
-
-        <div class="row">
-            {#
-            Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-            See https://symfony.com/doc/current/security/remember_me.html
-
-            <div class="col-8">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="_remember_me" id="_remember_me">
-                    <label class="form-check-label" for="_remember_me"> Remember Me </label>
-                </div>
-            </div>
-            #}
-            <!-- /.col -->
-            <div class="col-12">
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Iniciar Sesion</button>
-                </div>
-            </div>
-            <!-- /.col -->
+        <!-- Botón de Inicio de Sesión -->
+        <div class="d-grid mb-2">
+            <button type="submit" 
+                    class="apple-btn btn-apple-primary btn-apple-lg w-100" 
+                    data-controller="apple-spring"
+                    data-submit-once-target="submitButton">
+                <i class="bi bi-box-arrow-in-right"></i>
+                <span>Iniciar Sesión</span>
+            </button>
         </div>
 
         <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
@@ -59,16 +102,20 @@
     <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var form = document.querySelector('form');
+            var form = document.querySelector('form.apple-auth-form');
             if (form) {
                 form.addEventListener('submit', function(e) {
                     e.preventDefault();
                     grecaptcha.ready(function() {
-                        grecaptcha.execute('{{ recaptcha_site_key }}', {action: 'login'}).then(function(token) {
-                            document.getElementById('g-recaptcha-response').value = token;
-                            //document.getElementById('g-recaptcha-response').value = 'soyunbot_123'
-                            form.submit();
-                        });
+                        grecaptcha.execute('{{ recaptcha_site_key }}', {action: 'login'})
+                            .then(function(token) {
+                                document.getElementById('g-recaptcha-response').value = token;
+                                form.submit();
+                            })
+                            .catch(function(err) {
+                                console.warn('reCAPTCHA execution error, submitting form', err);
+                                form.submit();
+                            });
                     });
                 });
             }

@@ -1,38 +1,68 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Finalizar Registro{% endblock %}</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-    {% block stylesheets %}
-        {{ encore_entry_link_tags('app') }}
-    {% endblock %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Finalizar Registro | SGAHS{% endblock %}</title>
+        <script>
+            (function() {
+                var theme = localStorage.getItem('theme') || 
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            })();
+        </script>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
 
-    {% block javascripts %}
-        {{ encore_entry_script_tags('app') }}
-    {% endblock %}
-</head>
-<body class="login-page bg-body-secondary">
-<div class="login-logo">
-    <a href="#"><b>SGAHS</b></a>
-</div>
-<!-- /.login-logo -->
-<div class="row justify-content-center">
-    <div class="col-md-12">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">
-                    <i class="fa-solid fa-face-smile-beam"></i> ¡Bienvenido! Solo un paso más...
-                </h4>
-            </div>
-            <div class="card-body login-card-body">
-                <p class="login-box-msg"><i>Ya casi acabas. Para poder acceder al sistema, necesitamos que completes tu información personal.</i></p>
-                {% block body %}{% endblock %}
-            </div>
-            <!-- /.login-card-body -->
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body class="apple-auth-page">
+        <!-- Selector Flotante de Tema Claro / Oscuro -->
+        <div class="apple-auth-theme-switch">
+            <button type="button" 
+                    class="apple-theme-toggle-btn shadow-sm"
+                    data-controller="apple-spring theme-toggle"
+                    data-action="click->theme-toggle#toggle"
+                    data-theme-toggle-btn
+                    aria-label="Alternar modo oscuro o claro"
+                    title="Alternar tema">
+                <i class="bi bi-sun-fill text-warning" data-theme-icon></i>
+            </button>
         </div>
-    </div>
-</div>
-<!-- /.login-box -->
-</body>
+
+        <div class="apple-auth-canvas">
+            <div class="apple-auth-container apple-auth-container-wide">
+                <!-- Cabecera de Marca SGAHS -->
+                <div class="apple-auth-brand">
+                    <div class="apple-auth-logo-badge">
+                        <i class="bi bi-heart-pulse-fill"></i>
+                    </div>
+                    <h1 class="apple-auth-title">SGAHS</h1>
+                    <p class="apple-auth-subtitle">Sistema de Gestión y Atención Hospitalaria</p>
+                </div>
+
+                <!-- Tarjeta Onboarding Frosted Glass Apple -->
+                <div class="apple-auth-card shadow-lg">
+                    <div class="apple-auth-card-header text-center mb-4">
+                        <div class="apple-inbox-badge mx-auto mb-3">
+                            <i class="bi bi-person-vcard-fill"></i>
+                        </div>
+                        <h2 class="apple-auth-card-title">Completa tu Perfil Clínico</h2>
+                        <p class="apple-auth-card-desc">Solo un paso más para habilitar tu portal de paciente y gestionar tus citas médicas.</p>
+                    </div>
+
+                    {% block body %}{% endblock %}
+                </div>
+
+                <!-- Pie de Página Institucional -->
+                <div class="apple-auth-footer-note mt-4">
+                    <p>© {{ 'now'|date('Y') }} SGAHS. Gestión de salud confidencial y segura.</p>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

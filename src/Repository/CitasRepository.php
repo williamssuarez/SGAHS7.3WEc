@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Citas;
+use App\Entity\InternalProfile;
 use App\Entity\StatusRecord;
 use App\Enum\CitasEstados;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -16,6 +17,49 @@ class CitasRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Citas::class);
+    }
+
+    /**
+     * Obtiene las citas programadas para una fecha dada (por defecto hoy) asignadas a un médico o a sus especialidades,
+     * que aún no han anunciado su llegada (estado EXPECTED, consulta IS NULL y status activo).
+     *
+     * @param InternalProfile $doctorProfile
+     * @param \DateTimeInterface|null $date
+     * @return Citas[]
+     */
+    public function findPendingExpectedAppointmentsForDoctor(InternalProfile $doctorProfile, ?\DateTimeInterface $date = null): array
+    {
+        $date = $date ?? new \DateTime('today');
+        $startOfDay = (clone $date)->setTime(0, 0, 0);
+        $endOfDay = (clone $date)->setTime(23, 59, 59);
+
+        $specialties = $doctorProfile->getEspecialidades();
+
+        $qb = $this->createQueryBuilder('c')
+            ->select('c', 'p', 'e', 'con', 's')
+            ->join('c.paciente', 'p')
+            ->leftJoin('c.especialidad', 'e')
+            ->leftJoin('c.consultorio', 'con')
+            ->leftJoin('c.solicitud', 's')
+            ->where('c.status = :sts')
+            ->andWhere('c.estadoCita = :expectedState')
+            ->andWhere('c.consulta IS NULL')
+            ->andWhere('c.fecha BETWEEN :startOfDay AND :endOfDay')
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
+            ->setParameter('expectedState', CitasEstados::EXPECTED)
+            ->setParameter('startOfDay', $startOfDay)
+            ->setParameter('endOfDay', $endOfDay);
+
+        if ($specialties->count() > 0) {
+            $qb->andWhere('(c.doctor = :doctor OR (c.doctor IS NULL AND c.especialidad IN (:specialties)))')
+               ->setParameter('doctor', $doctorProfile)
+               ->setParameter('specialties', $specialties);
+        } else {
+            $qb->andWhere('c.doctor = :doctor')
+               ->setParameter('doctor', $doctorProfile);
+        }
+
+        return $qb->orderBy('c.horaInicio', 'ASC')->getQuery()->getResult();
     }
 
     public function getActivesforTableByState($state, \DateTime $from, \DateTime $to)
@@ -120,9 +164,11 @@ class CitasRepository extends ServiceEntityRepository
             ->join('c.especialidad', 'e')
             ->andWhere('c.fecha between :start AND :end')
             ->andWhere('c.estadoCita != :canceledState')
+            ->andWhere('e.status = :sts')
             ->setParameter('start', $startDate)
             ->setParameter('end', $endDate)
             ->setParameter('canceledState', \App\Enum\CitasEstados::CANCELED)
+            ->setParameter('sts', $this->getEntityManager()->getRepository(\App\Entity\StatusRecord::class)->getActive())
             ->groupBy('e.id')
             ->orderBy('totalAssigned', 'DESC')
             ->getQuery()

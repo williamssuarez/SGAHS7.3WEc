@@ -58,14 +58,17 @@ parameters:
                         - { title: Citas, route: app_citas_estadisticas_list, icon: 'bi bi-graph-down text-success' }
                         - { title: Especialidades, route: app_citas_estadisticas_especialidades, icon: 'bi bi-graph-down text-success' }
         -
-            title: Mis Citas
-            icon: 'bi bi-calendar-plus-fill text-primary'
+            title: Mi Perfil
+            icon: 'bi bi-person-circle text-primary'
             roles: 'ROLE_EXTERNAL'
-            children:
-                -   title: Citas Medicas
-                    icon: 'bi bi-calendar-plus-fill text-primary'
-                    children:
-                        - { title: Solicitudes, route: app_citas_solicitudes_index, icon: 'bi bi-calendar-plus-fill text-primary' }
+            route: app_my_profile
+            active_routes: ['app_my_profile', 'my_profile_show', 'app_alergias_new_ext', 'app_alergias_edit_ext', 'app_attachment_upload']
+        -
+            title: Mis Citas
+            icon: 'bi bi-calendar-heart-fill text-primary'
+            roles: 'ROLE_EXTERNAL'
+            route: app_citas_solicitudes_index
+            active_routes: ['app_citas_solicitudes_index', 'app_citas_solicitudes_new', 'app_citas_solicitudes_show', 'app_citas_solicitudes_edit', 'app_citas_solicitudes_voucher']
         -
             title: Consultas
             icon: 'bi bi-hospital-fill text-success'
@@ -92,7 +95,7 @@ parameters:
                         - { title: Historial de Emergencias, route: app_emergencia_listado, icon: 'fa-solid fa-magnifying-glass-plus text-danger' }
         -   title: Hospitalizaciones
             icon: 'fa-solid fa-bed text-info'
-            roles: 'ROLE_INTERNAL'
+            roles: 'ROLE_HOSPITALIZATION'
             children:
                 -   title: Configuraciones
                     icon: 'bi bi-gear text-warning'

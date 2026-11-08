@@ -1,4 +1,3 @@
-
 services:
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
@@ -43,6 +42,9 @@ services:
     ports:
       - "1025:1025" # SMTP port (Symfony sends here)
       - "8025:8025" # Web UI (You view emails here)
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
 
 volumes:
   database_data:

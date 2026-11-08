@@ -70,6 +70,10 @@ enum AuditTipos: string
     case PATIENT_LINK_CODE_GENERATED = 'patient_link_code_generated';
     case PATIENT_WEB_LINKED = 'patient_web_linked';
     case DEATH_STATUS_REVOKED = 'death_status_revoked';
+    case APPOINTMENT_REASSIGNED = 'appointment_reassigned';
+    case CONSULT_REASSIGNED = 'consult_reassigned';
+    case APPOINTMENT_RESCHEDULED = 'appointment_rescheduled';
+    case APPOINTMENT_BATCH_REASSIGNED = 'appointment_batch_reassigned';
 
     /**
      * Retorna un texto amigable para el usuario final.
@@ -138,6 +142,10 @@ enum AuditTipos: string
             self::PATIENT_LINK_CODE_GENERATED => 'Generación de Código Web',
             self::PATIENT_WEB_LINKED => 'Vinculación de Cuenta Web',
             self::DEATH_STATUS_REVOKED => 'Revocación de Estado de Fallecimiento',
+            self::APPOINTMENT_REASSIGNED => 'Reasignación de Médico en Cita',
+            self::CONSULT_REASSIGNED => 'Derivación/Reasignación de Médico en Consulta',
+            self::APPOINTMENT_RESCHEDULED => 'Reprogramación de Cita',
+            self::APPOINTMENT_BATCH_REASSIGNED => 'Reasignación Masiva de Pacientes por Contingencia',
         };
     }
 

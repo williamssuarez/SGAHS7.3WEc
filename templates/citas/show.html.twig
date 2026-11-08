@@ -191,6 +191,12 @@
                                                 <i class="bi bi-person-x-fill"></i> Cancelar Cita
                                             </button>
                                         </form>
+                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalReassignDoctor" data-action-url="{{ path('app_citas_reassign', {'id': cita.id}) }}" data-paciente-nombre="{{ cita.paciente.nombre }} {{ cita.paciente.apellido }}" data-especialidad-id="{{ cita.especialidad ? cita.especialidad.id : '' }}" data-especialidad-nombre="{{ cita.especialidad ? cita.especialidad.nombre : 'General' }}" data-redirect-route="app_citas_show">
+                                        <i class="fa-solid fa-arrow-right-arrow-left"></i> Reasignar Médico
+                                    </button>
+                                    <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#modalRescheduleCita" data-cita-id="{{ cita.id }}" data-paciente-nombre="{{ cita.paciente.nombre }} {{ cita.paciente.apellido }}" data-especialidad-id="{{ cita.especialidad ? cita.especialidad.id : '' }}" data-especialidad-nombre="{{ cita.especialidad ? cita.especialidad.nombre : 'General' }}" data-fecha-original="{{ cita.fecha|date('d/m/Y') }} {{ cita.horaInicio|date('H:i') }}" data-redirect-route="app_citas_show">
+                                        <i class="fa-solid fa-calendar-alt"></i> Reprogramar Cita
+                                    </button>
                                     {% endif %}
                                 </div>
                             </div>
@@ -200,4 +206,5 @@
             </div>
         </div>
     </div>
+    {% include 'citas/_reassign_reschedule_modals.html.twig' %}
 {% endblock %}

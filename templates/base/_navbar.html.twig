@@ -12,10 +12,20 @@
         <!--end::Start Navbar Links-->
 
         <!--begin::End Navbar Links-->
-        <ul class="navbar-nav ms-auto" role="navigation" aria-label="Navigation 2">
-            <!--begin::Navbar Search-->
-
-            <!--end::Fullscreen Toggle-->
+        <ul class="navbar-nav ms-auto align-items-center" role="navigation" aria-label="Navigation 2">
+            <!--begin::Theme Toggle Button-->
+            <li class="nav-item d-flex align-items-center me-2">
+                <button type="button" 
+                        class="apple-theme-toggle-btn shadow-sm"
+                        data-controller="apple-spring theme-toggle"
+                        data-action="click->theme-toggle#toggle"
+                        data-theme-toggle-btn
+                        aria-label="Alternar modo oscuro o claro"
+                        title="Alternar tema">
+                    <i class="bi bi-sun-fill text-warning" data-theme-icon></i>
+                </button>
+            </li>
+            <!--end::Theme Toggle Button-->
 
             <!--begin::User Menu Dropdown-->
             {# Define variables at the start for cleanliness #}
@@ -38,37 +48,89 @@
             {% endif %}
             {% set avatar = final_src %}
 
-            <li class="nav-item dropdown user-menu">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                    <img
-                        src="{{ asset(avatar) }}"
-                        class="rounded-circle"
-                        alt="User Image"
-                        style="cursor: pointer; width: 30px; height: 30px; border-radius: 100%;"
-                    >
-                    <span class="d-none d-md-inline">{{ display_name }}</span>
+            {# Menú Popover Glass estilo Apple para todos los usuarios (Personal Interno y Pacientes) #}
+            <li class="nav-item dropdown apple-user-nav-item">
+                <a href="#" class="nav-link d-flex align-items-center gap-2 px-2 py-1 rounded-pill apple-nav-user-trigger" 
+                   data-bs-toggle="dropdown" 
+                   data-controller="apple-spring"
+                   aria-expanded="false">
+                    <div class="apple-nav-avatar-wrap">
+                        <img
+                            src="{{ asset(avatar) }}"
+                            class="rounded-circle"
+                            alt="{{ display_name }}"
+                        >
+                    </div>
+                    <span class="d-none d-md-inline fw-semibold fs-6 text-body">{{ display_name }}</span>
+                    <i class="bi bi-chevron-down fs-7 text-secondary ms-1"></i>
                 </a>
 
-                <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-                    <li class="user-header text-bg-dark">
-                        <img src="{{ asset(avatar) }}" class="rounded-circle shadow" alt="User Image">
-                        <p>
-                            {{ display_name }}
-                            <small>{{ role_label }}</small>
-                            <small>Registrado desde {{ app.user.created|time_since }}</small>
-                        </p>
-                    </li>
+                <div class="dropdown-menu dropdown-menu-end apple-user-popover shadow-lg">
+                    {# Cabecera de Perfil Apple #}
+                    <div class="popover-profile-header">
+                        <div class="popover-avatar-wrap">
+                            <img src="{{ asset(avatar) }}" alt="{{ display_name }}" class="rounded-circle">
+                        </div>
+                        <h4 class="popover-user-name">{{ display_name }}</h4>
+                        <div class="popover-role-chip">
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <i class="bi bi-shield-check me-1"></i>
+                            {% elseif is_granted('ROLE_INTERNAL') %}
+                                <i class="bi bi-hospital me-1"></i>
+                            {% else %}
+                                <i class="bi bi-heart-pulse-fill me-1"></i>
+                            {% endif %}
+                            {{ role_label }}
+                        </div>
+                        <span class="popover-registered-date">
+                            <i class="bi bi-calendar3 me-1"></i> Registrado desde {{ app.user.created|time_since }}
+                        </span>
+                    </div>
 
-                    <li class="user-footer">
+                    <div class="popover-divider"></div>
+
+                    {# Selector de Modo Oscuro dentro del Popover #}
+                    <div class="popover-theme-row" data-controller="theme-toggle">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-sun-fill text-warning" data-theme-icon></i>
+                            <span class="small fw-semibold text-body" data-theme-label>Modo de Pantalla</span>
+                        </div>
+                        <button type="button" 
+                                class="apple-theme-pill-btn" 
+                                data-action="click->theme-toggle#toggle"
+                                data-controller="apple-spring">
+                            <span>Cambiar</span>
+                        </button>
+                    </div>
+
+                    <div class="popover-divider"></div>
+
+                    {# Acciones de Perfil #}
+                    <div class="popover-actions">
                         {% if is_granted('ROLE_INTERNAL') %}
-                            <a href="{{ path('my_internal_profile_show') }}" class="btn btn-primary btn-flat">Mi Perfil</a>
-                        {% else %}
-                            <a href="{{ path('my_profile_show', {'uuid': app.user.externalProfile.uuid}) }}" class="btn btn-success btn-flat">Mi Perfil</a>
+                            <a href="{{ path('my_internal_profile_show') }}" 
+                               class="apple-btn btn-apple-primary w-100 mb-2" 
+                               data-controller="apple-spring">
+                                <i class="bi bi-person-circle"></i>
+                                <span>Mi Perfil</span>
+                            </a>
+                        {% elseif app.user.externalProfile is not null %}
+                            <a href="{{ path('my_profile_show', {'uuid': app.user.externalProfile.uuid}) }}" 
+                               class="apple-btn btn-apple-primary w-100 mb-2" 
+                               data-controller="apple-spring">
+                                <i class="bi bi-person-circle"></i>
+                                <span>Mi Perfil</span>
+                            </a>
                         {% endif %}
 
-                        <a href="{{ path('app_logout') }}" class="btn btn-danger btn-flat float-end">Salir</a>
-                    </li>
-                </ul>
+                        <a href="{{ path('app_logout') }}" 
+                           class="apple-btn btn-apple-danger w-100" 
+                           data-controller="apple-spring">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Cerrar Sesión</span>
+                        </a>
+                    </div>
+                </div>
             </li>
             <!--end::User Menu Dropdown-->
         </ul>

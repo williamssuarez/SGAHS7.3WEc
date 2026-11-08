@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hospital Bed Map{% endblock %}
+{% block title %}Dashboard de Camas{% endblock %}
 
 {% block titlewrap %}
     Dashboard de Camas
@@ -28,7 +28,7 @@
                 <a href="{{ path('app_cama_new') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-circle"></i> Nueva Cama</a>
             </div>
         </div>
-        
+
         <div class="card-body">
             <!-- Nav Tabs -->
             <ul class="nav nav-tabs" id="zonaTabs" role="tablist">
@@ -40,19 +40,19 @@
                             {% set ocupadas = ocupadas + 1 %}
                         {% endif %}
                     {% endfor %}
-                    
+
                     {% set porcentaje = 0 %}
                     {% if zona.capacidadMaxima > 0 %}
                         {% set porcentaje = (ocupadas / zona.capacidadMaxima) * 100 %}
                     {% endif %}
-                    
+
                     {% set badgeColor = 'bg-success' %}
                     {% if porcentaje > 80 %}
                         {% set badgeColor = 'bg-danger' %}
                     {% elseif porcentaje > 50 %}
                         {% set badgeColor = 'bg-warning text-dark' %}
                     {% endif %}
-                    
+
                     <li class="nav-item" role="presentation">
                         <button class="nav-link {% if loop.first %}active{% endif %}" id="tab-{{ zona.id }}" data-bs-toggle="tab" data-bs-target="#content-{{ zona.id }}" type="button" role="tab" aria-controls="content-{{ zona.id }}" aria-selected="{{ loop.first ? 'true' : 'false' }}">
                             {{ zona.nombre }}
@@ -66,7 +66,7 @@
             <div class="tab-content pt-4" id="zonaTabsContent">
                 {% for zona in zonas %}
                     <div class="tab-pane fade {% if loop.first %}show active{% endif %}" id="content-{{ zona.id }}" role="tabpanel" aria-labelledby="tab-{{ zona.id }}">
-                        
+
                         <div class="row g-3">
                             {% for entity in camasAgrupadas[zona.id] %}
                                 {% set badge = entity.estadosBadgeConfig %}
@@ -89,7 +89,7 @@
                                             {% elseif entity.estado.value == 'maintenance' %}
                                                 <i class="fa-solid fa-screwdriver-wrench text-danger" style="font-size: 3rem;"></i>
                                             {% endif %}
-                                            
+
                                             {% if entity.estado.value == 'ocupied' %}
                                                 <p class="mt-2 mb-0 small fw-bold">Paciente Asignado</p>
                                             {% else %}
@@ -105,7 +105,7 @@
                                                     {% if entity.estado.value != 'ocupied' %}
                                                         <li><a class="dropdown-item" href="{{ path('app_cama_edit', {'id': entity.id}) }}"><i class="bi bi-pencil-square me-2"></i> Editar</a></li>
                                                         <li><hr class="dropdown-divider"></li>
-                                                        
+
                                                         {% if entity.estado.value == 'available' %}
                                                             <li>
                                                                 <form action="{{ path('app_cama_cleaning', {'id': entity.id}) }}" method="POST" data-controller="confirm-finalizar" data-action="submit->confirm-finalizar#confirm" data-confirm-finalizar-title-value="¿Solicitar Limpieza?" data-confirm-finalizar-text-value="Esto no permitirá que sea elegible para emergencias." data-confirm-finalizar-confirm-button-text-value="Sí, solicitar" class="dropdown-item p-0">
@@ -154,7 +154,7 @@
                                 </div>
                             {% endfor %}
                         </div>
-                        
+
                     </div>
                 {% else %}
                     <div class="alert alert-warning">

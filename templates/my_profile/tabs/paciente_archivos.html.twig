@@ -1,52 +1,134 @@
-<h4>
-    Archivos Subidos <a class="btn btn-primary btn-sm" href="{{ path('my_profile_attachment_upload', {'uuid': app.user.externalProfile.uuid}) }}"><i class="bi bi-plus-circle"></i> Subir</a>
-</h4>
-<table class="table table-striped dtHere">
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Nombre</th>
-        <th>Tipo de Archivo</th>
-        <th>Subido</th>
-        <th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for entity in paciente.attachments %}
-        <tr class="align-middle">
-            <td>{{ loop.index }}</td>
-            <td>{{ entity.fileName }}</td>
-            <td>
-                {% if entity.fileType == 'image/jpeg' or entity.fileType == 'image/png' %}
-                    <h4>
-                                    <span class="badge rounded-pill text-bg-success">
-                                        <i class="bi bi-card-image"></i>
-                                    </span>
-                    </h4>
-                {% elseif entity.fileType == 'application/pdf' %}
-                    <h4>
-                                    <span class="badge rounded-pill text-bg-danger">
-                                        <i class="bi bi-file-earmark-pdf"></i>
-                                    </span>
-                    </h4>
-                {% endif %}
-            </td>
-            <td>{{ entity.dateUploaded|date('d/m/Y') }}</td>
-            <td>
-                <a class="btn btn-success" href="{{ asset(paciente_photo_path ~ entity.fileHash) }}" target="_blank">
-                    <i class="bi bi-download"></i>
-                </a>
-                {% if entity.uuid == app.user.externalProfile.uuid %}
-                    <button class="btn btn-danger"
-                            onclick="deleteFile(
-                                '{{ path('my_profile_attachment_delete_upload', {'id': entity.id, 'uuid': app.user.externalProfile.uuid}) }}',
-                                '{{ csrf_token('delete' ~ entity.id) }}'
-                                )">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                {% endif %}
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<div class="apple-section">
+    <div class="apple-section-header">
+        <h5 class="text-body">
+            <i class="bi bi-folder-fill text-primary me-2"></i> Documentos y Estudios Adjuntos
+        </h5>
+        <a class="btn btn-primary btn-sm rounded-pill px-3 shadow-xs" href="{{ path('my_profile_attachment_upload', {'uuid': app.user.externalProfile.uuid}) }}" data-controller="apple-spring">
+            <i class="bi bi-cloud-arrow-up me-1"></i> Subir Documento
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle dtHere">
+            <thead>
+                <tr class="text-secondary small text-uppercase">
+                    <th>#</th>
+                    <th>Documento</th>
+                    <th>Formato</th>
+                    <th>Fecha de Carga</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in paciente.attachments %}
+                {% set isImage = (entity.fileType == 'image/jpeg' or entity.fileType == 'image/png') %}
+                {% set isPdf = (entity.fileType == 'application/pdf') %}
+                {% set viewUrl = path('app_attachment_download', {'id': entity.id}) %}
+                {% set downloadUrl = path('app_attachment_download', {'id': entity.id, 'download': 1}) %}
+                <tr>
+                    <td class="text-muted small">{{ loop.index }}</td>
+                    <td class="fw-semibold">
+                        <div class="d-flex align-items-center">
+                            {% if isImage %}
+                                <div class="apple-file-thumb-wrap me-3"
+                                     data-controller="apple-image-viewer"
+                                     data-apple-image-viewer-url-value="{{ viewUrl }}"
+                                     data-apple-image-viewer-title-value="{{ entity.fileName }}"
+                                     data-apple-image-viewer-download-url-value="{{ downloadUrl }}"
+                                     data-action="click->apple-image-viewer#open"
+                                     title="Clic para ampliar imagen en visor interactivo">
+                                    <img src="{{ viewUrl }}"
+                                         alt="{{ entity.fileName }}"
+                                         class="apple-file-thumb"
+                                         loading="lazy"
+                                         data-apple-image-viewer-target="thumb">
+                                    <span class="thumb-zoom-icon"><i class="bi bi-zoom-in"></i></span>
+                                </div>
+                            {% elseif isPdf %}
+                                <div class="apple-file-icon-wrap me-3 text-danger">
+                                    <i class="bi bi-file-earmark-pdf fs-4"></i>
+                                </div>
+                            {% else %}
+                                <div class="apple-file-icon-wrap me-3 text-secondary">
+                                    <i class="bi bi-file-earmark-text fs-4"></i>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <div class="text-body text-break">{{ entity.fileName }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {% if isPdf %}
+                            <span class="badge text-bg-danger rounded-pill px-2">PDF</span>
+                        {% elseif isImage %}
+                            <span class="badge text-bg-success rounded-pill px-2">IMAGEN</span>
+                        {% else %}
+                            <span class="badge text-bg-secondary rounded-pill px-2">ARCHIVO</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-secondary small">
+                        {{ entity.dateUploaded|date('d/m/Y') }}
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            {% if isImage %}
+                                {# Botón Ver Imagen con Viewer.js (In-place) #}
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-xs"
+                                        data-controller="apple-image-viewer apple-spring"
+                                        data-apple-image-viewer-url-value="{{ viewUrl }}"
+                                        data-apple-image-viewer-title-value="{{ entity.fileName }}"
+                                        data-apple-image-viewer-download-url-value="{{ downloadUrl }}"
+                                        data-action="click->apple-image-viewer#open">
+                                    <i class="bi bi-arrows-fullscreen me-1"></i> Ver Imagen
+                                </button>
+                                {# Botón Descarga Directa #}
+                                <a class="btn btn-sm btn-outline-secondary rounded-circle shadow-xs"
+                                   href="{{ downloadUrl }}"
+                                   title="Descargar imagen"
+                                   data-controller="apple-spring">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            {% elseif isPdf %}
+                                {# Botón Ver PDF (Nueva Pestaña) #}
+                                <a class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-xs" 
+                                   href="{{ viewUrl }}" 
+                                   target="_blank" 
+                                   data-controller="apple-spring">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i> Ver PDF
+                                </a>
+                                {# Botón Descarga Directa #}
+                                <a class="btn btn-sm btn-outline-secondary rounded-circle shadow-xs"
+                                   href="{{ downloadUrl }}"
+                                   title="Descargar PDF"
+                                   data-controller="apple-spring">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            {% else %}
+                                <a class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-xs" 
+                                   href="{{ downloadUrl }}" 
+                                   data-controller="apple-spring">
+                                    <i class="bi bi-download me-1"></i> Descargar
+                                </a>
+                            {% endif %}
+
+                            {% if entity.uuid == app.user.externalProfile.uuid %}
+                                <button class="btn btn-sm btn-outline-danger rounded-circle shadow-xs"
+                                        title="Eliminar documento"
+                                        data-controller="apple-spring"
+                                        onclick="deleteFile(
+                                            '{{ path('my_profile_attachment_delete_upload', {'id': entity.id, 'uuid': app.user.externalProfile.uuid}) }}',
+                                            '{{ csrf_token('delete' ~ entity.id) }}'
+                                            )">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,204 +1,326 @@
 {% extends 'completeBase.html.twig' %}
 
+{% block title %}Finalizar Registro | SGAHS{% endblock %}
+
 {% block body %}
     {{ form_start(form, {
         'attr': {
+            'class': 'apple-auth-form',
             'data-controller': 'submit-once cascading-location',
-            'data-action': 'submit->submit-once#disable'
+            'data-action': 'submit->submit-once#disable',
+            'data-submit-once-text-value': 'Finalizando registro...'
         }
     }) }}
-    {{ include('base/_form_error_messages.html.twig') }}
 
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="input-group">
-                <div class="col-md-12">
-                    {{form_label( form.nombre ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+        {# Mensajes Flash del Sistema #}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="apple-alert apple-alert-{{ label == 'error' or label == 'danger' ? 'danger' : (label == 'success' ? 'success' : 'info') }} mb-3" role="alert">
+                    <i class="bi bi-{{ label == 'error' or label == 'danger' ? 'exclamation-circle-fill' : (label == 'success' ? 'check-circle-fill' : 'info-circle-fill') }} flex-shrink-0"></i>
+                    <div>{{ message }}</div>
                 </div>
-                <div class="col-md-12">
-                    {{form_widget( form.nombre ) }}
+            {% endfor %}
+        {% endfor %}
+
+        {# Errores Globales del Formulario #}
+        {% if not form.vars.valid %}
+            <div class="apple-alert apple-alert-danger mb-4" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                <div>
+                    <strong>Por favor corrige los siguientes campos:</strong>
+                    <ul>
+                        {% for error in form.vars.errors %}
+                            <li>{{ error.message }}</li>
+                        {% endfor %}
+                        {% for child in form.children %}
+                            {% for error in child.vars.errors %}
+                                <li><strong>{{ child.vars.label|default(child.vars.name)|capitalize }}:</strong> {{ error.message }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="input-group">
-                <div class="col-md-12">
-                    {{form_label( form.apellido ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+        {% endif %}
+
+        <!-- Sección 1: Foto de Perfil (Opcional - Estilo Apple ID) -->
+        <div class="apple-form-section text-center pt-1 pb-3">
+            <div data-controller="avatar-upload" class="apple-avatar-uploader">
+                <div class="apple-avatar-circle shadow-sm" 
+                     data-action="click->avatar-upload#clickAvatar" 
+                     title="Haz clic para seleccionar tu foto de perfil">
+                    
+                    <div data-avatar-upload-target="placeholder" class="apple-avatar-placeholder">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+
+                    <img data-avatar-upload-target="preview" 
+                         class="apple-avatar-preview d-none" 
+                         alt="Foto de perfil seleccionada">
+
+                    <div class="apple-avatar-badge">
+                        <i class="bi bi-camera-fill"></i>
+                    </div>
                 </div>
-                <div class="col-md-12">
-                    {{form_widget( form.apellido ) }}
+
+                {{ form_widget(form.foto, {
+                    'attr': {
+                        'class': 'd-none',
+                        'accept': 'image/jpeg,image/png',
+                        'data-avatar-upload-target': 'input',
+                        'data-action': 'change->avatar-upload#fileChanged'
+                    }
+                }) }}
+
+                <button type="button" 
+                        class="apple-avatar-remove-btn d-none" 
+                        data-avatar-upload-target="removeBtn" 
+                        data-action="click->avatar-upload#remove">
+                    <i class="bi bi-x-circle me-1"></i> Quitar foto
+                </button>
+
+                <div class="apple-avatar-hint">
+                    Foto de Perfil (Opcional) · JPG o PNG, máx. 2 MB
                 </div>
+                <div data-avatar-upload-target="errorMsg" class="apple-field-error text-center mt-1 d-none"></div>
             </div>
         </div>
-    </div>
 
-    <br>
+        <!-- Sección 2: Identificación y Datos Personales -->
+        <div class="apple-form-section">
+            <div class="apple-section-header">
+                <i class="bi bi-person-vcard-fill"></i>
+                <span>Datos Personales</span>
+            </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="input-group">
-                <div class="col-md-12">
-                    {{form_label( form.nroDocumento ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+            <div class="row g-3">
+                <div class="col-12 col-md-6">
+                    <div class="apple-form-group">
+                        <label for="{{ form.nombre.vars.id }}" class="apple-input-label">
+                            Nombres <span class="text-danger">*</span>
+                        </label>
+                        {{ form_widget(form.nombre, {
+                            'attr': {
+                                'class': 'apple-text-input',
+                                'placeholder': 'Primer y segundo nombre'
+                            }
+                        }) }}
+                        {% if form_errors(form.nombre) %}
+                            <div class="apple-field-error">{{ form_errors(form.nombre) }}</div>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="col-md-3">
-                            {{form_widget( form.tipoDocumento ) }}
+
+                <div class="col-12 col-md-6">
+                    <div class="apple-form-group">
+                        <label for="{{ form.apellido.vars.id }}" class="apple-input-label">
+                            Apellidos <span class="text-danger">*</span>
+                        </label>
+                        {{ form_widget(form.apellido, {
+                            'attr': {
+                                'class': 'apple-text-input',
+                                'placeholder': 'Primer y segundo apellido'
+                            }
+                        }) }}
+                        {% if form_errors(form.apellido) %}
+                            <div class="apple-field-error">{{ form_errors(form.apellido) }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="apple-form-group">
+                        <label class="apple-input-label">
+                            Documento de Identidad <span class="text-danger">*</span>
+                        </label>
+                        <div class="apple-composite-group">
+                            <div class="apple-composite-prefix apple-composite-prefix-doc">
+                                {{ form_widget(form.tipoDocumento, {
+                                    'attr': {
+                                        'class': 'noSrchSelect form-select w-100'
+                                    }
+                                }) }}
+                            </div>
+                            <div class="apple-composite-input">
+                                {{ form_widget(form.nroDocumento, {
+                                    'attr': {
+                                        'class': 'apple-text-input number-only',
+                                        'placeholder': 'Nro. de documento',
+                                        'maxlength': '8'
+                                    }
+                                }) }}
+                            </div>
                         </div>
-                        <div class="col-md-9">
-                            {{form_widget( form.nroDocumento ) }}
-                        </div>
+                        {% if form_errors(form.nroDocumento) %}
+                            <div class="apple-field-error">{{ form_errors(form.nroDocumento) }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="apple-form-group">
+                        <label for="{{ form.fechaNacimiento.vars.id }}" class="apple-input-label">
+                            Fecha de Nacimiento <span class="text-danger">*</span>
+                        </label>
+                        {{ form_widget(form.fechaNacimiento, {
+                            'attr': {
+                                'class': 'apple-text-input mask'
+                            }
+                        }) }}
+                        {% if form_errors(form.fechaNacimiento) %}
+                            <div class="apple-field-error">{{ form_errors(form.fechaNacimiento) }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="apple-form-group">
+                        <label for="{{ form.sexo.vars.id }}" class="apple-input-label">
+                            Sexo <span class="text-danger">*</span>
+                        </label>
+                        {{ form_widget(form.sexo, {
+                            'attr': {
+                                'class': 'noSrchSelect form-select'
+                            }
+                        }) }}
+                        {% if form_errors(form.sexo) %}
+                            <div class="apple-field-error">{{ form_errors(form.sexo) }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="apple-form-group">
+                        <label for="{{ form.sangreTipo.vars.id }}" class="apple-input-label">
+                            Tipo de Sangre <span class="text-danger">*</span>
+                        </label>
+                        {{ form_widget(form.sangreTipo, {
+                            'attr': {
+                                'class': 'noSrchSelect form-select'
+                            }
+                        }) }}
+                        {% if form_errors(form.sangreTipo) %}
+                            <div class="apple-field-error">{{ form_errors(form.sangreTipo) }}</div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="input-group">
-                <div class="col-md-12">
-                    {{form_label( form.fechaNacimiento ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                </div>
-                <div class="col-md-12">
-                    {{form_widget( form.fechaNacimiento ) }}
-                </div>
+
+        <!-- Sección 3: Contacto y Ubicación -->
+        <div class="apple-form-section">
+            <div class="apple-section-header">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>Contacto y Residencia</span>
             </div>
-        </div>
-    </div>
 
-    <br>
-
-    <div class="row">
-        <div class="col-md-4">
-            <div class="input-group">
-                <div class="col-md-12">
-                    {{form_label( form.telefono ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="apple-form-group">
+                        <label class="apple-input-label">
+                            Teléfono de Contacto <span class="text-danger">*</span>
+                        </label>
+                        <div class="apple-composite-group">
+                            <div class="apple-composite-prefix apple-composite-prefix-phone">
+                                {{ form_widget(form.telefono.prefix, {
+                                    'attr': {
+                                        'class': 'noSrchSelect form-select w-100'
+                                    }
+                                }) }}
+                            </div>
+                            <div class="apple-composite-input">
+                                {{ form_widget(form.telefono.number, {
+                                    'attr': {
+                                        'class': 'apple-text-input number-only',
+                                        'placeholder': 'Ej. 1234567',
+                                        'maxlength': '7'
+                                    }
+                                }) }}
+                            </div>
+                        </div>
+                        {% if form_errors(form.telefono) %}
+                            <div class="apple-field-error">{{ form_errors(form.telefono) }}</div>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="col-md-12">
-                    <div class="row">
-                        <div class="col-md-4">
-                            {{form_widget( form.telefono.prefix ) }}
-                        </div>
-                        <div class="col-md-8">
-                            {{form_widget( form.telefono.number ) }}
-                        </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="apple-form-group">
+                        <label for="{{ form.location.estado.vars.id }}" class="apple-input-label">
+                            Estado <span class="text-danger">*</span>
+                        </label>
+                        {{ form_widget(form.location.estado) }}
+                        {% if form_errors(form.location.estado) %}
+                            <div class="apple-field-error">{{ form_errors(form.location.estado) }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="apple-form-group">
+                        <label for="{{ form.location.municipio.vars.id }}" class="apple-input-label">
+                            Municipio <span class="text-danger">*</span>
+                        </label>
+                        {{ form_widget(form.location.municipio) }}
+                        {% if form_errors(form.location.municipio) %}
+                            <div class="apple-field-error">{{ form_errors(form.location.municipio) }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="apple-form-group">
+                        <label for="{{ form.location.parroquia.vars.id }}" class="apple-input-label">
+                            Parroquia <span class="text-danger">*</span>
+                        </label>
+                        {{ form_widget(form.location.parroquia) }}
+                        {% if form_errors(form.location.parroquia) %}
+                            <div class="apple-field-error">{{ form_errors(form.location.parroquia) }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="apple-form-group">
+                        <label for="{{ form.location.sector.vars.id }}" class="apple-input-label">
+                            Sector <span class="text-danger">*</span>
+                        </label>
+                        {{ form_widget(form.location.sector) }}
+                        {% if form_errors(form.location.sector) %}
+                            <div class="apple-field-error">{{ form_errors(form.location.sector) }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="apple-form-group">
+                        <label for="{{ form.direccion.vars.id }}" class="apple-input-label">
+                            Dirección Específica de Habitación <span class="text-danger">*</span>
+                        </label>
+                        {{ form_widget(form.direccion, {
+                            'attr': {
+                                'class': 'apple-text-input',
+                                'rows': 2,
+                                'placeholder': 'Avenida, calle, edificio/casa, piso, punto de referencia...'
+                            }
+                        }) }}
+                        {% if form_errors(form.direccion) %}
+                            <div class="apple-field-error">{{ form_errors(form.direccion) }}</div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="input-group">
-                <div class="col-md-12">
-                    {{form_label( form.sangreTipo ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                </div>
-                <div class="col-md-12">
-                    {{form_widget( form.sangreTipo ) }}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="input-group">
-                <div class="col-md-12">
-                    {{form_label( form.sexo ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                </div>
-                <div class="col-md-12">
-                    {{form_widget( form.sexo ) }}
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <br>
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="input-group">
-                <div class="col-md-12">
-                    {{form_label( form.location.estado ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                </div>
-                <div class="col-md-12">
-                    {{form_widget( form.location.estado ) }}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="input-group">
-                <div class="col-md-12">
-                    {{form_label( form.location.municipio ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                </div>
-                <div class="col-md-12">
-                    {{form_widget( form.location.municipio ) }}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <br>
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="input-group">
-                <div class="col-md-12">
-                    {{form_label( form.location.parroquia ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                </div>
-                <div class="col-md-12">
-                    {{form_widget( form.location.parroquia ) }}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="input-group">
-                <div class="col-md-12">
-                    {{form_label( form.location.sector ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                </div>
-                <div class="col-md-12">
-                    {{form_widget( form.location.sector ) }}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <br>
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="input-group">
-                <div class="col-md-12">
-                    {{form_label( form.direccion ) }} <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                </div>
-                <div class="col-md-12">
-                    {{form_widget( form.direccion ) }}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <br>
-    <br>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="input-group mb-3">
-                {{form_widget( form.foto ) }}
-                {{form_label( form.foto ) }}
-            </div>
-            <small>Archivos <strong>JPG y PNG</strong>, tamaño máximo <strong>2mb</strong></small> <p class="text-justify" style="font-size: 10pt; font-style: italic;">Seleccione una foto como paciente y subala para guardarla (opcional)</p>
-        </div>
-    </div>
-
-    <br>
-    <div class="row">
-        {#<div class="col-8">
-            <div class="form-check">
-                {{ form_widget(registrationForm.agreeTerms) }}
-                {{form_label( registrationForm.agreeTerms ) }}
-            </div>
-        </div>#}
-        <div class="col-md-12">
-            <button type="submit" class="btn btn-success btn-lg form-control" data-submit-once-target="submitButton">
-                <i class="bi bi-check2-circle"></i> Finalizar Registro
+        <!-- Botón de Envío -->
+        <div class="pt-2">
+            <button type="submit" 
+                    class="apple-btn btn-apple-primary btn-apple-lg w-100" 
+                    data-submit-once-target="submitButton"
+                    data-controller="apple-spring">
+                <i class="bi bi-check2-circle"></i>
+                <span>Completar Perfil y Continuar</span>
             </button>
         </div>
-        <!-- /.col -->
-    </div>
-    <!--end::Row-->
+
     {{ form_end(form) }}
 {% endblock %}

@@ -1,0 +1,121 @@
+<div class="apple-form-card">
+    <div class="form-header-group">
+        <h3 class="form-header-title">
+            <i class="bi bi-shield-plus text-primary me-2"></i>
+            {{ form_title|default('Información de la Alergia') }}
+        </h3>
+        <p class="form-header-subtitle">
+            Registra o actualiza los detalles de la alergia conocida para prevenir reacciones adversas en tus tratamientos.
+        </p>
+    </div>
+
+    {{ form_start(form, {
+        'attr': {
+            'data-controller': 'submit-once',
+            'data-action': 'submit->submit-once#disable'
+        }
+    }) }}
+
+    {{ include('base/_form_error_messages.html.twig') }}
+
+    {# Alergeno #}
+    <div class="apple-form-group">
+        <label for="{{ form.alergeno.vars.id }}" class="apple-field-label">
+            <i class="bi bi-virus"></i>
+            {{ form_label(form.alergeno) }}
+        </label>
+        <div>
+            {{ form_widget(form.alergeno) }}
+        </div>
+        <div class="form-text mt-1 text-secondary small">
+            Selecciona la sustancia, medicamento o alimento que causa la reacción alérgica.
+        </div>
+        {{ form_errors(form.alergeno) }}
+    </div>
+
+    {# Reacciones (Multiple) #}
+    <div class="apple-form-group">
+        <label for="{{ form.reacciones.vars.id }}" class="apple-field-label">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            {{ form_label(form.reacciones) }}
+        </label>
+        <div>
+            {{ form_widget(form.reacciones) }}
+        </div>
+        <div class="form-text mt-1 text-secondary small">
+            Puedes seleccionar una o más manifestaciones clínicas asociadas (ej. urticaria, dificultad respiratoria).
+        </div>
+        {{ form_errors(form.reacciones) }}
+    </div>
+
+    {# Severidad (Apple Segmented Selector) #}
+    <div class="apple-form-group">
+        <label class="apple-field-label">
+            <i class="bi bi-activity"></i>
+            {{ form_label(form.severidad) }}
+        </label>
+        <div class="apple-severity-selector" role="radiogroup" aria-label="Severidad de la alergia">
+            {% for child in form.severidad %}
+                {% set sevValue = child.vars.value %}
+                <div class="apple-severity-option apple-severity-{{ sevValue }}">
+                    {{ form_widget(child, {'attr': {'class': 'apple-severity-input'}}) }}
+                    <label for="{{ child.vars.id }}" class="apple-severity-label" data-controller="apple-spring">
+                        <span class="apple-severity-indicator">
+                            {% if sevValue == 'min' %}
+                                <i class="bi bi-shield-check"></i>
+                            {% elseif sevValue == 'mod' %}
+                                <i class="bi bi-exclamation-triangle"></i>
+                            {% else %}
+                                <i class="bi bi-shield-fill-exclamation"></i>
+                            {% endif %}
+                        </span>
+                        <span class="apple-severity-text">{{ child.vars.label }}</span>
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="form-text mt-1 text-secondary small">
+            Indica la intensidad o gravedad con la que se presenta esta reacción en tu organismo.
+        </div>
+        {{ form_errors(form.severidad) }}
+    </div>
+
+    {# Observaciones #}
+    <div class="apple-form-group">
+        <label for="{{ form.observaciones.vars.id }}" class="apple-field-label">
+            <i class="bi bi-card-text"></i>
+            {{ form_label(form.observaciones) }}
+        </label>
+        <div>
+            {{ form_widget(form.observaciones, {
+                'attr': {
+                    'placeholder': 'Indica detalles complementarios, antecedentes o recomendaciones de tu médico de cabecera...'
+                }
+            }) }}
+        </div>
+        <div class="form-text mt-1 text-secondary small">
+            Describe cualquier síntoma adicional o condición que el personal deba conocer (Opcional).
+        </div>
+        {{ form_errors(form.observaciones) }}
+    </div>
+
+    {# Acciones #}
+    <div class="apple-form-actions">
+        <a href="{{ path('my_profile_show', {'uuid': app.user.externalProfile.uuid}) }}" 
+           class="apple-btn btn-apple-secondary" 
+           data-controller="apple-spring">
+            <i class="bi bi-arrow-left"></i>
+            <span>Cancelar</span>
+        </a>
+
+        <button type="submit" 
+                class="apple-btn btn-apple-primary" 
+                data-controller="apple-spring" 
+                data-submit-once-target="submitButton">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ button_label|default('Guardar Alergia') }}</span>
+        </button>
+    </div>
+
+    {{ form_end(form) }}
+</div>

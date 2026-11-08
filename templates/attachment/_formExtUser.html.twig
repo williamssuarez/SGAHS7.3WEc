@@ -1,0 +1,127 @@
+<div class="apple-form-card" data-controller="apple-upload-dropzone">
+    <div class="form-header-group">
+        <h3 class="form-header-title">
+            <i class="bi bi-cloud-arrow-up-fill text-primary me-2"></i>
+            {{ form_title|default('Subir Documento o Archivo') }}
+        </h3>
+        <p class="form-header-subtitle">
+            Adjunta tus documentos médicos, cédula de identidad, resultados de exámenes o cualquier comprobante para tu expediente digital.
+        </p>
+    </div>
+
+    {{ form_start(form, {
+        'attr': {
+            'data-controller': 'submit-once',
+            'data-action': 'submit->submit-once#disable'
+        }
+    }) }}
+
+    {{ include('base/_form_error_messages.html.twig') }}
+
+    {# Dropzone de Archivo #}
+    <div class="apple-form-group">
+        <label class="apple-field-label">
+            <i class="bi bi-paperclip"></i>
+            Documento a Adjuntar
+        </label>
+
+        <div class="apple-upload-dropzone"
+             tabindex="0"
+             role="button"
+             aria-label="Zona para subir archivo"
+             data-apple-upload-dropzone-target="dropzone"
+             data-action="click->apple-upload-dropzone#triggerBrowse dragover->apple-upload-dropzone#onDragOver dragenter->apple-upload-dropzone#onDragOver dragleave->apple-upload-dropzone#onDragLeave drop->apple-upload-dropzone#onDrop">
+
+            {{ form_widget(form.file, {
+                'attr': {
+                    'class': 'apple-dropzone-input',
+                    'data-apple-upload-dropzone-target': 'input',
+                    'data-action': 'change->apple-upload-dropzone#onInputChange'
+                }
+            }) }}
+
+            {# Estado Inicial / Sin Archivo #}
+            <div data-apple-upload-dropzone-target="prompt">
+                <div class="apple-dropzone-icon">
+                    <i class="bi bi-cloud-arrow-up-fill"></i>
+                </div>
+                <h4 class="apple-dropzone-title">Arrastra y suelta tu archivo aquí</h4>
+                <p class="apple-dropzone-subtitle">o haz clic para explorar tus documentos</p>
+                <div class="apple-format-chips">
+                    <span class="apple-format-chip">JPG</span>
+                    <span class="apple-format-chip">PNG</span>
+                    <span class="apple-format-chip">PDF</span>
+                    <span class="apple-format-chip">Máx. 2 MB</span>
+                    <span class="apple-format-chip chip-danger">Requerido</span>
+                </div>
+            </div>
+
+            {# Previsualización de Archivo Seleccionado #}
+            <div class="d-none" data-apple-upload-dropzone-target="preview">
+                <div class="apple-file-preview">
+                    <div class="preview-icon">
+                        <i data-apple-upload-dropzone-target="fileIcon" class="bi bi-file-earmark-check-fill text-primary"></i>
+                    </div>
+                    <div class="preview-info">
+                        <div class="preview-name" data-apple-upload-dropzone-target="fileName">documento.pdf</div>
+                        <div class="preview-size" data-apple-upload-dropzone-target="fileSize">0 KB</div>
+                    </div>
+                    <div class="preview-actions">
+                        <button type="button" 
+                                class="btn-clear-file" 
+                                data-action="click->apple-upload-dropzone#clearFile"
+                                title="Quitar o cambiar archivo">
+                            <i class="bi bi-arrow-repeat"></i>
+                            <span>Cambiar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-text mt-2 text-secondary small">
+            Selecciona un archivo válido (.jpg, .png o .pdf) de hasta 2 megabytes de tamaño.
+        </div>
+        {{ form_errors(form.file) }}
+    </div>
+
+    {# Nombre del Archivo (Opcional) #}
+    <div class="apple-form-group">
+        <label for="{{ form.nombre.vars.id }}" class="apple-field-label">
+            <i class="bi bi-tag-fill"></i>
+            {{ form_label(form.nombre) }}
+        </label>
+        <div>
+            {{ form_widget(form.nombre, {
+                'attr': {
+                    'data-apple-upload-dropzone-target': 'nameInput',
+                    'placeholder': 'Ej. Cédula de Identidad, Examen Cardiológico...'
+                }
+            }) }}
+        </div>
+        <div class="form-text mt-1 text-secondary small">
+            Escribe un nombre descriptivo para identificarlo fácilmente en tu expediente. Si lo dejas vacío, se utilizará el nombre original del archivo.
+        </div>
+        {{ form_errors(form.nombre) }}
+    </div>
+
+    {# Acciones #}
+    <div class="apple-form-actions">
+        <a href="{{ path('my_profile_show', {'uuid': app.user.externalProfile.uuid}) }}" 
+           class="apple-btn btn-apple-secondary" 
+           data-controller="apple-spring">
+            <i class="bi bi-arrow-left"></i>
+            <span>Cancelar</span>
+        </a>
+
+        <button type="submit" 
+                class="apple-btn btn-apple-primary" 
+                data-controller="apple-spring" 
+                data-submit-once-target="submitButton">
+            <i class="bi bi-cloud-arrow-up-fill"></i>
+            <span>{{ button_label|default('Subir Archivo') }}</span>
+        </button>
+    </div>
+
+    {{ form_end(form) }}
+</div>

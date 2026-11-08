@@ -4,6 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.attachments_dir: '%kernel.project_dir%/var/uploads/attachments'
     app.paciente_photo_path: '/uploads/pacientes/files/'
     app.external_user_photo_path: '/uploads/profiles/'
 
@@ -24,6 +25,10 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Service\AttachmentUploader:
+        arguments:
+            $targetDirectory: '%app.attachments_dir%'
+
     App\Service\FileUploader:
         arguments:
             $targetDirectory: '%kernel.project_dir%/public/uploads/pacientes/files'

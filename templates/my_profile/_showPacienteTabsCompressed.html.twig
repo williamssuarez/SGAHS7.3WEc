@@ -1,70 +1,64 @@
-<div class="card-body">
-    <ul class="nav nav-tabs" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="tabVitales" data-bs-toggle="tab" data-bs-target="#tabVitales-pane" type="button" role="tab" aria-controls="tabVitales-pane" aria-selected="true">
-                <i class="bi bi-heart-pulse-fill"></i> Vitales y biométricos
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tabMedicaciones" data-bs-toggle="tab" data-bs-target="#tabMedicaciones-pane" type="button" role="tab" aria-controls="tabMedicaciones-pane" aria-selected="false">
-                <i class="bi bi-capsule-pill"></i> Medicaciones
-            </button>
-        </li>
+<div class="apple-tabs-module">
+    <!-- Apple Segmented Bar (Fluid Touch & Desktop Drag/Wheel Scroll) -->
+    <div class="apple-segmented-bar-wrapper" data-controller="apple-segmented">
+        <button type="button" class="apple-scroll-btn apple-scroll-btn-left" data-apple-segmented-target="prevBtn" data-action="click->apple-segmented#scrollPrev" aria-label="Desplazar a la izquierda">
+            <i class="bi bi-chevron-left"></i>
+        </button>
 
-        {# --- TAB DROPDOWN --- #}
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
-                <i class="fa fa-notes-medical"></i> Antecedentes
-            </a>
-            <ul class="dropdown-menu">
-                <li>
-                    <button class="dropdown-item" id="tabAlergias" data-bs-toggle="tab" data-bs-target="#tabAlergias-pane" type="button" role="tab">
-                        <i class="bi bi-virus"></i> Alergias
-                    </button>
-                </li>
-                <li>
-                    <button class="dropdown-item" id="tabCondiciones" data-bs-toggle="tab" data-bs-target="#tabCondiciones-pane" type="button" role="tab">
-                        <i class="fa fa-person-cane"></i> Condiciones
-                    </button>
-                </li>
-                <li>
-                    <button class="dropdown-item" id="tabEnfermedades" data-bs-toggle="tab" data-bs-target="#tabEnfermedades-pane" type="button" role="tab">
-                        <i class="fa-solid fa-head-side-cough"></i> Enfermedades
-                    </button>
-                </li>
-                <li>
-                    <button class="dropdown-item" id="tabDiscapacidades" data-bs-toggle="tab" data-bs-target="#tabDiscapacidades-pane" type="button" role="tab">
-                        <i class="bi bi-person-wheelchair"></i> Discapacidades
-                    </button>
-                </li>
-                <li>
-                    <button class="dropdown-item" id="tabInmunizaciones" data-bs-toggle="tab" data-bs-target="#tabInmunizaciones-pane" type="button" role="tab">
-                        <i class="fa-solid fa-syringe"></i> Inmunizaciones
-                    </button>
-                </li>
-            </ul>
-        </li>
+        <div class="apple-segmented-bar" role="tablist" data-apple-segmented-target="bar">
+            <button class="apple-segmented-item active" id="tabVitales" data-bs-toggle="tab" data-bs-target="#tabVitales-pane" type="button" role="tab" aria-controls="tabVitales-pane" aria-selected="true" data-controller="apple-spring">
+                <i class="bi bi-heart-pulse-fill text-danger"></i>
+                <span>Signos Vitales</span>
+            </button>
 
-        {# --- TAB DROPDOWN 2 --- #}
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
-                <i class="fa fa-notes-medical"></i> Administrativo
-            </a>
-            <ul class="dropdown-menu">
-                <li>
-                    <button class="dropdown-item" id="tabArchivos" data-bs-toggle="tab" data-bs-target="#tabArchivos-pane" type="button" role="tab">
-                        <i class="bi bi-folder-fill"></i> Archivos
-                    </button>
-                </li>
-                <li>
-                    <button class="dropdown-item" id="tabHistorial" data-bs-toggle="tab" data-bs-target="#tabHistorial-pane" type="button" role="tab">
-                        <i class="bi bi-clock-history"></i> Historial
-                    </button>
-                </li>
-            </ul>
-        </li>
-    </ul>
-    <div class="tab-content" id="formTabContent">
+            <button class="apple-segmented-item" id="tabMedicaciones" data-bs-toggle="tab" data-bs-target="#tabMedicaciones-pane" type="button" role="tab" aria-controls="tabMedicaciones-pane" aria-selected="false" data-controller="apple-spring">
+                <i class="bi bi-capsule-pill text-primary"></i>
+                <span>Medicaciones</span>
+            </button>
+
+            <button class="apple-segmented-item" id="tabAlergias" data-bs-toggle="tab" data-bs-target="#tabAlergias-pane" type="button" role="tab" aria-controls="tabAlergias-pane" aria-selected="false" data-controller="apple-spring">
+                <i class="bi bi-virus text-warning"></i>
+                <span>Alergias</span>
+            </button>
+
+            <button class="apple-segmented-item" id="tabCondiciones" data-bs-toggle="tab" data-bs-target="#tabCondiciones-pane" type="button" role="tab" aria-controls="tabCondiciones-pane" aria-selected="false" data-controller="apple-spring">
+                <i class="fa fa-person-cane text-info"></i>
+                <span>Condiciones</span>
+            </button>
+
+            <button class="apple-segmented-item" id="tabEnfermedades" data-bs-toggle="tab" data-bs-target="#tabEnfermedades-pane" type="button" role="tab" aria-controls="tabEnfermedades-pane" aria-selected="false" data-controller="apple-spring">
+                <i class="fa-solid fa-head-side-cough text-secondary"></i>
+                <span>Enfermedades</span>
+            </button>
+
+            <button class="apple-segmented-item" id="tabDiscapacidades" data-bs-toggle="tab" data-bs-target="#tabDiscapacidades-pane" type="button" role="tab" aria-controls="tabDiscapacidades-pane" aria-selected="false" data-controller="apple-spring">
+                <i class="bi bi-person-wheelchair text-success"></i>
+                <span>Discapacidades</span>
+            </button>
+
+            <button class="apple-segmented-item" id="tabInmunizaciones" data-bs-toggle="tab" data-bs-target="#tabInmunizaciones-pane" type="button" role="tab" aria-controls="tabInmunizaciones-pane" aria-selected="false" data-controller="apple-spring">
+                <i class="fa-solid fa-syringe text-danger"></i>
+                <span>Vacunas</span>
+            </button>
+
+            <button class="apple-segmented-item" id="tabArchivos" data-bs-toggle="tab" data-bs-target="#tabArchivos-pane" type="button" role="tab" aria-controls="tabArchivos-pane" aria-selected="false" data-controller="apple-spring">
+                <i class="bi bi-folder-fill text-primary"></i>
+                <span>Documentos</span>
+            </button>
+
+            <button class="apple-segmented-item" id="tabHistorial" data-bs-toggle="tab" data-bs-target="#tabHistorial-pane" type="button" role="tab" aria-controls="tabHistorial-pane" aria-selected="false" data-controller="apple-spring">
+                <i class="bi bi-clock-history text-muted"></i>
+                <span>Historial</span>
+            </button>
+        </div>
+
+        <button type="button" class="apple-scroll-btn apple-scroll-btn-right" data-apple-segmented-target="nextBtn" data-action="click->apple-segmented#scrollNext" aria-label="Desplazar a la derecha">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Contenido de Pestañas con Transición Suave AutoAnimate -->
+    <div class="tab-content pt-2" id="formTabContent" data-controller="auto-animate">
         <div class="tab-pane fade show active" id="tabVitales-pane" role="tabpanel" aria-labelledby="tabVitales" tabindex="0">
             {{ include('my_profile/tabs/paciente_vitales.html.twig') }}
         </div>

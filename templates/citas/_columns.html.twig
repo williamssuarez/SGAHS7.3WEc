@@ -56,6 +56,40 @@
             </button>
         </form>
 
+        {# 3. GESTIÓN: REASIGNAR / REPROGRAMAR #}
+        <div class="btn-group d-inline">
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Más opciones de gestión">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                <li>
+                    <button type="button" class="dropdown-item py-2"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#modalReassignDoctor"
+                            data-action-url="{{ path('app_citas_reassign', {'id': row.id}) }}"
+                            data-paciente-nombre="{{ row.paciente.nombre }} {{ row.paciente.apellido }}"
+                            data-especialidad-id="{{ row.especialidad ? row.especialidad.id : '' }}"
+                            data-especialidad-nombre="{{ row.especialidad ? row.especialidad.nombre : 'General' }}"
+                            data-redirect-route="app_citas_index_list">
+                        <i class="fa-solid fa-arrow-right-arrow-left text-warning me-2"></i> Reasignar Médico
+                    </button>
+                </li>
+                <li>
+                    <button type="button" class="dropdown-item py-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalRescheduleCita"
+                            data-cita-id="{{ row.id }}"
+                            data-paciente-nombre="{{ row.paciente.nombre }} {{ row.paciente.apellido }}"
+                            data-especialidad-id="{{ row.especialidad ? row.especialidad.id : '' }}"
+                            data-especialidad-nombre="{{ row.especialidad ? row.especialidad.nombre : 'General' }}"
+                            data-fecha-original="{{ row.fecha|date('d/m/Y') }} {{ row.horaInicio|date('H:i') }}"
+                            data-redirect-route="app_citas_index_list">
+                        <i class="fa-solid fa-calendar-alt text-primary me-2"></i> Reprogramar Cita
+                    </button>
+                </li>
+            </ul>
+        </div>
+
     {% endif %}
 {% else %}
     {{ value }}

@@ -4,6 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Citas;
 use App\Entity\Consulta;
+use App\Entity\Consultorios;
+use App\Entity\Especialidades;
+use App\Entity\InternalProfile;
+use App\Entity\User;
 use App\Entity\StatusRecord;
 use App\Enum\AuditTipos;
 use App\Enum\CitasEstados;
@@ -12,6 +16,8 @@ use App\Enum\ConsultaTipos;
 use App\Form\CitasType;
 use App\Repository\CitasRepository;
 use App\Service\AuditService;
+use App\Service\AppointmentReassignService;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Composer\XdebugHandler\Status;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -81,6 +87,7 @@ final class CitasController extends AbstractController
             'currentState' => $state,
             'startDate' => $startDate->format('Y-m-d'),
             'endDate' => $endDate->format('Y-m-d'),
+            'consultorios' => $entityManager->getRepository(Consultorios::class)->getActivesforSelect()->getQuery()->getResult(),
         ]);
     }
 
@@ -95,6 +102,7 @@ final class CitasController extends AbstractController
         return $this->render('citas/show.html.twig', [
             'cita' => $cita,
             'paciente' => $cita->getPaciente(),
+            'consultorios' => $entityManager->getRepository(Consultorios::class)->getActivesforSelect()->getQuery()->getResult(),
         ]);
     }
 
@@ -174,6 +182,134 @@ final class CitasController extends AbstractController
 
         // Redirect back to the pending list
         return $this->redirectToRoute('app_citas_index_list');
+    }
+
+    #[Route('/api/doctores-disponibles/{id}', name: 'app_citas_api_doctores_disponibles', methods: ['GET'])]
+    public function apiDoctoresDisponibles(
+        Especialidades $especialidad,
+        AppointmentReassignService $reassignService
+    ): JsonResponse {
+        $doctors = $reassignService->getEligibleDoctors($especialidad);
+        return $this->json($doctors);
+    }
+
+    #[Route('/{id}/reassign', name: 'app_citas_reassign', methods: ['POST'])]
+    public function reassign(
+        Request $request,
+        Citas $cita,
+        AppointmentReassignService $reassignService,
+        EntityManagerInterface $em
+    ): Response {
+        $doctorId = $request->request->get('doctor_id');
+        $motivo = trim($request->request->get('motivo_reasignacion', ''));
+        $redirectRoute = $request->request->get('redirect', 'app_citas_index_list');
+        $allowedRedirects = ['app_citas_index_list', 'app_citas_show', 'app_consulta_pendientes_index'];
+        if (!in_array($redirectRoute, $allowedRedirects, true)) {
+            $redirectRoute = 'app_citas_index_list';
+        }
+
+        if (!$doctorId || empty($motivo)) {
+            $this->addFlash('error', 'Debe seleccionar un médico de destino y suministrar el motivo de reasignación.');
+            return $this->redirectToRoute($redirectRoute, $redirectRoute === 'app_citas_show' ? ['id' => $cita->getId()] : []);
+        }
+
+        $newDoctor = $em->getRepository(InternalProfile::class)->find($doctorId);
+        if (!$newDoctor) {
+            $this->addFlash('error', 'El médico seleccionado no es válido.');
+            return $this->redirectToRoute($redirectRoute, $redirectRoute === 'app_citas_show' ? ['id' => $cita->getId()] : []);
+        }
+
+        try {
+            $user = $em->getRepository(User::class)->find($this->getUser());
+            $reassignService->reassignCita($cita, $newDoctor, $motivo, $user);
+            $this->addFlash('success', sprintf('Cita reasignada al Dr. %s %s.', $newDoctor->getNombre(), $newDoctor->getApellido()));
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Error al reasignar cita: ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute($redirectRoute, $redirectRoute === 'app_citas_show' ? ['id' => $cita->getId()] : []);
+    }
+
+    #[Route('/{id}/reschedule-manual', name: 'app_citas_reschedule_manual', methods: ['POST'])]
+    public function rescheduleManual(
+        Request $request,
+        Citas $cita,
+        AppointmentReassignService $reassignService,
+        EntityManagerInterface $em
+    ): Response {
+        $newDateStr = $request->request->get('nueva_fecha');
+        $newStartStr = $request->request->get('nueva_hora_inicio');
+        $newEndStr = $request->request->get('nueva_hora_fin');
+        $newDoctorId = $request->request->get('doctor_id');
+        $newConsultorioId = $request->request->get('consultorio_id');
+        $motivo = trim($request->request->get('motivo_reprogramacion', ''));
+        $redirectRoute = $request->request->get('redirect', 'app_citas_index_list');
+        $allowedRedirects = ['app_citas_index_list', 'app_citas_show'];
+        if (!in_array($redirectRoute, $allowedRedirects, true)) {
+            $redirectRoute = 'app_citas_index_list';
+        }
+
+        if (!$newDateStr || !$newStartStr || empty($motivo)) {
+            $this->addFlash('error', 'La fecha, hora de inicio y motivo son obligatorios para reprogramar.');
+            return $this->redirectToRoute($redirectRoute, $redirectRoute === 'app_citas_show' ? ['id' => $cita->getId()] : []);
+        }
+
+        try {
+            $newDate = new \DateTime($newDateStr);
+            $newStart = new \DateTime($newStartStr);
+            $newEnd = $newEndStr ? new \DateTime($newEndStr) : (clone $newStart)->modify('+30 minutes');
+
+            $newDoctor = $newDoctorId ? $em->getRepository(InternalProfile::class)->find($newDoctorId) : null;
+            $newConsultorio = $newConsultorioId ? $em->getRepository(Consultorios::class)->find($newConsultorioId) : null;
+
+            $user = $em->getRepository(User::class)->find($this->getUser());
+            $reassignService->rescheduleCitaManually(
+                $cita,
+                $newDate,
+                $newStart,
+                $newEnd,
+                $newDoctor,
+                $newConsultorio,
+                $motivo,
+                $user
+            );
+
+            $this->addFlash('success', 'Cita reprogramada exitosamente.');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Error al reprogramar la cita: ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute($redirectRoute, $redirectRoute === 'app_citas_show' ? ['id' => $cita->getId()] : []);
+    }
+
+    #[Route('/{id}/reschedule-queue', name: 'app_citas_reschedule_queue', methods: ['POST'])]
+    public function rescheduleQueue(
+        Request $request,
+        Citas $cita,
+        AppointmentReassignService $reassignService,
+        EntityManagerInterface $em
+    ): Response {
+        $motivo = trim($request->request->get('motivo_reprogramacion', ''));
+        $redirectRoute = $request->request->get('redirect', 'app_citas_index_list');
+        $allowedRedirects = ['app_citas_index_list', 'app_citas_show'];
+        if (!in_array($redirectRoute, $allowedRedirects, true)) {
+            $redirectRoute = 'app_citas_index_list';
+        }
+
+        if (empty($motivo)) {
+            $this->addFlash('error', 'El motivo de reprogramación es obligatorio.');
+            return $this->redirectToRoute($redirectRoute, $redirectRoute === 'app_citas_show' ? ['id' => $cita->getId()] : []);
+        }
+
+        try {
+            $user = $em->getRepository(User::class)->find($this->getUser());
+            $reassignService->returnCitaToSchedulerQueue($cita, $motivo, $user);
+            $this->addFlash('success', 'La solicitud ha sido devuelta a la cola de espera del scheduler con máxima prioridad.');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Error al reenviar solicitud a la cola: ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute($redirectRoute, $redirectRoute === 'app_citas_show' ? ['id' => $cita->getId()] : []);
     }
 
     private function generatePdfReport(Request $request, \Doctrine\ORM\EntityManagerInterface $entityManager, \DateTime $startDate, \DateTime $endDate, string $state): Response

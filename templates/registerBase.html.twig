@@ -2,7 +2,15 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Registrarse{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Crear Cuenta | SGAHS{% endblock %}</title>
+        <script>
+            (function() {
+                var theme = localStorage.getItem('theme') || 
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            })();
+        </script>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
@@ -12,33 +20,82 @@
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </head>
-    <body class="register-page bg-body-secondary">
-    <div class="register-box">
-        <div class="register-logo">
-            <a href="#"><b>SGAHS</b></a>
+    <body class="apple-auth-page">
+        <!-- Selector Flotante de Tema Claro / Oscuro -->
+        <div class="apple-auth-theme-switch">
+            <button type="button" 
+                    class="apple-theme-toggle-btn shadow-sm"
+                    data-controller="apple-spring theme-toggle"
+                    data-action="click->theme-toggle#toggle"
+                    data-theme-toggle-btn
+                    aria-label="Alternar modo oscuro o claro"
+                    title="Alternar tema">
+                <i class="bi bi-sun-fill text-warning" data-theme-icon></i>
+            </button>
         </div>
-        <!-- /.register-logo -->
-        <div class="card">
-            <div class="card-body register-card-body">
-                <p class="register-box-msg">Registrar Usuario</p>
-                {% block body %}{% endblock %}
-                <div class="social-auth-links text-center mb-3 d-grid gap-2">
-                    <p>- O -</p>
-                    {#<a href="#" class="btn btn-primary">
-                        <i class="bi bi-facebook me-2"></i> Sign in using Facebook
-                    </a>#}
-                    <a href="{{ path('connect_google_start') }}" class="btn btn-danger">
-                        <i class="bi bi-google me-2"></i> Ingrese usando Google
-                    </a>
+
+        <div class="apple-auth-canvas">
+            <div class="apple-auth-container">
+                <!-- Cabecera de Marca SGAHS -->
+                <div class="apple-auth-brand">
+                    <div class="apple-auth-logo-badge">
+                        <i class="bi bi-heart-pulse-fill"></i>
+                    </div>
+                    <h1 class="apple-auth-title">SGAHS</h1>
+                    <p class="apple-auth-subtitle">Sistema de Gestión y Atención Hospitalaria</p>
                 </div>
-                <!-- /.social-auth-links -->
-                <p class="mb-0">
-                    <a href="{{ path('app_login') }}" class="text-center"> Si ya tiene cuenta inicie sesion </a>
-                </p>
+
+                <!-- Tarjeta Frosted Glass Apple -->
+                <div class="apple-auth-card shadow-lg">
+                    {% block auth_card %}
+                        <div class="apple-auth-card-header">
+                            <h2 class="apple-auth-card-title">{% block card_title %}Crear Cuenta{% endblock %}</h2>
+                            <p class="apple-auth-card-desc">{% block card_desc %}Únete al portal de pacientes de SGAHS{% endblock %}</p>
+                        </div>
+
+                        <div class="apple-auth-card-body">
+                            {% block body %}{% endblock %}
+                        </div>
+
+                        {% block auth_footer %}
+                            <div class="apple-auth-divider">
+                                <span>o</span>
+                            </div>
+
+                            <div class="apple-auth-social">
+                                <a href="{{ path('connect_google_start') }}" 
+                                   class="apple-btn-google shadow-sm" 
+                                   data-controller="apple-spring">
+                                    <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18">
+                                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.66v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.15z"/>
+                                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.17 0 9.97 0 12s.45 3.83 1.25 5.42l4.03-3.15z"/>
+                                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.93 6.72-4.93z"/>
+                                    </svg>
+                                    <span>Continuar con Google</span>
+                                </a>
+                            </div>
+
+                            <div class="apple-auth-links">
+                                <div class="apple-auth-sublink">
+                                    <span>¿Ya tienes una cuenta?</span>
+                                    <a href="{{ path('app_login') }}" class="apple-auth-link-bold">Inicia sesión</a>
+                                </div>
+                            </div>
+                        {% endblock %}
+                    {% endblock %}
+                </div>
+
+                <!-- Pie de Página Institucional -->
+                <div class="apple-auth-footer-note">
+                    <p>© {{ 'now'|date('Y') }} SGAHS. Gestión de salud confidencial y segura.</p>
+                    <p class="apple-recaptcha-disclaimer">
+                        Protegido por reCAPTCHA · 
+                        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacidad</a> · 
+                        <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Términos</a>
+                    </p>
+                </div>
             </div>
-            <!-- /.register-card-body -->
         </div>
-    </div>
-    <!-- /.register-box -->
     </body>
 </html>

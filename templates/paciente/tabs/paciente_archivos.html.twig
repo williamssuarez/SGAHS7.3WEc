@@ -33,7 +33,7 @@
             </td>
             <td>{{ entity.dateUploaded|date('d/m/Y') }}</td>
             <td>
-                <a class="btn btn-success" href="{{ asset(paciente_photo_path ~ entity.fileHash) }}" target="_blank">
+                <a class="btn btn-success" href="{{ path('app_attachment_download', {'id': entity.id}) }}" target="_blank">
                     <i class="bi bi-download"></i>
                 </a>
                 <button class="btn btn-danger"

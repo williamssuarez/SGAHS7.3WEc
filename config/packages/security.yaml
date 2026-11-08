@@ -65,42 +65,77 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         # Public
-        - { path: ^/login, roles: PUBLIC_ACCESS  }
-        - { path: ^/register, roles: PUBLIC_ACCESS  }
+        - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/logout$, roles: PUBLIC_ACCESS }
+        - { path: ^/register$, roles: PUBLIC_ACCESS }
+        - { path: ^/verify/email$, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+        - { path: ^/connect/google, roles: PUBLIC_ACCESS }
+        - { path: ^/verifications, roles: PUBLIC_ACCESS }
+        - { path: ^/qr-code, roles: PUBLIC_ACCESS }
+        - { path: ^/build, roles: PUBLIC_ACCESS }
 
         # User / External
         - { path: ^/dashboard, roles: ROLE_USER }
+        - { path: ^/forzar-cambio-clave, roles: ROLE_USER }
+        - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/my_profile, roles: ROLE_EXTERNAL }
+        - { path: ^/citas/solicitudes, roles: ROLE_EXTERNAL }
 
         # Admin Config / Master Data
+        - { path: ^/admin/database, roles: ROLE_ADMIN }
+        - { path: ^/auditoria, roles: ROLE_ADMIN }
         - { path: ^/empleado, roles: ROLE_ADMIN }
         - { path: ^/user_internal, roles: ROLE_ADMIN }
         - { path: ^/user_external, roles: ROLE_ADMIN }
         - { path: ^/ciudad, roles: ROLE_ADMIN }
+        - { path: ^/ubicaciones, roles: ROLE_ADMIN }
+        - { path: ^/estado, roles: ROLE_ADMIN }
+        - { path: ^/municipio, roles: ROLE_ADMIN }
+        - { path: ^/parroquia, roles: ROLE_ADMIN }
+        - { path: ^/sector, roles: ROLE_ADMIN }
         - { path: ^/enfermedades, roles: ROLE_ADMIN }
         - { path: ^/alergenos, roles: ROLE_ADMIN }
         - { path: ^/medicamentos, roles: ROLE_ADMIN }
         - { path: ^/inmunizaciones, roles: ROLE_ADMIN }
         - { path: ^/discapacidades, roles: ROLE_ADMIN }
+        - { path: ^/condiciones, roles: ROLE_ADMIN }
+        - { path: ^/reacciones, roles: ROLE_ADMIN }
         - { path: ^/especialidades, roles: ROLE_ADMIN }
+        - { path: ^/doctores, roles: ROLE_ADMIN }
         - { path: ^/consultorios, roles: ROLE_ADMIN }
+        - { path: ^/area, roles: ROLE_ADMIN }
+        - { path: ^/habitacion, roles: ROLE_ADMIN }
         - { path: ^/citas/configuraciones, roles: ROLE_ADMIN }
         - { path: ^/citas/estadisticas, roles: ROLE_ADMIN }
+        - { path: ^/horario, roles: ROLE_ADMIN }
         - { path: ^/turno, roles: ROLE_ADMIN }
 
         # Common Medical Records Access
+        - { path: ^/mi-perfil, roles: ROLE_INTERNAL }
         - { path: ^/paciente, roles: ROLE_INTERNAL }
         - { path: ^/historia/paciente, roles: ROLE_INTERNAL }
+        - { path: ^/vitales, roles: ROLE_INTERNAL }
+        - { path: ^/alergias, roles: ROLE_INTERNAL }
+        - { path: ^/cama, roles: ROLE_INTERNAL }
+        - { path: ^/hospitalizacioncama, roles: ROLE_INTERNAL }
+        - { path: ^/zona/cama, roles: ROLE_INTERNAL }
+        - { path: ^/citas, roles: ROLE_INTERNAL }
 
         # Modules
         - { path: ^/consulta, roles: ROLE_DOCTOR }
-        - { path: ^/visita, roles: ROLE_RECEPTIONIST }
-        - { path: ^/horario, roles: ROLE_ADMIN }
+        - { path: ^/prescripciones, roles: ROLE_DOCTOR }
         - { path: ^/emergencia, roles: ROLE_ER }
         - { path: ^/hospitalizacion, roles: ROLE_HOSPITALIZATION }
+        - { path: ^/visita, roles: ROLE_RECEPTIONIST }
         - { path: ^/cirugia, roles: ROLE_OR }
         - { path: ^/quirofano, roles: ROLE_ADMIN_QUIROFANO }
         - { path: ^/inventario, roles: ROLE_ADMIN_QUIROFANO }
+        - { path: ^/articulo, roles: ROLE_ADMIN_QUIROFANO }
+        - { path: ^/attachment, roles: ROLE_USER }
+
+        # Global Default-Deny
+        - { path: ^/, roles: ROLE_USER }
 
 when@test:
     security:

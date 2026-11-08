@@ -47,6 +47,19 @@ final class MyProfileController extends AbstractController
         ]);
     }
 
+    #[Route('/me', name: 'app_my_profile', priority: 10, methods: ['GET'])]
+    public function me(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_EXTERNAL');
+        /** @var User|null $user */
+        $user = $this->getUser();
+        if (!$user || !$user->getExternalProfile()) {
+            throw $this->createNotFoundException('Perfil de paciente no encontrado.');
+        }
+
+        return $this->redirectToRoute('my_profile_show', ['uuid' => $user->getExternalProfile()->getUuid()]);
+    }
+
     #[Route('/{uuid}', name: 'my_profile_show', methods: ['GET'])]
     public function show(#[MapEntity(mapping: ['uuid' => 'uuid'])] ExternalProfile $externalProfile, EntityManagerInterface $entityManager): Response
     {

@@ -1,0 +1,456 @@
+{# templates/citas/_reassign_reschedule_modals.html.twig #}
+
+{# ========================================================================= #}
+{# 1. MODAL REASIGNACIÓN DE MÉDICO / DERIVACIÓN                              #}
+{# ========================================================================= #}
+<div class="modal fade" id="modalReassignDoctor" tabindex="-1" aria-labelledby="modalReassignDoctorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-warning bg-opacity-10 border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </div>
+                    <h5 class="modal-title fw-bold text-dark" id="modalReassignDoctorLabel">Reasignar Médico / Derivar</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <form id="formReassignDoctor" method="POST" action="">
+                <div class="modal-body p-4">
+                    <input type="hidden" name="redirect" id="reassignRedirectInput" value="app_citas_index_list">
+
+                    <div class="alert alert-light border rounded-3 p-3 mb-3">
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Paciente</small>
+                                <span class="fw-bold text-dark" id="reassignPacienteNombreText">--</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Especialidad</small>
+                                <span class="badge bg-primary bg-opacity-10 text-primary border" id="reassignEspecialidadText">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reassignDoctorSelect" class="form-label fw-bold small text-secondary">
+                            Médico Sustituto / Destino <span class="text-danger">*</span>
+                        </label>
+                        <select name="doctor_id" id="reassignDoctorSelect" class="form-select form-select-lg" required>
+                            <option value="">Cargando especialistas disponibles...</option>
+                        </select>
+                        <div class="form-text small">
+                            <i class="bi bi-info-circle text-primary"></i> Los médicos con turno activo hoy aparecen destacados primero.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="reassignMotivoTextarea" class="form-label fw-bold small text-secondary">
+                            Motivo de la Reasignación / Derivación <span class="text-danger">*</span>
+                        </label>
+                        <div class="d-flex flex-wrap gap-1 mb-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 quick-motive-btn" data-target="#reassignMotivoTextarea">
+                                Emergencia médica
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 quick-motive-btn" data-target="#reassignMotivoTextarea">
+                                Retiro imprevisto
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 quick-motive-btn" data-target="#reassignMotivoTextarea">
+                                Sobrecarga en sala
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 quick-motive-btn" data-target="#reassignMotivoTextarea">
+                                Solicitud del paciente
+                            </button>
+                        </div>
+                        <textarea name="motivo_reasignacion" id="reassignMotivoTextarea" class="form-control" rows="3" placeholder="Explique brevemente la justificación..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning fw-bold rounded-pill px-4 shadow-sm">
+                        <i class="fa-solid fa-check me-1"></i> Confirmar Reasignación
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{# ========================================================================= #}
+{# 2. MODAL REPROGRAMACIÓN DE CITA (MANUAL O COLA DEL SCHEDULER)             #}
+{# ========================================================================= #}
+<div class="modal fade" id="modalRescheduleCita" tabindex="-1" aria-labelledby="modalRescheduleCitaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-primary bg-opacity-10 border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                        <i class="fa-solid fa-calendar-alt"></i>
+                    </div>
+                    <h5 class="modal-title fw-bold text-dark" id="modalRescheduleCitaLabel">Reprogramar Cita Médica</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="alert alert-light border rounded-3 p-3 mb-4">
+                    <div class="row g-2">
+                        <div class="col-sm-4">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Paciente</small>
+                            <span class="fw-bold text-dark" id="reschedulePacienteNombreText">--</span>
+                        </div>
+                        <div class="col-sm-4">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Especialidad</small>
+                            <span class="badge bg-primary bg-opacity-10 text-primary border" id="rescheduleEspecialidadText">--</span>
+                        </div>
+                        <div class="col-sm-4">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.75rem;">Fecha Original</small>
+                            <span class="text-muted fw-bold" id="rescheduleFechaOriginalText">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="nav nav-pills nav-fill mb-4 p-1 bg-light rounded-pill" id="rescheduleTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill fw-bold" id="reschedule-manual-tab" data-bs-toggle="pill" data-bs-target="#tabRescheduleManual" type="button" role="tab">
+                            <i class="fa-solid fa-pen-to-square me-1"></i> 1. Reprogramación Manual
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill fw-bold" id="reschedule-queue-tab" data-bs-toggle="pill" data-bs-target="#tabRescheduleQueue" type="button" role="tab">
+                            <i class="fa-solid fa-rotate me-1"></i> 2. Devolver a Cola Automática
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="rescheduleTabsContent">
+                    {# Pestaña 1: Manual #}
+                    <div class="tab-pane fade show active" id="tabRescheduleManual" role="tabpanel">
+                        <form id="formRescheduleManual" method="POST" action="">
+                            <input type="hidden" name="redirect" id="rescheduleManualRedirectInput" value="app_citas_index_list">
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold small text-secondary">Nueva Fecha <span class="text-danger">*</span></label>
+                                    <input type="date" name="nueva_fecha" class="form-control" min="{{ "now"|date('Y-m-d') }}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold small text-secondary">Hora Inicio <span class="text-danger">*</span></label>
+                                    <input type="time" name="nueva_hora_inicio" class="form-control" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold small text-secondary">Hora Fin</label>
+                                    <input type="time" name="nueva_hora_fin" class="form-control" placeholder="Automático (+30 min)">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-secondary">Médico Asignado</label>
+                                    <select name="doctor_id" id="rescheduleDoctorSelect" class="form-select">
+                                        <option value="">Mantener actual o cargar especialistas...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-secondary">Consultorio</label>
+                                    <select name="consultorio_id" class="form-select">
+                                        <option value="">Mantener consultorio actual</option>
+                                        {% if consultorios is defined %}
+                                            {% for c in consultorios %}
+                                                <option value="{{ c.id }}">{{ c.nombre }}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-secondary">Motivo de Reprogramación <span class="text-danger">*</span></label>
+                                <div class="d-flex flex-wrap gap-1 mb-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 quick-motive-btn" data-target="#rescheduleManualMotivo">
+                                        Solicitud del paciente
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 quick-motive-btn" data-target="#rescheduleManualMotivo">
+                                        Médico no disponible
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 quick-motive-btn" data-target="#rescheduleManualMotivo">
+                                        Mantenimiento de consultorio
+                                    </button>
+                                </div>
+                                <textarea name="motivo_reprogramacion" id="rescheduleManualMotivo" class="form-control" rows="2" placeholder="Indique la justificación de la reprogramación..." required></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary fw-bold rounded-pill px-4 shadow-sm">
+                                    <i class="fa-solid fa-calendar-check me-1"></i> Guardar Nueva Fecha
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    {# Pestaña 2: Cola del Scheduler #}
+                    <div class="tab-pane fade" id="tabRescheduleQueue" role="tabpanel">
+                        <form id="formRescheduleQueue" method="POST" action="">
+                            <input type="hidden" name="redirect" id="rescheduleQueueRedirectInput" value="app_citas_index_list">
+
+                            <div class="alert alert-info border-info-subtle rounded-3 p-3 mb-4">
+                                <div class="d-flex gap-3">
+                                    <i class="fa-solid fa-circle-info fa-2x text-info"></i>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Reencolado con Máxima Prioridad</h6>
+                                        <p class="small mb-0 text-secondary">
+                                            Al confirmar, la cita actual será cancelada por motivo de reprogramación y la solicitud original
+                                            volverá al estado <strong>Pendiente</strong> con <strong>puntuación de prioridad máxima</strong>.
+                                            El comando automatizado <code>app:schedule-appointments</code> le asignará el primer slot libre disponible.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-secondary">Motivo de Envío a Cola <span class="text-danger">*</span></label>
+                                <div class="d-flex flex-wrap gap-1 mb-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 quick-motive-btn" data-target="#rescheduleQueueMotivo">
+                                        Paciente no puede asistir hoy
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 quick-motive-btn" data-target="#rescheduleQueueMotivo">
+                                        Reprogramación por contingencia médica
+                                    </button>
+                                </div>
+                                <textarea name="motivo_reprogramacion" id="rescheduleQueueMotivo" class="form-control" rows="3" placeholder="Explique por qué se devuelve al agendador..." required></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-success fw-bold rounded-pill px-4 shadow-sm">
+                                    <i class="fa-solid fa-rotate me-1"></i> Enviar a Cola Prioritaria
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ========================================================================= #}
+{# 3. MODAL DE CONTINGENCIA / TRANSFERENCIA MASIVA DE JORNADA                #}
+{# ========================================================================= #}
+<div class="modal fade" id="modalBatchReassign" tabindex="-1" aria-labelledby="modalBatchReassignLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-danger bg-opacity-10 border-0 pb-0">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <h5 class="modal-title fw-bold text-dark" id="modalBatchReassignLabel">Declarar Contingencia de Jornada</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <form id="formBatchReassign" method="POST" action="{{ path('app_consulta_batch_reassign') }}">
+                <div class="modal-body p-4">
+                    <input type="hidden" name="origin_doctor_id" id="batchOriginDoctorId" value="">
+
+                    <div class="alert alert-danger bg-danger bg-opacity-10 border-danger-subtle rounded-3 p-3 mb-3">
+                        <div class="d-flex gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-danger mt-1"></i>
+                            <div>
+                                <strong class="d-block text-danger">Transferencia Masiva Inmediata</strong>
+                                <span class="small text-secondary">
+                                    Esta acción transferirá <strong id="batchTotalPacientesCount">todos los pacientes</strong>
+                                    (en sala de espera y citas de hoy) al médico sustituto que elija.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="batchTargetDoctorSelect" class="form-label fw-bold small text-secondary">
+                            Médico Sustituto que asume la guardia <span class="text-danger">*</span>
+                        </label>
+                        <select name="target_doctor_id" id="batchTargetDoctorSelect" class="form-select form-select-lg" required>
+                            <option value="">Seleccione médico de destino...</option>
+                        </select>
+                        <div class="form-text small">
+                            <i class="bi bi-info-circle text-primary"></i> Se priorizan médicos de la misma especialidad con turno activo hoy.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="batchMotivoTextarea" class="form-label fw-bold small text-secondary">
+                            Motivo Institucional de la Contingencia <span class="text-danger">*</span>
+                        </label>
+                        <div class="d-flex flex-wrap gap-1 mb-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 quick-motive-btn" data-target="#batchMotivoTextarea">
+                                Retiro imprevisto por emergencia
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 quick-motive-btn" data-target="#batchMotivoTextarea">
+                                Médico asignado a pabellón de urgencia
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 quick-motive-btn" data-target="#batchMotivoTextarea">
+                                Permiso médico de salud sobrevenido
+                            </button>
+                        </div>
+                        <textarea name="motivo_batch" id="batchMotivoTextarea" class="form-control" rows="3" placeholder="Detalle la razón de la ausencia o relevo del médico..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
+                        <i class="fa-solid fa-users-viewfinder me-1"></i> Transferir Pacientes Ahora
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{# ========================================================================= #}
+{# 4. JAVASCRIPT CONTROLADOR DE MODALES                                      #}
+{# ========================================================================= #}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Helper para botones de motivos rápidos
+    document.querySelectorAll('.quick-motive-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetSelector = this.getAttribute('data-target');
+            const target = document.querySelector(targetSelector);
+            if (target) {
+                target.value = this.textContent.trim();
+                target.focus();
+            }
+        });
+    });
+
+    // Helper para poblar selects de médicos vía AJAX
+    function loadDoctorsIntoSelect(especialidadId, selectElement, defaultText) {
+        if (!selectElement) return;
+        selectElement.innerHTML = '<option value="">Cargando especialistas...</option>';
+
+        if (!especialidadId) {
+            selectElement.innerHTML = '<option value="">-- No hay especialidad asociada --</option>';
+            return;
+        }
+
+        fetch('/citas/api/doctores-disponibles/' + encodeURIComponent(especialidadId))
+            .then(function(res) {
+                if (!res.ok) throw new Error('Error al consultar doctores disponibles.');
+                return res.json();
+            })
+            .then(function(doctors) {
+                selectElement.innerHTML = '';
+                if (!doctors || doctors.length === 0) {
+                    selectElement.innerHTML = '<option value="">No hay otros médicos activos para esta especialidad</option>';
+                    return;
+                }
+
+                const defaultOpt = document.createElement('option');
+                defaultOpt.value = '';
+                defaultOpt.textContent = defaultText || '-- Seleccione médico --';
+                selectElement.appendChild(defaultOpt);
+
+                doctors.forEach(function(doc) {
+                    const opt = document.createElement('option');
+                    opt.value = doc.id;
+                    const shiftBadge = doc.hasShiftToday ? '🟢 [DE TURNO HOY' + (doc.shiftDetails ? ': ' + doc.shiftDetails : '') + '] ' : '⚪ ';
+                    opt.textContent = shiftBadge + doc.nombre;
+                    selectElement.appendChild(opt);
+                });
+            })
+            .catch(function(err) {
+                selectElement.innerHTML = '<option value="">Error cargando médicos</option>';
+            });
+    }
+
+    // Modal 1: Reasignación Individual
+    const modalReassign = document.getElementById('modalReassignDoctor');
+    if (modalReassign) {
+        modalReassign.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            if (!button) return;
+
+            const actionUrl = button.getAttribute('data-action-url');
+            const pacienteNombre = button.getAttribute('data-paciente-nombre') || 'Paciente';
+            const especialidadId = button.getAttribute('data-especialidad-id');
+            const especialidadNombre = button.getAttribute('data-especialidad-nombre') || 'General';
+            const redirectRoute = button.getAttribute('data-redirect-route') || 'app_citas_index_list';
+
+            const form = document.getElementById('formReassignDoctor');
+            if (form && actionUrl) form.action = actionUrl;
+
+            document.getElementById('reassignPacienteNombreText').textContent = pacienteNombre;
+            document.getElementById('reassignEspecialidadText').textContent = especialidadNombre;
+            document.getElementById('reassignRedirectInput').value = redirectRoute;
+            document.getElementById('reassignMotivoTextarea').value = '';
+
+            const select = document.getElementById('reassignDoctorSelect');
+            loadDoctorsIntoSelect(especialidadId, select, '-- Seleccionar médico de destino --');
+        });
+    }
+
+    // Modal 2: Reprogramación de Cita
+    const modalReschedule = document.getElementById('modalRescheduleCita');
+    if (modalReschedule) {
+        modalReschedule.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            if (!button) return;
+
+            const citaId = button.getAttribute('data-cita-id');
+            const pacienteNombre = button.getAttribute('data-paciente-nombre') || 'Paciente';
+            const especialidadId = button.getAttribute('data-especialidad-id');
+            const especialidadNombre = button.getAttribute('data-especialidad-nombre') || 'General';
+            const fechaOriginal = button.getAttribute('data-fecha-original') || '--';
+            const redirectRoute = button.getAttribute('data-redirect-route') || 'app_citas_index_list';
+
+            document.getElementById('reschedulePacienteNombreText').textContent = pacienteNombre;
+            document.getElementById('rescheduleEspecialidadText').textContent = especialidadNombre;
+            document.getElementById('rescheduleFechaOriginalText').textContent = fechaOriginal;
+
+            const formManual = document.getElementById('formRescheduleManual');
+            if (formManual && citaId) {
+                formManual.action = '/citas/' + citaId + '/reschedule-manual';
+                document.getElementById('rescheduleManualRedirectInput').value = redirectRoute;
+            }
+
+            const formQueue = document.getElementById('formRescheduleQueue');
+            if (formQueue && citaId) {
+                formQueue.action = '/citas/' + citaId + '/reschedule-queue';
+                document.getElementById('rescheduleQueueRedirectInput').value = redirectRoute;
+            }
+
+            const selectDoc = document.getElementById('rescheduleDoctorSelect');
+            loadDoctorsIntoSelect(especialidadId, selectDoc, '-- Mantener doctor actual o cambiar --');
+        });
+    }
+
+    // Modal 3: Batch Reassign (Contingencia de Jornada)
+    const modalBatch = document.getElementById('modalBatchReassign');
+    if (modalBatch) {
+        modalBatch.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            if (!button) return;
+
+            const total = button.getAttribute('data-total-pacientes') || '';
+            const especialidadId = button.getAttribute('data-especialidad-id');
+            const originDoctorId = button.getAttribute('data-origin-doctor-id') || '';
+
+            if (total) {
+                document.getElementById('batchTotalPacientesCount').textContent = total + ' paciente(s)';
+            }
+            document.getElementById('batchOriginDoctorId').value = originDoctorId;
+            document.getElementById('batchMotivoTextarea').value = '';
+
+            const select = document.getElementById('batchTargetDoctorSelect');
+            loadDoctorsIntoSelect(especialidadId, select, '-- Seleccione médico sustituto --');
+        });
+    }
+});
+</script>

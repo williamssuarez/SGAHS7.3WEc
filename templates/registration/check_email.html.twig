@@ -1,73 +1,182 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Verificacion Pendiente - SGAHS</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-    {% block stylesheets %}
-        {{ encore_entry_link_tags('app') }}
-    {% endblock %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Verificación de Correo | SGAHS</title>
+        <script>
+            (function() {
+                var theme = localStorage.getItem('theme') || 
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            })();
+        </script>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
 
-    {% block javascripts %}
-        {{ encore_entry_script_tags('app') }}
-    {% endblock %}
-</head>
-    <body class="login-page bg-body-secondary d-flex align-items-center justify-content-center" style="min-height: 100vh;">
-        <div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
-            <div class="col-md-6 col-lg-5">
-                <div class="card shadow-lg border-warning">
-                    <div class="card-header bg-warning text-dark text-center py-3">
-                        <h4 class="mb-0 fw-bold"><i class="bi bi-envelope-exclamation"></i> Verificación Pendiente</h4>
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body class="apple-auth-page">
+        <!-- Selector Flotante de Tema Claro / Oscuro -->
+        <div class="apple-auth-theme-switch">
+            <button type="button" 
+                    class="apple-theme-toggle-btn shadow-sm"
+                    data-controller="apple-spring theme-toggle"
+                    data-action="click->theme-toggle#toggle"
+                    data-theme-toggle-btn
+                    aria-label="Alternar modo oscuro o claro"
+                    title="Alternar tema">
+                <i class="bi bi-sun-fill text-warning" data-theme-icon></i>
+            </button>
+        </div>
+
+        <div class="apple-auth-canvas">
+            <div class="apple-auth-container">
+                <!-- Cabecera de Marca SGAHS -->
+                <div class="apple-auth-brand">
+                    <div class="apple-auth-logo-badge">
+                        <i class="bi bi-heart-pulse-fill"></i>
                     </div>
-                    <div class="card-body p-4 text-center">
+                    <h1 class="apple-auth-title">SGAHS</h1>
+                    <p class="apple-auth-subtitle">Sistema de Gestión y Atención Hospitalaria</p>
+                </div>
 
-                        {# ADD THIS BLOCK TO CATCH THE CONTROLLER FLASH MESSAGES #}
-                        {% for label, messages in app.flashes %}
-                            {% for message in messages %}
-                                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show text-start shadow-sm" role="alert">
-                                    <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            {% endfor %}
+                <!-- Tarjeta Frosted Glass Apple -->
+                <div class="apple-auth-card shadow-lg">
+                    <!-- Distintivo de Correo Central -->
+                    <div class="text-center mb-3">
+                        <div class="apple-inbox-badge mx-auto">
+                            <i class="bi bi-envelope-check-fill"></i>
+                        </div>
+                    </div>
+
+                    <div class="apple-auth-card-header text-center mb-3">
+                        <h2 class="apple-auth-card-title">Verifica tu Correo</h2>
+                        <p class="apple-auth-card-desc">Para continuar, confirma tu dirección de correo electrónico.</p>
+                    </div>
+
+                    <!-- Mensajes Flash del Sistema -->
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="apple-alert apple-alert-{{ label == 'error' ? 'danger' : (label == 'success' ? 'success' : 'info') }} mb-3" role="alert">
+                                <i class="bi bi-{{ label == 'error' ? 'exclamation-circle-fill' : (label == 'success' ? 'check-circle-fill' : 'info-circle-fill') }} flex-shrink-0"></i>
+                                <div>{{ message }}</div>
+                            </div>
                         {% endfor %}
-                        <p class="text-muted fs-5 mb-4">
-                            Para continuar usando el sistema, debes confirmar tu dirección de correo electrónico.
-                        </p>
-                        <div class="alert alert-info text-start shadow-sm mb-4">
-                            <i class="bi bi-info-circle-fill me-2"></i> Hemos enviado un enlace de confirmación a tu correo. Revisa tu bandeja de entrada o carpeta de Spam.
-                        </div>
-                        <div class="d-grid gap-2">
-                            <a href="{{ path('app_logout') }}" class="btn btn-outline-secondary fw-bold shadow-sm">
-                                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                            </a>
-                        </div>
-                        <div class="mt-4 text-center">
-                            <p class="text-muted small fw-bold" id="timer-text">Puedes solicitar un nuevo enlace en <span id="countdown" class="text-danger">120</span> segundos.</p>
+                    {% endfor %}
 
-                            <a href="{{ path('app_verify_resend_email') }}" id="resend-btn" class="btn btn-outline-primary fw-bold shadow-sm d-none">
-                                <i class="bi bi-send"></i> Reenviar Correo de Confirmación
-                            </a>
+                    <!-- Chip con el Correo del Usuario -->
+                    {% if app.user and app.user.email %}
+                        <div class="apple-email-chip mb-3">
+                            <i class="bi bi-envelope-at-fill me-2 text-primary"></i>
+                            <span>{{ app.user.email }}</span>
                         </div>
+                    {% endif %}
+
+                    <!-- Nota Informativa -->
+                    <div class="apple-alert apple-alert-info mb-4" role="alert">
+                        <i class="bi bi-info-circle-fill flex-shrink-0"></i>
+                        <div>Hemos enviado un enlace de confirmación a tu correo. Revisa tu bandeja de entrada o carpeta de Spam.</div>
                     </div>
+
+                    <!-- Temporizador y Botón de Reenvío -->
+                    <div class="text-center mb-4">
+                        <div id="timer-pill" class="apple-timer-pill">
+                            <i class="bi bi-clock-history me-1 text-primary"></i>
+                            <span>Puedes solicitar otro enlace en <strong id="countdown" class="text-primary">120</strong>s</span>
+                        </div>
+
+                        <a href="{{ path('app_verify_resend_email') }}" 
+                           id="resend-btn" 
+                           class="apple-btn btn-apple-primary btn-apple-lg w-100 d-none" 
+                           data-controller="apple-spring">
+                            <i class="bi bi-send-fill"></i>
+                            <span>Reenviar Correo de Confirmación</span>
+                        </a>
+                    </div>
+
+                    <!-- Acción Secundaria: Cerrar Sesión -->
+                    <div class="d-grid pt-3 border-top">
+                        <a href="{{ path('app_logout') }}" 
+                           class="apple-btn btn-apple-secondary w-100" 
+                           data-controller="apple-spring">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Cerrar Sesión</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Pie de Página Institucional -->
+                <div class="apple-auth-footer-note">
+                    <p>© {{ 'now'|date('Y') }} SGAHS. Gestión de salud confidencial y segura.</p>
                 </div>
             </div>
         </div>
+
         <script>
-            let timeLeft = 120;
-            const timerText = document.getElementById('timer-text');
-            const countdownSpan = document.getElementById('countdown');
-            const resendBtn = document.getElementById('resend-btn');
+            document.addEventListener('DOMContentLoaded', function() {
+                const STORAGE_KEY = 'sgahs_resend_cooldown_target';
+                const COOLDOWN_SECONDS = 120;
+                const timerPill = document.getElementById('timer-pill');
+                const countdownSpan = document.getElementById('countdown');
+                const resendBtn = document.getElementById('resend-btn');
 
-            const timer = setInterval(() => {
-                timeLeft--;
-                countdownSpan.textContent = timeLeft;
+                let targetTime = parseInt(sessionStorage.getItem(STORAGE_KEY), 10);
+                const hasErrorFlash = document.querySelector('.apple-alert-danger');
 
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    timerText.classList.add('d-none');
-                    resendBtn.classList.remove('d-none');
+                // Si no hay tiempo guardado o el backend devolvió error de tasa, fijar 120s
+                if (!targetTime || isNaN(targetTime) || hasErrorFlash) {
+                    targetTime = Date.now() + (COOLDOWN_SECONDS * 1000);
+                    sessionStorage.setItem(STORAGE_KEY, targetTime);
                 }
-            }, 1000);
+
+                function updateCountdown() {
+                    const remaining = Math.ceil((targetTime - Date.now()) / 1000);
+
+                    if (remaining <= 0) {
+                        if (timerPill) timerPill.classList.add('d-none');
+                        if (resendBtn) {
+                            resendBtn.classList.remove('d-none');
+                            resendBtn.classList.add('apple-fade-in');
+                        }
+                        return false;
+                    } else {
+                        if (timerPill) {
+                            timerPill.classList.remove('d-none');
+                        }
+                        if (countdownSpan) {
+                            countdownSpan.textContent = remaining;
+                        }
+                        if (resendBtn) {
+                            resendBtn.classList.add('d-none');
+                        }
+                        return true;
+                    }
+                }
+
+                // Ejecución inicial
+                if (updateCountdown()) {
+                    const interval = setInterval(function() {
+                        if (!updateCountdown()) {
+                            clearInterval(interval);
+                        }
+                    }, 1000);
+                }
+
+                // Manejo de clic en reenviar: reiniciar tiempo en almacenamiento y mostrar feedback
+                if (resendBtn) {
+                    resendBtn.addEventListener('click', function() {
+                        sessionStorage.setItem(STORAGE_KEY, Date.now() + (COOLDOWN_SECONDS * 1000));
+                        resendBtn.classList.add('disabled');
+                        resendBtn.style.pointerEvents = 'none';
+                        resendBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span><span>Reenviando correo...</span>';
+                    });
+                }
+            });
         </script>
     </body>
 </html>

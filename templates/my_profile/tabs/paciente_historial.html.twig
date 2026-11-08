@@ -1,31 +1,31 @@
-<h4>
-    Historial del Paciente
-</h4>
-
-<div class="card card-success card-outline">
-    <div class="card-header">
-        <div class="card-title">Historial Completo</div>
+<div class="apple-section">
+    <div class="apple-section-header">
+        <h5 class="text-body"><i class="bi bi-clock-history text-primary me-2"></i> Historial Clínico Completo</h5>
+        <small class="text-secondary">Registro cronológico de eventos</small>
     </div>
 
-    <div class="card-body">
-        <table class="table table-striped dtHere">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle dtHere">
             <thead>
-            <tr>
-                <th>#</th>
-                <th>Accion</th>
-                <th>Detalles</th>
-                <th>Creado por</th>
-                <th>Fecha Creada</th>
-            </tr>
+                <tr class="text-secondary small text-uppercase">
+                    <th>#</th>
+                    <th>Acción</th>
+                    <th>Detalles del Evento</th>
+                    <th>Registrado por</th>
+                    <th>Fecha y Hora</th>
+                </tr>
             </thead>
             <tbody>
             {% for entity in allHistory %}
-                <tr class="align-middle">
-                    <td>{{ loop.index }}</td>
-                    <td>{{ entity.tipoAudit.getReadableText }}</td>
-                    <td>{{ entity.descripcion }}</td>
-                    <td>{{ entity.uidCreate|public_username|title }}</td>
-                    <td><strong>{{ entity.created|date('d-m-Y H:i') }}</strong> <i>({{ entity.created|time_ago }})</i></td>
+                <tr>
+                    <td class="text-muted small">{{ loop.index }}</td>
+                    <td class="fw-semibold">{{ entity.tipoAudit.getReadableText }}</td>
+                    <td class="small text-secondary">{{ entity.descripcion }}</td>
+                    <td class="small">{{ entity.uidCreate|public_username|title }}</td>
+                    <td class="text-nowrap small">
+                        <strong>{{ entity.created|date('d/m/Y H:i') }}</strong>
+                        <div class="text-muted small">({{ entity.created|time_ago }})</div>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>

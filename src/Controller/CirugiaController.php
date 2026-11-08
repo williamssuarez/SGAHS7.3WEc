@@ -10,6 +10,7 @@ use App\Entity\InventarioLote;
 use App\Entity\MovimientoInventario;
 use App\Entity\ProtocoloOperatorio;
 use App\Entity\Quirofano;
+use App\Entity\StatusRecord;
 use App\Enum\AuditTipos;
 use App\Enum\CirugiaEstados;
 use App\Enum\HospitalizacionEstados;
@@ -143,6 +144,7 @@ final class CirugiaController extends AbstractController
 
         return $this->render('cirugia/pizarra_publica.html.twig', [
             'surgeries' => $surgeries,
+            'today' => $today,
         ]);
     }
 
@@ -194,25 +196,19 @@ final class CirugiaController extends AbstractController
             switch ($nextState){
                 case 'en_sala':
                     // Check if room is already occupied by another surgery
-                    $activeSurgeriesInRoom = $em->getRepository(Cirugia::class)->createQueryBuilder('c')
-                        ->where('c.quirofano = :room')
-                        ->andWhere('c.id != :currentId')
-                        ->andWhere('c.estado IN (:activeStates)')
-                        ->setParameter('room', $cirugia->getQuirofano())
-                        ->setParameter('currentId', $cirugia->getId())
-                        ->setParameter('activeStates', [
-                            CirugiaEstados::EN_SALA,
-                            CirugiaEstados::PRE_OP,
-                            CirugiaEstados::TRANS_OP,
-                            CirugiaEstados::POST_OP
-                        ])
-                        ->getQuery()
-                        ->getResult();
+                    $activeSurgery = $em->getRepository(Cirugia::class)->findActiveSurgeryInQuirofano($cirugia->getQuirofano(), $cirugia->getId());
 
-                    if (count($activeSurgeriesInRoom) > 0) {
+                    if ($activeSurgery !== null) {
+                        $paciente = $activeSurgery->getPaciente();
+                        $pacienteNombre = $paciente ? ($paciente->getNombre() . ' ' . $paciente->getApellido()) : 'Desconocido';
                         return $this->json([
                             'success' => false,
-                            'message' => 'No se puede ingresar al paciente. El ' . $cirugia->getQuirofano()->getNombre() . ' ya se encuentra ocupado por otra cirugía en curso.'
+                            'message' => sprintf(
+                                'No se puede ingresar al paciente. El %s ya se encuentra ocupado por otra cirugía en curso (%s - %s).',
+                                $cirugia->getQuirofano()->getNombre(),
+                                $pacienteNombre,
+                                $activeSurgery->getProcedimientoPropuesto()
+                            )
                         ], 400);
                     }
 

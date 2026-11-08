@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Editar Alergia para {{ paciente.nombre|title }}{% endblock %}
+{% block title %}Editar Alergia | {{ paciente.nombre|title }}{% endblock %}
 
 {% block titlewrap %}
-    Editar Alergia para {{ paciente.nombre|title }}
+    Editar Alergia para {{ paciente.nombre|title }} {{ paciente.apellido|title }}
 {% endblock %}
 
 {% block breadcrumb %}
@@ -12,9 +12,24 @@
 {% endblock %}
 
 {% block body %}
-    <div class="col-md-12">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('alergias/_form.html.twig') }}
+<div class="apple-portal-container">
+    {# Mensajes Flash #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show border-0 rounded-4 shadow-sm mb-4" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            {{ include('alergias/_formExtUser.html.twig', {
+                'form_title': 'Editar Registro de Alergia',
+                'button_label': 'Actualizar Alergia'
+            }) }}
         </div>
     </div>
+</div>
 {% endblock %}

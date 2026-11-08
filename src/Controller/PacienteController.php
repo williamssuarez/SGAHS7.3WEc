@@ -46,14 +46,22 @@ final class PacienteController extends AbstractController
     #[Route('/autocomplete-paciente', name: 'app_paciente_autocomplete', methods: ['GET'])]
     public function search(Request $request, PacienteRepository $repository): JsonResponse
     {
-        $query = $request->query->get('q'); // Select2 sends the search term as 'q'
+        $query = (string) $request->query->get('q', '');
+        if (trim($query) === '') {
+            return new JsonResponse(['results' => []]);
+        }
+
         $pacientes = $repository->findByNombreLike($query);
 
         $results = [];
         foreach ($pacientes as $p) {
+            $formattedCedula = is_numeric($p->getCedula())
+                ? number_format((float) $p->getCedula(), 0, ',', '.')
+                : $p->getCedula();
+
             $results[] = [
                 'id' => $p->getId(),
-                'text' => sprintf('%s %s (%s-%s)', $p->getNombre(), $p->getApellido(), $p->getTipoDocumento(), number_format($p->getCedula(), 0, ',', '.'))
+                'text' => sprintf('%s %s (%s-%s)', $p->getNombre(), $p->getApellido(), $p->getTipoDocumento(), $formattedCedula)
             ];
         }
 

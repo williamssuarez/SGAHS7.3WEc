@@ -76,12 +76,14 @@ class CitasSolicitudesRepository extends ServiceEntityRepository
             ->join('s.especialidad', 'e')
             ->andWhere('s.created between :start AND :end')
             ->andWhere('s.estadoSolicitud NOT IN (:excluded)')
+            ->andWhere('e.status = :sts')
             ->setParameter('start', $startDate)
             ->setParameter('end', $endDate)
             ->setParameter('excluded', [
                 \App\Enum\CitasSolicitudesEstados::CANCELED,
                 \App\Enum\CitasSolicitudesEstados::REJECTED
             ])
+            ->setParameter('sts', $this->getEntityManager()->getRepository(StatusRecord::class)->getActive())
             ->groupBy('e.id')
             ->getQuery()
             ->getArrayResult();

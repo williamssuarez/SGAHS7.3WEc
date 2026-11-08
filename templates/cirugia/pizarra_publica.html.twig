@@ -28,7 +28,14 @@
             {% for cirugia in surgeries %}
                 {% set isFinalizada = (cirugia.estado.value == 'finalizada' or cirugia.estado.value == 'cancelada') %}
                 <tr class="{{ isFinalizada ? 'opacity-50 text-muted' : '' }}">
-                    <td class="fw-bold">{{ cirugia.fechaHoraProgramada|date('H:i', false) }}</td>
+                    <td class="fw-bold">
+                        {{ cirugia.fechaHoraProgramada|date('H:i', false) }}
+                        {% if cirugia.fechaHoraProgramada|date('Y-m-d') != today|date('Y-m-d') %}
+                            <small class="badge bg-warning text-dark d-block mt-1">
+                                <i class="bi bi-clock-history"></i> {{ cirugia.fechaHoraProgramada|date('d/m') }}
+                            </small>
+                        {% endif %}
+                    </td>
                     <td>
                         {# Privacy Standard: First Initial + Last Name #}
                         {{ cirugia.paciente.nombre|first|upper }}. {{ cirugia.paciente.apellido }}
