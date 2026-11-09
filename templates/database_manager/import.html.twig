@@ -14,45 +14,96 @@
 {% block body %}
     {% for label, messages in app.flashes %}
         {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+            <div class="alert apple-alert apple-alert-{{ label == 'error' or label == 'danger' ? 'danger' : (label == 'warning' ? 'warning' : 'success') }} alert-dismissible fade show mb-4" role="alert">
+                <i class="bi {{ label == 'error' or label == 'danger' ? 'bi-exclamation-octagon-fill' : (label == 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill') }} me-2"></i>
+                <div class="flex-grow-1">{{ message }}</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
     {% endfor %}
 
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card card-warning card-outline">
-                <div class="card-header">
-                    <h3 class="card-title text-danger"><i class="bi bi-exclamation-triangle-fill"></i> Autorización Requerida</h3>
-                </div>
+    <div class="apple-portal-container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8 col-xl-7">
+                <div class="apple-form-card shadow-sm mb-4">
+                    <div class="apple-form-header d-flex align-items-center gap-3 pb-3 mb-4 border-bottom">
+                        <div class="apple-header-icon-badge" style="background: rgba(255, 149, 0, 0.15); color: #ff9f0a;">
+                            <i class="bi bi-shield-exclamation"></i>
+                        </div>
+                        <div>
+                            <h3 class="apple-table-title m-0 text-warning">Restauración Crítica de Datos</h3>
+                            <p class="apple-table-subtitle text-muted small m-0">
+                                Autorización requerida para sobrescribir la base de datos
+                            </p>
+                        </div>
+                    </div>
 
-                <div class="card-body">
-                    <p class="text-muted">
-                        Está a punto de restaurar la base de datos desde el archivo <strong>{{ filename }}</strong>.<br>
-                        Esta acción sobrescribirá todos los datos actuales del sistema. Por seguridad, debe confirmar su contraseña de administrador y registrar el motivo de esta acción.
-                    </p>
+                    <div class="apple-alert apple-alert-warning d-flex align-items-start gap-2 mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill fs-5 mt-1"></i>
+                        <div class="small">
+                            Está a punto de restaurar la base de datos desde el archivo <code class="apple-code-badge fw-bold">{{ filename }}</code>.<br>
+                            <strong>Atención:</strong> Esta acción sobrescribirá todos los registros actuales con el estado del respaldo. Por seguridad, confirme su clave de administrador y el motivo.
+                        </div>
+                    </div>
 
                     {{ form_start(form, {
                         'attr': {
                             'data-controller': 'confirm-submit',
                             'data-action': 'submit->confirm-submit#confirm',
-                            'data-confirm-submit-title-value': 'Confirmar Restauración',
-                            'data-confirm-submit-text-value': 'ATENCIÓN: Se perderán los datos posteriores a la fecha del respaldo. Esta acción sobrescribirá la base de datos actual.',
+                            'data-confirm-submit-title-value': '¿Confirmar Restauración?',
+                            'data-confirm-submit-text-value': 'ATENCIÓN: Se perderán los datos generados después de la fecha de este respaldo. La base de datos actual será sobrescrita por completo.',
                             'data-confirm-submit-icon-value': 'warning',
-                            'data-confirm-submit-confirm-button-text-value': 'Sí, restaurar',
+                            'data-confirm-submit-confirm-button-text-value': 'Sí, restaurar base de datos',
                             'data-confirm-submit-loading-text-value': 'Restaurando base de datos...'
                         }
                     }) }}
-                        {{ form_row(form.password) }}
-                        {{ form_row(form.reason) }}
+                        <div class="apple-form-group mb-3">
+                            <label class="apple-input-label" for="{{ form.password.vars.id }}">
+                                {{ form.password.vars.label|default('Su Clave de Administrador') }} <span class="text-danger">*</span>
+                            </label>
+                            <div class="apple-input-wrap" data-controller="password-toggle">
+                                {{ form_widget(form.password, {
+                                    'attr': {
+                                        'class': 'apple-text-input',
+                                        'placeholder': '••••••••',
+                                        'data-password-toggle-target': 'input',
+                                        'autocomplete': 'current-password'
+                                    }
+                                }) }}
+                                <button type="button"
+                                        class="apple-input-action-btn apple-spring"
+                                        data-action="click->password-toggle#toggle"
+                                        tabindex="-1"
+                                        title="Mostrar u ocultar contraseña"
+                                        aria-label="Mostrar u ocultar contraseña">
+                                    <i class="bi bi-eye-fill" data-password-toggle-target="icon"></i>
+                                </button>
+                            </div>
+                            {{ form_errors(form.password) }}
+                        </div>
+
+                        <div class="apple-form-group mb-4">
+                            <label class="apple-input-label" for="{{ form.reason.vars.id }}">
+                                {{ form.reason.vars.label|default('Motivo de la restauración') }} <span class="text-danger">*</span>
+                            </label>
+                            {{ form_widget(form.reason, {
+                                'attr': {
+                                    'class': 'apple-text-input apple-textarea',
+                                    'rows': 4,
+                                    'placeholder': 'Describa el motivo o contingencia técnica que amerita la restauración...'
+                                }
+                            }) }}
+                            {{ form_errors(form.reason) }}
+                        </div>
                         
-                        <div class="d-grid gap-2 mt-4">
-                            <button class="btn btn-warning" type="submit">
-                                Confirmar Restauración
+                        <div class="apple-form-actions d-flex flex-wrap justify-content-between align-items-center gap-3 pt-3 border-top border-secondary-subtle">
+                            <a href="{{ path('app_database_index') }}" class="btn btn-secondary apple-btn-secondary rounded-pill px-4 py-2" data-controller="apple-spring">
+                                <i class="bi bi-arrow-left me-1"></i> Cancelar
+                            </a>
+                            <button class="btn btn-warning apple-btn-warning rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2 fw-semibold" type="submit" data-controller="apple-spring">
+                                <i class="bi bi-cloud-arrow-up-fill"></i>
+                                <span>Confirmar Restauración</span>
                             </button>
-                            <a href="{{ path('app_database_index') }}" class="btn btn-secondary">Cancelar</a>
                         </div>
                     {{ form_end(form) }}
                 </div>

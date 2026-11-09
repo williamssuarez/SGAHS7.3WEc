@@ -1,144 +1,191 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard Principal{% endblock %}
+{% block title %}Dashboard Principal | SGAHS{% endblock %}
 
 {% block titlewrap %}
     Resumen Global del Sistema
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_index') }}">Inicio</a></li>
     <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid" 
+    <div class="container-fluid px-0 px-md-2" 
          data-controller="dashboard-charts"
          data-dashboard-charts-endpoint-value="{{ path('api_dashboard_admin') }}">
 
-        <!-- 4 Cards Superiores (Estilo AdminLTE 4) -->
-        <div class="row">
-            <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-primary">
-                    <div class="inner">
-                        <h3 data-dashboard-charts-target="card1">
+        <!-- 4 Tarjetas KPI Apple -->
+        <div class="row g-3 mb-4">
+            <!-- Card 1: Pacientes Registrados -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="apple-kpi-card" data-controller="apple-spring">
+                    <div class="apple-kpi-header">
+                        <div class="apple-kpi-icon apple-kpi-icon-blue">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <span class="apple-kpi-badge">Censo Total</span>
+                    </div>
+                    <div class="apple-kpi-body">
+                        <div class="apple-kpi-value" data-dashboard-charts-target="card1">
                             <div class="spinner-border spinner-border-sm" role="status">
                                 <span class="visually-hidden">Cargando...</span>
                             </div>
-                        </h3>
-                        <p>Pacientes Registrados</p>
+                        </div>
+                        <p class="apple-kpi-label">Pacientes Registrados</p>
                     </div>
-                    <i class="small-box-icon bi bi-people-fill"></i>
-                    <a href="{{ path('app_paciente_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
-                    </a>
+                    <div class="apple-kpi-footer">
+                        <a href="{{ path('app_paciente_index') }}" class="apple-kpi-link">
+                            <span>Ver pacientes</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-success">
-                    <div class="inner">
-                        <h3 data-dashboard-charts-target="card2">
+            <!-- Card 2: Citas Hoy -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="apple-kpi-card" data-controller="apple-spring">
+                    <div class="apple-kpi-header">
+                        <div class="apple-kpi-icon apple-kpi-icon-green">
+                            <i class="bi bi-calendar-check-fill"></i>
+                        </div>
+                        <span class="apple-kpi-badge">Hoy</span>
+                    </div>
+                    <div class="apple-kpi-body">
+                        <div class="apple-kpi-value" data-dashboard-charts-target="card2">
                             <div class="spinner-border spinner-border-sm" role="status">
                                 <span class="visually-hidden">Cargando...</span>
                             </div>
-                        </h3>
-                        <p>Citas Agendadas Hoy</p>
+                        </div>
+                        <p class="apple-kpi-label">Citas Agendadas</p>
                     </div>
-                    <i class="small-box-icon bi bi-calendar-check-fill"></i>
-                    <a href="{{ path('app_citas_index_expected') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
-                    </a>
+                    <div class="apple-kpi-footer">
+                        <a href="{{ path('app_citas_index_expected') }}" class="apple-kpi-link">
+                            <span>Ver agenda</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-warning">
-                    <div class="inner">
-                        <h3 class="text-dark" data-dashboard-charts-target="card3">
+            <!-- Card 3: Cirugías Hoy -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="apple-kpi-card" data-controller="apple-spring">
+                    <div class="apple-kpi-header">
+                        <div class="apple-kpi-icon apple-kpi-icon-amber">
+                            <i class="bi bi-heart-pulse-fill"></i>
+                        </div>
+                        <span class="apple-kpi-badge">Programadas</span>
+                    </div>
+                    <div class="apple-kpi-body">
+                        <div class="apple-kpi-value" data-dashboard-charts-target="card3">
                             <div class="spinner-border spinner-border-sm" role="status">
                                 <span class="visually-hidden">Cargando...</span>
                             </div>
-                        </h3>
-                        <p class="text-dark">Cirugías Hoy</p>
+                        </div>
+                        <p class="apple-kpi-label">Cirugías Hoy</p>
                     </div>
-                    <i class="small-box-icon bi bi-activity text-dark"></i>
-                    <a href="{{ path('app_cirugia_agenda') }}" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
-                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
-                    </a>
+                    <div class="apple-kpi-footer">
+                        <a href="{{ path('app_cirugia_agenda') }}" class="apple-kpi-link">
+                            <span>Ver quirófanos</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-danger">
-                    <div class="inner">
-                        <h3 data-dashboard-charts-target="card4">
+            <!-- Card 4: Emergencias Activas -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="apple-kpi-card" data-controller="apple-spring">
+                    <div class="apple-kpi-header">
+                        <div class="apple-kpi-icon apple-kpi-icon-red">
+                            <i class="bi bi-lightning-charge-fill"></i>
+                        </div>
+                        <span class="apple-kpi-badge">En Atención</span>
+                    </div>
+                    <div class="apple-kpi-body">
+                        <div class="apple-kpi-value" data-dashboard-charts-target="card4">
                             <div class="spinner-border spinner-border-sm" role="status">
                                 <span class="visually-hidden">Cargando...</span>
                             </div>
-                        </h3>
-                        <p>Emergencias Activas</p>
+                        </div>
+                        <p class="apple-kpi-label">Emergencias Activas</p>
                     </div>
-                    <i class="small-box-icon bi bi-heart-pulse-fill"></i>
-                    <a href="{{ path('app_emergencia_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
-                    </a>
+                    <div class="apple-kpi-footer">
+                        <a href="{{ path('app_emergencia_index') }}" class="apple-kpi-link">
+                            <span>Ver triaje</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Fila de Gráficos -->
-        <div class="row mt-2">
-            <!-- Gráfico de Área/Líneas -->
-            <div class="col-lg-7">
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header border-0 bg-transparent">
-                        <h3 class="card-title fw-bold text-secondary">
-                            <i class="bi bi-graph-up-arrow text-primary me-2"></i>
-                            Volumen de Atención (7 días)
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        <div style="position: relative; height: 320px; width: 100%;">
-                            <!-- Spinner de carga para barras -->
-                            <div data-dashboard-charts-target="barLoading" class="d-flex align-items-center justify-content-center h-100">
-                                <div class="spinner-border text-primary" role="status"></div>
+        <!-- Fila de Gráficos Apple Glass -->
+        <div class="row g-3">
+            <!-- Gráfico de Tendencia (7 días) -->
+            <div class="col-12 col-lg-7">
+                <div class="apple-chart-card shadow-sm">
+                    <div class="apple-chart-header">
+                        <div class="apple-chart-title-group">
+                            <div class="apple-chart-icon-badge badge-blue">
+                                <i class="bi bi-graph-up-arrow"></i>
                             </div>
-                            <!-- Canvas oculto inicialmente -->
-                            <canvas data-dashboard-charts-target="barChart" class="d-none"></canvas>
+                            <div>
+                                <h3 class="apple-chart-title">Volumen de Atención</h3>
+                                <p class="apple-chart-subtitle">Citas, consultas y emergencias</p>
+                            </div>
                         </div>
+                        <span class="apple-chart-badge">Últimos 7 días</span>
+                    </div>
+                    <div class="apple-chart-canvas-wrap">
+                        <!-- Spinner de carga -->
+                        <div data-dashboard-charts-target="barLoading" class="d-flex align-items-center justify-content-center h-100">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando gráfico...</span>
+                            </div>
+                        </div>
+                        <!-- Canvas Chart.js -->
+                        <canvas data-dashboard-charts-target="barChart" class="d-none"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Gráfico de Torta / Doughnut -->
-            <div class="col-lg-5">
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header border-0 bg-transparent">
-                        <h3 class="card-title fw-bold text-secondary">
-                            <i class="bi bi-pie-chart-fill text-danger me-2"></i>
-                            Distribución de Citas Hoy
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        <div style="position: relative; height: 320px; width: 100%;">
-                            <!-- Spinner de carga -->
-                            <div data-dashboard-charts-target="pieLoading" class="d-flex align-items-center justify-content-center h-100">
-                                <div class="spinner-border text-info" role="status"></div>
+            <!-- Gráfico Doughnut: Citas Hoy -->
+            <div class="col-12 col-lg-5">
+                <div class="apple-chart-card shadow-sm">
+                    <div class="apple-chart-header">
+                        <div class="apple-chart-title-group">
+                            <div class="apple-chart-icon-badge badge-amber">
+                                <i class="bi bi-pie-chart-fill"></i>
                             </div>
-                            <!-- Contenedor vacío si no hay citas -->
-                            <div data-dashboard-charts-target="pieEmpty" class="d-none align-items-center justify-content-center h-100">
-                                <div class="text-center text-muted">
-                                    <i class="bi bi-calendar-x fs-1 mb-2"></i>
-                                    <p class="mb-0">No hay citas agendadas para hoy.</p>
-                                </div>
+                            <div>
+                                <h3 class="apple-chart-title">Distribución de Citas</h3>
+                                <p class="apple-chart-subtitle">Estado de la agenda diaria</p>
                             </div>
-                            <!-- Canvas oculto inicialmente -->
-                            <canvas data-dashboard-charts-target="pieChart" class="d-none"></canvas>
                         </div>
+                        <span class="apple-chart-badge">Hoy</span>
+                    </div>
+                    <div class="apple-chart-canvas-wrap">
+                        <!-- Spinner de carga -->
+                        <div data-dashboard-charts-target="pieLoading" class="d-flex align-items-center justify-content-center h-100">
+                            <div class="spinner-border text-info" role="status">
+                                <span class="visually-hidden">Cargando distribución...</span>
+                            </div>
+                        </div>
+                        <!-- Contenedor vacío si no hay citas -->
+                        <div data-dashboard-charts-target="pieEmpty" class="d-none align-items-center justify-content-center flex-column h-100">
+                            <i class="bi bi-calendar-x text-muted mb-2" style="font-size: 2.5rem; opacity: 0.6;"></i>
+                            <p class="text-muted mb-0 small">No hay citas agendadas para hoy.</p>
+                        </div>
+                        <!-- Canvas Chart.js -->
+                        <canvas data-dashboard-charts-target="pieChart" class="d-none"></canvas>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 {% endblock %}

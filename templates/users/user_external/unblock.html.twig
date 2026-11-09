@@ -1,18 +1,26 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Desbloquear perfil de Usuario Externo{% endblock %}
+{% block title %}Desbloquear Perfil de Usuario Externo{% endblock %}
 
 {% block titlewrap %}
-    Desbloquear perfil de Usuario Externo
+    Desbloquear Cuenta de Usuario Externo
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_user_external_index') }}">Usuarios</a></li>
-    <li class="breadcrumb-item active" aria-current="page">{{ profile.nombre|default('Usuario') }}</li>
+    <li class="breadcrumb-item"><a href="{{ path('app_user_external_index') }}">Usuarios Externos</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_user_external_show', {'id': user.id}) }}">{{ profile.nombre|default('Usuario') }} {{ profile.apellido|default('') }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Desbloquear</li>
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid px-0">
-        {{ include('users/user_external/_admin_audit.html.twig') }}
+    <div class="apple-portal-container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8 col-xl-7">
+                {{ include('users/user_external/_admin_audit.html.twig', {
+                    'button_label': 'Desbloquear Cuenta',
+                    'back_url': path('app_user_external_index')
+                }) }}
+            </div>
+        </div>
     </div>
 {% endblock %}

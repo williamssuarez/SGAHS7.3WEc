@@ -21,11 +21,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 use Omines\DataTablesBundle\DataTableFactory;
 use App\DataTable\Type\UserInternalTableType;
 
 #[Route('/user_internal')]
+#[IsGranted('ROLE_ADMIN')]
 final class UserInternalController extends AbstractController
 {
     #[Route(name: 'app_user_internal_index', methods: ['GET', 'POST'])]
@@ -65,7 +67,7 @@ final class UserInternalController extends AbstractController
         }
 
         return $this->render('users/user_internal/new.html.twig', [
-            'user_internal' => $user,
+            'user' => $user,
             'form' => $form,
         ]);
     }
@@ -109,7 +111,7 @@ final class UserInternalController extends AbstractController
         }
 
         return $this->render('users/user_internal/edit.html.twig', [
-            'user_internal' => $user,
+            'user' => $user,
             'form' => $form,
         ]);
     }

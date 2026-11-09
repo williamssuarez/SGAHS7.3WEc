@@ -1,55 +1,41 @@
-{# templates/security/blocked.html.twig #}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Cuenta Bloqueada - SGAHS</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-    {% block stylesheets %}
-        {{ encore_entry_link_tags('app') }}
-    {% endblock %}
+{% extends 'resetBase.html.twig' %}
 
-    {% block javascripts %}
-        {{ encore_entry_script_tags('app') }}
-    {% endblock %}
-</head>
-<body class="login-page bg-body-secondary d-flex align-items-center justify-content-center" style="min-height: 100vh;">
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
+{% block title %}Cuenta Suspendida | SGAHS{% endblock %}
 
-            <div class="text-center mb-4">
-                <h1 class="fw-bolder text-dark">SGAHS</h1>
-            </div>
+{% block card_title %}Acceso Restringido{% endblock %}
+{% block card_desc %}El acceso a esta cuenta ha sido bloqueado administrativamente.{% endblock %}
 
-            <div class="card shadow-lg border-danger">
-                <div class="card-header bg-danger text-white text-center py-3">
-                    <h4 class="mb-0 fw-bold">
-                        <i class="bi bi-lock-fill fs-3 d-block mb-2"></i>
-                        Acceso Denegado
-                    </h4>
-                </div>
-                <div class="card-body p-4 text-center">
-                    <h5 class="text-danger fw-bold mb-3">Tu cuenta ha sido suspendida.</h5>
-                    <p class="text-muted mb-4">
-                        Por motivos de seguridad, un administrador ha bloqueado el acceso a esta cuenta. Ya no puedes acceder al sistema ni agendar citas.
-                    </p>
-
-                    <div class="alert alert-warning text-start fs-6 shadow-sm">
-                        <i class="bi bi-info-circle-fill me-2"></i> <strong>¿Cómo solucionarlo?</strong><br>
-                        Debes presentarte personalmente en el área de Admisión del hospital con tu Cédula de Identidad laminada para validar tus datos y solicitar el desbloqueo.
-                    </div>
-
-                    <div class="mt-4">
-                        <a href="{{ path('app_logout') }}" class="btn btn-outline-secondary w-100 fw-bold shadow-sm">
-                            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                        </a>
-                    </div>
-                </div>
-            </div>
-
+{% block body %}
+    <div class="apple-alert apple-alert-danger mb-4" role="alert">
+        <i class="bi bi-shield-slash-fill flex-shrink-0"></i>
+        <div>
+            <strong class="d-block mb-1">Tu cuenta se encuentra suspendida</strong>
+            Por motivos de seguridad, cumplimiento normativo o auditoría interna, un administrador ha inhabilitado el acceso a esta cuenta.
         </div>
     </div>
-</div>
-</body>
-</html>
+
+    <div class="apple-alert apple-alert-warning mb-4" role="alert">
+        <i class="bi bi-info-circle-fill flex-shrink-0"></i>
+        <div>
+            <strong class="d-block mb-1">¿Cómo solucionar esta restricción?</strong>
+            Debes presentarte personalmente en el área de <strong>Admisión / Atención al Usuario</strong> con tu Cédula de Identidad física y laminada para validar tus datos y solicitar el desbloqueo con el personal autorizado.
+        </div>
+    </div>
+
+    <div class="mt-4 pt-2">
+        <a href="{{ path('app_logout') }}" 
+           class="apple-btn btn-apple-secondary btn-apple-lg w-100" 
+           data-controller="apple-spring">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar Sesión</span>
+        </a>
+    </div>
+{% endblock %}
+
+{% block auth_footer %}
+    <div class="apple-auth-links">
+        <span class="text-muted small">
+            <i class="bi bi-shield-lock me-1"></i> SGAHS · Departamento de Seguridad y Control de Acceso
+        </span>
+    </div>
+{% endblock %}

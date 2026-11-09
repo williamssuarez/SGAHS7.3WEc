@@ -1,66 +1,56 @@
-{# templates/security/blocked.html.twig #}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Credenciales Expiradas - SGAHS</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-    {% block stylesheets %}
-        {{ encore_entry_link_tags('app') }}
-    {% endblock %}
+{% extends 'resetBase.html.twig' %}
 
-    {% block javascripts %}
-        {{ encore_entry_script_tags('app') }}
-    {% endblock %}
-</head>
-<body class="login-page bg-body-secondary d-flex align-items-center justify-content-center" style="min-height: 100vh;">
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
+{% block title %}Credenciales Expiradas | SGAHS{% endblock %}
 
-            <div class="text-center mb-4">
-                <h1 class="fw-bolder text-dark">SGAHS</h1>
-            </div>
+{% block card_title %}Credenciales Expiradas{% endblock %}
+{% block card_desc %}Por motivos de seguridad, tus credenciales de acceso han caducado.{% endblock %}
 
-            <div class="card shadow-lg border-danger">
-                <div class="card-header bg-danger text-white text-center py-3">
-                    <h4 class="mb-0 fw-bold">
-                        <i class="bi bi-lock-fill fs-3 d-block mb-2"></i>
-                        Acceso Denegado
-                    </h4>
-                </div>
-                <div class="card-body p-4 text-center">
-                    <h5 class="text-danger fw-bold mb-3">Las credenciales de tu cuenta han expirado.</h5>
-                    <p class="text-muted mb-4">
-                        Por motivos de seguridad, un administrador ha expirado las credenciales de acceso a esta cuenta. Ya no puedes acceder al sistema ni agendar citas.
-                    </p>
-
-                    <div class="alert alert-warning text-start fs-6 shadow-sm">
-                        <i class="bi bi-info-circle-fill me-2"></i> <strong>¿Cómo solucionarlo?</strong><br>
-                        Se le debe haber enviado un enlace de restablecimiento de contraseña a su correo electronico.
-                    </div>
-
-                    <div class="alert alert-info bg-light border-info text-start fs-6 mb-4 shadow-sm">
-                        <i class="bi bi-info-circle-fill text-info me-2"></i> <strong>¿No recibiste el correo?</strong><br>
-                        Asegurese de revisar su carpeta de Spam o correo no deseado. En caso de no encontrarlo solicite el reinicio manualmente en el boton de "Olvide mi contraseña"
-                    </div>
-
-                    {#<div class="mt-4">
-                        <a href="{{ path('app_forgot_password_manually_request') }}" class="btn btn-outline-primary w-100 fw-bold shadow-sm">
-                            <i class="fa-solid fa-paper-plane"></i> Reiniciar Credenciales Manualmente
-                        </a>
-                    </div>#}
-
-                    <div class="mt-4">
-                        <a href="{{ path('app_logout') }}" class="btn btn-outline-secondary w-100 fw-bold shadow-sm">
-                            <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                        </a>
-                    </div>
-                </div>
-            </div>
-
+{% block body %}
+    <div class="apple-alert apple-alert-warning mb-3" role="alert">
+        <i class="bi bi-shield-exclamation flex-shrink-0"></i>
+        <div>
+            <strong class="d-block mb-1">Actualización de clave requerida</strong>
+            Un administrador o la política institucional de seguridad ha expirado las credenciales de esta cuenta. Ya no es posible iniciar sesión con la clave anterior.
         </div>
     </div>
-</div>
-</body>
-</html>
+
+    <div class="apple-alert apple-alert-info mb-3" role="alert">
+        <i class="bi bi-envelope-check-fill flex-shrink-0"></i>
+        <div>
+            <strong class="d-block mb-1">Revisa tu correo electrónico</strong>
+            Se ha generado un enlace de restablecimiento a tu dirección registrada. Por favor revisa tu bandeja de entrada y tu carpeta de <em>Spam</em> o <em>Correo no deseado</em>.
+        </div>
+    </div>
+
+    <div class="apple-alert apple-alert-secondary mb-4" role="alert">
+        <i class="bi bi-question-circle-fill flex-shrink-0"></i>
+        <div>
+            <strong class="d-block mb-1">¿No recibiste el correo?</strong>
+            Puedes solicitar un nuevo enlace de recuperación directamente con el botón a continuación.
+        </div>
+    </div>
+
+    <div class="d-flex flex-column gap-2 mt-4">
+        <a href="{{ path('app_forgot_password_manually_request') }}" 
+           class="apple-btn btn-apple-primary btn-apple-lg w-100" 
+           data-controller="apple-spring">
+            <i class="bi bi-send-fill"></i>
+            <span>Solicitar Nuevo Enlace</span>
+        </a>
+
+        <a href="{{ path('app_logout') }}" 
+           class="apple-btn btn-apple-secondary btn-apple-lg w-100" 
+           data-controller="apple-spring">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Cerrar Sesión</span>
+        </a>
+    </div>
+{% endblock %}
+
+{% block auth_footer %}
+    <div class="apple-auth-links">
+        <a href="{{ path('app_login') }}" class="apple-auth-link">
+            <i class="bi bi-arrow-left me-1"></i> Ir al inicio de sesión
+        </a>
+    </div>
+{% endblock %}

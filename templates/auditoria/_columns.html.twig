@@ -1,20 +1,57 @@
 {% if column.name == 'id' %}
-    {{ row.id }}
+    <span class="text-muted fw-semibold">#{{ row.id }}</span>
 
 {% elseif column.name == 'tipoAudit' %}
-    {{ row.tipoAudit.getReadableText }}
+    {% set val = row.tipoAudit.value|default('') %}
+    {% set text = row.tipoAudit.readableText|default(value) %}
+    {% set badge_class = 'text-bg-secondary' %}
+    {% set icon_class = 'bi-dot' %}
+
+    {% if val in ['login_success', 'patient_new', 'consult_finished', 'reception_checkin', 'surgery_finished', 'death_status_revoked', 'internal_user_admin_reactivate', 'external_user_admin_unblock', 'patient_web_linked', 'system_auto_link_account'] or '_new' in val or '_success' in val or '_checkin' in val or '_finished' in val or '_unblock' in val or '_reactivate' in val %}
+        {% set badge_class = 'text-bg-success' %}
+        {% set icon_class = 'bi-check-circle-fill' %}
+    {% elseif val in ['login_failed', 'delete', 'consult_canceled', 'reception_canceled', 'system_reception_auto_canceled', 'emergency_discharge_deceased', 'emergency_discharge_left', 'surgery_canceled', 'external_user_admin_block', 'internal_user_admin_deactivate'] or '_delete' in val or '_failed' in val or '_canceled' in val or '_deceased' in val or '_block' in val or '_deactivate' in val %}
+        {% set badge_class = 'text-bg-danger' %}
+        {% set icon_class = 'bi-x-circle-fill' %}
+    {% elseif val in ['update', 'patient_edit', 'inventory_batch_adjustment', 'inventory_batch_edition', 'external_user_admin_edit', 'user_password_changed_mandatory', 'internal_user_admin_reset_password', 'emergency_discharge_transfer'] or '_edit' in val or '_adjustment' in val or '_reset_password' in val or '_transfer' in val %}
+        {% set badge_class = 'text-bg-warning' %}
+        {% set icon_class = 'bi-pencil-square' %}
+    {% elseif val in ['consult_active', 'hospitalization_created', 'surgery_programmed', 'surgery_en_sala', 'surgery_pre_op', 'surgery_trans_op', 'surgery_post_op', 'appointment_reassigned', 'consult_reassigned', 'appointment_rescheduled', 'appointment_batch_reassigned', 'create'] or '_active' in val or '_programmed' in val or '_reassigned' in val or '_rescheduled' in val or '_sala' in val or '_op' in val %}
+        {% set badge_class = 'text-bg-primary' %}
+        {% set icon_class = 'bi-play-circle-fill' %}
+    {% elseif val in ['consult_vitals', 'consult_new', 'emergency_discharge_sent_home', 'patient_link_code_generated'] or '_vitals' in val %}
+        {% set badge_class = 'text-bg-info' %}
+        {% set icon_class = 'bi-info-circle-fill' %}
+    {% endif %}
+
+    <span class="apple-role-pill {{ badge_class }}">
+        <i class="bi {{ icon_class }}"></i>
+        <span>{{ text }}</span>
+    </span>
 
 {% elseif column.name == 'descripcion' %}
-    {{ row.descripcion }}
+    <span class="text-break">{{ row.descripcion }}</span>
 
 {% elseif column.name == 'direccionIp' %}
-    {{ row.direccionIp }}
+    {% if row.direccionIp %}
+        <code class="apple-code-badge">{{ row.direccionIp }}</code>
+    {% else %}
+        <span class="text-muted small">&mdash;</span>
+    {% endif %}
 
 {% elseif column.name == 'usuario' %}
-    {{ row.uidCreate|public_username|title }}
+    <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-person-circle text-secondary opacity-75"></i>
+        <span class="fw-medium">{{ row.uidCreate|public_username|title }}</span>
+    </div>
 
 {% elseif column.name == 'fecha' %}
-    {{ row.created ? row.created|date('Y-m-d h:i A') : '' }}
+    {% if row.created %}
+        <div class="d-flex align-items-center gap-1 text-nowrap">
+            <i class="bi bi-clock text-secondary opacity-75 small me-1"></i>
+            <span>{{ row.created|date('d/m/Y h:i A') }}</span>
+        </div>
+    {% endif %}
 
 {% else %}
     {{ value }}

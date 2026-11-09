@@ -12,87 +12,151 @@
 {% endblock %}
 
 {% block body %}
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card card-primary card-outline">
-                <div class="card-header">
-                    <h3 class="card-title">Configurar Ejecución en Segundo Plano</h3>
-                </div>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert apple-alert apple-alert-{{ label == 'error' or label == 'danger' ? 'danger' : (label == 'warning' ? 'warning' : 'success') }} alert-dismissible fade show mb-4" role="alert">
+                <i class="bi {{ label == 'error' or label == 'danger' ? 'bi-exclamation-octagon-fill' : (label == 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill') }} me-2"></i>
+                <div class="flex-grow-1">{{ message }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
 
-                <div class="card-body">
+    <div class="apple-portal-container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8 col-xl-8">
+                <div class="apple-form-card shadow-sm mb-4">
+                    <div class="apple-form-header d-flex align-items-center gap-3 pb-3 mb-4 border-bottom">
+                        <div class="apple-header-icon-badge">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <div>
+                            <h3 class="apple-table-title m-0">Programación de Respaldos Automáticos</h3>
+                            <p class="apple-table-subtitle text-muted small m-0">
+                                Configura la ejecución desatendida de copias de seguridad en segundo plano
+                            </p>
+                        </div>
+                    </div>
+
                     {% if last_run %}
-                        <div class="alert alert-info">
-                            <i class="bi bi-clock-history"></i> <strong>Última ejecución automática:</strong> 
-                            {{ last_run|date('d/m/Y h:i:s A', 'America/Caracas') }}
+                        <div class="alert apple-alert apple-alert-info d-flex align-items-center gap-2 mb-4" role="alert">
+                            <i class="bi bi-clock-history fs-5"></i>
+                            <div>
+                                <strong>Última ejecución automática:</strong>
+                                {{ last_run|date('d/m/Y h:i:s A', 'America/Caracas') }}
+                            </div>
                         </div>
                     {% endif %}
 
-                    {{ form_start(form) }}
-                        <div class="mb-3 form-check form-switch">
-                            {{ form_widget(form.enabled, {'attr': {'class': 'form-check-input', 'role': 'switch'}}) }}
-                            {{ form_label(form.enabled, null, {'label_attr': {'class': 'form-check-label fw-bold text-primary'}}) }}
+                    {{ form_start(form, {
+                        'attr': {
+                            'data-controller': 'submit-once backup-schedule',
+                            'data-action': 'submit->submit-once#disable'
+                        }
+                    }) }}
+                        {# Switch Apple #}
+                        <div class="p-3 mb-4 rounded-3 border border-secondary-subtle d-flex align-items-center justify-content-between" style="background: rgba(var(--bs-primary-rgb), 0.04);">
+                            <div>
+                                <label class="form-check-label fw-bold text-primary d-block mb-1" for="{{ form.enabled.vars.id }}">Habilitar Respaldos Automáticos</label>
+                                <span class="small text-secondary">El sistema creará copias de seguridad de forma autónoma según el horario programado.</span>
+                            </div>
+                            <div class="form-check form-switch fs-4 m-0">
+                                {{ form_widget(form.enabled, {'attr': {'class': 'form-check-input', 'role': 'switch'}}) }}
+                            </div>
                         </div>
 
-                        <div class="row mt-4">
-                            <div class="col-md-6 mb-3">
-                                {{ form_row(form.frequency) }}
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-6">
+                                <div class="apple-form-group">
+                                    <label class="apple-input-label" for="{{ form.frequency.vars.id }}">
+                                        {{ form.frequency.vars.label|default('Frecuencia') }}
+                                    </label>
+                                    {{ form_widget(form.frequency, {
+                                        'attr': {
+                                            'class': 'form-select noSrchSelect w-100',
+                                            'data-backup-schedule-target': 'frequency'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.frequency) }}
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                {{ form_row(form.hour) }}
+                            <div class="col-12 col-md-6">
+                                <div class="apple-form-group">
+                                    <label class="apple-input-label" for="{{ form.hour.vars.id }}">
+                                        {{ form.hour.vars.label|default('Hora de ejecución') }}
+                                    </label>
+                                    {{ form_widget(form.hour, {
+                                        'attr': {
+                                            'class': 'form-select noSrchSelect w-100'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.hour) }}
+                                </div>
                             </div>
                         </div>
 
-                        <div class="row" id="conditional-fields">
-                            <div class="col-md-6 mb-3" id="field-day-of-week">
-                                {{ form_row(form.day_of_week) }}
+                        <div class="row g-3 mb-3" id="conditional-fields">
+                            <div class="col-12 col-md-6" data-backup-schedule-target="dayOfWeekContainer">
+                                <div class="apple-form-group">
+                                    <label class="apple-input-label" for="{{ form.day_of_week.vars.id }}">
+                                        {{ form.day_of_week.vars.label|default('Día de la semana (Para semanal)') }}
+                                    </label>
+                                    {{ form_widget(form.day_of_week, {
+                                        'attr': {
+                                            'class': 'form-select noSrchSelect w-100'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.day_of_week) }}
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3" id="field-day-of-month">
-                                {{ form_row(form.day_of_month) }}
+                            <div class="col-12 col-md-6" data-backup-schedule-target="dayOfMonthContainer">
+                                <div class="apple-form-group">
+                                    <label class="apple-input-label" for="{{ form.day_of_month.vars.id }}">
+                                        {{ form.day_of_month.vars.label|default('Día del mes (Para mensual)') }}
+                                    </label>
+                                    {{ form_widget(form.day_of_month, {
+                                        'attr': {
+                                            'class': 'apple-text-input form-control',
+                                            'min': 1,
+                                            'max': 31,
+                                            'placeholder': 'Ej. 1 al 31'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.day_of_month) }}
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="d-flex justify-content-between mt-4">
-                            <a href="{{ path('app_database_index') }}" class="btn btn-secondary">Cancelar</a>
-                            <button class="btn btn-success" type="submit">
-                                <i class="bi bi-save"></i> Guardar Programación
+                        <div class="apple-form-actions d-flex flex-wrap align-items-center justify-content-between pt-4 mt-3 border-top border-secondary-subtle gap-2">
+                            <a href="{{ path('app_database_index') }}" class="btn btn-secondary apple-btn-secondary rounded-pill px-4 py-2" data-controller="apple-spring">
+                                <i class="bi bi-arrow-left me-1"></i> Cancelar
+                            </a>
+                            <button class="btn btn-primary apple-btn-primary rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2" type="submit" data-controller="apple-spring" data-submit-once-target="submitButton">
+                                <i class="bi bi-floppy-fill"></i>
+                                <span>Guardar Programación</span>
                             </button>
                         </div>
                     {{ form_end(form) }}
                 </div>
-            </div>
-            
-            <div class="callout callout-warning mt-4">
-                <h5><i class="bi bi-info-circle"></i> Importante: Requisito del Servidor</h5>
-                <p>Para que los respaldos automáticos funcionen, el servidor debe tener configurado un Cron Job general (o Tarea Programada en Windows) que ejecute el siguiente comando <strong>cada hora</strong> o cada minuto:</p>
-                <code>php bin/console app:database:cron</code>
+
+                {# Tarjeta de Asistencia Apple (Comando Servidor) #}
+                <div class="apple-form-card shadow-sm p-4 border border-secondary-subtle mb-4">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="apple-header-icon-badge" style="background: rgba(13, 110, 253, 0.12); color: #0d6efd; flex-shrink: 0;">
+                            <i class="bi bi-terminal-fill"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-1">Requisito del Servidor (Tarea Programada / Cron Job)</h5>
+                            <p class="small text-secondary mb-2">
+                                Para que los respaldos programados se ejecuten automáticamente, el servidor debe contar con un Cron Job en Linux o una Tarea Programada en Windows que ejecute el siguiente comando con regularidad:
+                            </p>
+                            <div class="d-inline-block">
+                                <code class="apple-code-badge fw-bold user-select-all py-1 px-3 fs-6">php bin/console app:database:cron</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const freqSelectId = '{{ form.frequency.vars.id }}';
-            const fieldDayOfWeek = document.getElementById('field-day-of-week');
-            const fieldDayOfMonth = document.getElementById('field-day-of-month');
-
-            function toggleFields() {
-                let freq;
-                if (typeof $ !== 'undefined' && $('#' + freqSelectId).data('select2')) {
-                    freq = $('#' + freqSelectId).val();
-                } else {
-                    freq = document.getElementById(freqSelectId).value;
-                }
-                
-                fieldDayOfWeek.style.display = freq === 'weekly' ? 'block' : 'none';
-                fieldDayOfMonth.style.display = freq === 'monthly' ? 'block' : 'none';
-            }
-
-            if (typeof $ !== 'undefined') {
-                $('#' + freqSelectId).on('change', toggleFields);
-            }
-            document.getElementById(freqSelectId).addEventListener('change', toggleFields);
-            
-            toggleFields();
-        });
-    </script>
 {% endblock %}

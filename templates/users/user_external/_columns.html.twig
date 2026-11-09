@@ -1,52 +1,69 @@
 {% if column.name == 'email' %}
-    {{ row.email }}
-    {% if row.isVerified %}
-        <i class="bi bi-check-circle-fill" style="color: #138b00"></i>
-    {% else %}
-        <i class="bi bi-x-circle-fill" style="color: #8b0000"></i>
-    {% endif %}
+    <div class="d-flex align-items-center flex-wrap gap-2">
+        <span class="fw-semibold">{{ row.email }}</span>
+        {% if row.isVerified %}
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small" title="Correo verificado">
+                <i class="bi bi-check-circle-fill"></i>
+            </span>
+        {% else %}
+            <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill small" title="Correo pendiente por verificar">
+                <i class="bi bi-clock-history"></i>
+            </span>
+        {% endif %}
+        {% if row.status and row.status.codigo == 'NLOKREC' %}
+            <span class="apple-role-pill text-bg-danger"><i class="bi bi-person-fill-lock"></i> Bloqueado</span>
+        {% endif %}
+    </div>
 
 {% elseif column.name == 'nombre' %}
-    {{ row.externalNameorNothing }}
+    <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-person text-secondary opacity-75"></i>
+        <span>{{ row.externalNameorNothing }}</span>
+    </div>
 
 {% elseif column.name == 'status' %}
     {{ row.status|status_badge }}
 
 {% elseif column.name == 'acciones' %}
     <div class="btn-group">
-        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-shield-fill-exclamation"></i> Acciones
+        <button type="button"
+                class="btn btn-sm btn-outline-primary dropdown-toggle apple-spring rounded-pill px-3 py-1"
+                data-bs-toggle="dropdown"
+                data-bs-boundary="window"
+                data-bs-popper-config='{"strategy":"fixed"}'
+                aria-expanded="false">
+            <i class="bi bi-shield-fill-exclamation me-1"></i> Acciones
         </button>
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu dropdown-menu-end apple-dropdown-menu shadow-lg">
             <li>
                 <a class="dropdown-item" href="{{ path('app_user_external_show', {'id': row.id}) }}">
-                    <i class="bi bi-search"></i> Ver Detalles
+                    <i class="bi bi-search text-primary me-2"></i> Ver Detalles
                 </a>
             </li>
             <li>
                 <a class="dropdown-item" href="{{ path('app_user_external_edit', {'id': row.id}) }}">
-                    <i class="bi bi-pencil-square"></i> Editar
+                    <i class="bi bi-pencil-square text-primary me-2"></i> Editar Perfil
                 </a>
             </li>
             <li>
-                <hr class="dropdown-divider">
+                <hr class="dropdown-divider my-1">
             </li>
             {% if row.status and row.status.codigo == 'NLOKREC' %}
                 <li>
-                    <a class="dropdown-item" href="{{ path('app_user_external_unblock', {'id': row.id}) }}">
-                        <i class="bi bi-unlock-fill"></i> Desbloquear Cuenta
+                    <a class="dropdown-item text-success" href="{{ path('app_user_external_unblock', {'id': row.id}) }}">
+                        <i class="bi bi-person-fill-check me-2"></i> Desbloquear Cuenta
                     </a>
                 </li>
             {% else %}
                 <li>
-                    <a class="dropdown-item" href="{{ path('app_user_external_block', {'id': row.id}) }}">
-                        <i class="bi bi-lock-fill"></i> Bloquear Cuenta
+                    <a class="dropdown-item text-danger" href="{{ path('app_user_external_block', {'id': row.id}) }}">
+                        <i class="bi bi-person-fill-lock me-2"></i> Bloquear Cuenta
                     </a>
                 </li>
             {% endif %}
             <li>
-                <a class="dropdown-item" href="{{ path('app_user_external_force_reset', {'id': row.id}) }}">
-                    <i class="bi bi-unlock-fill"></i> Forzar Reinicio
+                <a class="dropdown-item text-warning" href="{{ path('app_user_external_force_reset', {'id': row.id}) }}">
+                    <i class="bi bi-unlock-fill me-2"></i> Forzar Reinicio
                 </a>
             </li>
         </ul>

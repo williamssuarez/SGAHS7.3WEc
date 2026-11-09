@@ -1,37 +1,82 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Reiniciar Clave{% endblock %}</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-    {% block stylesheets %}
-        {{ encore_entry_link_tags('app') }}
-    {% endblock %}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Reiniciar Contraseña | SGAHS{% endblock %}</title>
+        <script>
+            (function() {
+                var theme = localStorage.getItem('theme') || 
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-bs-theme', theme);
+            })();
+        </script>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
 
-    {% block javascripts %}
-        {{ encore_entry_script_tags('app') }}
-    {% endblock %}
-</head>
-<body class="login-page bg-body-secondary">
-<div class="login-box">
-    <div class="login-logo">
-        <a href="#"><b>SGAHS</b></a>
-    </div>
-    <!-- /.login-logo -->
-    <div class="card">
-        <div class="card-body login-card-body">
-            <p class="login-box-msg">Reiniciar</p>
-            {% block body %}{% endblock %}
-            <div class="social-auth-links text-center mb-3 d-grid gap-2">
-                <p>- O -</p>
-                <a href="{{ path('app_logout') }}" class="btn btn-primary">
-                    <i class="fa-solid fa-circle-left"></i> Regresar al inicio de sesion
-                </a>
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body class="apple-auth-page">
+        <!-- Selector Flotante de Tema Claro / Oscuro -->
+        <div class="apple-auth-theme-switch">
+            <button type="button" 
+                    class="apple-theme-toggle-btn shadow-sm"
+                    data-controller="apple-spring theme-toggle"
+                    data-action="click->theme-toggle#toggle"
+                    data-theme-toggle-btn
+                    aria-label="Alternar modo oscuro o claro"
+                    title="Alternar tema">
+                <i class="bi bi-sun-fill text-warning" data-theme-icon></i>
+            </button>
+        </div>
+
+        <div class="apple-auth-canvas">
+            <div class="apple-auth-container">
+                <!-- Cabecera de Marca SGAHS -->
+                <div class="apple-auth-brand">
+                    <div class="apple-auth-logo-badge">
+                        <i class="bi bi-heart-pulse-fill"></i>
+                    </div>
+                    <h1 class="apple-auth-title">SGAHS</h1>
+                    <p class="apple-auth-subtitle">Sistema de Gestión y Atención Hospitalaria</p>
+                </div>
+
+                <!-- Tarjeta Frosted Glass Apple -->
+                <div class="apple-auth-card shadow-lg">
+                    {% block auth_card %}
+                        <div class="apple-auth-card-header">
+                            <h2 class="apple-auth-card-title">{% block card_title %}Reiniciar Contraseña{% endblock %}</h2>
+                            <p class="apple-auth-card-desc">{% block card_desc %}Ingresa tu correo para recuperar el acceso a tu cuenta{% endblock %}</p>
+                        </div>
+
+                        <div class="apple-auth-card-body">
+                            {% block body %}{% endblock %}
+                        </div>
+
+                        {% block auth_footer %}
+                            <div class="apple-auth-links">
+                                <a href="{{ path('app_login') }}" class="apple-auth-link">
+                                    <i class="bi bi-arrow-left me-1"></i> Volver al inicio de sesión
+                                </a>
+                            </div>
+                        {% endblock %}
+                    {% endblock %}
+                </div>
+
+                <!-- Pie de Página Institucional -->
+                <div class="apple-auth-footer-note">
+                    <p>© {{ 'now'|date('Y') }} SGAHS. Gestión de salud confidencial y segura.</p>
+                    <p class="apple-recaptcha-disclaimer">
+                        Protegido por reCAPTCHA · 
+                        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacidad</a> · 
+                        <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Términos</a>
+                    </p>
+                </div>
             </div>
         </div>
-        <!-- /.login-card-body -->
-    </div>
-</div>
-<!-- /.login-box -->
-</body>
+    </body>
 </html>

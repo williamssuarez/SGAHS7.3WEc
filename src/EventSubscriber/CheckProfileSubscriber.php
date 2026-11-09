@@ -35,7 +35,10 @@ readonly class CheckProfileSubscriber implements EventSubscriberInterface
             'app_send_check_inbox',
             'app_account_blocked',
             'app_account_expired',
-            'app_verify_resend_email'
+            'app_verify_resend_email',
+            'app_reset_password',
+            'app_forgot_password_manually_request',
+            'app_check_email',
         ];
 
         if ($user && !in_array($route, $allowList)) {

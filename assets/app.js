@@ -152,6 +152,7 @@ $(document).ready(function () {
     $('.dtHere').DataTable({
         pageLength: 5,
         lengthMenu: [[5, 10, 20, 50, -1], [5, 10, 20, 50, 'All']],
+        autoWidth: false,
         language: {
             decimal: "",
             emptyTable: "No hay datos disponibles en la tabla",
@@ -161,7 +162,8 @@ $(document).ready(function () {
             lengthMenu: "Mostrar _MENU_ registros",
             loadingRecords: "Cargando...",
             processing: "Procesando...",
-            search: "Buscar:",
+            search: "",
+            searchPlaceholder: "Buscar registros...",
             zeroRecords: "No se encontraron resultados",
         },
         responsive: true,
@@ -175,6 +177,7 @@ $(document).ready(function () {
                 pageLength: 5,
                 lengthMenu: [[5, 10, 20, 50, -1], [5, 10, 20, 50, 'All']],
                 searching: true,
+                autoWidth: false,
                 dom: "<'row mt-3'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
                 language: {
                     decimal: "",
@@ -185,13 +188,95 @@ $(document).ready(function () {
                     lengthMenu: "Mostrar _MENU_ registros",
                     loadingRecords: "Cargando...",
                     processing: "Procesando...",
-                    search: "Buscar:",
+                    search: "",
+            searchPlaceholder: "Buscar registros...",
                     zeroRecords: "No se encontraron resultados",
                 },
                 responsive: true,
             });
         }
     });
+
+    // Helper to init Select2 on DataTables length menus with Apple style
+    function initDataTableLengthSelect2(container) {
+        var $ctx = container ? $(container) : $(document);
+        $ctx.find('.dt-length select, .dataTables_length select').each(function() {
+            var $select = $(this);
+            if (!$select.hasClass('select2-hidden-accessible')) {
+                $select.select2({
+                    theme: "bootstrap-5",
+                    width: "auto",
+                    dropdownAutoWidth: true,
+                    minimumResultsForSearch: Infinity
+                });
+            }
+        });
+    }
+
+    // ======================================================================
+    // Universal Auto-Recalculate for DataTables Responsive (Uncollapse Bug Fix)
+    // ======================================================================
+    var dtResizeTimer = null;
+    function recalcAllDataTables() {
+        clearTimeout(dtResizeTimer);
+        dtResizeTimer = setTimeout(function () {
+            if ($.fn.dataTable) {
+                try {
+                    $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust().responsive.recalc();
+                } catch (e) {
+                    // Ignore transient errors
+                }
+            }
+        }, 100);
+    }
+
+    // 1. Window resize & orientation change
+    $(window).on('resize orientationchange', recalcAllDataTables);
+
+    // 2. AdminLTE 4 Sidebar collapse / expand events and button clicks
+    $(document).on('collapsed.lte.sidebar expanded.lte.sidebar', function () {
+        setTimeout(recalcAllDataTables, 340);
+    });
+    $(document).on('click', '[data-lte-toggle="sidebar"], .apple-sidebar-toggle-btn', function () {
+        setTimeout(recalcAllDataTables, 340);
+    });
+
+    // 3. ResizeObserver for fluid container width changes (split-screen, devtools, zoom)
+    var dtContainerObserver = null;
+    if (window.ResizeObserver) {
+        var lastObservedWidths = new WeakMap();
+        dtContainerObserver = new ResizeObserver(function (entries) {
+            var hasRealWidthChange = false;
+            for (var i = 0; i < entries.length; i++) {
+                var target = entries[i].target;
+                var currentWidth = Math.round(entries[i].contentRect.width);
+                var prevWidth = lastObservedWidths.get(target);
+
+                if (currentWidth > 0 && (prevWidth === undefined || Math.abs(currentWidth - prevWidth) >= 4)) {
+                    lastObservedWidths.set(target, currentWidth);
+                    hasRealWidthChange = true;
+                }
+            }
+            if (hasRealWidthChange) {
+                recalcAllDataTables();
+            }
+        });
+
+        document.querySelectorAll('.apple-table-card, .dtHereServer, .dataTables_wrapper, .dt-container').forEach(function (el) {
+            dtContainerObserver.observe(el);
+        });
+    }
+
+    $(document).on('init.dt', function (e, settings) {
+        var api = new $.fn.dataTable.Api(settings);
+        var container = api.table().container();
+        initDataTableLengthSelect2(container);
+        if (dtContainerObserver && container) {
+            dtContainerObserver.observe(container);
+        }
+    });
+
+    initDataTableLengthSelect2();
 
     // Helper to init select2 fixing modal focus issues and width bugs
     function initSelect2($elements, extraOptions = {}) {
@@ -477,6 +562,45 @@ document.addEventListener('DOMContentLoaded', function () {
         // 4. Render the calendar
         calendar.render();
     }
+
+    // Universal Apple Alert Dismissal with fluid spring collapse
+    $(document).on('click', '[data-bs-dismiss="alert"], .apple-alert .btn-close, .alert .btn-close', function (e) {
+        const $btn = $(this);
+        const $alert = $btn.closest('.apple-alert, .alert');
+        if ($alert.length) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const currentHeight = $alert.outerHeight();
+            $alert.css({
+                maxHeight: currentHeight + 'px',
+                overflow: 'hidden'
+            });
+
+            // Force reflow
+            if ($alert[0]) {
+                void $alert[0].offsetHeight;
+            }
+
+            $alert.addClass('apple-alert-dismissing');
+
+            setTimeout(function () {
+                $alert.css({
+                    maxHeight: '0',
+                    paddingTop: '0',
+                    paddingBottom: '0',
+                    marginTop: '0',
+                    marginBottom: '0',
+                    borderTopWidth: '0',
+                    borderBottomWidth: '0'
+                });
+
+                setTimeout(function () {
+                    $alert.remove();
+                }, 260);
+            }, 140);
+        }
+    });
 });
 /* Overlayscrollbars config end */
 

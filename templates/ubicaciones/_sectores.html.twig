@@ -1,20 +1,67 @@
 <turbo-frame id="parroquia_{{ parroquia.id }}_sectores">
-    <ul class="list-group list-group-flush mb-2 border-start border-2 border-success">
+    <ul class="apple-tree-list mb-2">
         {% for sector in parroquia.sectores %}
-            <li class="list-group-item border-0 py-1 d-flex align-items-center justify-content-between">
-                <div>
-                    <i class="bi bi-geo-alt-fill me-2 text-success"></i>
-                    {{ sector.nombre }}
+            <li class="apple-tree-item">
+                <div class="apple-tree-node" data-controller="apple-inline-edit" data-apple-inline-edit-url-value="{{ path('app_ubicaciones_rename', {type: 'sector', id: sector.id}) }}">
+                    {# Modo Vista #}
+                    <div class="apple-tree-node-display" data-apple-inline-edit-target="display">
+                        <div class="apple-tree-node-content ms-2">
+                            <span class="apple-tree-badge badge-sector" title="Nivel: Sector">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </span>
+                            <span class="apple-tree-node-text" data-apple-inline-edit-target="label" title="{{ sector.nombre }}">{{ sector.nombre }}</span>
+                        </div>
+                        <div class="apple-tree-node-actions">
+                            <button type="button" class="apple-tree-action-btn apple-spring" data-action="click->apple-inline-edit#start" title="Editar Sector {{ sector.nombre }}">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    {# Modo Edición Inline #}
+                    <div class="apple-tree-inline-edit d-none ms-2" data-apple-inline-edit-target="form">
+                        <span class="apple-tree-badge badge-sector" title="Editando Sector">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </span>
+                        <input type="text"
+                               class="form-control form-control-sm apple-tree-input"
+                               data-apple-inline-edit-target="input"
+                               data-action="keydown->apple-inline-edit#handleKeydown"
+                               placeholder="Nombre del sector..."
+                               autocomplete="off">
+                        <button type="button"
+                                class="btn btn-sm btn-primary apple-btn-primary btn-inline-save apple-spring"
+                                data-apple-inline-edit-target="saveBtn"
+                                data-action="click->apple-inline-edit#save"
+                                title="Guardar nombre">
+                            <i class="bi bi-check-lg"></i>
+                        </button>
+                        <button type="button"
+                                class="btn btn-sm btn-secondary apple-btn-secondary btn-inline-cancel apple-spring"
+                                data-action="click->apple-inline-edit#cancel"
+                                title="Cancelar">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
                 </div>
-                <a href="{{ path('app_sector_edit', {id: sector.id}) }}" data-turbo-frame="_top" class="btn btn-sm text-secondary p-0 m-0" title="Editar"><i class="bi bi-pencil-square"></i></a>
             </li>
         {% else %}
-            <li class="list-group-item border-0 py-1 text-muted small"><i class="bi bi-info-circle me-1"></i> Sin sectores registrados.</li>
+            <li class="apple-tree-item">
+                <div class="apple-tree-empty ms-2">
+                    <i class="bi bi-info-circle me-1"></i> Sin sectores registrados.
+                </div>
+            </li>
         {% endfor %}
-        <li class="list-group-item border-0 py-1 mt-2">
-            <form action="{{ path('app_ubicaciones_sectores', {id: parroquia.id}) }}" method="POST" class="d-flex w-50" data-turbo-frame="parroquia_{{ parroquia.id }}_sectores">
-                <input type="text" name="nombre" class="form-control form-control-sm me-2" placeholder="Nuevo Sector" required>
-                <button type="submit" class="btn btn-sm btn-outline-success" title="Añadir"><i class="bi bi-plus-lg"></i></button>
+        <li class="apple-tree-item mt-2">
+            <form action="{{ path('app_ubicaciones_sectores', {id: parroquia.id}) }}" method="POST" class="apple-tree-add-bar d-flex align-items-center gap-2 ms-2" data-turbo-frame="parroquia_{{ parroquia.id }}_sectores" data-controller="submit-once" data-action="submit->submit-once#disable">
+                <span class="apple-tree-badge badge-sector d-none d-sm-inline-flex" title="Nuevo Sector">
+                    <i class="bi bi-plus-lg"></i>
+                </span>
+                <input type="text" name="nombre" class="form-control form-control-sm apple-tree-input flex-grow-1" placeholder="Nuevo sector..." required autocomplete="off">
+                <button type="submit" class="btn btn-sm btn-outline-success apple-btn-secondary rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1 text-nowrap" data-submit-once-target="submitButton" data-controller="apple-spring">
+                    <i class="bi bi-plus-lg"></i>
+                    <span class="d-none d-sm-inline">Añadir</span>
+                </button>
             </form>
         </li>
     </ul>

@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Omines\DataTablesBundle\DataTableFactory;
 use App\DataTable\Type\UserExternalTableType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -33,6 +34,7 @@ use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 
 #[Route('/user_external')]
+#[IsGranted('ROLE_ADMIN')]
 final class UserExternalController extends AbstractController
 {
     #[Route(name: 'app_user_external_index', methods: ['GET', 'POST'])]
@@ -328,6 +330,7 @@ final class UserExternalController extends AbstractController
 
         return $this->render('users/user_external/admin_reset.html.twig', [
             'target_user' => $user,
+            'user' => $user,
             'form' => $form->createView(),
         ]);
     }

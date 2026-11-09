@@ -8,14 +8,15 @@
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{{ path('app_user_internal_index') }}">Usuarios Internos</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Detalles de Usuario Interno</li>
+    <li class="breadcrumb-item active" aria-current="page">{{ user.internalProfile.nombre|default('Detalles') }}</li>
 {% endblock %}
 
 {% block body %}
     {% for label, messages in app.flashes %}
         {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+            <div class="apple-alert apple-alert-{{ label == 'error' or label == 'danger' ? 'danger' : (label == 'warning' ? 'warning' : 'success') }} alert-dismissible fade show mb-4" role="alert">
+                <i class="bi {{ label == 'error' or label == 'danger' ? 'bi-exclamation-octagon-fill' : (label == 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill') }} me-2"></i>
+                <div class="flex-grow-1">{{ message }}</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
@@ -23,49 +24,43 @@
 
     {{ include('users/user_internal/_show.html.twig', {'profile': user.internalProfile, 'show_edit_button': false}) }}
 
-    <div class="row mt-4">
-        <div class="col-md-12">
-            <div class="d-flex justify-content-between">
-                <a class="btn btn-outline-secondary shadow-sm px-4" href="{{ path('app_user_internal_index') }}">
-                    <i class="bi bi-arrow-left"></i> Volver a la lista
-                </a>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4">
+        <a class="btn btn-outline-secondary apple-spring rounded-pill px-4 py-2" href="{{ path('app_user_internal_index') }}">
+            <i class="bi bi-arrow-left me-2"></i> Volver a la lista
+        </a>
 
-                <div class="d-flex">
-                    <div class="btn-group shadow-sm">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-shield-fill-exclamation"></i> Acciones
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item" href="{{ path('app_user_internal_edit', {'id': user.id}) }}">
-                                    <i class="bi bi-pencil-square"></i> Editar Perfil
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            {% if user.status and user.status.codigo == 'NLOKREC' %}
-                                <li>
-                                    <a class="dropdown-item" href="{{ path('app_user_internal_reactivate', {'id': user.id}) }}">
-                                        <i class="bi bi-person-fill-check"></i> Activar Cuenta
-                                    </a>
-                                </li>
-                            {% else %}
-                                <li>
-                                    <a class="dropdown-item text-danger" href="{{ path('app_user_internal_deactivate', {'id': user.id}) }}">
-                                        <i class="bi bi-person-fill-lock"></i> Desactivar Cuenta
-                                    </a>
-                                </li>
-                            {% endif %}
-                            <li>
-                                <a class="dropdown-item" href="{{ path('app_user_internal_reset_password', {'id': user.id}) }}">
-                                    <i class="bi bi-unlock-fill"></i> Reiniciar Clave
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary apple-btn-primary apple-spring rounded-pill px-4 py-2 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-shield-fill-exclamation me-2"></i> Acciones del Usuario
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end apple-dropdown-menu shadow-lg">
+                <li>
+                    <a class="dropdown-item py-2" href="{{ path('app_user_internal_edit', {'id': user.id}) }}">
+                        <i class="bi bi-pencil-square text-primary me-2"></i> Editar Perfil
+                    </a>
+                </li>
+                <li>
+                    <hr class="dropdown-divider my-1">
+                </li>
+                {% if user.status and user.status.codigo == 'NLOKREC' %}
+                    <li>
+                        <a class="dropdown-item py-2 text-success" href="{{ path('app_user_internal_reactivate', {'id': user.id}) }}">
+                            <i class="bi bi-person-fill-check me-2"></i> Activar Cuenta
+                        </a>
+                    </li>
+                {% else %}
+                    <li>
+                        <a class="dropdown-item py-2 text-danger" href="{{ path('app_user_internal_deactivate', {'id': user.id}) }}">
+                            <i class="bi bi-person-fill-lock me-2"></i> Desactivar Cuenta
+                        </a>
+                    </li>
+                {% endif %}
+                <li>
+                    <a class="dropdown-item py-2 text-warning" href="{{ path('app_user_internal_reset_password', {'id': user.id}) }}">
+                        <i class="bi bi-unlock-fill me-2"></i> Reiniciar Clave
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 {% endblock %}

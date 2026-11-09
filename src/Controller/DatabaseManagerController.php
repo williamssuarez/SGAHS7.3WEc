@@ -148,6 +148,7 @@ class DatabaseManagerController extends AbstractController
             ])
             ->add('day_of_week', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
                 'label' => 'Día de la semana (Para semanal)',
+                'required' => false,
                 'choices' => [
                     'Lunes' => 1,
                     'Martes' => 2,
@@ -161,6 +162,7 @@ class DatabaseManagerController extends AbstractController
             ])
             ->add('day_of_month', \Symfony\Component\Form\Extension\Core\Type\IntegerType::class, [
                 'label' => 'Día del mes (Para mensual)',
+                'required' => false,
                 'attr' => ['min' => 1, 'max' => 31, 'class' => 'form-control']
             ])
             ->add('hour', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [

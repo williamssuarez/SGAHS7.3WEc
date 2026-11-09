@@ -36,8 +36,16 @@ class ResetPasswordController extends AbstractController
     #[Route('/manually-request', name: 'app_forgot_password_manually_request')]
     public function manuallyRequest(Security $security): Response
     {
-        // Trigger logout and capture the response containing clear-cookie headers
-        $response = $security->logout(false);
+        $response = null;
+
+        // Solo ejecutar logout si existe un usuario autenticado en la sesion
+        if ($security->getUser()) {
+            try {
+                $response = $security->logout(false);
+            } catch (\LogicException) {
+                $response = null;
+            }
+        }
 
         // Intercept the firewall's default redirect and change the destination
         if ($response instanceof RedirectResponse) {
@@ -45,8 +53,13 @@ class ResetPasswordController extends AbstractController
             return $response;
         }
 
-        // Fallback if the firewall is not configured with a default logout redirect
-        return $this->redirectToRoute('app_forgot_password_request');
+        $redirect = $this->redirectToRoute('app_forgot_password_request');
+        if ($response instanceof Response) {
+            foreach ($response->headers->getCookies() as $cookie) {
+                $redirect->headers->setCookie($cookie);
+            }
+        }
+        return $redirect;
     }
 
     /**
@@ -91,7 +104,14 @@ class ResetPasswordController extends AbstractController
      * Validates and process the reset URL that the user clicked in their email.
      */
     #[Route('/reset/{token?}', name: 'app_reset_password')]
-    public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator, string $token = null, StatusRecordRepository $statusRecordRepository): Response
+    public function reset(
+        Request $request,
+        UserPasswordHasherInterface $passwordHasher,
+        TranslatorInterface $translator,
+        StatusRecordRepository $statusRecordRepository,
+        Security $security,
+        string $token = null
+    ): Response
     {
         if ($token) {
             // We store the token in session and remove it from the URL, to avoid the URL being
@@ -137,6 +157,17 @@ class ResetPasswordController extends AbstractController
 
             // The session is cleaned up after the password has been changed.
             $this->cleanSessionAfterReset();
+
+            // Si existia un usuario autenticado en este navegador, cerrar su sesion residual
+            if ($security->getUser()) {
+                try {
+                    $security->logout(false);
+                } catch (\LogicException) {
+                    // Fallback seguro si ya estaba desautenticado
+                }
+            }
+
+            $this->addFlash('success', 'Tu contraseña ha sido restablecida exitosamente. Por favor, inicia sesión con tu nueva clave.');
 
             return $this->redirectToRoute('app_login');
         }

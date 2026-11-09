@@ -327,7 +327,7 @@ class AppExtension extends AbstractExtension
     public function formatStatusBadge(?StatusRecord $status): string
     {
         if (!$status) {
-            return '<span class="badge bg-secondary"><i class="bi bi-question-circle"></i> Desconocido</span>';
+            return '<span class="apple-role-pill text-bg-secondary"><i class="bi bi-question-circle"></i> Desconocido</span>';
         }
 
         $codigo = $status->getCodigo();
@@ -335,13 +335,13 @@ class AppExtension extends AbstractExtension
 
         // Match the specific codes from your image_76f6a7.png database table
         return match ($codigo) {
-            'ACTRECORD'  => sprintf('<span class="badge bg-success fs-6 shadow-sm"><i class="bi bi-check-circle"></i> %s</span>', $titulo),
-            'REMRECORD'  => sprintf('<span class="badge bg-danger fs-6 shadow-sm"><i class="bi bi-trash"></i> %s</span>', $titulo),
-            'DISHRECORD' => sprintf('<span class="badge bg-secondary fs-6 shadow-sm"><i class="bi bi-slash-circle"></i> %s</span>', $titulo),
-            'NEXPREC'    => sprintf('<span class="badge bg-warning text-dark fs-6 shadow-sm"><i class="bi bi-clock-history"></i> %s</span>', $titulo),
-            'NLOKREC'    => sprintf('<span class="badge bg-dark fs-6 shadow-sm"><i class="bi bi-lock-fill"></i> %s</span>', $titulo),
-            'CEXPREC'    => sprintf('<span class="badge bg-warning text-dark fs-6 shadow-sm"><i class="bi bi-key-fill"></i> %s</span>', $titulo),
-            default      => sprintf('<span class="badge bg-light text-dark border fs-6 shadow-sm">%s</span>', $titulo),
+            'ACTRECORD'  => sprintf('<span class="apple-role-pill text-bg-success"><i class="bi bi-check-circle-fill"></i> %s</span>', $titulo),
+            'REMRECORD'  => sprintf('<span class="apple-role-pill text-bg-danger"><i class="bi bi-trash-fill"></i> %s</span>', $titulo),
+            'DISHRECORD' => sprintf('<span class="apple-role-pill text-bg-secondary"><i class="bi bi-slash-circle"></i> %s</span>', $titulo),
+            'NEXPREC'    => sprintf('<span class="apple-role-pill text-bg-warning"><i class="bi bi-clock-history"></i> %s</span>', $titulo),
+            'NLOKREC'    => sprintf('<span class="apple-role-pill text-bg-dark"><i class="bi bi-lock-fill"></i> %s</span>', $titulo),
+            'CEXPREC'    => sprintf('<span class="apple-role-pill text-bg-warning"><i class="bi bi-key-fill"></i> %s</span>', $titulo),
+            default      => sprintf('<span class="apple-role-pill text-bg-secondary">%s</span>', $titulo),
         };
     }
 

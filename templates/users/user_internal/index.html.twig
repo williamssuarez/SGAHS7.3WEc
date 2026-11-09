@@ -1,41 +1,53 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion de Usuarios Internos{% endblock %}
+{% block title %}Gestión de Usuarios Internos{% endblock %}
 
 {% block titlewrap %}
-    Usuarios
+    Gestión de Usuarios Internos
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item active" aria-current="page">Usuarios</li>
+    <li class="breadcrumb-item active" aria-current="page">Usuarios Internos</li>
 {% endblock %}
 
 {% block body %}
     {% for label, messages in app.flashes %}
         {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+            <div class="apple-alert apple-alert-{{ label == 'error' or label == 'danger' ? 'danger' : (label == 'warning' ? 'warning' : 'success') }} alert-dismissible fade show mb-4" role="alert">
+                <i class="bi {{ label == 'error' or label == 'danger' ? 'bi-exclamation-octagon-fill' : (label == 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill') }} me-2"></i>
+                <div class="flex-grow-1">{{ message }}</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
     {% endfor %}
 
-<div class="card card-primary card-outline">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h3 class="card-title m-0">Usuarios Registrados</h3>
-        <span class="text-muted small ms-auto"><i class="bi bi-info-circle"></i> Puedes buscar por <strong>Nombre o Email</strong></span>
-    </div>
+    <div class="apple-table-card shadow-sm mb-4">
+        <div class="apple-table-header d-flex flex-wrap justify-content-between align-items-center gap-3 pb-3 mb-3 border-bottom">
+            <div class="d-flex align-items-center gap-3">
+                <div class="apple-header-icon-badge">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div>
+                    <h3 class="apple-table-title m-0">Usuarios Registrados</h3>
+                    <p class="apple-table-subtitle text-muted small m-0">
+                        <i class="bi bi-info-circle me-1"></i> Puedes buscar por <strong>Nombre</strong> o <strong>Correo Electrónico</strong>
+                    </p>
+                </div>
+            </div>
+            <div>
+                <a href="{{ path('app_user_internal_new') }}" class="btn btn-primary apple-btn-primary apple-spring rounded-pill px-4 py-2">
+                    <i class="bi bi-person-plus-fill me-2"></i> Nuevo Usuario
+                </a>
+            </div>
+        </div>
 
-    <div class="card-body">
-        <div class="dtHereServer table-responsive" data-dt-config="{{ datatable_settings(datatable)|escape('html_attr') }}">
-            Cargando usuarios...
+        <div class="apple-table-body">
+            <div class="dtHereServer table-responsive" data-dt-config="{{ datatable_settings(datatable)|escape('html_attr') }}">
+                <div class="text-center py-5 text-muted">
+                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                    Cargando usuarios...
+                </div>
+            </div>
         </div>
     </div>
-
-    <br>
-
-    <div class="card-footer clearfix">
-        <a href="{{ path('app_user_internal_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
-    </div>
-</div>
 {% endblock %}

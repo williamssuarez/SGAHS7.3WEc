@@ -1,10 +1,16 @@
-<nav class="app-header navbar navbar-expand bg-body" id="navigation" tabindex="-1">
+<nav class="app-header navbar navbar-expand apple-topbar" id="navigation" tabindex="-1">
     <!--begin::Container-->
     <div class="container-fluid">
         <!--begin::Start Navbar Links-->
         <ul class="navbar-nav" role="navigation" aria-label="Navigation 1">
-            <li class="nav-item">
-                <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+            <li class="nav-item d-flex align-items-center">
+                <a class="apple-sidebar-toggle-btn shadow-sm" 
+                   data-lte-toggle="sidebar" 
+                   data-controller="apple-spring"
+                   href="#" 
+                   role="button" 
+                   aria-label="Alternar barra lateral"
+                   title="Menú lateral">
                     <i class="bi bi-list"></i>
                 </a>
             </li>
@@ -49,9 +55,10 @@
             {% set avatar = final_src %}
 
             {# Menú Popover Glass estilo Apple para todos los usuarios (Personal Interno y Pacientes) #}
-            <li class="nav-item dropdown apple-user-nav-item">
+            <li class="nav-item dropdown apple-user-nav-item" data-controller="apple-popover">
                 <a href="#" class="nav-link d-flex align-items-center gap-2 px-2 py-1 rounded-pill apple-nav-user-trigger" 
                    data-bs-toggle="dropdown" 
+                   data-bs-auto-close="outside"
                    data-controller="apple-spring"
                    aria-expanded="false">
                     <div class="apple-nav-avatar-wrap">

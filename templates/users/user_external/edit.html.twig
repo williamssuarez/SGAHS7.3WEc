@@ -1,192 +1,304 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Perfil de Usuario Externo{% endblock %}
+{% block title %}Editar Perfil de Paciente / Usuario Externo{% endblock %}
 
 {% block titlewrap %}
-    Detalles del Usuario
+    Editar Usuario Externo
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_user_external_index') }}">Usuarios</a></li>
-    <li class="breadcrumb-item active" aria-current="page">{{ profile.nombre|default('Usuario') }}</li>
+    <li class="breadcrumb-item"><a href="{{ path('app_user_external_index') }}">Usuarios Externos</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_user_external_show', {'id': user.id}) }}">{{ profile.nombre|default('Usuario') }} {{ profile.apellido|default('') }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Editar</li>
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid px-0">
-        {{ form_start(form, {
-            'attr': {
-                'data-controller': 'submit-once cascading-location',
-                'data-action': 'submit->submit-once#disable'
-            }
-        }) }}
-        {{ include('base/_form_error_messages.html.twig') }}
-            <div class="row g-4">
+<div class="apple-portal-container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-9 col-xl-8">
+            <div class="apple-form-card shadow-sm">
+                {{ form_start(form, {
+                    'attr': {
+                        'data-controller': 'submit-once cascading-location',
+                        'data-action': 'submit->submit-once#disable'
+                    }
+                }) }}
+                {{ include('base/_form_error_messages.html.twig') }}
 
-                {# LEFT COLUMN: Profile Card #}
-                <div class="col-md-4">
-                    <div class="card card-primary card-outline shadow-sm h-100">
-                        <div class="card-body text-center mt-4">
+                {# Cabecera de Identidad con Avatar de Solo Lectura #}
+                {% if user.avatarUrl is empty %}
+                    {% set final_src = asset('build/assets/img/user2-160x160.jpg') %}
+                {% elseif user.avatarUrl starts with 'http' %}
+                    {% set final_src = user.avatarUrl %}
+                {% else %}
+                    {% set full_photo_path = external_user_photo_path ~ user.avatarUrl %}
+                    {% set final_src = asset(full_photo_path) | imagine_filter('patient_profile') %}
+                {% endif %}
 
-                            {# Profile Picture #}
-                            {% if user.avatarUrl starts with 'http' %}
-                                {# It is a Google/External URL, leave this trash as it is #}
-                                {% set final_src = user.avatarUrl %}
-                                {% set original_src = user.avatarUrl %}
-                            {% else %}
-                                {# It is a Local File, apply filters and services  #}
-                                {% set full_photo_path = external_user_photo_path ~ user.avatarUrl %}
-                                {% set final_src = asset(full_photo_path) | imagine_filter('patient_profile') %}
-                                {% set original_src = asset(full_photo_path) | imagine_filter('patient_viewer_full') %}
+                <div class="d-flex flex-column flex-sm-row align-items-center gap-3 pb-4 mb-4 border-bottom text-center text-sm-start">
+                    <div class="apple-show-avatar-wrap apple-avatar-sm flex-shrink-0">
+                        <img src="{{ final_src }}" class="apple-show-avatar" alt="Foto de {{ profile.nombre|default('Usuario') }}">
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-1">{{ profile.nombre|default('Usuario') }} {{ profile.apellido|default('') }}</h4>
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-person-badge me-1"></i> CI / Doc: <strong>{{ profile.tipoDocumento|default('') }}{{ profile.tipoDocumento ? '-' : '' }}{{ profile.nroDocumento|default('No registrado') }}</strong>
+                        </p>
+                        <div class="d-flex flex-wrap justify-content-center justify-content-sm-start gap-2">
+                            {{ user.status|status_badge }}
+                            {% if profile.sangreTipo %}
+                                <span class="apple-role-pill text-bg-danger">
+                                    <i class="bi bi-droplet-fill me-1"></i> {{ profile.sangreTipo.readableText }}
+                                </span>
                             {% endif %}
-                            {% set avatar = final_src|default('build/assets/img/user2-160x160.jpg') %}
-
-                            <div class="mb-4">
-                                <img
-                                    {#src="{{ asset('uploads/profiles/' ~ profile.foto) }}"#}
-                                    src="{{ asset(avatar) }}"
-                                    class="rounded-circle img-thumbnail shadow-sm"
-                                    alt="Foto de Perfil"
-                                    style="width: 150px; height: 150px; object-fit: cover;">
-                            </div>
-
-                            <h6 class="fw-bold">
-                                {{form_label( form.nombre ) }}
-                                {{form_widget( form.nombre ) }}
-                            </h6>
-                            <h6 class="fw-bold">
-                                {{form_label( form.apellido ) }}
-                                {{form_widget( form.apellido ) }}
-                            </h6>
-                            <h6 class="fw-bold">
-                                Documento
-                            </h6>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    {{form_widget( form.tipoDocumento ) }}
-                                </div>
-                                <div class="col-md-9">
-                                    {{form_widget( form.nroDocumento ) }}
-                                </div>
-                            </div>
-
-                            <h6 class="fw-bold">
-                                {{ form_label( form.sangreTipo ) }}
-                                {{ form_widget( form.sangreTipo ) }}
-                            </h6>
-
                         </div>
                     </div>
                 </div>
 
-                {# RIGHT COLUMN: Detailed Information #}
-                <div class="col-md-8">
-                    <div class="card shadow-sm h-100 border-0">
-                        <div class="card-header bg-light border-bottom">
-                            <h5 class="card-title mb-0 fw-bold text-secondary">
-                                <i class="bi bi-info-circle"></i> Información General
-                            </h5>
+                {# SECCIÓN 1: DATOS PERSONALES Y DOCUMENTO #}
+                <div class="apple-form-section mb-4">
+                    <div class="d-flex align-items-center gap-2 pb-2 mb-3 border-bottom">
+                        <div class="apple-icon-circle-sm">
+                            <i class="bi bi-person-vcard text-primary"></i>
                         </div>
-                        <div class="card-body p-4">
+                        <h5 class="fw-bold m-0">1. Datos Personales y Documento</h5>
+                    </div>
 
-                            <div class="row g-4">
-                                {# Account Details #}
-                                <div class="col-sm-6">
-                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">Correo Electrónico</small>
-                                    <p class="fs-5 mb-0"><i class="bi bi-envelope text-primary me-2"></i> {{ user.email }}</p>
-                                </div>
-                                <div class="col-sm-6">
-                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{ form_label( form.telefono ) }}</small>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            {{form_widget( form.telefono.prefix ) }}
-                                        </div>
-                                        <div class="col-md-8">
-                                            {{form_widget( form.telefono.number ) }}
-                                        </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.nombre.vars.id }}">
+                                    Nombres <span class="text-danger">*</span>
+                                </label>
+                                {{ form_widget(form.nombre, {'attr': {'class': 'apple-text-input', 'placeholder': 'Primer y segundo nombre'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.apellido.vars.id }}">
+                                    Apellidos <span class="text-danger">*</span>
+                                </label>
+                                {{ form_widget(form.apellido, {'attr': {'class': 'apple-text-input', 'placeholder': 'Primer y segundo apellido'}}) }}
+                            </div>
+                        </div>
+
+                        {# Documento de Identidad Compuesto #}
+                        <div class="col-md-6">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.nroDocumento.vars.id }}">
+                                    Documento de Identidad <span class="text-danger">*</span>
+                                </label>
+                                <div class="apple-composite-group">
+                                    <div class="apple-composite-prefix apple-composite-prefix-doc">
+                                        {{ form_widget(form.tipoDocumento, {'attr': {'class': 'noSrchSelect form-select w-100'}}) }}
                                     </div>
-                                </div>
-
-                                <div class="col-12"><hr class="text-muted my-2"></div>
-
-                                {# Demographics #}
-                                <div class="col-sm-6">
-                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.fechaNacimiento ) }}</small>
-                                    {{form_widget( form.fechaNacimiento ) }}
-                                </div>
-                                <div class="col-sm-6">
-                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.sexo ) }}</small>
-                                    {{form_widget( form.sexo ) }}
-                                </div>
-
-                                <div class="col-12"><hr class="text-muted my-2"></div>
-
-                                {# Address #}
-                                <div class="col-6">
-                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.location.estado ) }}</small>
-                                    {{form_widget( form.location.estado ) }}
-                                </div>
-                                <div class="col-6">
-                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.location.municipio ) }}</small>
-                                    {{form_widget( form.location.municipio ) }}
-                                </div>
-                                <div class="col-6">
-                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.location.parroquia ) }}</small>
-                                    {{form_widget( form.location.parroquia ) }}
-                                </div>
-                                <div class="col-6">
-                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.location.sector ) }}</small>
-                                    {{form_widget( form.location.sector ) }}
-                                </div>
-                                <div class="col-12">
-                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.direccion ) }}</small>
-                                    {{form_widget( form.direccion ) }}
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-12">
-                    <div class="card card-primary card-outline shadow-sm h-100">
-                        <div class="card-body p-4">
-                            <div class="alert alert-info mt-2">
-                                <h5><i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Auditoria de Procesos</strong></h5>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.password ) }}</small>
-                                    {{form_widget( form.password ) }}
-                                </div>
-                                <div class="col-12">
-                                    <small class="text-muted text-uppercase fw-bold d-block mb-1">{{form_label( form.reason ) }}</small>
-                                    {{form_widget( form.reason ) }}
-                                </div>
-                            </div>
-
-                            {# fucking ugly ass line break #}
-                            <br>
-
-                            {# Bottom Actions (Navigation) #}
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="d-flex justify-content-between">
-                                        <a href="{{ path('app_user_external_index') }}" class="btn btn-outline-secondary shadow-sm px-4">
-                                            <i class="bi bi-arrow-left"></i> Volver a la lista
-                                        </a>
-
-                                        <div class="d-flex">
-                                            <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
-                                                {{ button_label|default('Guardar') }}
-                                            </button>
-                                        </div>
+                                    <div class="apple-composite-input">
+                                        {{ form_widget(form.nroDocumento, {'attr': {'class': 'apple-text-input number-only', 'placeholder': 'Ej. 12345678', 'maxlength': 8}}) }}
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        {# Tipo de Sangre #}
+                        <div class="col-md-6">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.sangreTipo.vars.id }}">
+                                    Tipo de Sangre <span class="text-danger">*</span>
+                                </label>
+                                {{ form_widget(form.sangreTipo, {'attr': {'class': 'noSrchSelect form-select w-100'}}) }}
+                            </div>
+                        </div>
+
+                        {# Sexo Biológico #}
+                        <div class="col-md-6">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.sexo.vars.id }}">
+                                    Sexo Biológico <span class="text-danger">*</span>
+                                </label>
+                                {{ form_widget(form.sexo, {'attr': {'class': 'noSrchSelect form-select w-100'}}) }}
+                            </div>
+                        </div>
+
+                        {# Fecha de Nacimiento #}
+                        <div class="col-md-6">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.fechaNacimiento.vars.id }}">
+                                    Fecha de Nacimiento <span class="text-danger">*</span>
+                                </label>
+                                {{ form_widget(form.fechaNacimiento, {'attr': {'class': 'apple-text-input mask', 'data-inputmask': " 'alias': 'date', 'clearIncomplete': true "}}) }}
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                {# SECCIÓN 2: CONTACTO Y UBICACIÓN #}
+                <div class="apple-form-section mb-4">
+                    <div class="d-flex align-items-center gap-2 pb-2 mb-3 border-bottom">
+                        <div class="apple-icon-circle-sm">
+                            <i class="bi bi-geo-alt text-primary"></i>
+                        </div>
+                        <h5 class="fw-bold m-0">2. Contacto y Residencia</h5>
+                    </div>
+
+                    <div class="row g-3">
+                        {# Correo Institucional (Solo Lectura) #}
+                        <div class="col-md-6">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label">
+                                    Correo Electrónico
+                                </label>
+                                <div class="apple-text-input text-muted bg-body-tertiary d-flex align-items-center justify-content-between" style="cursor: not-allowed; opacity: 0.85;">
+                                    <span>{{ user.email }}</span>
+                                    {% if user.isVerified %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small" title="Correo verificado">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill small" title="Pendiente por verificar">
+                                            <i class="bi bi-clock-history"></i>
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <span class="form-text small text-muted">Para modificar el correo se requiere solicitud formal.</span>
+                            </div>
+                        </div>
+
+                        {# Teléfono Móvil Compuesto #}
+                        <div class="col-md-6">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label">
+                                    Teléfono Móvil <span class="text-danger">*</span>
+                                </label>
+                                <div class="apple-composite-group">
+                                    <div class="apple-composite-prefix apple-composite-prefix-phone">
+                                        {{ form_widget(form.telefono.prefix, {'attr': {'class': 'noSrchSelect form-select w-100'}}) }}
+                                    </div>
+                                    <div class="apple-composite-input">
+                                        {{ form_widget(form.telefono.number, {'attr': {'class': 'apple-text-input', 'placeholder': 'Ej. 1234567'}}) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# Cascada Geográfica en Grid 2x2 #}
+                        <div class="col-md-6">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.location.estado.vars.id }}">
+                                    Estado <span class="text-danger">*</span>
+                                </label>
+                                {{ form_widget(form.location.estado, {'attr': {'class': 'noSrchSelect form-select w-100'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.location.municipio.vars.id }}">
+                                    Municipio <span class="text-danger">*</span>
+                                </label>
+                                {{ form_widget(form.location.municipio, {'attr': {'class': 'noSrchSelect form-select w-100'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.location.parroquia.vars.id }}">
+                                    Parroquia <span class="text-danger">*</span>
+                                </label>
+                                {{ form_widget(form.location.parroquia, {'attr': {'class': 'noSrchSelect form-select w-100'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.location.sector.vars.id }}">
+                                    Sector <span class="text-danger">*</span>
+                                </label>
+                                {{ form_widget(form.location.sector, {'attr': {'class': 'noSrchSelect form-select w-100'}}) }}
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.direccion.vars.id }}">
+                                    Dirección Detallada <span class="text-danger">*</span>
+                                </label>
+                                {{ form_widget(form.direccion, {'attr': {'class': 'apple-text-input apple-textarea', 'rows': 3, 'placeholder': 'Avenida, calle, casa o punto de referencia...'}}) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# SECCIÓN 3: AUDITORÍA DE SEGURIDAD REQUERIDA #}
+                <div class="apple-form-section pt-3 border-top mb-4">
+                    <div class="apple-alert apple-alert-warning mb-4 d-flex align-items-start gap-3">
+                        <i class="bi bi-shield-exclamation fs-3 mt-1 text-warning"></i>
+                        <div>
+                            <h5 class="fw-bold mb-1">Auditoría de Seguridad Requerida</h5>
+                            <p class="small mb-0 opacity-75">
+                                La modificación de datos de un usuario externo afecta información clínica y de contacto sensible. Esta acción administrativa quedará registrada con tu firma de auditoría.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.password.vars.id }}">
+                                    Clave de Administrador <span class="text-danger">*</span>
+                                </label>
+                                <div class="apple-input-wrap" data-controller="password-toggle">
+                                    {{ form_widget(form.password, {
+                                        'attr': {
+                                            'class': 'apple-text-input',
+                                            'placeholder': 'Ingresa tu clave de administrador para autorizar',
+                                            'data-password-toggle-target': 'input',
+                                            'autocomplete': 'current-password'
+                                        }
+                                    }) }}
+                                    <button type="button"
+                                            class="apple-input-action-btn apple-spring"
+                                            data-action="click->password-toggle#toggle"
+                                            tabindex="-1"
+                                            title="Mostrar u ocultar contraseña"
+                                            aria-label="Mostrar u ocultar contraseña">
+                                        <i class="bi bi-eye-fill" data-password-toggle-target="icon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="apple-form-group">
+                                <label class="apple-input-label" for="{{ form.reason.vars.id }}">
+                                    Motivo de la Modificación <span class="text-danger">*</span>
+                                </label>
+                                {{ form_widget(form.reason, {
+                                    'attr': {
+                                        'class': 'apple-text-input apple-textarea',
+                                        'rows': 3,
+                                        'placeholder': 'Explica detalladamente la razón por la cual se actualiza este registro...'
+                                    }
+                                }) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# TOOLBAR DE ACCIONES #}
+                <div class="apple-form-actions d-flex flex-wrap justify-content-between align-items-center gap-3 pt-4 border-top">
+                    <a href="{{ path('app_user_external_show', {'id': user.id}) }}" class="btn btn-outline-secondary apple-spring rounded-pill px-4 py-2">
+                        <i class="bi bi-arrow-left me-2"></i> Cancelar
+                    </a>
+
+                    <button type="submit" class="btn btn-primary apple-btn-primary apple-spring rounded-pill px-4 py-2" data-submit-once-target="submitButton">
+                        <i class="bi bi-check2-circle me-2"></i> Guardar Cambios
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
             </div>
-        {{ form_end(form) }}
+        </div>
     </div>
+</div>
 {% endblock %}

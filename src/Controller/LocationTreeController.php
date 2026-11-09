@@ -80,4 +80,39 @@ class LocationTreeController extends AbstractController
         }
         return $this->render('ubicaciones/_sectores.html.twig', ['parroquia' => $parroquia]);
     }
+
+    #[Route('/rename/{type}/{id}', name: 'app_ubicaciones_rename', methods: ['POST'])]
+    public function rename(string $type, int $id, Request $request, EntityManagerInterface $em): Response
+    {
+        $nombre = trim($request->request->get('nombre', ''));
+        if ($nombre === '') {
+            return $this->json(['success' => false, 'message' => 'El nombre no puede estar vacío.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $entityClass = match ($type) {
+            'estado' => Estado::class,
+            'municipio' => Municipio::class,
+            'parroquia' => Parroquia::class,
+            'sector' => Sector::class,
+            default => null,
+        };
+
+        if (!$entityClass) {
+            return $this->json(['success' => false, 'message' => 'Tipo de entidad inválido.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $entity = $em->getRepository($entityClass)->find($id);
+        if (!$entity) {
+            return $this->json(['success' => false, 'message' => 'Entidad no encontrada.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $entity->setNombre($nombre);
+        $em->flush();
+
+        return $this->json([
+            'success' => true,
+            'id' => $id,
+            'nombre' => $entity->getNombre()
+        ]);
+    }
 }

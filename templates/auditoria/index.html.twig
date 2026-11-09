@@ -1,168 +1,131 @@
-﻿{% extends 'base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-
-
-{% block title %}Auditoria{% endblock %}
-
-
+{% block title %}Auditoría{% endblock %}
 
 {% block titlewrap %}
-
-    Auditoria
-
+    Auditoría
 {% endblock %}
-
-
 
 {% block breadcrumb %}
-
-    <li class="breadcrumb-item active" aria-current="page">Auditoria</li>
-
+    <li class="breadcrumb-item active" aria-current="page">Auditoría</li>
 {% endblock %}
-
-
 
 {% block body %}
-
     {% for label, messages in app.flashes %}
-
         {% for message in messages %}
-
-            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-
-                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
-
+            <div class="apple-alert apple-alert-{{ label == 'error' or label == 'danger' ? 'danger' : (label == 'warning' ? 'warning' : 'success') }} alert-dismissible fade show mb-4" role="alert">
+                <i class="bi {{ label == 'error' or label == 'danger' ? 'bi-exclamation-octagon-fill' : (label == 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill') }} me-2"></i>
+                <div class="flex-grow-1">{{ message }}</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-
             </div>
-
         {% endfor %}
-
     {% endfor %}
 
-    <div class="card card-primary card-outline mb-4">
+    {# Tarjeta 1: Filtros de Auditoría #}
+    <div class="apple-table-card shadow-sm mb-4">
+        <div class="apple-table-header d-flex flex-wrap justify-content-between align-items-center gap-3 pb-3 mb-3 border-bottom">
+            <div class="d-flex align-items-center gap-3">
+                <div class="apple-header-icon-badge">
+                    <i class="bi bi-sliders2"></i>
+                </div>
+                <div>
+                    <h3 class="apple-table-title m-0">Filtros de Búsqueda</h3>
+                    <p class="apple-table-subtitle text-muted small m-0">
+                        <i class="bi bi-calendar-range me-1"></i> Filtra eventos por rango de fechas, tipo de acción o usuario
+                    </p>
+                </div>
+            </div>
+        </div>
 
-        <div class="card-body">
-
-            <form method="get" action="{{ path('app_auditoria_index') }}" class="row g-3 mb-4">
-
-                <div class="row">
-
-                    <div class="col-md-2">
-
-                        <label>Desde</label>
-
-                        <input type="date" name="startDate" value="{{ startDate }}" class="form-control">
-
-                    </div>
-
-                    <div class="col-md-2">
-
-                        <label>Hasta</label>
-
-                        <input type="date" name="endDate" value="{{ endDate }}" class="form-control">
-
-                    </div>
-
-                    <div class="col-md-3">
-
-                        <label>Accion</label>
-
-                        <select name="state" class="form-control srchSelect">
-
-                            {% for state in tipos %}
-
-                                <option value="{{ state.value }}" {{ currentState == state.value ? 'selected' }}>{{ state.readableText }}</option>
-
-                            {% endfor %}
-
-                        </select>
-
-                    </div>
-
-                    <div class="col-md-3">
-
-                        <label>Usuarios</label>
-
-                        <select name="user" class="form-control srchSelect">
-
-                            <option value="" {{ currentUser == '' ? 'selected' }}>Todos</option>
-
-                            {% for usuario in usuarios %}
-
-                                <option value="{{ usuario.id }}" {{ currentUser == usuario.id ? 'selected' }}>{{ usuario.id|public_username_email|title }}</option>
-
-                            {% endfor %}
-
-                        </select>
-
-                    </div>
-
-                                        <div class="col-md-2 d-flex align-items-end gap-1">
-
-                        <button type="submit" class="btn btn-primary" title="Filtrar">
-
-                            <i class="bi bi-funnel-fill"></i>
-
-                        </button>
-
-                        <a href="{{ path('app_auditoria_index') }}" class="btn btn-secondary" title="Limpiar">
-
-                            <i class="bi bi-eraser-fill"></i>
-
-                        </a>
-
-                        <button type="submit" name="export" value="pdf" class="btn btn-outline-danger" formtarget="_blank" title="Exportar a PDF" data-controller="confirm-action" data-action="click->confirm-action#confirm" data-confirm-action-title-value="¿Generar Reporte PDF?" data-confirm-action-text-value="Solo se permiten exportar reportes de máximo 1000 registros a la vez por motivos de rendimiento. ¿Desea continuar?" data-confirm-action-icon-value="info" data-confirm-action-confirm-text-value="Generar PDF">
-
-                            <i class="bi bi-file-earmark-pdf-fill"></i> PDF
-
-                        </button>
-
-                    </div>
-
+        <div class="apple-table-body">
+            <form method="get" action="{{ path('app_auditoria_index') }}" class="row g-3">
+                {# Fila 1: 4 Campos Simétricos (25% cada uno en pantallas medianas y amplias) #}
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <label class="form-label small fw-semibold text-secondary mb-1">Desde</label>
+                    <input type="date" name="startDate" value="{{ startDate }}" class="form-control apple-date-input">
                 </div>
 
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <label class="form-label small fw-semibold text-secondary mb-1">Hasta</label>
+                    <input type="date" name="endDate" value="{{ endDate }}" class="form-control apple-date-input">
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <label class="form-label small fw-semibold text-secondary mb-1">Acción</label>
+                    <select name="state" class="form-control srchSelect w-100">
+                        {% for state in tipos %}
+                            <option value="{{ state.value }}" {{ currentState == state.value ? 'selected' }}>{{ state.readableText }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <label class="form-label small fw-semibold text-secondary mb-1">Usuario</label>
+                    <select name="user" class="form-control srchSelect w-100">
+                        <option value="" {{ currentUser == '' ? 'selected' }}>Todos</option>
+                        {% for usuario in usuarios %}
+                            <option value="{{ usuario.id }}" {{ currentUser == usuario.id ? 'selected' }}>{{ usuario.id|public_username_email|title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                {# Fila 2: Barra de Acciones y Resumen (Apple Toolbar Footer) #}
+                <div class="col-12 d-flex flex-wrap align-items-center justify-content-between pt-3 mt-2 border-top border-secondary-subtle gap-2">
+                    <div class="text-secondary small d-none d-md-flex align-items-center gap-2">
+                        <i class="bi bi-funnel text-primary"></i>
+                        <span>Filtro activo: <strong>{{ startDate }}</strong> al <strong>{{ endDate }}</strong></span>
+                    </div>
+
+                    <div class="d-flex flex-wrap align-items-center gap-2 ms-auto">
+                        <a href="{{ path('app_auditoria_index') }}" class="btn btn-secondary apple-btn-secondary rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2" data-controller="apple-spring" title="Limpiar filtros">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                            <span>Limpiar</span>
+                        </a>
+
+                        <button type="submit" name="export" value="pdf" class="btn btn-outline-danger apple-btn-danger rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2 text-nowrap" formtarget="_blank" title="Exportar reporte en PDF" data-controller="confirm-action apple-spring" data-action="click->confirm-action#confirm" data-confirm-action-title-value="¿Generar Reporte PDF?" data-confirm-action-text-value="Solo se permiten exportar reportes de máximo 1000 registros a la vez por motivos de rendimiento. ¿Desea continuar?" data-confirm-action-icon-value="info" data-confirm-action-confirm-text-value="Generar PDF">
+                            <i class="bi bi-file-earmark-pdf-fill"></i>
+                            <span>Exportar PDF</span>
+                        </button>
+
+                        <button type="submit" class="btn btn-primary apple-btn-primary rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2" data-controller="apple-spring" title="Filtrar registros">
+                            <i class="bi bi-funnel-fill"></i>
+                            <span>Filtrar</span>
+                        </button>
+                    </div>
+                </div>
             </form>
-
         </div>
-
     </div>
 
+    {# Tarjeta 2: Listado de Auditoría (DataTables) #}
+    <div class="apple-table-card shadow-sm mb-4">
+        <div class="apple-table-header d-flex flex-wrap justify-content-between align-items-center gap-3 pb-3 mb-3 border-bottom">
+            <div class="d-flex align-items-center gap-3">
+                <div class="apple-header-icon-badge">
+                    <i class="bi bi-shield-shaded"></i>
+                </div>
+                <div>
+                    <h3 class="apple-table-title m-0">Registro de Auditoría</h3>
+                    <p class="apple-table-subtitle text-muted small m-0">
+                        <i class="bi bi-info-circle me-1"></i> Búsqueda en tiempo real por <strong>Detalles</strong> o <strong>Dirección IP</strong>
+                    </p>
+                </div>
+            </div>
 
-
-    <br>
-
-
-
-    <div class="card card-primary card-outline mb-4">
-
-        <div class="card-header d-flex justify-content-between align-items-center">
-
-            <h3 class="card-title m-0">Auditoria</h3>
-
-            <div class="text-end ms-auto"><span class="text-muted small d-block"><i class="bi bi-info-circle"></i> Puedes buscar por <strong>Detalles o Dirección IP</strong></span><span class="text-danger small d-block mt-1"><i class="bi bi-exclamation-triangle-fill"></i> El límite máximo para exportar reportes en PDF es de 1000 registros.</span></div>
-
+            <div class="d-flex align-items-center">
+                <span class="apple-role-pill text-bg-warning d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Máx. 1,000 registros para PDF
+                </span>
+            </div>
         </div>
 
-
-
-        <div class="card-body">
-
-            <div class="dtHereServer table-responsive" data-dt-config="{{ datatable_settings(datatable)|escape('html_attr') }}">Cargando registros...</div>
-
+        <div class="apple-table-body">
+            <div class="dtHereServer" data-dt-config="{{ datatable_settings(datatable)|escape('html_attr') }}">
+                <div class="text-center py-5 text-muted">
+                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                    Cargando eventos de auditoría...
+                </div>
+            </div>
         </div>
-
     </div>
-
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-

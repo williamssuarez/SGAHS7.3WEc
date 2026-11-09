@@ -8,13 +8,31 @@
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{{ path('app_user_internal_index') }}">Usuarios Internos</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Editar Usuario Interno</li>
+    {% set current_user = user_internal|default(user|default(null)) %}
+    {% if current_user and current_user.id is defined %}
+        <li class="breadcrumb-item"><a href="{{ path('app_user_internal_show', {'id': current_user.id}) }}">{{ current_user.internalProfile.nombre|default('Usuario') }}</a></li>
+    {% endif %}
+    <li class="breadcrumb-item active" aria-current="page">Editar</li>
 {% endblock %}
 
 {% block body %}
-    <div class="col-md-12">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('users/user_internal/_form.html.twig', {'button_label': 'Actualizar'}) }}
+    <div class="apple-portal-container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8 col-xl-7">
+                <div class="apple-form-card shadow-sm mb-4">
+                    <div class="form-header-group d-flex align-items-center gap-3">
+                        <div class="apple-header-icon-badge">
+                            <i class="bi bi-pencil-square"></i>
+                        </div>
+                        <div>
+                            <h3 class="form-header-title m-0">Editar Usuario Interno</h3>
+                            <p class="form-header-subtitle">Modifica la información de credenciales, roles o contactos del usuario.</p>
+                        </div>
+                    </div>
+
+                    {{ include('users/user_internal/_form.html.twig', {'button_label': 'Guardar Cambios'}) }}
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

@@ -1,127 +1,186 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard Quirófano{% endblock %}
+{% block title %}Dashboard Quirófano | SGAHS{% endblock %}
 
 {% block titlewrap %}
     Resumen Operativo Quirúrgico
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_index') }}">Inicio</a></li>
     <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid" 
+    <div class="container-fluid px-0 px-md-2" 
          data-controller="dashboard-charts"
          data-dashboard-charts-endpoint-value="{{ path('api_dashboard_quirofano') }}">
 
-        <div class="row">
-            <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-warning">
-                    <div class="inner">
-                        <h3 class="text-dark" data-dashboard-charts-target="card1">
-                            <div class="spinner-border spinner-border-sm" role="status"></div>
-                        </h3>
-                        <p class="text-dark">Cirugías Agendadas</p>
+        <!-- 4 Tarjetas KPI Apple -->
+        <div class="row g-3 mb-4">
+            <!-- Card 1: Cirugías Programadas -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="apple-kpi-card" data-controller="apple-spring">
+                    <div class="apple-kpi-header">
+                        <div class="apple-kpi-icon apple-kpi-icon-amber">
+                            <i class="bi bi-calendar-event-fill"></i>
+                        </div>
+                        <span class="apple-kpi-badge">Por Iniciar</span>
                     </div>
-                    <i class="small-box-icon bi bi-calendar-event text-dark"></i>
-                    <a href="{{ path('app_cirugia_agenda') }}" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
-                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
-                    </a>
+                    <div class="apple-kpi-body">
+                        <div class="apple-kpi-value" data-dashboard-charts-target="card1">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        <p class="apple-kpi-label">Cirugías Programadas</p>
+                    </div>
+                    <div class="apple-kpi-footer">
+                        <a href="{{ path('app_cirugia_agenda') }}" class="apple-kpi-link">
+                            <span>Ver agenda</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-primary">
-                    <div class="inner">
-                        <h3 data-dashboard-charts-target="card2">
-                            <div class="spinner-border spinner-border-sm" role="status"></div>
-                        </h3>
-                        <p>Cirugías en Proceso</p>
+            <!-- Card 2: En Proceso -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="apple-kpi-card" data-controller="apple-spring">
+                    <div class="apple-kpi-header">
+                        <div class="apple-kpi-icon apple-kpi-icon-blue">
+                            <i class="bi bi-activity"></i>
+                        </div>
+                        <span class="apple-kpi-badge">En Pabellón</span>
                     </div>
-                    <i class="small-box-icon bi bi-activity"></i>
-                    <a href="{{ path('app_cirugia_pizarra') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
-                    </a>
+                    <div class="apple-kpi-body">
+                        <div class="apple-kpi-value" data-dashboard-charts-target="card2">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        <p class="apple-kpi-label">Cirugías en Proceso</p>
+                    </div>
+                    <div class="apple-kpi-footer">
+                        <a href="{{ path('app_cirugia_pizarra') }}" class="apple-kpi-link">
+                            <span>Pizarra pública</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-success">
-                    <div class="inner">
-                        <h3 data-dashboard-charts-target="card3">
-                            <div class="spinner-border spinner-border-sm" role="status"></div>
-                        </h3>
-                        <p>Finalizadas Hoy</p>
+            <!-- Card 3: Finalizadas Hoy -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="apple-kpi-card" data-controller="apple-spring">
+                    <div class="apple-kpi-header">
+                        <div class="apple-kpi-icon apple-kpi-icon-green">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <span class="apple-kpi-badge">Completadas</span>
                     </div>
-                    <i class="small-box-icon bi bi-check-circle-fill"></i>
-                    <a href="{{ path('app_cirugia') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
-                    </a>
+                    <div class="apple-kpi-body">
+                        <div class="apple-kpi-value" data-dashboard-charts-target="card3">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        <p class="apple-kpi-label">Finalizadas Hoy</p>
+                    </div>
+                    <div class="apple-kpi-footer">
+                        <a href="{{ path('app_cirugia') }}" class="apple-kpi-link">
+                            <span>Ver historial</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-info">
-                    <div class="inner">
-                        <h3 data-dashboard-charts-target="card4">
-                            <div class="spinner-border spinner-border-sm" role="status"></div>
-                        </h3>
-                        <p>Quirófanos Registrados</p>
+            <!-- Card 4: Quirófanos -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="apple-kpi-card" data-controller="apple-spring">
+                    <div class="apple-kpi-header">
+                        <div class="apple-kpi-icon apple-kpi-icon-purple">
+                            <i class="bi bi-door-open-fill"></i>
+                        </div>
+                        <span class="apple-kpi-badge">Salas</span>
                     </div>
-                    <i class="small-box-icon bi bi-door-open-fill"></i>
-                    <a href="{{ path('app_quirofano_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
-                    </a>
+                    <div class="apple-kpi-body">
+                        <div class="apple-kpi-value" data-dashboard-charts-target="card4">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        <p class="apple-kpi-label">Quirófanos Totales</p>
+                    </div>
+                    <div class="apple-kpi-footer">
+                        <a href="{{ path('app_quirofano_index') }}" class="apple-kpi-link">
+                            <span>Gestionar salas</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mt-2">
-            <div class="col-lg-7">
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header border-0 bg-transparent">
-                        <h3 class="card-title fw-bold text-secondary">
-                            <i class="bi bi-graph-up-arrow text-warning me-2"></i>
-                            Volumen Quirúrgico (7 días)
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        <div style="position: relative; height: 320px; width: 100%;">
-                            <div data-dashboard-charts-target="barLoading" class="d-flex align-items-center justify-content-center h-100">
-                                <div class="spinner-border text-warning" role="status"></div>
+        <!-- Fila de Gráficos Apple Glass -->
+        <div class="row g-3">
+            <!-- Gráfico de Tendencia (7 días) -->
+            <div class="col-12 col-lg-7">
+                <div class="apple-chart-card shadow-sm">
+                    <div class="apple-chart-header">
+                        <div class="apple-chart-title-group">
+                            <div class="apple-chart-icon-badge badge-amber">
+                                <i class="bi bi-graph-up-arrow"></i>
                             </div>
-                            <canvas data-dashboard-charts-target="barChart" class="d-none"></canvas>
+                            <div>
+                                <h3 class="apple-chart-title">Volumen Quirúrgico</h3>
+                                <p class="apple-chart-subtitle">Intervenciones realizadas</p>
+                            </div>
                         </div>
+                        <span class="apple-chart-badge">Últimos 7 días</span>
+                    </div>
+                    <div class="apple-chart-canvas-wrap">
+                        <div data-dashboard-charts-target="barLoading" class="d-flex align-items-center justify-content-center h-100">
+                            <div class="spinner-border text-warning" role="status">
+                                <span class="visually-hidden">Cargando gráfico...</span>
+                            </div>
+                        </div>
+                        <canvas data-dashboard-charts-target="barChart" class="d-none"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-5">
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header border-0 bg-transparent">
-                        <h3 class="card-title fw-bold text-secondary">
-                            <i class="bi bi-pie-chart-fill text-info me-2"></i>
-                            Estatus Operativo Hoy
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        <div style="position: relative; height: 320px; width: 100%;">
-                            <div data-dashboard-charts-target="pieLoading" class="d-flex align-items-center justify-content-center h-100">
-                                <div class="spinner-border text-info" role="status"></div>
+            <!-- Gráfico Doughnut: Cirugías Hoy -->
+            <div class="col-12 col-lg-5">
+                <div class="apple-chart-card shadow-sm">
+                    <div class="apple-chart-header">
+                        <div class="apple-chart-title-group">
+                            <div class="apple-chart-icon-badge badge-blue">
+                                <i class="bi bi-pie-chart-fill"></i>
                             </div>
-                            <div data-dashboard-charts-target="pieEmpty" class="d-none align-items-center justify-content-center h-100">
-                                <div class="text-center text-muted">
-                                    <i class="bi bi-calendar-x fs-1 mb-2"></i>
-                                    <p class="mb-0">No hay cirugías registradas para hoy.</p>
-                                </div>
+                            <div>
+                                <h3 class="apple-chart-title">Distribución Quirúrgica</h3>
+                                <p class="apple-chart-subtitle">Estado de los procedimientos de hoy</p>
                             </div>
-                            <canvas data-dashboard-charts-target="pieChart" class="d-none"></canvas>
                         </div>
+                        <span class="apple-chart-badge">Hoy</span>
+                    </div>
+                    <div class="apple-chart-canvas-wrap">
+                        <div data-dashboard-charts-target="pieLoading" class="d-flex align-items-center justify-content-center h-100">
+                            <div class="spinner-border text-info" role="status">
+                                <span class="visually-hidden">Cargando distribución...</span>
+                            </div>
+                        </div>
+                        <div data-dashboard-charts-target="pieEmpty" class="d-none align-items-center justify-content-center flex-column h-100">
+                            <i class="bi bi-calendar-x text-muted mb-2" style="font-size: 2.5rem; opacity: 0.6;"></i>
+                            <p class="text-muted mb-0 small">No hay cirugías programadas para hoy.</p>
+                        </div>
+                        <canvas data-dashboard-charts-target="pieChart" class="d-none"></canvas>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 {% endblock %}

@@ -1,32 +1,86 @@
 {% extends 'resetBase.html.twig' %}
 
+{% block title %}Recuperar Contraseña | SGAHS{% endblock %}
+
+{% block card_title %}¿Olvidaste tu contraseña?{% endblock %}
+{% block card_desc %}Ingresa tu correo y te enviaremos un enlace seguro para restablecerla.{% endblock %}
+
 {% block body %}
+    {# Mensajes de error flash del bundle #}
     {% for flash_error in app.flashes('reset_password_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+        <div class="apple-alert apple-alert-danger mb-3" role="alert">
+            <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i>
+            <div>{{ flash_error }}</div>
+        </div>
     {% endfor %}
 
-    <br>
+    {# Otros mensajes flash de la app #}
+    {% for label, messages in app.flashes %}
+        {% if label != 'reset_password_error' %}
+            {% for message in messages %}
+                <div class="apple-alert apple-alert-{{ label == 'error' ? 'danger' : (label == 'success' ? 'success' : 'info') }} mb-3" role="alert">
+                    <i class="bi bi-{{ label == 'error' ? 'exclamation-circle-fill' : (label == 'success' ? 'check-circle-fill' : 'info-circle-fill') }} flex-shrink-0"></i>
+                    <div>{{ message }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
 
-    <div>
-        <div class="alert alert-primary" role="alert">
-            <small>
-                <i class="bi bi-info-circle"></i>
-                Introduzca su correo electronico, le enviaremos un enlace a dicho correo para reiniciar su clave.
-            </small>
-        </div>
+    <div class="apple-alert apple-alert-info mb-4" role="alert">
+        <i class="bi bi-info-circle-fill flex-shrink-0"></i>
+        <div>Introduce el correo electrónico asociado a tu cuenta para recibir las instrucciones de reinicio.</div>
     </div>
 
-    <br>
+    {{ form_start(requestForm, {
+        'attr': {
+            'class': 'apple-auth-form',
+            'data-controller': 'submit-once',
+            'data-action': 'submit->submit-once#disable',
+            'data-submit-once-text-value': 'Enviando enlace...'
+        }
+    }) }}
 
-    {{ form_start(requestForm) }}
-        {{ form_row(requestForm.email) }}
+        <div class="apple-form-group mb-4">
+            <label for="{{ requestForm.email.vars.id }}" class="apple-input-label">
+                Correo Electrónico <span class="text-danger">*</span>
+            </label>
+            <div class="apple-input-wrap">
+                <i class="bi bi-envelope-at apple-input-icon"></i>
+                {{ form_widget(requestForm.email, {
+                    'attr': {
+                        'class': 'apple-text-input',
+                        'placeholder': 'ejemplo@correo.com',
+                        'autocomplete': 'email',
+                        'autofocus': true
+                    }
+                }) }}
+            </div>
+            {% if form_errors(requestForm.email) %}
+                <div class="apple-field-error">{{ form_errors(requestForm.email) }}</div>
+            {% endif %}
+        </div>
 
-        <br>
-
-        <button class="btn btn-success form-control">
-            <i class="fa-solid fa-paper-plane"></i>
-            Enviar Enlace
-        </button>
         {{ form_widget(requestForm.captcha) }}
+
+        <button type="submit" 
+                class="apple-btn btn-apple-primary btn-apple-lg w-100" 
+                data-submit-once-target="submitButton"
+                data-controller="apple-spring">
+            <i class="bi bi-send-fill"></i>
+            <span>Enviar Enlace de Recuperación</span>
+        </button>
+
     {{ form_end(requestForm) }}
+{% endblock %}
+
+{% block auth_footer %}
+    <div class="apple-auth-links">
+        <a href="{{ path('app_login') }}" class="apple-auth-link">
+            <i class="bi bi-arrow-left me-1"></i> Volver al inicio de sesión
+        </a>
+        <div class="apple-auth-sublink">
+            <span>¿No tienes una cuenta?</span>
+            <a href="{{ path('app_register') }}" class="apple-auth-link-bold">Regístrate</a>
+        </div>
+    </div>
 {% endblock %}

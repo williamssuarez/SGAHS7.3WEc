@@ -13,66 +13,139 @@
 {% block body %}
     {% for label, messages in app.flashes %}
         {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+            <div class="alert apple-alert apple-alert-{{ label == 'error' or label == 'danger' ? 'danger' : (label == 'warning' ? 'warning' : 'success') }} alert-dismissible fade show mb-4" role="alert">
+                <i class="bi {{ label == 'error' or label == 'danger' ? 'bi-exclamation-octagon-fill' : (label == 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill') }} me-2"></i>
+                <div class="flex-grow-1">{{ message }}</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
     {% endfor %}
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card card-primary card-outline mb-4">
-                <div class="card-header">
-                    <h3 class="card-title">Árbol de Ubicaciones</h3>
+    <div class="apple-tree-card shadow-sm mb-4" data-controller="apple-tree-filter">
+        <div class="apple-tree-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="apple-header-icon-badge">
+                    <i class="bi bi-diagram-3-fill"></i>
                 </div>
-                
-                <div class="card-body p-0">
-                    <ul class="list-group list-group-flush" id="tree-root">
-                        {% for estado in estados %}
-                            <li class="list-group-item">
-                                <details>
-                                    <summary class="d-flex align-items-center justify-content-between" style="cursor: pointer; list-style: none;">
-                                        <div>
-                                            <i class="bi bi-chevron-right me-2 chevron-icon transition-transform"></i>
-                                            <strong class="text-primary">{{ estado.nombre }}</strong>
-                                        </div>
-                                        <a href="{{ path('app_estado_edit', {id: estado.id}) }}" data-turbo-frame="_top" class="btn btn-sm text-secondary p-0 m-0" title="Editar"><i class="bi bi-pencil-square"></i></a>
-                                    </summary>
-                                    <div class="ps-4 pt-2">
-                                        <turbo-frame id="estado_{{ estado.id }}_municipios" src="{{ path('app_ubicaciones_municipios', {id: estado.id}) }}" loading="lazy">
-                                            <div class="text-muted small my-2"><i class="spinner-border spinner-border-sm me-2"></i> Cargando municipios...</div>
-                                        </turbo-frame>
-                                    </div>
-                                </details>
-                            </li>
-                        {% endfor %}
-                        <li class="list-group-item mt-2">
-                            <form action="{{ path('app_ubicaciones_index') }}" method="POST" class="d-flex w-50">
-                                <input type="text" name="nombre" class="form-control me-2" placeholder="Nuevo Estado" required>
-                                <button type="submit" class="btn btn-primary" title="Añadir"><i class="bi bi-plus-lg"></i></button>
-                            </form>
-                        </li>
-                    </ul>
+                <div>
+                    <h3 class="apple-table-title m-0">Árbol Jerárquico de Ubicaciones</h3>
+                    <p class="apple-table-subtitle text-muted small m-0">
+                        Zonificación territorial: 
+                        <span class="badge-estado px-1 rounded">Estado</span> → 
+                        <span class="badge-municipio px-1 rounded">Municipio</span> → 
+                        <span class="badge-parroquia px-1 rounded">Parroquia</span> → 
+                        <span class="badge-sector px-1 rounded">Sector</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 ms-auto">
+                <span class="apple-tree-pill d-none d-sm-inline-flex" data-apple-tree-filter-target="count">{{ estados|length }} estados</span>
+                <div class="apple-tree-search-wrap">
+                    <i class="bi bi-search apple-tree-search-icon"></i>
+                    <input type="text"
+                           class="apple-tree-search-input"
+                           placeholder="Filtrar estados..."
+                           autocomplete="off"
+                           data-apple-tree-filter-target="input"
+                           data-action="input->apple-tree-filter#filter">
+                    <button type="button"
+                            class="apple-tree-search-clear"
+                            title="Limpiar búsqueda"
+                            data-action="click->apple-tree-filter#clear">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <style>
-        /* Arrow animation logic */
-        details summary::-webkit-details-marker {
-            display: none;
-        }
-        details[open] > summary .chevron-icon {
-            transform: rotate(90deg);
-        }
-        .transition-transform {
-            transition: transform 0.2s ease-in-out;
-        }
-        details > summary {
-            outline: none;
-            user-select: none;
-        }
-    </style>
+        <div class="apple-tree-body">
+            <ul class="apple-tree-list" id="tree-root">
+                {% for estado in estados %}
+                    <li class="apple-tree-item" data-apple-tree-filter-target="item" data-name="{{ estado.nombre }}">
+                        <details>
+                            <summary class="apple-tree-node" data-controller="apple-inline-edit" data-apple-inline-edit-url-value="{{ path('app_ubicaciones_rename', {type: 'estado', id: estado.id}) }}">
+                                {# Modo Vista #}
+                                <div class="apple-tree-node-display" data-apple-inline-edit-target="display">
+                                    <div class="apple-tree-node-content">
+                                        <i class="bi bi-chevron-right apple-tree-chevron"></i>
+                                        <span class="apple-tree-badge badge-estado" title="Nivel: Estado">
+                                            <i class="bi bi-map-fill"></i>
+                                        </span>
+                                        <strong class="text-primary apple-tree-node-text" data-apple-inline-edit-target="label" title="{{ estado.nombre }}">{{ estado.nombre }}</strong>
+                                        <span class="apple-tree-pill ms-1 d-none d-sm-inline-flex flex-shrink-0">{{ estado.municipios|length }} mun</span>
+                                    </div>
+                                    <div class="apple-tree-node-actions">
+                                        <button type="button" class="apple-tree-action-btn apple-spring" data-action="click->apple-inline-edit#start" title="Editar Estado {{ estado.nombre }}">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {# Modo Edición Inline #}
+                                <div class="apple-tree-inline-edit d-none" data-apple-inline-edit-target="form">
+                                    <span class="apple-tree-badge badge-estado" title="Editando Estado">
+                                        <i class="bi bi-map-fill"></i>
+                                    </span>
+                                    <input type="text"
+                                           class="form-control apple-tree-input"
+                                           data-apple-inline-edit-target="input"
+                                           data-action="keydown->apple-inline-edit#handleKeydown"
+                                           placeholder="Nombre del estado..."
+                                           autocomplete="off">
+                                    <button type="button"
+                                            class="btn btn-sm btn-primary apple-btn-primary btn-inline-save apple-spring"
+                                            data-apple-inline-edit-target="saveBtn"
+                                            data-action="click->apple-inline-edit#save"
+                                            title="Guardar nombre">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-sm btn-secondary apple-btn-secondary btn-inline-cancel apple-spring"
+                                            data-action="click->apple-inline-edit#cancel"
+                                            title="Cancelar">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                            </summary>
+                            <div class="apple-tree-branch">
+                                <turbo-frame id="estado_{{ estado.id }}_municipios" src="{{ path('app_ubicaciones_municipios', {id: estado.id}) }}" loading="lazy">
+                                    <div class="apple-tree-loading d-flex align-items-center gap-2">
+                                        <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
+                                        <span>Cargando municipios...</span>
+                                    </div>
+                                </turbo-frame>
+                            </div>
+                        </details>
+                    </li>
+                {% else %}
+                    <li class="apple-tree-item">
+                        <div class="apple-tree-empty">
+                            <i class="bi bi-info-circle me-1"></i> No hay estados registrados actualmente.
+                        </div>
+                    </li>
+                {% endfor %}
+
+                <li class="apple-tree-item d-none" data-apple-tree-filter-target="noResults">
+                    <div class="apple-alert apple-alert-warning d-flex align-items-center gap-2 my-2">
+                        <i class="bi bi-search"></i>
+                        <span>No se encontraron estados que coincidan con la búsqueda.</span>
+                    </div>
+                </li>
+
+                <li class="apple-tree-item mt-3 pt-3 border-top border-secondary-subtle">
+                    <form action="{{ path('app_ubicaciones_index') }}" method="POST" class="apple-tree-add-bar d-flex align-items-center gap-2" data-controller="submit-once" data-action="submit->submit-once#disable">
+                        <span class="apple-tree-badge badge-estado d-none d-sm-inline-flex" title="Nuevo Estado">
+                            <i class="bi bi-plus-lg"></i>
+                        </span>
+                        <input type="text" name="nombre" class="form-control apple-tree-input flex-grow-1" placeholder="Nuevo estado..." required autocomplete="off">
+                        <button type="submit" class="btn btn-sm btn-primary apple-btn-primary rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1 text-nowrap" data-submit-once-target="submitButton" data-controller="apple-spring">
+                            <i class="bi bi-plus-lg"></i>
+                            <span class="d-none d-sm-inline">Añadir Estado</span>
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
 {% endblock %}

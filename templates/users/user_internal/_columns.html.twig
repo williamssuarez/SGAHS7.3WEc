@@ -1,56 +1,66 @@
 {% if column.name == 'email' %}
-    {{ row.email }}
-    {% if row.status and row.status.codigo == 'NLOKREC' %}
-        <span class="badge bg-danger ms-2"><i class="bi bi-person-fill-lock"></i> Desactivado</span>
-    {% endif %}
+    <div class="d-flex align-items-center flex-wrap gap-2">
+        <span class="fw-semibold">{{ row.email }}</span>
+        {% if row.status and row.status.codigo == 'NLOKREC' %}
+            <span class="apple-role-pill text-bg-danger"><i class="bi bi-person-fill-lock"></i> Desactivado</span>
+        {% endif %}
+    </div>
 
 {% elseif column.name == 'roles' %}
     <div class="d-flex flex-wrap gap-1">
         {% for badge in row.roles|user_badges %}
-            <span class="badge rounded-pill {{ badge.class }}">
+            <span class="apple-role-pill {{ badge.class }}">
                 {{ badge.label }}
             </span>
         {% endfor %}
     </div>
 
 {% elseif column.name == 'nombre' %}
-    {{ row.internalNameorNothing }}
+    <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-person text-secondary opacity-75"></i>
+        <span>{{ row.internalNameorNothing }}</span>
+    </div>
 
 {% elseif column.name == 'acciones' %}
     <div class="btn-group">
-        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-shield-fill-exclamation"></i> Acciones
+        <button type="button"
+                class="btn btn-sm btn-outline-primary dropdown-toggle apple-spring rounded-pill px-3 py-1"
+                data-bs-toggle="dropdown"
+                data-bs-boundary="window"
+                data-bs-popper-config='{"strategy":"fixed"}'
+                aria-expanded="false">
+            <i class="bi bi-shield-fill-exclamation me-1"></i> Acciones
         </button>
-        <ul class="dropdown-menu">
+        <ul class="dropdown-menu dropdown-menu-end apple-dropdown-menu shadow-lg">
             <li>
                 <a class="dropdown-item" href="{{ path('app_user_internal_show', {'id': row.id}) }}">
-                    <i class="bi bi-search"></i> Ver Detalles
+                    <i class="bi bi-search text-primary me-2"></i> Ver Detalles
                 </a>
             </li>
             <li>
                 <a class="dropdown-item" href="{{ path('app_user_internal_edit', {'id': row.id}) }}">
-                    <i class="bi bi-pencil-square"></i> Editar
+                    <i class="bi bi-pencil-square text-primary me-2"></i> Editar
                 </a>
             </li>
             <li>
-                <hr class="dropdown-divider">
+                <hr class="dropdown-divider my-1">
             </li>
             {% if row.status and row.status.codigo == 'NLOKREC' %}
                 <li>
-                    <a class="dropdown-item" href="{{ path('app_user_internal_reactivate', {'id': row.id}) }}">
-                        <i class="bi bi-person-fill-check"></i> Activar Cuenta
+                    <a class="dropdown-item text-success" href="{{ path('app_user_internal_reactivate', {'id': row.id}) }}">
+                        <i class="bi bi-person-fill-check me-2"></i> Activar Cuenta
                     </a>
                 </li>
             {% else %}
                 <li>
-                    <a class="dropdown-item" href="{{ path('app_user_internal_deactivate', {'id': row.id}) }}">
-                        <i class="bi bi-person-fill-lock"></i> Desactivar Cuenta
+                    <a class="dropdown-item text-danger" href="{{ path('app_user_internal_deactivate', {'id': row.id}) }}">
+                        <i class="bi bi-person-fill-lock me-2"></i> Desactivar Cuenta
                     </a>
                 </li>
             {% endif %}
             <li>
-                <a class="dropdown-item" href="{{ path('app_user_internal_reset_password', {'id': row.id}) }}">
-                    <i class="bi bi-unlock-fill"></i> Reiniciar Clave
+                <a class="dropdown-item text-warning" href="{{ path('app_user_internal_reset_password', {'id': row.id}) }}">
+                    <i class="bi bi-unlock-fill me-2"></i> Reiniciar Clave
                 </a>
             </li>
         </ul>

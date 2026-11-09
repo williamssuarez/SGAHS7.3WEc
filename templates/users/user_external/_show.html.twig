@@ -1,127 +1,150 @@
 <div class="row g-4">
+    {# COLUMNA IZQUIERDA: Tarjeta de Perfil Apple #}
+    <div class="col-lg-4 col-md-5">
+        <div class="apple-details-card text-center p-4 h-100">
+            {# Foto de Perfil #}
+            {% if user.avatarUrl is empty %}
+                {% set final_src = asset('build/assets/img/user2-160x160.jpg') %}
+            {% elseif user.avatarUrl starts with 'http' %}
+                {% set final_src = user.avatarUrl %}
+            {% else %}
+                {% set full_photo_path = external_user_photo_path ~ user.avatarUrl %}
+                {% set final_src = asset(full_photo_path) | imagine_filter('patient_profile') %}
+            {% endif %}
 
-    {# LEFT COLUMN: Profile Card #}
-    <div class="col-md-4">
-        <div class="card card-primary card-outline shadow-sm h-100">
-            <div class="card-body text-center mt-4">
-
-                {# Profile Picture #}
-                {% if user.avatarUrl is empty %}
-                    {% set final_src = asset('build/assets/img/user2-160x160.jpg') %}
-                    {% set original_src = asset('build/assets/img/user2-160x160.jpg') %}
-                {% elseif user.avatarUrl starts with 'http' %}
-                    {# It is a Google/External URL, leave this trash as it is #}
-                    {% set final_src = user.avatarUrl %}
-                    {% set original_src = user.avatarUrl %}
-                {% else %}
-                    {# It is a Local File, apply filters and services  #}
-                    {% set full_photo_path = external_user_photo_path ~ user.avatarUrl %}
-                    {% set final_src = asset(full_photo_path) | imagine_filter('patient_profile') %}
-                    {% set original_src = asset(full_photo_path) | imagine_filter('patient_viewer_full') %}
-                {% endif %}
-                {% set avatar = final_src %}
-
-                <div class="mb-4">
-                    <img
-                        {#src="{{ asset('uploads/profiles/' ~ profile.foto) }}"#}
-                        src="{{ asset(avatar) }}"
-                        class="rounded-circle img-thumbnail shadow-sm"
-                        alt="Foto de Perfil"
-                        style="width: 150px; height: 150px; object-fit: cover;">
-                </div>
-
-                <h3 class="fw-bold mb-1">{{ profile.nombre|default('Nombre') }} {{ profile.apellido|default('No registrado') }}</h3>
-                <p class="text-muted mb-3"><i class="bi bi-person-badge"></i> CI / Doc: <strong>{{ profile.nroDocumento|default('No registrado') }}</strong></p>
-
-                <div class="d-flex justify-content-center gap-2 mb-4">
-                    {{ user.status|status_badge }}
-                    {% if profile.sangreTipo %}
-                        <span class="badge bg-danger fs-6"><i class="bi bi-droplet-fill"></i> {{ profile.sangreTipo.readableText }}</span>
-                    {% endif %}
-                </div>
-
+            <div class="apple-show-avatar-wrap mx-auto mb-3">
+                <img
+                    src="{{ final_src }}"
+                    class="apple-show-avatar shadow-sm"
+                    alt="Foto de Perfil de {{ profile.nombre|default('Usuario') }}">
             </div>
-            <div class="card-footer bg-white text-center">
-                <a href="{{ path('app_user_external_edit', {'id': user.id}) }}" class="btn btn-primary shadow-sm w-100">
-                    <i class="bi bi-pencil-square"></i> Editar Perfil
+
+            <h4 class="fw-bold mb-1">{{ profile.nombre|default('Nombre') }} {{ profile.apellido|default('No registrado') }}</h4>
+            <div class="text-muted small mb-3">
+                <i class="bi bi-person-badge me-1"></i> CI / Doc: <strong>{{ profile.tipoDocumento|default('') }}{{ profile.tipoDocumento ? '-' : '' }}{{ profile.nroDocumento|default('No registrado') }}</strong>
+            </div>
+
+            <div class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+                {{ user.status|status_badge }}
+                {% if profile.sangreTipo %}
+                    <span class="apple-role-pill text-bg-danger">
+                        <i class="bi bi-droplet-fill me-1"></i> {{ profile.sangreTipo.readableText }}
+                    </span>
+                {% endif %}
+            </div>
+
+            {# Acciones Administrativas Rápidas #}
+            <div class="d-flex flex-column gap-2 pt-3 border-top mt-3">
+                <a href="{{ path('app_user_external_edit', {'id': user.id}) }}" class="btn btn-outline-primary apple-spring rounded-pill py-2">
+                    <i class="bi bi-pencil-square me-2"></i> Editar Perfil
+                </a>
+                {% if user.status and user.status.codigo == 'NLOKREC' %}
+                    <a href="{{ path('app_user_external_unblock', {'id': user.id}) }}" class="btn btn-outline-success apple-spring rounded-pill py-2">
+                        <i class="bi bi-person-fill-check me-2"></i> Desbloquear Cuenta
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_user_external_block', {'id': user.id}) }}" class="btn btn-outline-danger apple-spring rounded-pill py-2">
+                        <i class="bi bi-person-fill-lock me-2"></i> Bloquear Cuenta
+                    </a>
+                {% endif %}
+                <a href="{{ path('app_user_external_force_reset', {'id': user.id}) }}" class="btn btn-outline-warning apple-spring rounded-pill py-2">
+                    <i class="bi bi-unlock-fill me-2"></i> Forzar Reinicio
                 </a>
             </div>
         </div>
     </div>
 
-    {# RIGHT COLUMN: Detailed Information #}
-    <div class="col-md-8">
-        <div class="card shadow-sm h-100 border-0">
-            <div class="card-header bg-light border-bottom">
-                <h5 class="card-title mb-0 fw-bold text-secondary">
-                    <i class="bi bi-info-circle"></i> Información General
-                </h5>
+    {# COLUMNA DERECHA: Información Detallada #}
+    <div class="col-lg-8 col-md-7">
+        <div class="apple-details-card p-4 h-100">
+            <div class="d-flex align-items-center gap-2 pb-3 mb-4 border-bottom">
+                <div class="apple-icon-circle-sm">
+                    <i class="bi bi-info-circle-fill text-primary"></i>
+                </div>
+                <h5 class="fw-bold m-0">Información General del Paciente</h5>
             </div>
-            <div class="card-body p-4">
 
-                <div class="row g-4">
-                    {# Account Details #}
-                    <div class="col-sm-6">
-                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Correo Electrónico</small>
-                        <p class="fs-5 mb-0"><i class="bi bi-envelope text-primary me-2"></i>
-                            {{ user.email }}
+            <div class="row g-4">
+                <div class="col-sm-6">
+                    <div class="apple-info-item">
+                        <span class="apple-info-label d-block text-muted small text-uppercase fw-semibold mb-1">
+                            <i class="bi bi-envelope me-1"></i> Correo Electrónico
+                        </span>
+                        <div class="apple-info-value fs-6 d-flex align-items-center gap-2">
+                            <span>{{ user.email }}</span>
                             {% if user.isVerified %}
-                                <i class="bi bi-check-circle-fill" style="color: #138b00"></i>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill small" title="Correo verificado">
+                                    <i class="bi bi-check-circle-fill"></i> Verificado
+                                </span>
                             {% else %}
-                                <i class="bi bi-x-circle-fill" style="color: #8b0000"></i>
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill small" title="Correo pendiente por verificar">
+                                    <i class="bi bi-clock-history"></i> Pendiente
+                                </span>
                             {% endif %}
-                        </p>
-                    </div>
-                    <div class="col-sm-6">
-                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Teléfono</small>
-                        <p class="fs-5 mb-0"><i class="bi bi-telephone text-primary me-2"></i> {{ profile.telefono|default('No registrado') }}</p>
-                    </div>
-
-                    <div class="col-12"><hr class="text-muted my-2"></div>
-
-                    {# Demographics #}
-                    <div class="col-sm-6">
-                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Fecha de Nacimiento</small>
-                        <p class="fs-5 mb-0">
-                            <i class="bi bi-calendar text-primary me-2"></i>
-                            {% if profile.fechaNacimiento %}
-                                {{ profile.fechaNacimiento|date('d/m/Y', false) }}
-                                <span class="text-muted fs-6 fst-italic">({{ date('now').diff(date(profile.fechaNacimiento)).y }} años)</span>
-                            {% else %}
-                                No registrada
-                            {% endif %}
-                        </p>
-                    </div>
-                    <div class="col-sm-6">
-                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Sexo Biológico</small>
-                        <p class="fs-5 mb-0">
-                            {% if profile.sexo == 'M' or profile.sexo == 'Masculino' %}
-                                <i class="bi bi-gender-male text-primary me-2"></i> Masculino
-                            {% elseif profile.sexo == 'F' or profile.sexo == 'Femenino' %}
-                                <i class="bi bi-gender-female text-danger me-2"></i> Femenino
-                            {% else %}
-                                <i class="bi bi-gender-ambiguous text-secondary me-2"></i> {{ profile.sexo|default('No registrado') }}
-                            {% endif %}
-                        </p>
-                    </div>
-
-                    <div class="col-12"><hr class="text-muted my-2"></div>
-
-                    {# Address #}
-                    <div class="col-12">
-                        <small class="text-muted text-uppercase fw-bold d-block mb-1">Dirección de Residencia</small>
-                        <p class="fs-5 mb-0">
-                            <i class="bi bi-geo-alt text-primary me-2"></i>
-                            {% if profile.sector %}
-                                {{ profile.sector.displayFullLocation }}
-                            {% endif %}
-                            {{ profile.direccion|default('No se ha proporcionado una dirección de residencia.') }}
-                        </p>
+                        </div>
                     </div>
                 </div>
 
+                <div class="col-sm-6">
+                    <div class="apple-info-item">
+                        <span class="apple-info-label d-block text-muted small text-uppercase fw-semibold mb-1">
+                            <i class="bi bi-telephone me-1"></i> Teléfono Móvil
+                        </span>
+                        <div class="apple-info-value fs-6">
+                            {{ profile.telefono|default('No registrado') }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="apple-info-item pt-2 border-top">
+                        <span class="apple-info-label d-block text-muted small text-uppercase fw-semibold mb-1">
+                            <i class="bi bi-calendar me-1"></i> Fecha de Nacimiento
+                        </span>
+                        <div class="apple-info-value fs-6">
+                            {% if profile.fechaNacimiento %}
+                                {{ profile.fechaNacimiento|date('d/m/Y', false) }}
+                                <span class="text-muted small fst-italic ms-1">({{ date('now').diff(date(profile.fechaNacimiento)).y }} años)</span>
+                            {% else %}
+                                <span class="text-muted">No registrada</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="apple-info-item pt-2 border-top">
+                        <span class="apple-info-label d-block text-muted small text-uppercase fw-semibold mb-1">
+                            <i class="bi bi-gender-ambiguous me-1"></i> Sexo Biológico
+                        </span>
+                        <div class="apple-info-value fs-6">
+                            {% if profile.sexo == 'M' or profile.sexo == 'Masculino' %}
+                                <span class="text-primary"><i class="bi bi-gender-male me-1"></i> Masculino</span>
+                            {% elseif profile.sexo == 'F' or profile.sexo == 'Femenino' %}
+                                <span class="text-danger"><i class="bi bi-gender-female me-1"></i> Femenino</span>
+                            {% else %}
+                                <span>{{ profile.sexo|default('No registrado') }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="apple-info-item pt-2 border-top">
+                        <span class="apple-info-label d-block text-muted small text-uppercase fw-semibold mb-1">
+                            <i class="bi bi-geo-alt me-1"></i> Dirección de Residencia
+                        </span>
+                        <div class="apple-info-value fs-6 text-secondary">
+                            {% if profile.sector %}
+                                <span class="d-block mb-1 text-muted small">
+                                    <i class="bi bi-pin-map me-1"></i>{{ profile.sector.displayFullLocation }}
+                                </span>
+                            {% endif %}
+                            {{ profile.direccion|default('No se ha proporcionado una dirección de residencia.') }}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
 </div>

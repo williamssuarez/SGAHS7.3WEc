@@ -1,127 +1,186 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard Emergencia{% endblock %}
+{% block title %}Dashboard Emergencia | SGAHS{% endblock %}
 
 {% block titlewrap %}
     Resumen Operativo de Emergencias
 {% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('app_index') }}">Inicio</a></li>
     <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid" 
+    <div class="container-fluid px-0 px-md-2" 
          data-controller="dashboard-charts"
          data-dashboard-charts-endpoint-value="{{ path('api_dashboard_emergencia') }}">
 
-        <div class="row">
-            <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-danger">
-                    <div class="inner">
-                        <h3 data-dashboard-charts-target="card1">
-                            <div class="spinner-border spinner-border-sm" role="status"></div>
-                        </h3>
-                        <p>Esperando Triaje</p>
+        <!-- 4 Tarjetas KPI Apple -->
+        <div class="row g-3 mb-4">
+            <!-- Card 1: Esperando Triaje -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="apple-kpi-card" data-controller="apple-spring">
+                    <div class="apple-kpi-header">
+                        <div class="apple-kpi-icon apple-kpi-icon-red">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+                        <span class="apple-kpi-badge">Prioridad</span>
                     </div>
-                    <i class="small-box-icon bi bi-exclamation-triangle-fill"></i>
-                    <a href="{{ path('app_emergencia_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
-                    </a>
+                    <div class="apple-kpi-body">
+                        <div class="apple-kpi-value" data-dashboard-charts-target="card1">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        <p class="apple-kpi-label">Esperando Triaje</p>
+                    </div>
+                    <div class="apple-kpi-footer">
+                        <a href="{{ path('app_emergencia_index') }}" class="apple-kpi-link">
+                            <span>Sala de espera</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-warning">
-                    <div class="inner">
-                        <h3 class="text-dark" data-dashboard-charts-target="card2">
-                            <div class="spinner-border spinner-border-sm" role="status"></div>
-                        </h3>
-                        <p class="text-dark">Esperando Cama</p>
+            <!-- Card 2: Esperando Cama -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="apple-kpi-card" data-controller="apple-spring">
+                    <div class="apple-kpi-header">
+                        <div class="apple-kpi-icon apple-kpi-icon-amber">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                        <span class="apple-kpi-badge">Pendiente</span>
                     </div>
-                    <i class="small-box-icon bi bi-hourglass-split text-dark"></i>
-                    <a href="{{ path('app_emergencia_index') }}" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
-                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
-                    </a>
+                    <div class="apple-kpi-body">
+                        <div class="apple-kpi-value" data-dashboard-charts-target="card2">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        <p class="apple-kpi-label">Esperando Cama</p>
+                    </div>
+                    <div class="apple-kpi-footer">
+                        <a href="{{ path('app_emergencia_index') }}" class="apple-kpi-link">
+                            <span>Asignar cama</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-info">
-                    <div class="inner">
-                        <h3 data-dashboard-charts-target="card3">
-                            <div class="spinner-border spinner-border-sm" role="status"></div>
-                        </h3>
-                        <p>En Atención</p>
+            <!-- Card 3: En Atención -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="apple-kpi-card" data-controller="apple-spring">
+                    <div class="apple-kpi-header">
+                        <div class="apple-kpi-icon apple-kpi-icon-blue">
+                            <i class="bi bi-heart-pulse-fill"></i>
+                        </div>
+                        <span class="apple-kpi-badge">En Cama</span>
                     </div>
-                    <i class="small-box-icon bi bi-heart-pulse-fill"></i>
-                    <a href="{{ path('app_emergencia_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
-                    </a>
+                    <div class="apple-kpi-body">
+                        <div class="apple-kpi-value" data-dashboard-charts-target="card3">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        <p class="apple-kpi-label">En Atención Médica</p>
+                    </div>
+                    <div class="apple-kpi-footer">
+                        <a href="{{ path('app_emergencia_index') }}" class="apple-kpi-link">
+                            <span>Ver pacientes</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-6">
-                <div class="small-box text-bg-success">
-                    <div class="inner">
-                        <h3 data-dashboard-charts-target="card4">
-                            <div class="spinner-border spinner-border-sm" role="status"></div>
-                        </h3>
-                        <p>Altas / Finalizadas (Hoy)</p>
+            <!-- Card 4: Altas Médicas Hoy -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="apple-kpi-card" data-controller="apple-spring">
+                    <div class="apple-kpi-header">
+                        <div class="apple-kpi-icon apple-kpi-icon-green">
+                            <i class="bi bi-check2-all"></i>
+                        </div>
+                        <span class="apple-kpi-badge">Egresos</span>
                     </div>
-                    <i class="small-box-icon bi bi-check2-all"></i>
-                    <a href="{{ path('app_emergencia_index') }}" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
-                        Más información <i class="bi bi-arrow-right-circle-fill"></i>
-                    </a>
+                    <div class="apple-kpi-body">
+                        <div class="apple-kpi-value" data-dashboard-charts-target="card4">
+                            <div class="spinner-border spinner-border-sm" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        <p class="apple-kpi-label">Altas Médicas Hoy</p>
+                    </div>
+                    <div class="apple-kpi-footer">
+                        <a href="{{ path('app_emergencia_index') }}" class="apple-kpi-link">
+                            <span>Ver egresos</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mt-2">
-            <div class="col-lg-7">
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header border-0 bg-transparent">
-                        <h3 class="card-title fw-bold text-secondary">
-                            <i class="bi bi-graph-up-arrow text-danger me-2"></i>
-                            Ingresos de Emergencia (7 días)
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        <div style="position: relative; height: 320px; width: 100%;">
-                            <div data-dashboard-charts-target="barLoading" class="d-flex align-items-center justify-content-center h-100">
-                                <div class="spinner-border text-danger" role="status"></div>
+        <!-- Fila de Gráficos Apple Glass -->
+        <div class="row g-3">
+            <!-- Gráfico de Tendencia (7 días) -->
+            <div class="col-12 col-lg-7">
+                <div class="apple-chart-card shadow-sm">
+                    <div class="apple-chart-header">
+                        <div class="apple-chart-title-group">
+                            <div class="apple-chart-icon-badge badge-red">
+                                <i class="bi bi-graph-up-arrow"></i>
                             </div>
-                            <canvas data-dashboard-charts-target="barChart" class="d-none"></canvas>
+                            <div>
+                                <h3 class="apple-chart-title">Ingresos de Emergencia</h3>
+                                <p class="apple-chart-subtitle">Flujo de pacientes ingresados</p>
+                            </div>
                         </div>
+                        <span class="apple-chart-badge">Últimos 7 días</span>
+                    </div>
+                    <div class="apple-chart-canvas-wrap">
+                        <div data-dashboard-charts-target="barLoading" class="d-flex align-items-center justify-content-center h-100">
+                            <div class="spinner-border text-danger" role="status">
+                                <span class="visually-hidden">Cargando gráfico...</span>
+                            </div>
+                        </div>
+                        <canvas data-dashboard-charts-target="barChart" class="d-none"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-5">
-                <div class="card mb-4 shadow-sm border-0">
-                    <div class="card-header border-0 bg-transparent">
-                        <h3 class="card-title fw-bold text-secondary">
-                            <i class="bi bi-pie-chart-fill text-warning me-2"></i>
-                            Distribución de Casos Activos
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        <div style="position: relative; height: 320px; width: 100%;">
-                            <div data-dashboard-charts-target="pieLoading" class="d-flex align-items-center justify-content-center h-100">
-                                <div class="spinner-border text-warning" role="status"></div>
+            <!-- Gráfico Doughnut: Emergencias Activas -->
+            <div class="col-12 col-lg-5">
+                <div class="apple-chart-card shadow-sm">
+                    <div class="apple-chart-header">
+                        <div class="apple-chart-title-group">
+                            <div class="apple-chart-icon-badge badge-blue">
+                                <i class="bi bi-pie-chart-fill"></i>
                             </div>
-                            <div data-dashboard-charts-target="pieEmpty" class="d-none align-items-center justify-content-center h-100">
-                                <div class="text-center text-muted">
-                                    <i class="bi bi-emoji-smile fs-1 mb-2"></i>
-                                    <p class="mb-0">No hay emergencias activas en este momento.</p>
-                                </div>
+                            <div>
+                                <h3 class="apple-chart-title">Casos Activos por Estado</h3>
+                                <p class="apple-chart-subtitle">Distribución del servicio en curso</p>
                             </div>
-                            <canvas data-dashboard-charts-target="pieChart" class="d-none"></canvas>
                         </div>
+                        <span class="apple-chart-badge">Tiempo Real</span>
+                    </div>
+                    <div class="apple-chart-canvas-wrap">
+                        <div data-dashboard-charts-target="pieLoading" class="d-flex align-items-center justify-content-center h-100">
+                            <div class="spinner-border text-info" role="status">
+                                <span class="visually-hidden">Cargando distribución...</span>
+                            </div>
+                        </div>
+                        <div data-dashboard-charts-target="pieEmpty" class="d-none align-items-center justify-content-center flex-column h-100">
+                            <i class="bi bi-shield-check text-muted mb-2" style="font-size: 2.5rem; opacity: 0.6;"></i>
+                            <p class="text-muted mb-0 small">No hay emergencias activas en este momento.</p>
+                        </div>
+                        <canvas data-dashboard-charts-target="pieChart" class="d-none"></canvas>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 {% endblock %}
