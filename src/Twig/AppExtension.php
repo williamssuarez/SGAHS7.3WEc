@@ -35,6 +35,8 @@ class AppExtension extends AbstractExtension
             new TwigFilter('time_since', $this->getTimeSince(...)),
             new TwigFilter('status_badge', $this->formatStatusBadge(...), ['is_safe' => ['html']]),
             new TwigFilter('user_badges', $this->getUserBadges(...)),
+            new TwigFilter('primary_role_label', $this->getPrimaryRoleLabel(...)),
+            new TwigFilter('primary_role_icon', $this->getPrimaryRoleIcon(...)),
         ];
     }
 
@@ -374,5 +376,31 @@ class AppExtension extends AbstractExtension
         }
 
         return $badges;
+    }
+
+    public function getPrimaryRoleLabel(mixed $userOrRoles): string
+    {
+        if ($userOrRoles instanceof User) {
+            return $userOrRoles->getDisplayRoleLabel();
+        }
+
+        if (is_array($userOrRoles)) {
+            return User::resolveRoleLabel($userOrRoles);
+        }
+
+        return 'Paciente';
+    }
+
+    public function getPrimaryRoleIcon(mixed $userOrRoles): string
+    {
+        if ($userOrRoles instanceof User) {
+            return $userOrRoles->getDisplayRoleIcon();
+        }
+
+        if (is_array($userOrRoles)) {
+            return User::resolveRoleIcon($userOrRoles);
+        }
+
+        return 'bi-heart-pulse-fill';
     }
 }

@@ -36,7 +36,8 @@
             <!--begin::User Menu Dropdown-->
             {# Define variables at the start for cleanliness #}
             {% set display_name = app.user.displayName %}
-            {% set role_label = app.user.displayRoleLabel %}
+            {% set role_label = app.user|primary_role_label %}
+            {% set role_icon = app.user|primary_role_icon %}
 
             {# Define avatar url #}
             {% if app.user.avatarUrl is empty %}
@@ -80,13 +81,7 @@
                         </div>
                         <h4 class="popover-user-name">{{ display_name }}</h4>
                         <div class="popover-role-chip">
-                            {% if is_granted('ROLE_ADMIN') %}
-                                <i class="bi bi-shield-check me-1"></i>
-                            {% elseif is_granted('ROLE_INTERNAL') %}
-                                <i class="bi bi-hospital me-1"></i>
-                            {% else %}
-                                <i class="bi bi-heart-pulse-fill me-1"></i>
-                            {% endif %}
+                            <i class="bi {{ role_icon }} me-1"></i>
                             {{ role_label }}
                         </div>
                         <span class="popover-registered-date">

@@ -147,21 +147,52 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
     }
 
-    public function getDisplayRoleLabel(): string
+    public static function resolveRoleLabel(array $roles): string
     {
-        $roles = $this->getRoles();
-        
-        if (in_array('ROLE_ADMIN', $roles)) return 'Administrador de Sistema';
-        if (in_array('ROLE_ADMIN_QUIROFANO', $roles)) return 'Coordinador de Quirófano';
-        if (in_array('ROLE_OR', $roles)) return 'Personal de Quirófano';
-        if (in_array('ROLE_SURGEON', $roles)) return 'Cirujano/a';
-        if (in_array('ROLE_ANESTHESIOLOGIST', $roles)) return 'Anestesiólogo/a';
-        if (in_array('ROLE_ADMISSION', $roles)) return 'Personal de Admisión';
-        if (in_array('ROLE_EMERGENCY', $roles)) return 'Personal de Emergencias';
-        if (in_array('ROLE_HOSPITALIZATION', $roles)) return 'Personal de Hospitalización';
-        if (in_array('ROLE_INTERNAL', $roles)) return 'Personal Médico';
+        if (in_array('ROLE_ADMIN', $roles, true)) return 'Administrador del Sistema';
+        if (in_array('ROLE_ADMIN_QUIROFANO', $roles, true)) return 'Director de Quirófano';
+        if (in_array('ROLE_SURGEON', $roles, true)) return 'Cirujano/a';
+        if (in_array('ROLE_ANESTHESIOLOGIST', $roles, true)) return 'Anestesiólogo/a';
+        if (in_array('ROLE_ER_DOCTOR', $roles, true)) return 'Doctor/a (Emergencias)';
+        if (in_array('ROLE_DOCTOR', $roles, true)) return 'Doctor/a';
+        if (in_array('ROLE_ER_NURSE', $roles, true)) return 'Enfermero/a (Emergencias)';
+        if (in_array('ROLE_NURSE', $roles, true)) return 'Enfermero/a';
+        if (in_array('ROLE_RECEPTIONIST', $roles, true) || in_array('ROLE_ADMISSION', $roles, true)) return 'Recepción / Admisión';
+        if (in_array('ROLE_OR', $roles, true)) return 'Personal de Quirófano';
+        if (in_array('ROLE_ER', $roles, true) || in_array('ROLE_EMERGENCY', $roles, true)) return 'Personal de Emergencias';
+        if (in_array('ROLE_HOSPITALIZATION', $roles, true)) return 'Personal de Hospitalización';
+        if (in_array('ROLE_INTERNAL', $roles, true)) return 'Personal Médico';
         
         return 'Paciente';
+    }
+
+    public static function resolveRoleIcon(array $roles): string
+    {
+        if (in_array('ROLE_ADMIN', $roles, true)) return 'bi-shield-check';
+        if (in_array('ROLE_ADMIN_QUIROFANO', $roles, true)) return 'bi-door-open-fill';
+        if (in_array('ROLE_SURGEON', $roles, true)) return 'bi-bandaid';
+        if (in_array('ROLE_ANESTHESIOLOGIST', $roles, true)) return 'bi-capsule';
+        if (in_array('ROLE_ER_DOCTOR', $roles, true)) return 'bi-lightning-charge-fill';
+        if (in_array('ROLE_DOCTOR', $roles, true)) return 'bi-hospital';
+        if (in_array('ROLE_ER_NURSE', $roles, true)) return 'bi-lightning-charge';
+        if (in_array('ROLE_NURSE', $roles, true)) return 'bi-heart';
+        if (in_array('ROLE_RECEPTIONIST', $roles, true) || in_array('ROLE_ADMISSION', $roles, true)) return 'bi-person-badge';
+        if (in_array('ROLE_OR', $roles, true)) return 'bi-door-open';
+        if (in_array('ROLE_ER', $roles, true) || in_array('ROLE_EMERGENCY', $roles, true)) return 'bi-activity';
+        if (in_array('ROLE_HOSPITALIZATION', $roles, true)) return 'bi-hospital';
+        if (in_array('ROLE_INTERNAL', $roles, true)) return 'bi-hospital';
+        
+        return 'bi-heart-pulse-fill';
+    }
+
+    public function getDisplayRoleLabel(): string
+    {
+        return self::resolveRoleLabel($this->getRoles());
+    }
+
+    public function getDisplayRoleIcon(): string
+    {
+        return self::resolveRoleIcon($this->getRoles());
     }
 
     public function getId(): ?int
