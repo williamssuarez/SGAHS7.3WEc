@@ -4184,7 +4184,19 @@ body {
         }
     }
 
-    // Selects Nativos con Chevron Apple
+    // Selects Nativos con Chevron Apple + respaldo color-scheme/option
+    .form-select {
+        color-scheme: light;
+
+        [data-bs-theme="dark"] & {
+            color-scheme: dark;
+
+            option {
+                background-color: #1c1c1e;
+                color: #f5f5f7;
+            }
+        }
+    }
     .form-select {
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%231d1d1f' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
         background-repeat: no-repeat !important;
@@ -4364,6 +4376,53 @@ body {
 }
 
 // Menú Desplegable de Select2 (se anexa al <body> o al modal)
+.select2-container--bootstrap-5 {
+    .select2-dropdown {
+        background-color: rgba(255, 255, 255, 0.96) !important;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12) !important;
+        overflow: hidden !important;
+
+        .select2-search .select2-search__field {
+            background-color: rgba(118, 118, 128, 0.08) !important;
+            color: #1d1d1f !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+        }
+
+        .select2-results__options {
+            padding: 4px !important;
+
+            .select2-results__option {
+                color: #1d1d1f !important;
+                padding: 8px 12px !important;
+                font-size: 0.9rem !important;
+                border-radius: 8px !important;
+
+                &--highlighted {
+                    background-color: #0071e3 !important;
+                    color: #ffffff !important;
+                }
+
+                &--selected,
+                &[aria-selected="true"] {
+                    background-color: rgba(0, 113, 227, 0.12) !important;
+                    color: #005bb5 !important;
+
+                    [data-bs-theme="dark"] & {
+                        background-color: rgba(0, 113, 227, 0.25) !important;
+                        color: #70baff !important;
+                    }
+                }
+            }
+        }
+    }
+}
+
 [data-bs-theme="dark"] {
     .select2-dropdown {
         background-color: #1c1c1e !important;
@@ -6370,3 +6429,1071 @@ details summary::-webkit-details-marker {
     font-size: 0.85rem;
 }
 
+
+// ==========================================================================
+// Apple Health / iOS Grouped Inset Detail Surfaces & Doctor Preview Modal
+// Encapsulado bajo .apple-table-card y .swal2-container .swal2-popup (STACK_VISUAL Regla 1)
+// ==========================================================================
+.apple-table-card {
+    .apple-tabular-nums {
+        font-variant-numeric: tabular-nums;
+    }
+
+    .apple-detail-surface {
+        background: rgba(118, 118, 128, 0.06);
+        border: 1px solid rgba(0, 0, 0, 0.045);
+        border-radius: 18px;
+        padding: 16px;
+        margin-bottom: 16px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        [data-bs-theme="dark"] & {
+            background: rgba(255, 255, 255, 0.045);
+            border-color: rgba(255, 255, 255, 0.07);
+        }
+
+        @media (prefers-contrast: more) {
+            border-color: rgba(0, 0, 0, 0.25);
+
+            [data-bs-theme="dark"] & {
+                border-color: rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        @media (max-width: 359.98px) {
+            padding: 12px;
+            border-radius: 15px;
+        }
+    }
+
+    .apple-detail-surface__header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .apple-detail-surface__title {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.96rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--bs-body-color);
+        min-width: 0;
+    }
+
+    .apple-detail-surface__empty {
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    .apple-detail-surface__footer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(120, 120, 128, 0.16);
+        font-size: 0.85rem;
+    }
+
+    .apple-metric-tiles {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+
+        @media (max-width: 359.98px) {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 8px;
+        }
+    }
+
+    .apple-metric-tile {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        min-width: 0;
+        padding: 12px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+
+        [data-bs-theme="dark"] & {
+            background: rgba(44, 44, 46, 0.72);
+            border-color: rgba(255, 255, 255, 0.06);
+            box-shadow: none;
+        }
+
+        @media (prefers-contrast: more) {
+            border-color: rgba(0, 0, 0, 0.24);
+
+            [data-bs-theme="dark"] & {
+                border-color: rgba(255, 255, 255, 0.28);
+            }
+        }
+    }
+
+    .apple-metric-tile__content {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .apple-metric-tile__label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+        line-height: 1.25;
+        margin-bottom: 3px;
+    }
+
+    .apple-metric-tile__value {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 4px;
+        font-variant-numeric: tabular-nums;
+        font-size: 0.96rem;
+        font-weight: 700;
+        letter-spacing: -0.015em;
+        color: var(--bs-body-color);
+        line-height: 1.25;
+    }
+
+    .apple-metric-tile__unit {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+    }
+
+    .apple-tile-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.92rem;
+
+        &--blue {
+            background: rgba(0, 113, 227, 0.12);
+            color: #0071e3;
+
+            [data-bs-theme="dark"] & {
+                background: rgba(41, 151, 255, 0.2);
+                color: #409cff;
+            }
+        }
+
+        &--cyan {
+            background: rgba(50, 173, 230, 0.14);
+            color: #0077a6;
+
+            [data-bs-theme="dark"] & {
+                background: rgba(100, 210, 255, 0.2);
+                color: #64d2ff;
+            }
+        }
+
+        &--amber {
+            background: rgba(255, 159, 10, 0.14);
+            color: #b85d00;
+
+            [data-bs-theme="dark"] & {
+                background: rgba(255, 159, 10, 0.2);
+                color: #ffb340;
+            }
+        }
+
+        &--green {
+            background: rgba(52, 199, 89, 0.14);
+            color: #1e823f;
+
+            [data-bs-theme="dark"] & {
+                background: rgba(48, 209, 88, 0.2);
+                color: #30d158;
+            }
+        }
+    }
+
+    .apple-inset-list {
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(0, 0, 0, 0.045);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        overflow: hidden;
+
+        [data-bs-theme="dark"] & {
+            background: rgba(44, 44, 46, 0.72);
+            border-color: rgba(255, 255, 255, 0.06);
+            box-shadow: none;
+        }
+
+        @media (prefers-contrast: more) {
+            border-color: rgba(0, 0, 0, 0.24);
+
+            [data-bs-theme="dark"] & {
+                border-color: rgba(255, 255, 255, 0.28);
+            }
+        }
+    }
+
+    .apple-doctor-row {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-height: 58px;
+        padding: 10px 14px;
+        text-decoration: none;
+        text-align: left;
+        color: var(--bs-body-color);
+        background: transparent;
+        border: 0;
+        position: relative;
+        cursor: pointer;
+        touch-action: manipulation;
+        transition: background-color 0.16s ease;
+
+        & + .apple-doctor-row::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 66px;
+            right: 0;
+            height: 1px;
+            background: rgba(120, 120, 128, 0.16);
+
+            @media (max-width: 359.98px) {
+                left: 60px;
+            }
+        }
+
+        &:hover,
+        &:focus-visible {
+            background: rgba(0, 113, 227, 0.055);
+            color: var(--bs-body-color);
+
+            [data-bs-theme="dark"] & {
+                background: rgba(255, 255, 255, 0.065);
+            }
+
+            .apple-doctor-row__hint {
+                background: rgba(0, 113, 227, 0.15);
+
+                [data-bs-theme="dark"] & {
+                    background: rgba(41, 151, 255, 0.24);
+                }
+            }
+
+            .apple-doctor-row__chevron {
+                transform: translateX(2px);
+                color: #0071e3;
+
+                [data-bs-theme="dark"] & {
+                    color: #409cff;
+                }
+            }
+        }
+
+        &:focus-visible {
+            outline: 2px solid #0071e3;
+            outline-offset: -2px;
+        }
+
+        @media (max-width: 359.98px) {
+            padding: 10px 10px;
+            gap: 10px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+
+            .apple-doctor-row__chevron,
+            .apple-doctor-row__hint {
+                transition: none;
+            }
+
+            &:hover .apple-doctor-row__chevron,
+            &:focus-visible .apple-doctor-row__chevron {
+                transform: none;
+            }
+        }
+    }
+
+    .apple-doctor-row__meta {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .apple-doctor-row__name {
+        display: block;
+        font-size: 0.94rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        line-height: 1.25;
+        color: var(--bs-body-color);
+        overflow-wrap: break-word;
+    }
+
+    .apple-doctor-row__sub {
+        display: block;
+        margin-top: 2px;
+        font-size: 0.78rem;
+        color: var(--bs-secondary-color);
+        line-height: 1.3;
+        overflow-wrap: break-word;
+    }
+
+    .apple-doctor-row__trailing {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .apple-doctor-row__hint {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 9999px;
+        background: rgba(0, 113, 227, 0.09);
+        color: #0071e3;
+        transition: background-color 0.16s ease;
+
+        [data-bs-theme="dark"] & {
+            background: rgba(41, 151, 255, 0.16);
+            color: #409cff;
+        }
+    }
+
+    .apple-doctor-row__chevron {
+        font-size: 0.85rem;
+        color: var(--bs-secondary-color);
+        transition: transform 0.16s ease, color 0.16s ease;
+    }
+}
+
+.apple-table-card,
+.swal2-container .swal2-popup {
+    .apple-doctor-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(145deg, rgba(0, 113, 227, 0.16), rgba(90, 200, 250, 0.22));
+        color: #005bb5;
+        font-weight: 700;
+        font-size: 0.86rem;
+        letter-spacing: -0.02em;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+
+        [data-bs-theme="dark"] & {
+            background: linear-gradient(145deg, rgba(41, 151, 255, 0.24), rgba(100, 210, 255, 0.16));
+            color: #64d2ff;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+        }
+
+        &--lg {
+            width: 68px;
+            height: 68px;
+            font-size: 1.38rem;
+            margin: 0 auto;
+        }
+    }
+
+    .apple-doctor-avatar__img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .apple-doctor-avatar__initials {
+        line-height: 1;
+        user-select: none;
+    }
+}
+
+.swal2-container .swal2-popup {
+    .apple-doctor-modal {
+        text-align: left;
+        color: #1d1d1f;
+        margin-top: 2px;
+
+        [data-bs-theme="dark"] & {
+            color: #f5f5f7;
+        }
+    }
+
+    .apple-doctor-modal__header {
+        text-align: center;
+        margin-bottom: 14px;
+    }
+
+    .apple-doctor-modal__name {
+        font-size: 1.18rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+        margin: 10px 0 6px;
+        color: inherit;
+        overflow-wrap: anywhere;
+    }
+
+    .apple-doctor-modal__roles {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .apple-doctor-modal__list {
+        margin: 0;
+        border-radius: 16px;
+        background: rgba(118, 118, 128, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+
+        [data-bs-theme="dark"] & {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        @media (prefers-contrast: more) {
+            border-color: rgba(0, 0, 0, 0.25);
+
+            [data-bs-theme="dark"] & {
+                border-color: rgba(255, 255, 255, 0.3);
+            }
+        }
+    }
+
+    .apple-doctor-modal__row {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 14px;
+        margin: 0;
+
+        & + .apple-doctor-modal__row {
+            border-top: 1px solid rgba(120, 120, 128, 0.16);
+        }
+    }
+
+    .apple-doctor-modal__row-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: rgba(0, 113, 227, 0.12);
+        color: #0071e3;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+
+        [data-bs-theme="dark"] & {
+            background: rgba(41, 151, 255, 0.18);
+            color: #409cff;
+        }
+    }
+
+    .apple-doctor-modal__row-body {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .apple-doctor-modal__dt {
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        color: rgba(60, 60, 67, 0.65);
+        margin: 0 0 1px;
+
+        [data-bs-theme="dark"] & {
+            color: rgba(235, 235, 245, 0.62);
+        }
+    }
+
+    .apple-doctor-modal__dd {
+        font-size: 0.88rem;
+        font-weight: 500;
+        margin: 0;
+        color: inherit;
+        overflow-wrap: anywhere;
+        font-variant-numeric: tabular-nums;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .apple-doctor-modal__verified {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 9999px;
+
+        &.is-verified {
+            background: rgba(52, 199, 89, 0.14);
+            color: #1e823f;
+
+            [data-bs-theme="dark"] & {
+                background: rgba(48, 209, 88, 0.2);
+                color: #30d158;
+            }
+        }
+
+        &.is-pending {
+            background: rgba(255, 159, 10, 0.14);
+            color: #b85d00;
+
+            [data-bs-theme="dark"] & {
+                background: rgba(255, 159, 10, 0.2);
+                color: #ffb340;
+            }
+        }
+    }
+
+    .apple-doctor-modal__section {
+        margin-top: 12px;
+    }
+
+    .apple-doctor-modal__label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: rgba(60, 60, 67, 0.65);
+        margin-bottom: 6px;
+
+        [data-bs-theme="dark"] & {
+            color: rgba(235, 235, 245, 0.62);
+        }
+    }
+
+    .apple-doctor-modal__chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .apple-doctor-modal__chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        background: rgba(0, 113, 227, 0.1);
+        color: #0071e3;
+
+        [data-bs-theme="dark"] & {
+            background: rgba(41, 151, 255, 0.16);
+            color: #64d2ff;
+        }
+    }
+
+    .apple-turno-modal__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+
+        > .btn {
+            min-height: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 420px) {
+            flex-direction: column;
+
+            > .btn {
+                width: 100%;
+            }
+        }
+    }
+}
+
+// ==========================================================================
+// TURNO DOCTOR: FULLCALENDAR APPLE, FILTROS EN VIVO, KPIs Y FORMULARIOS
+// ==========================================================================
+.apple-table-card {
+    // Indicador accesible no dependiente solo del color en pestañas segmentadas (WCAG 1.4.1 / Forced Colors)
+    .apple-segmented-item.active,
+    .apple-segmented-item[aria-selected="true"] {
+        border: 1px solid rgba(0, 113, 227, 0.25);
+
+        [data-bs-theme="dark"] & {
+            border-color: rgba(41, 151, 255, 0.35);
+        }
+
+        @media (forced-colors: active) {
+            position: relative;
+            border: 2px solid Highlight;
+
+            &::after {
+                content: "";
+                position: absolute;
+                inset: auto 10px 2px;
+                border-block-end: 3px solid Highlight;
+            }
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .apple-segmented-item,
+        .apple-segmented-item i {
+            transition: none !important;
+            transform: none !important;
+        }
+    }
+
+    .apple-turno-kpis {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+
+        .apple-metric-tile {
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: rgba(118, 118, 128, 0.055);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+
+            [data-bs-theme="dark"] & {
+                background: rgba(255, 255, 255, 0.05);
+                border-color: rgba(255, 255, 255, 0.08);
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 8px;
+        }
+    }
+
+    .apple-turno-filters {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px 14px;
+        padding: 10px 14px;
+        border-radius: 16px;
+        background: rgba(118, 118, 128, 0.06);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+
+        [data-bs-theme="dark"] & {
+            background: rgba(255, 255, 255, 0.045);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        @media (prefers-contrast: more) {
+            border-color: rgba(0, 0, 0, 0.25);
+
+            [data-bs-theme="dark"] & {
+                border-color: rgba(255, 255, 255, 0.3);
+            }
+        }
+    }
+
+    .apple-turno-filters__group {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .apple-turno-filters__field {
+        flex: 1 1 190px;
+        min-width: 0;
+        max-width: 240px;
+
+        @media (max-width: 575.98px) {
+            flex: 1 1 100%;
+            max-width: 100%;
+        }
+    }
+
+    .apple-turno-select {
+        min-height: 38px !important;
+        height: 38px !important;
+        padding: 6px 32px 6px 12px !important;
+        font-size: 0.84rem !important;
+        border-radius: 10px !important;
+    }
+
+    .apple-turno-filters__field {
+        .select2-container--bootstrap-5 {
+            width: 100% !important;
+            max-width: 100%;
+            min-width: 0;
+
+            .select2-selection--single {
+                min-height: 38px !important;
+                height: 38px !important;
+                padding: 4px 32px 4px 12px !important;
+                border-radius: 10px !important;
+                border: 1px solid rgba(0, 0, 0, 0.12) !important;
+                background-color: rgba(255, 255, 255, 0.9) !important;
+                color: var(--apple-text-primary, #1d1d1f) !important;
+                display: flex !important;
+                align-items: center !important;
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%231d1d1f' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+                background-repeat: no-repeat !important;
+                background-position: right 12px center !important;
+                background-size: 13px 9px !important;
+                transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease !important;
+
+                .select2-selection__rendered {
+                    padding: 0 !important;
+                    font-size: 0.84rem !important;
+                    font-weight: 500 !important;
+                    line-height: 26px !important;
+                    color: var(--apple-text-primary, #1d1d1f) !important;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    max-width: 100%;
+                }
+
+                [data-bs-theme="dark"] & {
+                    background-color: rgba(44, 44, 46, 0.85) !important;
+                    border-color: rgba(255, 255, 255, 0.14) !important;
+                    color: #f5f5f7 !important;
+                    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23f5f5f7' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+
+                    .select2-selection__rendered {
+                        color: #f5f5f7 !important;
+                    }
+                }
+            }
+
+            &.select2-container--focus .select2-selection--single,
+            &.select2-container--open .select2-selection--single {
+                border-color: #0071e3 !important;
+                box-shadow: 0 0 0 3.5px rgba(0, 113, 227, 0.25) !important;
+
+                [data-bs-theme="dark"] & {
+                    border-color: #2997ff !important;
+                    box-shadow: 0 0 0 3.5px rgba(41, 151, 255, 0.28) !important;
+                }
+            }
+        }
+    }
+
+    .apple-turno-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 38px;
+        padding-left: 2.35rem;
+    }
+
+    .apple-turno-filters__meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .apple-turno-count-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 11px;
+        border-radius: 9999px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        background: rgba(0, 113, 227, 0.11);
+        color: #005bb5;
+
+        [data-bs-theme="dark"] & {
+            background: rgba(41, 151, 255, 0.18);
+            color: #64b5ff;
+        }
+    }
+
+    .apple-fc-scroll-wrap {
+        overflow-x: auto;
+        max-width: 100%;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 18px;
+        border: 1px solid rgba(0, 0, 0, 0.07);
+        background: rgba(255, 255, 255, 0.96);
+        padding: 8px;
+
+        [data-bs-theme="dark"] & {
+            background: #161618;
+            border-color: rgba(255, 255, 255, 0.09);
+        }
+
+        &:focus-visible {
+            outline: 2px solid #0071e3;
+            outline-offset: 2px;
+        }
+
+        .apple-fc-host {
+            width: 100%;
+
+            @media (max-width: 767.98px) {
+                min-width: 680px;
+            }
+        }
+
+        .fc {
+            --fc-border-color: rgba(120, 120, 128, 0.18);
+            --fc-page-bg-color: transparent;
+            --fc-neutral-bg-color: rgba(118, 118, 128, 0.05);
+            --fc-today-bg-color: transparent;
+            --fc-highlight-color: rgba(0, 113, 227, 0.14);
+
+            .fc-scrollgrid {
+                border-radius: 12px;
+                overflow: hidden;
+            }
+
+            .fc-col-header-cell {
+                background: rgba(118, 118, 128, 0.06);
+
+                [data-bs-theme="dark"] & {
+                    background: rgba(255, 255, 255, 0.05);
+                }
+            }
+
+            .fc-col-header-cell-cushion {
+                font-size: 0.82rem;
+                font-weight: 600;
+                letter-spacing: -0.01em;
+                text-transform: capitalize;
+                padding: 10px 4px;
+                color: var(--bs-body-color);
+                text-decoration: none;
+            }
+
+            .fc-timegrid-slot-label-cushion {
+                font-size: 0.76rem;
+                font-variant-numeric: tabular-nums;
+                color: var(--bs-secondary-color);
+            }
+
+            .fc-timegrid-slot {
+                height: 2.5rem;
+            }
+
+            .fc-event.apple-fc-event {
+                border-radius: 10px;
+                border-width: 0 0 0 3px;
+                padding: 2px 5px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+                cursor: pointer;
+                transition: transform 0.14s ease, box-shadow 0.14s ease;
+
+                &:hover,
+                &:focus-visible {
+                    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+                    outline: 2px solid #0071e3;
+                    outline-offset: 1px;
+                }
+
+                &:active {
+                    transform: scale(0.985);
+                }
+
+                &.is-inactive {
+                    opacity: 0.72;
+                    border-style: dashed;
+                    border-width: 1.5px;
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                    transition: none;
+
+                    &:active {
+                        transform: none;
+                    }
+                }
+            }
+
+            .fc-timegrid-event .fc-event-title {
+                font-weight: 600;
+                font-size: 0.75rem;
+                line-height: 1.25;
+            }
+
+            .fc-timegrid-event .fc-event-time {
+                font-size: 0.7rem;
+                font-variant-numeric: tabular-nums;
+                opacity: 0.92;
+            }
+        }
+    }
+
+    .apple-turno-spec-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 3px;
+        padding: 2px 9px;
+        border-radius: 9999px;
+        font-size: 0.74rem;
+        font-weight: 600;
+        background: var(--chip-bg, rgba(0, 113, 227, 0.12));
+        color: var(--bs-body-color);
+    }
+
+    .apple-turno-spec-chip__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: var(--chip-dot, #0071e3);
+    }
+
+    .apple-turno-duration-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 1px 7px;
+        border-radius: 9999px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        background: rgba(118, 118, 128, 0.12);
+        color: var(--bs-body-color);
+
+        [data-bs-theme="dark"] & {
+            background: rgba(255, 255, 255, 0.12);
+        }
+    }
+
+    .apple-turno-action-btn {
+        min-width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 10px;
+    }
+}
+
+.apple-form-card {
+    .apple-form-fieldset {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+
+        .select2-container {
+            width: 100% !important;
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        .select2-selection__rendered {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+    }
+
+    // Mantener float: left (Bootstrap Reboot) para que <legend> nunca cruce el borde superior del <fieldset>
+    .apple-form-legend {
+        float: left;
+        width: 100%;
+        max-width: 100%;
+        padding: 0;
+        margin: 0 0 12px 0;
+        font-size: 0.96rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        line-height: 1.35;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        color: var(--bs-body-color);
+
+        &.apple-form-legend--split {
+            @media (min-width: 576px) {
+                width: auto;
+            }
+        }
+    }
+
+    .apple-form-fieldset__meta {
+        float: left;
+        clear: left;
+        margin: 0 0 12px 0;
+
+        @media (min-width: 576px) {
+            float: right;
+            clear: none;
+        }
+    }
+
+    .apple-form-fieldset__body {
+        clear: both;
+    }
+
+    .apple-turno-duration-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-size: 0.78rem;
+        font-weight: 600;
+
+        &.is-empty {
+            background: rgba(118, 118, 128, 0.12);
+            color: var(--bs-secondary-color);
+
+            [data-bs-theme="dark"] & {
+                background: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        &.is-valid {
+            background: rgba(0, 113, 227, 0.12);
+            color: #005bb5;
+
+            [data-bs-theme="dark"] & {
+                background: rgba(41, 151, 255, 0.18);
+                color: #64b5ff;
+            }
+        }
+
+        &.is-invalid {
+            background: rgba(255, 59, 48, 0.12);
+            color: #d70015;
+
+            [data-bs-theme="dark"] & {
+                background: rgba(255, 69, 58, 0.18);
+                color: #ff6961;
+            }
+        }
+    }
+}

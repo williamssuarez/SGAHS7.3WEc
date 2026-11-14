@@ -1,54 +1,248 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_show.html.twig' %}
 
-{% block title %}Detalles{% endblock %}
+{% set catalog_title = 'Especialidades' %}
+{% set catalog_singular = 'Especialidad' %}
+{% set catalog_icon = 'bi-heart-pulse' %}
+{% set index_route = 'app_especialidades_index' %}
+{% set edit_route = 'app_especialidades_edit' %}
+{% set delete_route = 'app_especialidades_delete' %}
 
-{% block titlewrap %}
-    Detalles
-{% endblock %}
+{% block detail_content %}
+    <div class="mb-3">
+        <span class="text-secondary small fw-semibold text-uppercase d-block mb-1">Nombre</span>
+        <div class="fs-5 fw-bold text-body text-break">{{ entity.nombre }}</div>
+    </div>
 
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_especialidades_index') }}">Especialidades</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Detalles</li>
-{% endblock %}
+    <div class="mb-4">
+        <span class="text-secondary small fw-semibold text-uppercase d-block mb-1">Descripción</span>
+        <div class="text-body text-break">{{ entity.descripcion|default('Sin descripción registrada') }}</div>
+    </div>
 
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            <div class="card-body">
-                <div class="mb-3">
-                    <h3>{{ entity.nombre }}</h3>
-                </div>
-                <div class="mb-3">
-                    <h3>{{ entity.descripcion }}</h3>
-                </div>
+    {# Subtarjeta: Configuración de Citas #}
+    {% set targetConfig = activeConfig ?? latestConfig %}
+    <div class="apple-detail-surface">
+        <div class="apple-detail-surface__header">
+            <div class="apple-detail-surface__title">
+                <i class="bi bi-calendar2-check text-primary" aria-hidden="true"></i>
+                <span>Configuración de Citas</span>
             </div>
 
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="d-flex justify-content-between">
-                            <a class="btn btn-primary" href="{{ path('app_especialidades_index') }}">
-                                <i class="bi bi-arrow-left"></i> Volver
-                            </a>
+            {% if activeConfig %}
+                <span class="apple-role-pill text-bg-success">
+                    <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                    <span>Activa</span>
+                </span>
+            {% elseif latestConfig %}
+                <span class="apple-role-pill text-bg-warning">
+                    <i class="bi bi-pause-circle-fill" aria-hidden="true"></i>
+                    <span>Inactiva</span>
+                </span>
+            {% else %}
+                <span class="apple-role-pill text-bg-secondary">
+                    <i class="bi bi-dash-circle" aria-hidden="true"></i>
+                    <span>Sin configurar</span>
+                </span>
+            {% endif %}
+        </div>
 
-                            <a class="btn btn-success" href="{{ path('app_especialidades_edit', {'id': entity.id}) }}">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </a>
+        {% if activeConfig %}
+            <div class="apple-metric-tiles">
+                <div class="apple-metric-tile">
+                    <span class="apple-tile-icon apple-tile-icon--blue" aria-hidden="true">
+                        <i class="bi bi-people-fill"></i>
+                    </span>
+                    <div class="apple-metric-tile__content">
+                        <span class="apple-metric-tile__label">Cupos / Día</span>
+                        <div class="apple-metric-tile__value">
+                            <span>{{ activeConfig.maxPacientesDia }}</span>
+                            <span class="apple-metric-tile__unit">pacientes</span>
+                        </div>
+                    </div>
+                </div>
 
-                            <div class="d-flex">
-                                <button class="btn btn-danger"
-                                        onclick="softDeleteRecord(
-                                            '{{ path('app_especialidades_delete', {'id': entity.id}) }}',
-                                            '{{ csrf_token('delete' ~ entity.id) }}'
-                                            )">
-                                    <i class="bi bi-trash"></i> Eliminar
-                                </button>
-                            </div>
+                <div class="apple-metric-tile">
+                    <span class="apple-tile-icon apple-tile-icon--cyan" aria-hidden="true">
+                        <i class="bi bi-stopwatch-fill"></i>
+                    </span>
+                    <div class="apple-metric-tile__content">
+                        <span class="apple-metric-tile__label">Duración / Cita</span>
+                        <div class="apple-metric-tile__value">
+                            <span>{{ activeConfig.duracionCita }}</span>
+                            <span class="apple-metric-tile__unit">min</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="apple-metric-tile">
+                    <span class="apple-tile-icon apple-tile-icon--amber" aria-hidden="true">
+                        <i class="bi bi-person-heart"></i>
+                    </span>
+                    <div class="apple-metric-tile__content">
+                        <span class="apple-metric-tile__label">Edad Prioritaria</span>
+                        <div class="apple-metric-tile__value">
+                            {% if activeConfig.tieneEdadPrioridad %}
+                                <span>{{ activeConfig.edadPrioridad }}+</span>
+                                <span class="apple-metric-tile__unit">años</span>
+                            {% else %}
+                                <span>No aplica</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="apple-metric-tile">
+                    <span class="apple-tile-icon apple-tile-icon--green" aria-hidden="true">
+                        <i class="bi bi-cup-hot-fill"></i>
+                    </span>
+                    <div class="apple-metric-tile__content">
+                        <span class="apple-metric-tile__label">Receso entre Citas</span>
+                        <div class="apple-metric-tile__value">
+                            {% if activeConfig.tieneTiempoReceso %}
+                                <span>{{ activeConfig.tiempoReceso }}</span>
+                                <span class="apple-metric-tile__unit">min</span>
+                            {% else %}
+                                <span>Sin receso</span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
+        {% elseif latestConfig %}
+            <p class="apple-detail-surface__empty text-secondary">
+                Existe {{ configsCount }} {{ configsCount == 1 ? 'configuración registrada' : 'configuraciones registradas' }} pendiente{{ configsCount == 1 ? '' : 's' }} de activación para habilitar citas en esta especialidad.
+            </p>
+        {% else %}
+            <p class="apple-detail-surface__empty text-secondary">
+                Esta especialidad aún no tiene parámetros de citas configurados.
+            </p>
+        {% endif %}
 
+        <div class="apple-detail-surface__footer">
+            {% if targetConfig %}
+                <a href="{{ path('app_citas_configuraciones_edit', {'id': targetConfig.id}) }}"
+                   class="link-primary text-decoration-none fw-semibold d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-sliders2" aria-hidden="true"></i>
+                    <span>{{ activeConfig ? 'Editar configuración' : 'Revisar configuración' }}</span>
+                </a>
+                <span class="text-secondary" aria-hidden="true">·</span>
+                <a href="{{ path('app_citas_configuraciones_index') }}"
+                   class="link-secondary text-decoration-none d-inline-flex align-items-center gap-1">
+                    <span>Ir al listado</span>
+                    <i class="bi bi-arrow-right-short" aria-hidden="true"></i>
+                </a>
+            {% else %}
+                <a href="{{ path('app_citas_configuraciones_new') }}"
+                   class="link-primary text-decoration-none fw-semibold d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                    <span>Crear configuración</span>
+                </a>
+            {% endif %}
         </div>
+    </div>
+
+    {# Subtarjeta: Médicos Asociados #}
+    <div class="apple-detail-surface">
+        <div class="apple-detail-surface__header">
+            <div class="apple-detail-surface__title">
+                <i class="bi bi-person-badge text-primary" aria-hidden="true"></i>
+                <span>Médicos Asociados</span>
+            </div>
+
+            <span class="apple-role-pill text-bg-primary">
+                <i class="bi bi-people-fill" aria-hidden="true"></i>
+                <span>{{ doctors|length }} {{ doctors|length == 1 ? 'médico' : 'médicos' }}</span>
+            </span>
+        </div>
+
+        {% if doctors|length > 0 %}
+            <div class="apple-inset-list">
+                {% for doctor in doctors %}
+                    {% set docUser = doctor.webUser %}
+                    {% set docInitials = ((doctor.nombre|default('')|trim|slice(0, 1)) ~ (doctor.apellido|default('')|trim|slice(0, 1)))|upper ?: 'DR' %}
+                    {% set docAvatar = '' %}
+                    {% if docUser and docUser.avatarUrl is not empty %}
+                        {% if docUser.avatarUrl starts with 'http' %}
+                            {% set docAvatar = docUser.avatarUrl %}
+                        {% else %}
+                            {% set docAvatar = asset(paciente_photo_path ~ docUser.avatarUrl)|imagine_filter('patient_profile') %}
+                        {% endif %}
+                    {% endif %}
+                    {% set docDocument = doctor.tipoDocumento ? (doctor.tipoDocumento ~ '-' ~ doctor.nroDocumento|default('S/N')) : (doctor.nroDocumento|default('No registrado')) %}
+                    {% set docRoleLabel = docUser ? (docUser|primary_role_label) : 'Sin usuario web' %}
+                    {% set activeSpecs = [] %}
+                    {% for spec in doctor.especialidades %}
+                        {% if spec.status and spec.status.codigo == 'ACTRECORD' %}
+                            {% set activeSpecs = activeSpecs|merge([spec.nombre]) %}
+                        {% endif %}
+                    {% endfor %}
+                    {% set docAttrs %}
+                        data-controller="doctor-preview apple-spring"
+                        data-apple-spring-scale-value="0.985"
+                        data-action="click->doctor-preview#open"
+                        data-doctor-preview-name-value="{{ doctor.nombreCompleto }}"
+                        data-doctor-preview-initials-value="{{ docInitials }}"
+                        data-doctor-preview-avatar-url-value="{{ docAvatar }}"
+                        data-doctor-preview-role-label-value="{{ docRoleLabel }}"
+                        data-doctor-preview-roles-value="{{ (docUser ? docUser.roles|user_badges : [])|json_encode }}"
+                        data-doctor-preview-doc-value="{{ docDocument }}"
+                        data-doctor-preview-phone-value="{{ doctor.telefono|default('No registrado') }}"
+                        data-doctor-preview-email-value="{{ docUser ? docUser.email : '' }}"
+                        data-doctor-preview-verified-value="{{ docUser and docUser.isVerified ? 'true' : 'false' }}"
+                        data-doctor-preview-specialties-value="{{ activeSpecs|json_encode }}"
+                        data-doctor-preview-show-url-value="{{ docUser ? path('app_user_internal_show', {'id': docUser.id}) : '' }}"
+                    {% endset %}
+
+                    {% set rowBody %}
+                        <span class="apple-doctor-avatar" aria-hidden="true">
+                            {% if docAvatar %}
+                                <img src="{{ docAvatar }}"
+                                     alt=""
+                                     class="apple-doctor-avatar__img"
+                                     loading="lazy"
+                                     data-action="error->doctor-preview#fallbackAvatar">
+                                <span class="apple-doctor-avatar__initials" hidden>{{ docInitials }}</span>
+                            {% else %}
+                                <span class="apple-doctor-avatar__initials">{{ docInitials }}</span>
+                            {% endif %}
+                        </span>
+
+                        <span class="apple-doctor-row__meta">
+                            <span class="apple-doctor-row__name">{{ doctor.nombreCompleto }}</span>
+                            <span class="apple-doctor-row__sub">
+                                <span>{{ docRoleLabel }}</span>{% if doctor.telefono %} <span class="text-nowrap apple-tabular-nums"><span aria-hidden="true">· </span>{{ doctor.telefono }}</span>{% endif %}
+                            </span>
+                        </span>
+
+                        <span class="apple-doctor-row__trailing" aria-hidden="true">
+                            <span class="apple-doctor-row__hint d-none d-xl-inline-flex">
+                                <i class="bi bi-person-lines-fill"></i>
+                                <span>Resumen</span>
+                            </span>
+                            <i class="bi bi-chevron-right apple-doctor-row__chevron"></i>
+                        </span>
+                    {% endset %}
+
+                    {% if docUser %}
+                        <a href="{{ path('app_user_internal_show', {'id': docUser.id}) }}"
+                           class="apple-doctor-row"
+                           title="Ver resumen de {{ doctor.nombreCompleto }}"
+                           {{ docAttrs|raw }}>
+                            {{ rowBody }}
+                        </a>
+                    {% else %}
+                        <button type="button"
+                                class="apple-doctor-row"
+                                title="Ver resumen de {{ doctor.nombreCompleto }}"
+                                {{ docAttrs|raw }}>
+                            {{ rowBody }}
+                        </button>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="apple-detail-surface__empty text-secondary">
+                No hay médicos activos asignados actualmente a esta especialidad.
+            </p>
+        {% endif %}
     </div>
 {% endblock %}

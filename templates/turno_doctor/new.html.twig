@@ -1,20 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nueva Configuracion de Turno{% endblock %}
+{% block title %}Nueva Configuración de Turno{% endblock %}
 
 {% block titlewrap %}
-    Nueva Configuracion de Turno
+    Nueva Configuración de Turno
 {% endblock %}
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{{ path('app_turno_doctor_index') }}">Configuraciones de Turnos</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Nueva Configuracion de Turno</li>
+    <li class="breadcrumb-item active" aria-current="page">Nuevo Turno</li>
 {% endblock %}
 
 {% block body %}
-    <div class="col-md-12">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('turno_doctor/_form.html.twig') }}
+<div class="apple-portal-container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-9 col-xl-8">
+            <div class="apple-table-card apple-form-card shadow-sm mb-4">
+                <div class="apple-table-header d-flex flex-wrap align-items-center gap-3 pb-3 mb-4 border-bottom border-secondary-subtle">
+                    <div class="apple-header-icon-badge" aria-hidden="true">
+                        <i class="bi bi-calendar-plus-fill"></i>
+                    </div>
+                    <div class="min-width-0">
+                        <h3 class="apple-table-title m-0">Programar Nuevo Turno</h3>
+                        <p class="apple-table-subtitle text-muted small m-0">
+                            Asigna especialidad, médico, consultorio y bloque horario semanal sin traslapes
+                        </p>
+                    </div>
+                </div>
+
+                {{ include('turno_doctor/_form.html.twig', {'button_label': 'Guardar Turno'}) }}
+            </div>
         </div>
     </div>
+</div>
 {% endblock %}

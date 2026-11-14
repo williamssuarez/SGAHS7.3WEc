@@ -6,100 +6,118 @@
         'data-shift-validator-exclude-id-value': form.vars.data.id|default('')
     }
 }) }}
+
 {{ include('base/_form_error_messages.html.twig') }}
-<div class="card-body">
-    <h5>Configurar Parametros de Turno:</h5>
 
-    <div class="alert d-none mb-3" role="alert" data-shift-validator-target="feedbackContainer">
-        <span data-shift-validator-target="feedbackText"></span>
-    </div>
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="mb-3">
-                {{form_label( form.especialidad ) }}
-                <div class="input-group">
-                    {{form_widget( form.especialidad ) }}
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="mb-3">
-                {{form_label( form.doctor ) }}
-                <div class="input-group">
-                    {{form_widget( form.doctor, { 'attr': {
-                        'data-shift-validator-target': 'doctor',
-                        'data-action': 'change->shift-validator#calculate'
-                    } } ) }}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-2">
-            <div class="mb-2">
-                {{form_label( form.dayOfWeek ) }}
-                <div class="input-group">
-                    {{form_widget( form.dayOfWeek, { 'attr': {
-                        'data-shift-validator-target': 'dayOfWeek',
-                        'data-action': 'change->shift-validator#calculate'
-                    } } ) }}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="mb-3">
-                {{form_label( form.startTime ) }}
-                <div class="input-group">
-                    {{form_widget( form.startTime, { 'attr': {
-                        'data-shift-validator-target': 'startTime',
-                        'data-action': 'change->shift-validator#calculate'
-                    } } ) }}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="mb-3">
-                {{form_label( form.endTime ) }}
-                <div class="input-group">
-                    {{form_widget( form.endTime, { 'attr': {
-                        'data-shift-validator-target': 'endTime',
-                        'data-action': 'change->shift-validator#calculate'
-                    } } ) }}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="mb-4">
-                {{form_label( form.consultorio ) }}
-                <div class="input-group">
-                    {{form_widget( form.consultorio, { 'attr': {
-                        'data-shift-validator-target': 'consultorio',
-                        'data-action': 'change->shift-validator#calculate'
-                    } } ) }}
-                </div>
-            </div>
-        </div>
+{# Alerta Apple dinámica para disponibilidad horaria (construida vía textContent) #}
+<div id="shift-conflict-feedback"
+     class="apple-alert d-none mb-4"
+     role="alert"
+     aria-live="polite"
+     data-shift-validator-target="feedbackContainer">
+    <i class="bi bi-info-circle-fill" aria-hidden="true" data-shift-validator-target="feedbackIcon"></i>
+    <div>
+        <span class="fw-semibold" data-shift-validator-target="feedbackText"></span>
     </div>
 </div>
 
-<div class="card-footer">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="d-flex justify-content-between">
-                <a class="btn btn-primary" href="{{ path('app_turno_doctor_index') }}">
-                    <i class="bi bi-arrow-left"></i> Volver
-                </a>
+{# Sección 1: Asignación Clínica #}
+<fieldset class="apple-detail-surface apple-form-fieldset mb-3">
+    <legend class="apple-form-legend">
+        <i class="bi bi-person-badge text-primary" aria-hidden="true"></i>
+        <span>1. Asignación Clínica</span>
+    </legend>
 
-                <div class="d-flex">
-                    <button type="submit" class="btn btn-success" data-submit-once-target="submitButton" data-shift-validator-target="submitButton">
-                        {{ button_label|default('Guardar') }}
-                    </button>
-                </div>
-            </div>
+    <div class="row g-3 apple-form-fieldset__body">
+        <div class="col-12 col-md-6">
+            <label for="{{ form.especialidad.vars.id }}" class="apple-input-label">Especialidad</label>
+            {{ form_widget(form.especialidad) }}
+            {{ form_errors(form.especialidad) }}
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label for="{{ form.doctor.vars.id }}" class="apple-input-label">Doctor</label>
+            {{ form_widget(form.doctor, { 'attr': {
+                'data-shift-validator-target': 'doctor',
+                'data-action': 'change->shift-validator#calculate'
+            } }) }}
+            {{ form_errors(form.doctor) }}
+        </div>
+
+        <div class="col-12">
+            <label for="{{ form.consultorio.vars.id }}" class="apple-input-label">Consultorio</label>
+            {{ form_widget(form.consultorio, { 'attr': {
+                'data-shift-validator-target': 'consultorio',
+                'data-action': 'change->shift-validator#calculate'
+            } }) }}
+            {{ form_errors(form.consultorio) }}
         </div>
     </div>
+</fieldset>
+
+{# Sección 2: Horario Semanal #}
+<fieldset class="apple-detail-surface apple-form-fieldset mb-4">
+    <legend class="apple-form-legend apple-form-legend--split">
+        <i class="bi bi-clock-history text-primary" aria-hidden="true"></i>
+        <span>2. Horario Semanal</span>
+    </legend>
+
+    <div class="apple-form-fieldset__meta">
+        <span class="apple-turno-duration-pill is-empty apple-tabular-nums"
+              data-shift-validator-target="durationBadge"
+              aria-live="polite">
+            Duración: selecciona inicio y cierre
+        </span>
+    </div>
+
+    <div class="row g-3 apple-form-fieldset__body">
+        <div class="col-12 col-md-4">
+            <label for="{{ form.dayOfWeek.vars.id }}" class="apple-input-label">Día de la Semana</label>
+            {{ form_widget(form.dayOfWeek, { 'attr': {
+                'data-shift-validator-target': 'dayOfWeek',
+                'data-action': 'change->shift-validator#calculate'
+            } }) }}
+            {{ form_errors(form.dayOfWeek) }}
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4">
+            <label for="{{ form.startTime.vars.id }}" class="apple-input-label">Hora de Inicio</label>
+            {{ form_widget(form.startTime, { 'attr': {
+                'data-shift-validator-target': 'startTime',
+                'data-action': 'input->shift-validator#calculate change->shift-validator#calculate'
+            } }) }}
+            {{ form_errors(form.startTime) }}
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4">
+            <label for="{{ form.endTime.vars.id }}" class="apple-input-label">Hora de Cierre</label>
+            {{ form_widget(form.endTime, { 'attr': {
+                'data-shift-validator-target': 'endTime',
+                'data-action': 'input->shift-validator#calculate change->shift-validator#calculate'
+            } }) }}
+            {{ form_errors(form.endTime) }}
+        </div>
+    </div>
+</fieldset>
+
+{{ form_rest(form) }}
+
+<div class="apple-form-actions d-flex flex-column-reverse flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2 pt-3 border-top border-secondary-subtle">
+    <a class="btn btn-secondary apple-btn-secondary rounded-pill px-4 py-2 d-inline-flex align-items-center justify-content-center gap-2"
+       href="{{ path('app_turno_doctor_index') }}"
+       data-controller="apple-spring">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+        <span>Volver al calendario</span>
+    </a>
+
+    <button type="submit"
+            class="btn btn-primary apple-btn-primary rounded-pill px-4 py-2 d-inline-flex align-items-center justify-content-center gap-2"
+            data-controller="apple-spring"
+            data-submit-once-target="submitButton"
+            data-shift-validator-target="submitButton">
+        <i class="bi bi-check2-circle" aria-hidden="true"></i>
+        <span>{{ button_label|default('Guardar Turno') }}</span>
+    </button>
 </div>
+
 {{ form_end(form) }}

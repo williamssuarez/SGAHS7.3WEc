@@ -1,20 +1,12 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Editar Especialidad{% endblock %}
+{% set nombre_actual = entity.nombre|default('')|trim %}
+{% set catalog_title = 'Especialidades' %}
+{% set form_title = 'Editar Especialidad' %}
+{% set form_subtitle = nombre_actual ? 'Actualiza la información de la especialidad «' ~ nombre_actual ~ '»' : 'Actualiza la información de la especialidad seleccionada' %}
+{% set catalog_icon = 'bi-pencil-square' %}
+{% set index_route = 'app_especialidades_index' %}
 
-{% block titlewrap %}
-    Editar Especialidad
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_especialidades_index') }}">Especialidades</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Editar Especialidad</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('especialidades/_form.html.twig', {'button_label': 'Actualizar'}) }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('especialidades/_form.html.twig', {'button_label': 'Actualizar'}) }}
 {% endblock %}

@@ -27,7 +27,7 @@ class TurnoDoctor
         if ($this->startTime !== null && $this->endTime !== null) {
             if ($this->endTime < $this->startTime) {
                 $context->buildViolation('La hora de finalización no puede ser anterior al inicio.')
-                    ->atPath('fechaFin')
+                    ->atPath('endTime')
                     ->addViolation();
             }
         }

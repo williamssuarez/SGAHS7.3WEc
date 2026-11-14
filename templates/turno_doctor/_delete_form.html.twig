@@ -1,4 +1,17 @@
-<form method="post" action="{{ path('app_turno_doctor_delete', {'id': turno_doctor.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+<form method="post"
+      action="{{ path('app_turno_doctor_delete', {'id': turno_doctor.id}) }}"
+      class="d-inline"
+      data-controller="confirm-submit"
+      data-action="submit->confirm-submit#confirm"
+      data-confirm-submit-title-value="¿Eliminar este turno?"
+      data-confirm-submit-text-value="El turno inactivo se enviará a la papelera de forma segura."
+      data-confirm-submit-icon-value="error"
+      data-confirm-submit-confirm-button-text-value="Sí, Eliminar">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ turno_doctor.id) }}">
-    <button class="btn">Delete</button>
+    <button type="submit"
+            class="btn btn-outline-danger apple-btn-danger rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-2"
+            data-controller="apple-spring">
+        <i class="bi bi-trash3-fill" aria-hidden="true"></i>
+        <span>Eliminar</span>
+    </button>
 </form>

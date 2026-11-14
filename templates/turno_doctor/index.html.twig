@@ -11,75 +11,348 @@
 {% endblock %}
 
 {% block body %}
+<div class="apple-portal-container">
+    {# Alertas Flash estilizadas con Apple Alert #}
     {% for label, messages in app.flashes %}
+        {% set alertVariant = label == 'error' ? 'danger' : label %}
+        {% set alertIcon = alertVariant == 'success' ? 'bi-check-circle-fill' : (alertVariant == 'danger' ? 'bi-exclamation-octagon-fill' : (alertVariant == 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-info-circle-fill')) %}
         {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="apple-alert apple-alert-{{ alertVariant }} alert-dismissible fade show mb-4" role="alert">
+                <i class="bi {{ alertIcon }}" aria-hidden="true"></i>
+                <div>{{ message }}</div>
+                <button type="button" class="btn-close apple-alert-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
         {% endfor %}
     {% endfor %}
-    <div class="card card-primary card-outline mb-4">
-        <div class="card-header p-0 border-bottom-0">
-            <ul class="nav nav-tabs" id="turnoTabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" data-bs-toggle="pill" href="#tab-table">Vista de Lista</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="pill" href="#tab-calendar">Cuadrícula Semanal</a>
-                </li>
-            </ul>
+
+    {# Mapa de avatares para el modal Liquid Glass del calendario #}
+    {% set doctorAvatars = {} %}
+    {% for entity in entities %}
+        {% set doc = entity.doctor %}
+        {% if doc and attribute(doctorAvatars, 'd_' ~ doc.id) is not defined %}
+            {% set docUser = doc.webUser %}
+            {% set docAvatar = '' %}
+            {% if docUser and docUser.avatarUrl is not empty %}
+                {% if docUser.avatarUrl starts with 'http' %}
+                    {% set docAvatar = docUser.avatarUrl %}
+                {% else %}
+                    {% set docAvatar = asset(paciente_photo_path ~ docUser.avatarUrl)|imagine_filter('patient_profile') %}
+                {% endif %}
+            {% endif %}
+            {% set doctorAvatars = doctorAvatars|merge({ ('d_' ~ doc.id): docAvatar }) %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="apple-table-card shadow-sm mb-4">
+        {# Cabecera Apple #}
+        <div class="apple-table-header d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 pb-3 mb-3 border-bottom border-secondary-subtle">
+            <div class="d-flex align-items-center gap-3 min-width-0">
+                <div class="apple-header-icon-badge" aria-hidden="true">
+                    <i class="bi bi-calendar2-week-fill"></i>
+                </div>
+                <div class="min-width-0">
+                    <h3 class="apple-table-title m-0">Configuración de Turnos Médicos</h3>
+                    <p class="apple-table-subtitle text-muted small m-0">
+                        Organiza franjas semanales de atención en cuadrícula visual y listado detallado
+                    </p>
+                </div>
+            </div>
+
+            <a href="{{ path('app_turno_doctor_new') }}"
+               class="btn btn-primary apple-btn-primary rounded-pill px-4 py-2 d-inline-flex align-items-center justify-content-center gap-2 flex-shrink-0"
+               data-controller="apple-spring">
+                <i class="bi bi-plus-circle-fill" aria-hidden="true"></i>
+                <span>Nuevo Turno</span>
+            </a>
         </div>
 
-        <div class="card-body">
-            <div class="tab-content">
-                <!-- TAB 1: DATATABLE -->
-                <div class="tab-pane fade show active" id="tab-table">
-                    <table class="table table-striped dtHere">
+        {# Franja Compacta de Métricas (KPIs sutiles sin ocupar altura excesiva) #}
+        <div class="apple-turno-kpis mb-3" aria-label="Resumen de cobertura semanal">
+            <div class="apple-metric-tile">
+                <span class="apple-tile-icon apple-tile-icon--green" aria-hidden="true">
+                    <i class="bi bi-calendar-check-fill"></i>
+                </span>
+                <div class="apple-metric-tile__content">
+                    <span class="apple-metric-tile__label">Turnos Activos</span>
+                    <div class="apple-metric-tile__value">
+                        <span>{{ kpis.activeCount }}</span>
+                        <span class="apple-metric-tile__unit">de {{ kpis.totalCount }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="apple-metric-tile">
+                <span class="apple-tile-icon apple-tile-icon--blue" aria-hidden="true">
+                    <i class="bi bi-person-badge-fill"></i>
+                </span>
+                <div class="apple-metric-tile__content">
+                    <span class="apple-metric-tile__label">Médicos con Agenda</span>
+                    <div class="apple-metric-tile__value">
+                        <span>{{ kpis.doctorCount }}</span>
+                        <span class="apple-metric-tile__unit">{{ kpis.doctorCount == 1 ? 'especialista' : 'especialistas' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="apple-metric-tile">
+                <span class="apple-tile-icon apple-tile-icon--cyan" aria-hidden="true">
+                    <i class="bi bi-door-open-fill"></i>
+                </span>
+                <div class="apple-metric-tile__content">
+                    <span class="apple-metric-tile__label">Consultorios Cubiertos</span>
+                    <div class="apple-metric-tile__value">
+                        <span>{{ kpis.consultorioCount }}</span>
+                        <span class="apple-metric-tile__unit">{{ kpis.consultorioCount == 1 ? 'sala activa' : 'salas activas' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Apple Segmented Control (Calendario Semanal predeterminado + Vista de Lista) #}
+        <div class="apple-segmented-bar-wrapper mb-3" data-controller="apple-segmented">
+            <button type="button" class="apple-scroll-btn apple-scroll-btn-left" data-apple-segmented-target="prevBtn" aria-label="Desplazar pestañas a la izquierda">
+                <i class="bi bi-chevron-left" aria-hidden="true"></i>
+            </button>
+
+            <div class="apple-segmented-bar" id="turnoTabs" data-apple-segmented-target="bar" role="tablist" aria-label="Vistas de turnos médicos">
+                <button type="button"
+                        id="btn-tab-calendar"
+                        class="apple-segmented-item active"
+                        data-bs-toggle="pill"
+                        data-bs-target="#tab-calendar"
+                        role="tab"
+                        aria-selected="true"
+                        data-controller="apple-spring"
+                        data-apple-spring-scale-value="0.97">
+                    <i class="bi bi-calendar3-week-fill" aria-hidden="true"></i>
+                    <span>Cuadrícula Semanal</span>
+                </button>
+
+                <button type="button"
+                        id="btn-tab-table"
+                        class="apple-segmented-item"
+                        data-bs-toggle="pill"
+                        data-bs-target="#tab-table"
+                        role="tab"
+                        aria-selected="false"
+                        data-controller="apple-spring"
+                        data-apple-spring-scale-value="0.97">
+                    <i class="bi bi-list-ul" aria-hidden="true"></i>
+                    <span>Vista de Lista ({{ kpis.totalCount }})</span>
+                </button>
+            </div>
+
+            <button type="button" class="apple-scroll-btn apple-scroll-btn-right" data-apple-segmented-target="nextBtn" aria-label="Desplazar pestañas a la derecha">
+                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div class="tab-content">
+            {# TAB 1 (PREDETERMINADA): FULLCALENDAR #}
+            <div class="tab-pane fade show active"
+                 id="tab-calendar"
+                 role="tabpanel"
+                 aria-labelledby="btn-tab-calendar">
+                <div data-controller="shift-calendar"
+                     data-shift-calendar-events-value="{{ path('app_turno_doctor_json') }}"
+                     data-shift-calendar-new-url-value="{{ path('app_turno_doctor_new') }}"
+                     data-shift-calendar-avatars-value="{{ doctorAvatars|json_encode|e('html_attr') }}">
+
+                    {# Barra de filtros rápidos en vivo sobre el calendario #}
+                    <div class="apple-turno-filters mb-3" role="region" aria-label="Filtros rápidos de calendario">
+                        <div class="apple-turno-filters__group">
+                            <div class="apple-turno-filters__field">
+                                <label for="calendar-filter-specialty" class="visually-hidden">Filtrar por especialidad</label>
+                                <select id="calendar-filter-specialty"
+                                        class="form-select form-select-sm apple-turno-select"
+                                        data-placeholder="Todas las especialidades"
+                                        data-shift-calendar-target="specialtyFilter">
+                                    <option value="">Todas las especialidades</option>
+                                </select>
+                            </div>
+
+                            <div class="apple-turno-filters__field">
+                                <label for="calendar-filter-doctor" class="visually-hidden">Filtrar por médico</label>
+                                <select id="calendar-filter-doctor"
+                                        class="form-select form-select-sm apple-turno-select"
+                                        data-placeholder="Todos los médicos"
+                                        data-shift-calendar-target="doctorFilter">
+                                    <option value="">Todos los médicos</option>
+                                </select>
+                            </div>
+
+                            <div class="form-check form-switch m-0 apple-turno-switch">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       role="switch"
+                                       id="calendar-filter-inactive"
+                                       data-shift-calendar-target="inactiveToggle"
+                                       data-action="change->shift-calendar#applyFilters">
+                                <label class="form-check-label small fw-medium" for="calendar-filter-inactive">
+                                    Incluir inactivos
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="apple-turno-filters__meta">
+                            <span class="apple-turno-count-pill apple-tabular-nums"
+                                  data-shift-calendar-target="visibleCount"
+                                  aria-live="polite">
+                                {{ kpis.activeCount }} turnos visibles
+                            </span>
+                            <span class="apple-turno-tip d-none d-xl-inline-flex align-items-center gap-1 small text-secondary">
+                                <i class="bi bi-hand-index-thumb" aria-hidden="true"></i>
+                                <span>Clic o arrastra en una hora libre para crear</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    {# Contenedor scrollable en móviles (< 768px) para proteger 320px sin deformar días #}
+                    <div class="apple-fc-scroll-wrap" tabindex="0" role="region" aria-label="Horario semanal por día y hora">
+                        <div class="apple-fc-host" data-shift-calendar-target="calendar"></div>
+                    </div>
+                </div>
+            </div>
+
+            {# TAB 2: DATATABLES (SIN fila else colspan por STACK_VISUAL.md Regla 2) #}
+            <div class="tab-pane fade"
+                 id="tab-table"
+                 role="tabpanel"
+                 aria-labelledby="btn-tab-table">
+                <div class="table-responsive" tabindex="0" role="region" aria-label="Listado detallado de turnos médicos">
+                    <table class="table table-hover align-middle dtHere mb-0">
                         <thead>
                         <tr>
-                            <th>Especialidad</th>
-                            <th>Doctor</th>
-                            <th>Consultorio</th>
-                            <th>Día</th>
-                            <th>Inicio-Fin</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
+                            <th scope="col">Médico y Especialidad</th>
+                            <th scope="col">Día y Horario</th>
+                            <th scope="col">Consultorio</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col" class="text-end">Acciones</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {% set days = {1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado', 7: 'Domingo'} %}
                         {% for entity in entities %}
-                            <tr class="align-middle">
-                                <td>{{ entity.especialidad.nombre }}</td>
-                                <td>{{ entity.doctor.nombre }} {{ entity.doctor.apellido }}</td>
-                                <td>{{ entity.consultorio.nombre }}</td>
-                                <td>{{ days[entity.dayOfWeek] }}</td>
-                                <td>{{ entity.startTime|date('H:i', false) }} - {{ entity.endTime|date('H:i', false) }}</td>
+                            {% set doc = entity.doctor %}
+                            {% set esp = entity.especialidad %}
+                            {% set docInitials = ((doc.nombre|default('')|trim|slice(0, 1)) ~ (doc.apellido|default('')|trim|slice(0, 1)))|upper ?: 'DR' %}
+                            {% set docAvatar = doc ? attribute(doctorAvatars, 'd_' ~ doc.id)|default('') : '' %}
+                            {% set colorInfo = esp and attribute(specialty_colors, esp.id) is defined ? attribute(specialty_colors, esp.id) : {'bg': '#0071e3', 'softBg': 'rgba(0, 113, 227, 0.12)', 'text': '#005bb5'} %}
+                            {% set startMins = (entity.startTime|date('H', false) * 60) + entity.startTime|date('i', false) %}
+                            {% set endMins = (entity.endTime|date('H', false) * 60) + entity.endTime|date('i', false) %}
+                            {% set diffMins = endMins - startMins %}
+                            {% set dHours = diffMins // 60 %}
+                            {% set dRest = diffMins % 60 %}
+
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="apple-doctor-avatar" aria-hidden="true">
+                                            {% if docAvatar is not empty %}
+                                                <img src="{{ docAvatar }}" alt="" class="apple-doctor-avatar__img" loading="lazy">
+                                            {% else %}
+                                                <span class="apple-doctor-avatar__initials">{{ docInitials }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="min-width-0">
+                                            <div class="fw-semibold text-body text-truncate">
+                                                {{ doc.nombre }} {{ doc.apellido }}
+                                            </div>
+                                            <span class="apple-turno-spec-chip"
+                                                  style="--chip-dot: {{ colorInfo.bg }}; --chip-bg: {{ colorInfo.softBg }};">
+                                                <span class="apple-turno-spec-chip__dot" aria-hidden="true"></span>
+                                                <span>{{ esp.nombre }}</span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td data-order="{{ entity.dayOfWeek }}-{{ entity.startTime|date('Hi', false) }}">
+                                    <div class="fw-semibold text-body">{{ days[entity.dayOfWeek]|default('—') }}</div>
+                                    <div class="d-flex align-items-center flex-wrap gap-1 small text-secondary apple-tabular-nums">
+                                        <span>{{ entity.startTime|date('H:i', false) }} – {{ entity.endTime|date('H:i', false) }}</span>
+                                        {% if diffMins > 0 %}
+                                            <span class="apple-turno-duration-tag">
+                                                {% if dHours > 0 and dRest > 0 %}{{ dHours }}h {{ '%02d'|format(dRest) }}m{% elseif dHours > 0 %}{{ dHours }}h{% else %}{{ dRest }}m{% endif %}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="apple-role-pill text-bg-dark">
+                                        <i class="bi bi-door-open" aria-hidden="true"></i>
+                                        <span>{{ entity.consultorio.nombre }}</span>
+                                    </span>
+                                </td>
+
                                 <td>
                                     {% if entity.isActive %}
-                                        Turno Activo <i class="bi bi-check-circle-fill" style="color: #138b00"></i>
+                                        <span class="apple-role-pill text-bg-success">
+                                            <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                                            <span>Activo</span>
+                                        </span>
                                     {% else %}
-                                        Turno Inactivo <i class="bi bi-x-circle-fill" style="color: #8b0000"></i>
+                                        <span class="apple-role-pill text-bg-secondary">
+                                            <i class="bi bi-pause-circle-fill" aria-hidden="true"></i>
+                                            <span>Inactivo</span>
+                                        </span>
                                     {% endif %}
                                 </td>
+
                                 <td>
-                                    <div class="d-flex gap-2">
-                                        <a class="btn btn-sm btn-success" href="{{ path('app_turno_doctor_edit', {'id': entity.id}) }}" title="Editar"><i class="bi bi-pencil-fill"></i></a>
-                                        
-                                        <!-- Toggle Button -->
-                                        <form method="post" action="{{ path('app_turno_doctor_toggle_active', {'id': entity.id}) }}" data-controller="confirm-submit" data-action="submit->confirm-submit#confirm" data-confirm-submit-title-value="{{ entity.isActive ? '¿Desactivar este turno?' : '¿Activar este turno?' }}" data-confirm-submit-text-value="{{ entity.isActive ? 'El turno dejará de estar disponible para agendar.' : 'Se verificará que no choque con otros turnos activos.' }}" data-confirm-submit-icon-value="{{ entity.isActive ? 'warning' : 'question' }}">
+                                    <div class="d-flex align-items-center justify-content-end gap-1">
+                                        <a class="btn btn-sm apple-btn-secondary rounded-pill apple-turno-action-btn"
+                                           href="{{ path('app_turno_doctor_show', {'id': entity.id}) }}"
+                                           title="Ver detalle"
+                                           aria-label="Ver detalle del turno de {{ doc.nombre }} {{ doc.apellido }}"
+                                           data-controller="apple-spring">
+                                            <i class="bi bi-eye-fill" aria-hidden="true"></i>
+                                        </a>
+
+                                        <a class="btn btn-sm btn-primary apple-btn-primary rounded-pill apple-turno-action-btn"
+                                           href="{{ path('app_turno_doctor_edit', {'id': entity.id}) }}"
+                                           title="Editar turno"
+                                           aria-label="Editar turno de {{ doc.nombre }} {{ doc.apellido }}"
+                                           data-controller="apple-spring">
+                                            <i class="bi bi-pencil-fill" aria-hidden="true"></i>
+                                        </a>
+
+                                        <form method="post"
+                                              action="{{ path('app_turno_doctor_toggle_active', {'id': entity.id}) }}"
+                                              class="d-inline"
+                                              data-controller="confirm-submit"
+                                              data-action="submit->confirm-submit#confirm"
+                                              data-confirm-submit-title-value="{{ entity.isActive ? '¿Desactivar este turno?' : '¿Activar este turno?' }}"
+                                              data-confirm-submit-text-value="{{ entity.isActive ? 'El turno dejará de estar disponible para agendar.' : 'Se verificará que no choque con otros turnos activos.' }}"
+                                              data-confirm-submit-icon-value="{{ entity.isActive ? 'warning' : 'question' }}">
                                             <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ entity.id) }}">
-                                            <button type="submit" class="btn btn-sm btn-{{ entity.isActive ? 'warning' : 'info' }}" title="{{ entity.isActive ? 'Desactivar Turno' : 'Activar Turno' }}">
-                                                <i class="bi bi-power"></i>
+                                            <button type="submit"
+                                                    class="btn btn-sm rounded-pill apple-turno-action-btn {{ entity.isActive ? 'apple-btn-warning' : 'btn-outline-info' }}"
+                                                    title="{{ entity.isActive ? 'Desactivar turno' : 'Activar turno' }}"
+                                                    aria-label="{{ entity.isActive ? 'Desactivar turno' : 'Activar turno' }} de {{ doc.nombre }} {{ doc.apellido }}"
+                                                    data-controller="apple-spring">
+                                                <i class="bi bi-power" aria-hidden="true"></i>
                                             </button>
                                         </form>
 
-                                        <!-- Delete Button (Only visible if inactive) -->
                                         {% if not entity.isActive %}
-                                            <form method="post" action="{{ path('app_turno_doctor_delete', {'id': entity.id}) }}" data-controller="confirm-submit" data-action="submit->confirm-submit#confirm" data-confirm-submit-title-value="¿Eliminar este turno?" data-confirm-submit-text-value="El turno pasará a la papelera." data-confirm-submit-icon-value="error" data-confirm-submit-confirm-button-text-value="Sí, Eliminar">
+                                            <form method="post"
+                                                  action="{{ path('app_turno_doctor_delete', {'id': entity.id}) }}"
+                                                  class="d-inline"
+                                                  data-controller="confirm-submit"
+                                                  data-action="submit->confirm-submit#confirm"
+                                                  data-confirm-submit-title-value="¿Eliminar este turno?"
+                                                  data-confirm-submit-text-value="El turno pasará a la papelera."
+                                                  data-confirm-submit-icon-value="error"
+                                                  data-confirm-submit-confirm-button-text-value="Sí, Eliminar">
                                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entity.id) }}">
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Eliminar Turno"><i class="bi bi-trash-fill"></i></button>
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-danger apple-btn-danger rounded-pill apple-turno-action-btn"
+                                                        title="Eliminar turno"
+                                                        aria-label="Eliminar turno de {{ doc.nombre }} {{ doc.apellido }}"
+                                                        data-controller="apple-spring">
+                                                    <i class="bi bi-trash3-fill" aria-hidden="true"></i>
+                                                </button>
                                             </form>
                                         {% endif %}
                                     </div>
@@ -89,19 +362,8 @@
                         </tbody>
                     </table>
                 </div>
-
-                <!-- TAB 2: FULLCALENDAR -->
-                <div class="tab-pane fade" id="tab-calendar">
-                    <div data-controller="shift-calendar"
-                         data-shift-calendar-events-value="{{ path('app_turno_doctor_json') }}">
-                        <div data-shift-calendar-target="calendar"></div>
-                    </div>
-                </div>
             </div>
         </div>
-
-        <div class="card-footer clearfix">
-            <a href="{{ path('app_turno_doctor_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
-        </div>
     </div>
+</div>
 {% endblock %}

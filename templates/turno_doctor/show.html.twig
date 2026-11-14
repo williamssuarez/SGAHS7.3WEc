@@ -1,58 +1,198 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}TurnoDoctor{% endblock %}
+{% block title %}Detalle de Turno · {{ turno_doctor.doctor.nombre }} {{ turno_doctor.doctor.apellido }}{% endblock %}
+
+{% block titlewrap %}
+    Detalle de Turno Médico
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('app_turno_doctor_index') }}">Configuraciones de Turnos</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Detalle #{{ turno_doctor.id }}</li>
+{% endblock %}
 
 {% block body %}
-    <h1>TurnoDoctor</h1>
+{% set doc = turno_doctor.doctor %}
+{% set esp = turno_doctor.especialidad %}
+{% set cons = turno_doctor.consultorio %}
+{% set docUser = doc ? doc.webUser : null %}
+{% set docInitials = ((doc.nombre|default('')|trim|slice(0, 1)) ~ (doc.apellido|default('')|trim|slice(0, 1)))|upper ?: 'DR' %}
+{% set docAvatar = '' %}
+{% if docUser and docUser.avatarUrl is not empty %}
+    {% if docUser.avatarUrl starts with 'http' %}
+        {% set docAvatar = docUser.avatarUrl %}
+    {% else %}
+        {% set docAvatar = asset(paciente_photo_path ~ docUser.avatarUrl)|imagine_filter('patient_profile') %}
+    {% endif %}
+{% endif %}
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ turno_doctor.id }}</td>
-            </tr>
-            <tr>
-                <th>DayOfWeek</th>
-                <td>{{ turno_doctor.dayOfWeek }}</td>
-            </tr>
-            <tr>
-                <th>StartTime</th>
-                <td>{{ turno_doctor.startTime ? turno_doctor.startTime|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>EndTime</th>
-                <td>{{ turno_doctor.endTime ? turno_doctor.endTime|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>SlotDuration</th>
-                <td>{{ turno_doctor.slotDuration }}</td>
-            </tr>
-            <tr>
-                <th>IsActive</th>
-                <td>{{ turno_doctor.isActive ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>UidCreate</th>
-                <td>{{ turno_doctor.uidCreate }}</td>
-            </tr>
-            <tr>
-                <th>UidUpdate</th>
-                <td>{{ turno_doctor.uidUpdate }}</td>
-            </tr>
-            <tr>
-                <th>Created</th>
-                <td>{{ turno_doctor.created ? turno_doctor.created|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Updated</th>
-                <td>{{ turno_doctor.updated ? turno_doctor.updated|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+<div class="apple-portal-container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-9 col-lg-7 mx-auto">
+            <div class="apple-table-card shadow-sm mb-4">
+                {# Cabecera del Turno #}
+                <div class="apple-table-header d-flex flex-wrap align-items-center justify-content-between gap-3 pb-3 mb-4 border-bottom border-secondary-subtle">
+                    <div class="d-flex align-items-center gap-3 min-width-0">
+                        <div class="apple-doctor-avatar" aria-hidden="true">
+                            {% if docAvatar is not empty %}
+                                <img src="{{ docAvatar }}" alt="" class="apple-doctor-avatar__img">
+                            {% else %}
+                                <span class="apple-doctor-avatar__initials">{{ docInitials }}</span>
+                            {% endif %}
+                        </div>
 
-    <a href="{{ path('app_turno_doctor_index') }}">back to list</a>
+                        <div class="min-width-0">
+                            <h3 class="apple-table-title m-0 text-truncate">
+                                {{ doc.nombre }} {{ doc.apellido }}
+                            </h3>
+                            <p class="apple-table-subtitle text-muted small m-0">
+                                Turno semanal #{{ turno_doctor.id }}
+                            </p>
+                        </div>
+                    </div>
 
-    <a href="{{ path('app_turno_doctor_edit', {'id': turno_doctor.id}) }}">edit</a>
+                    <div class="d-flex align-items-center flex-wrap gap-2">
+                        <span class="apple-turno-spec-chip"
+                              style="--chip-dot: {{ specialty_color.bg|default('#0071e3') }}; --chip-bg: {{ specialty_color.softBg|default('rgba(0, 113, 227, 0.13)') }};">
+                            <span class="apple-turno-spec-chip__dot" aria-hidden="true"></span>
+                            <span>{{ esp.nombre }}</span>
+                        </span>
 
-    {{ include('turno_doctor/_delete_form.html.twig') }}
+                        <span class="apple-role-pill {{ turno_doctor.isActive ? 'text-bg-success' : 'text-bg-secondary' }}">
+                            <i class="bi {{ turno_doctor.isActive ? 'bi-check-circle-fill' : 'bi-pause-circle-fill' }}" aria-hidden="true"></i>
+                            <span>{{ turno_doctor.isActive ? 'Activo' : 'Inactivo' }}</span>
+                        </span>
+                    </div>
+                </div>
+
+                {# Subtarjeta 1: Asignación Clínica #}
+                <div class="apple-detail-surface">
+                    <div class="apple-detail-surface__header">
+                        <div class="apple-detail-surface__title">
+                            <i class="bi bi-hospital text-primary" aria-hidden="true"></i>
+                            <span>Asignación Clínica</span>
+                        </div>
+                    </div>
+
+                    <div class="apple-metric-tiles">
+                        <div class="apple-metric-tile">
+                            <span class="apple-tile-icon apple-tile-icon--blue" aria-hidden="true">
+                                <i class="bi bi-heart-pulse-fill"></i>
+                            </span>
+                            <div class="apple-metric-tile__content">
+                                <span class="apple-metric-tile__label">Especialidad</span>
+                                <div class="apple-metric-tile__value">
+                                    <span>{{ esp.nombre }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="apple-metric-tile">
+                            <span class="apple-tile-icon apple-tile-icon--cyan" aria-hidden="true">
+                                <i class="bi bi-door-open-fill"></i>
+                            </span>
+                            <div class="apple-metric-tile__content">
+                                <span class="apple-metric-tile__label">Consultorio</span>
+                                <div class="apple-metric-tile__value">
+                                    <span>{{ cons.nombre }}</span>
+                                    {% if cons.ubicacion %}
+                                        <span class="apple-metric-tile__unit">· {{ cons.ubicacion }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Subtarjeta 2: Bloque Horario Semanal #}
+                <div class="apple-detail-surface">
+                    <div class="apple-detail-surface__header">
+                        <div class="apple-detail-surface__title">
+                            <i class="bi bi-clock-fill text-primary" aria-hidden="true"></i>
+                            <span>Bloque Horario Semanal</span>
+                        </div>
+                    </div>
+
+                    <div class="apple-metric-tiles">
+                        <div class="apple-metric-tile">
+                            <span class="apple-tile-icon apple-tile-icon--amber" aria-hidden="true">
+                                <i class="bi bi-calendar-event-fill"></i>
+                            </span>
+                            <div class="apple-metric-tile__content">
+                                <span class="apple-metric-tile__label">Día Programado</span>
+                                <div class="apple-metric-tile__value">
+                                    <span>{{ day_label }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="apple-metric-tile">
+                            <span class="apple-tile-icon apple-tile-icon--green" aria-hidden="true">
+                                <i class="bi bi-stopwatch-fill"></i>
+                            </span>
+                            <div class="apple-metric-tile__content">
+                                <span class="apple-metric-tile__label">Franja y Duración</span>
+                                <div class="apple-metric-tile__value apple-tabular-nums">
+                                    <span>{{ turno_doctor.startTime ? turno_doctor.startTime|date('H:i', false) : '—' }} – {{ turno_doctor.endTime ? turno_doctor.endTime|date('H:i', false) : '—' }}</span>
+                                    <span class="apple-metric-tile__unit">({{ duration_label }})</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if turno_doctor.created or turno_doctor.updated %}
+                        <div class="apple-detail-surface__footer text-secondary small apple-tabular-nums">
+                            {% if turno_doctor.created %}
+                                <span><i class="bi bi-clock-history me-1" aria-hidden="true"></i>Creado: {{ turno_doctor.created|date('d/m/Y H:i') }}</span>
+                            {% endif %}
+                            {% if turno_doctor.updated %}
+                                <span>· Actualizado: {{ turno_doctor.updated|date('d/m/Y H:i') }}</span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Botonera de Acciones #}
+                <div class="apple-form-actions d-flex flex-column-reverse flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2 pt-3 mt-3 border-top border-secondary-subtle">
+                    <a class="btn btn-secondary apple-btn-secondary rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-2"
+                       href="{{ path('app_turno_doctor_index') }}"
+                       data-controller="apple-spring">
+                        <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                        <span>Volver</span>
+                    </a>
+
+                    <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 ms-sm-auto">
+                        <a class="btn btn-primary apple-btn-primary rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-2"
+                           href="{{ path('app_turno_doctor_edit', {'id': turno_doctor.id}) }}"
+                           data-controller="apple-spring">
+                            <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                            <span>Editar</span>
+                        </a>
+
+                        <form method="post"
+                              action="{{ path('app_turno_doctor_toggle_active', {'id': turno_doctor.id}) }}"
+                              class="d-inline"
+                              data-controller="confirm-submit"
+                              data-action="submit->confirm-submit#confirm"
+                              data-confirm-submit-title-value="{{ turno_doctor.isActive ? '¿Desactivar este turno?' : '¿Activar este turno?' }}"
+                              data-confirm-submit-text-value="{{ turno_doctor.isActive ? 'El turno dejará de estar disponible para agendar.' : 'Se verificará que no choque con otros turnos activos.' }}"
+                              data-confirm-submit-icon-value="{{ turno_doctor.isActive ? 'warning' : 'question' }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ turno_doctor.id) }}">
+                            <button type="submit"
+                                    class="btn rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-2 {{ turno_doctor.isActive ? 'apple-btn-warning' : 'btn-outline-success' }}"
+                                    data-controller="apple-spring">
+                                <i class="bi bi-power" aria-hidden="true"></i>
+                                <span>{{ turno_doctor.isActive ? 'Desactivar' : 'Activar' }}</span>
+                            </button>
+                        </form>
+
+                        {% if not turno_doctor.isActive %}
+                            {{ include('turno_doctor/_delete_form.html.twig') }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

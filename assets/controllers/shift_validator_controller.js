@@ -1,24 +1,36 @@
 import { Controller } from '@hotwired/stimulus';
+import $ from 'jquery';
 
 export default class extends Controller {
     static targets = [
         'dayOfWeek', 'startTime', 'endTime', 'consultorio', 'doctor',
-        'feedbackContainer', 'feedbackText', 'submitButton'
-    ]
+        'feedbackContainer', 'feedbackIcon', 'feedbackText', 'durationBadge', 'submitButton'
+    ];
     static values = {
         excludeId: Number,
         apiUrl: String
-    }
+    };
 
     connect() {
-        // Ejecutar validación inicial por si estamos en modo edición
+        this.requestSeq = 0;
+        this.abortController = null;
+
+        // Mantener botón habilitado inicialmente para permitir resaltar errores si intentan enviar (modern-web-guidance: forms)
+        this.enableButton();
         this.calculate();
 
-        // Escuchar eventos de cambio de Select2 (que usa jQuery y detiene la propagación nativa)
+        // Select2 dispara eventos jQuery sin propagación nativa DOM
         if (typeof $ !== 'undefined') {
-            $(this.element).find('select').on('change', () => {
+            $(this.element).find('select').on('change.shiftValidator', () => {
                 this.calculate();
             });
+        }
+    }
+
+    disconnect() {
+        this.abortController?.abort();
+        if (typeof $ !== 'undefined') {
+            $(this.element).find('select').off('change.shiftValidator');
         }
     }
 
@@ -29,33 +41,81 @@ export default class extends Controller {
         const consultorio = this.hasConsultorioTarget ? this.consultorioTarget.value : null;
         const doctor = this.hasDoctorTarget ? this.doctorTarget.value : null;
 
-        // Limpiar la UI mientras se obtienen datos completos
+        this.updateDurationBadge(startTime, endTime);
+
+        // Si aún faltan campos, no bloquear ni mostrar errores prematuros
         if (!dayOfWeek || !startTime || !endTime || !consultorio || !doctor) {
             this.hideFeedback();
-            // Deshabilitar botón hasta que todos los campos requeridos estén listos
-            this.disableButton();
+            this.clearTimeInvalidState();
+            this.enableButton();
             return;
         }
 
-        // Validación 1: Hora inicio vs Hora fin en el lado del cliente
-        // Como startTime y endTime vienen en formato "HH:MM", una comparación de strings alfanumérica funciona perfecto.
         if (startTime >= endTime) {
+            this.markTimeInvalid();
             this.showFeedback('La hora de inicio debe ser estrictamente anterior a la hora de cierre.', 'danger');
-            this.disableButton();
+            this.enableButton();
             return;
         }
 
-        // Validación 2: Chequeo de cruces en el servidor
+        this.clearTimeInvalidState();
         this.checkConflicts(dayOfWeek, startTime, endTime, consultorio, doctor);
     }
 
+    updateDurationBadge(startTime, endTime) {
+        if (!this.hasDurationBadgeTarget) return;
+
+        const badge = this.durationBadgeTarget;
+        badge.classList.remove('is-valid', 'is-invalid', 'is-empty');
+
+        if (!startTime || !endTime) {
+            badge.classList.add('is-empty');
+            badge.textContent = 'Duración: selecciona inicio y cierre';
+            return;
+        }
+
+        const startMin = this.parseMinutes(startTime);
+        const endMin = this.parseMinutes(endTime);
+        if (startMin === null || endMin === null) {
+            badge.classList.add('is-empty');
+            badge.textContent = 'Duración: --';
+            return;
+        }
+
+        const diff = endMin - startMin;
+        if (diff <= 0) {
+            badge.classList.add('is-invalid');
+            badge.textContent = 'Rango horario inválido';
+            return;
+        }
+
+        const hours = Math.floor(diff / 60);
+        const mins = diff % 60;
+        const formatted = hours > 0 && mins > 0
+            ? `${hours} h ${String(mins).padStart(2, '0')} min`
+            : (hours > 0 ? `${hours} h` : `${mins} min`);
+
+        badge.classList.add('is-valid');
+        badge.textContent = `Bloque de ${formatted}`;
+    }
+
+    parseMinutes(value) {
+        const match = /^([01]\d|2[0-3]):([0-5]\d)/.exec((value || '').trim());
+        if (!match) return null;
+        return Number(match[1]) * 60 + Number(match[2]);
+    }
+
     async checkConflicts(dayOfWeek, startTime, endTime, consultorio, doctor) {
+        const currentSeq = ++this.requestSeq;
+        this.abortController?.abort();
+        this.abortController = new AbortController();
+
         const payload = {
-            dayOfWeek: dayOfWeek,
-            startTime: startTime,
-            endTime: endTime,
-            consultorio: consultorio,
-            doctor: doctor,
+            dayOfWeek,
+            startTime,
+            endTime,
+            consultorio,
+            doctor,
             excludeId: this.excludeIdValue || null
         };
 
@@ -66,27 +126,30 @@ export default class extends Controller {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
+                signal: this.abortController.signal
             });
+
+            if (currentSeq !== this.requestSeq) return;
 
             if (response.ok) {
                 const data = await response.json();
-                
                 if (data.valid) {
                     this.showFeedback(data.message, 'success');
-                    this.enableButton();
                 } else {
                     this.showFeedback(data.message, 'danger');
-                    this.disableButton();
                 }
             } else {
-                this.showFeedback('Ocurrió un error al validar los datos con el servidor.', 'warning');
-                this.disableButton();
+                this.showFeedback('No fue posible verificar conflictos en el servidor.', 'warning');
             }
         } catch (error) {
+            if (error.name === 'AbortError' || currentSeq !== this.requestSeq) return;
             console.error('Error validating shift:', error);
-            this.showFeedback('Ocurrió un error de conexión al validar.', 'warning');
-            this.disableButton();
+            this.showFeedback('Error de conexión al comprobar disponibilidad horaria.', 'warning');
+        } finally {
+            if (currentSeq === this.requestSeq) {
+                this.enableButton();
+            }
         }
     }
 
@@ -94,12 +157,20 @@ export default class extends Controller {
         if (!this.hasFeedbackContainerTarget || !this.hasFeedbackTextTarget) return;
 
         const container = this.feedbackContainerTarget;
-        
-        // Reset classes
-        container.classList.remove('d-none', 'alert-success', 'alert-danger', 'alert-warning');
-        container.classList.add(`alert-${type}`);
-        
-        this.feedbackTextTarget.innerHTML = `<strong>Atención:</strong> ${message}`;
+        container.classList.remove('d-none', 'apple-alert-success', 'apple-alert-danger', 'apple-alert-warning');
+        container.classList.add(`apple-alert-${type}`);
+
+        if (this.hasFeedbackIconTarget) {
+            const iconMap = {
+                success: 'bi-check-circle-fill',
+                danger: 'bi-exclamation-octagon-fill',
+                warning: 'bi-exclamation-triangle-fill'
+            };
+            this.feedbackIconTarget.className = `bi ${iconMap[type] || 'bi-info-circle-fill'}`;
+        }
+
+        const prefix = type === 'success' ? 'Disponible: ' : (type === 'danger' ? 'Conflicto: ' : 'Atención: ');
+        this.feedbackTextTarget.textContent = `${prefix}${message}`;
     }
 
     hideFeedback() {
@@ -108,10 +179,18 @@ export default class extends Controller {
         }
     }
 
-    disableButton() {
-        if (this.hasSubmitButtonTarget) {
-            this.submitButtonTarget.disabled = true;
+    markTimeInvalid() {
+        if (!this.hasEndTimeTarget) return;
+        this.endTimeTarget.setAttribute('aria-invalid', 'true');
+        if (this.hasFeedbackContainerTarget && this.feedbackContainerTarget.id) {
+            this.endTimeTarget.setAttribute('aria-describedby', this.feedbackContainerTarget.id);
         }
+    }
+
+    clearTimeInvalidState() {
+        if (!this.hasEndTimeTarget) return;
+        this.endTimeTarget.removeAttribute('aria-invalid');
+        this.endTimeTarget.removeAttribute('aria-describedby');
     }
 
     enableButton() {

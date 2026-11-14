@@ -3,11 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\CitasConfiguraciones;
-use App\Entity\Condiciones;
 use App\Entity\Especialidades;
 use App\Entity\StatusRecord;
 use App\Form\EspecialidadesType;
+use App\Repository\CitasConfiguracionesRepository;
 use App\Repository\EspecialidadesRepository;
+use App\Repository\InternalProfileRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -48,11 +49,17 @@ final class EspecialidadesController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_especialidades_show', methods: ['GET'])]
-    public function show(Especialidades $especialidade, EntityManagerInterface $entityManager): Response
-    {
+    public function show(
+        Especialidades $especialidade,
+        EntityManagerInterface $entityManager,
+        CitasConfiguracionesRepository $citasConfiguracionesRepository,
+        InternalProfileRepository $internalProfileRepository
+    ): Response {
+        $activeStatus = $entityManager->getRepository(StatusRecord::class)->getActive();
+
         $especialidad = $entityManager->getRepository(Especialidades::class)->findOneBy([
             'id' => $especialidade->getId(),
-            'status' => $entityManager->getRepository(StatusRecord::class)->getActive()
+            'status' => $activeStatus,
         ]);
 
         if (!$especialidad) {
@@ -60,8 +67,23 @@ final class EspecialidadesController extends AbstractController
             return $this->redirectToRoute('app_especialidades_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        $configs = $citasConfiguracionesRepository->findBy(
+            ['especialidad' => $especialidad, 'status' => $activeStatus],
+            ['isActive' => 'DESC', 'id' => 'DESC']
+        );
+        $latestConfig = $configs[0] ?? null;
+        $activeConfig = ($latestConfig && $latestConfig->isActive()) ? $latestConfig : null;
+        $doctors = $internalProfileRepository
+            ->getDoctorsByEspecialidadQueryBuilder($especialidad)
+            ->getQuery()
+            ->getResult();
+
         return $this->render('especialidades/show.html.twig', [
             'entity' => $especialidad,
+            'activeConfig' => $activeConfig,
+            'latestConfig' => $latestConfig,
+            'configsCount' => count($configs),
+            'doctors' => $doctors,
         ]);
     }
 
@@ -89,6 +111,7 @@ final class EspecialidadesController extends AbstractController
         }
 
         return $this->render('especialidades/edit.html.twig', [
+            'entity' => $especialidad,
             'especialidade' => $especialidade,
             'form' => $form,
         ]);

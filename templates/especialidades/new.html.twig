@@ -1,20 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Nueva Especialidad{% endblock %}
+{% set catalog_title = 'Especialidades' %}
+{% set form_title = 'Nueva Especialidad' %}
+{% set form_subtitle = 'Registre una nueva especialidad médica en el catálogo' %}
+{% set catalog_icon = 'bi-heart-pulse' %}
+{% set index_route = 'app_especialidades_index' %}
 
-{% block titlewrap %}
-    Nueva Especialidad
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_especialidades_index') }}">Especialidades</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Nueva Especialidad</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('especialidades/_form.html.twig') }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('especialidades/_form.html.twig') }}
 {% endblock %}

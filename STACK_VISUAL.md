@@ -295,3 +295,7 @@ Tras modificar cualquier archivo en `assets/styles/`, `assets/controllers/` o pl
    ```powershell
    php bin/console lint:twig templates/<directorio>
    ```
+
+### Regla 12: Contención de `<fieldset>/<legend>` y Paridad de Selectores (`Select2`)
+- **Prohibido desflotar `<legend>` dentro de tarjetas con borde/fondo (`<fieldset class="apple-detail-surface">`):** Bootstrap 5 aplica `legend { float: left; }` precisamente para evitar que el borde y el fondo del `<fieldset>` inicien a mitad vertical del `<legend>`. Nunca usar `float: none` sobre un `<legend>` hijo directo de `<fieldset>` estilizado; mantener `float: left`, `clear: both` en el contenedor de campos siguiente y `min-width: 0; width: 100%;` en el `<fieldset>`. Usar `flex-wrap` en cabeceras `.apple-table-header` con badges para evitar compresión en `320px`.
+- **Paridad de `<select>` en vistas Apple:** Todo selector `<select>` agregado en vistas modernizadas (incluidos filtros dinámicos Stimulus fuera de Symfony Forms) debe integrar el componente de la casa **Select2** (`theme: 'bootstrap-5'`) gestionado en su controlador Stimulus tras poblar opciones (`trigger('change.select2')` y `select2('destroy')` en `disconnect()`), manteniendo `color-scheme` y colores de `<option>` como respaldo base en `.apple-portal-container .form-select`.

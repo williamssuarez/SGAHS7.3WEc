@@ -23,6 +23,7 @@ Utiliza esta skill tras `validate_local.ps1` para verificar el comportamiento re
      - Delega al subagente `browser` sobre `http://127.0.0.1:8000` (o `https://127.0.0.1:8000`) reutilizando la sesión activa del navegador.
      - **Regla de Login y reCAPTCHA:** Si la sesión expiró y el navegador es redirigido a `/login`, **NO intentes resolver el reCAPTCHA ni adivinar contraseñas**. Pausa y pide al usuario que inicie sesión una vez en el panel del navegador; cuando confirme, reanuda la verificación en la misma pestaña.
      - Comprueba la interfaz visual (respetando `STACK_VISUAL.md` y `apple-design` si es vista externa) y que la consola JS no arroje errores.
+     - **Inspección Visual Obligatoria de Capturas y Estados Abiertos:** No bastan métricas numéricas (`scrollWidth <= innerWidth` o HTTP `200`). En cambios con UI, captura e inspecciona visualmente (vía `read_file`) vistas de escritorio (`1440x900` Light/Dark) y móvil (`320x640`) cubriendo estado inicial, formularios (`/new`, `/edit`) y controles interactivos abiertos (desplegables `<select>` / Select2 y modales) para descartar recortes de borde (`<fieldset>/<legend>`), solapamientos o menús nativos sin estilizar.
 
 3. **Inspección de Logs Locales (`var/log/dev.log`):**
    - Lee las últimas líneas de `var/log/dev.log` directamente (con `read_file` o `Get-Content var/log/dev.log -Tail 50`).
