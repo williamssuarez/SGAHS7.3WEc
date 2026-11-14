@@ -1,59 +1,64 @@
-<div class="row">
-    <div class="col-md-12">
-        <h4 class="mb-4 mt-2 fw-bold"><i class="bi bi-heart-pulse text-info"></i> Historial Quirúrgico</h4>
-        
-        {% set cirugiasSorted = paciente.cirugias|sort((a, b) => b.fechaHoraProgramada <=> a.fechaHoraProgramada) %}
-        
-        {% if cirugiasSorted is empty %}
-            <div class="alert alert-light text-center py-5 border">
-                <i class="bi bi-file-medical display-4 text-muted mb-3 d-block"></i>
-                <h5>Sin registro quirúrgico</h5>
-                <p class="text-muted mb-0">El paciente no tiene cirugías registradas en el sistema.</p>
-            </div>
-        {% else %}
-            <div class="table-responsive">
-                <table class="table table-hover align-middle table-striped border">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Procedimiento</th>
-                            <th>Cirujano Principal</th>
-                            <th>Quirófano</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for cirugia in cirugiasSorted %}
-                            <tr>
-                                <td>
-                                    <div class="fw-bold">{{ cirugia.fechaHoraProgramada|date('d/m/Y') }}</div>
-                                    <small class="text-muted">{{ cirugia.fechaHoraProgramada|date('h:i A') }}</small>
-                                </td>
-                                <td>
-                                    <div class="fw-bold text-dark">{{ cirugia.procedimientoPropuesto }}</div>
-                                    {% if cirugia.diagnosticoPreoperatorio %}
-                                        <small class="text-muted d-block text-truncate" style="max-width: 200px;" title="{{ cirugia.diagnosticoPreoperatorio }}">
-                                            Motivo: {{ cirugia.diagnosticoPreoperatorio }}
-                                        </small>
-                                    {% endif %}
-                                </td>
-                                <td>Dr(a). {{ cirugia.cirujanoPrincipal.nombre }}</td>
-                                <td>{{ cirugia.quirofano ? cirugia.quirofano.nombre : '<span class="text-muted">No asignado</span>'|raw }}</td>
-                                <td>
-                                    {% set badge = cirugia.cirugiaEstadosBadgeConfig %}
-                                    <span class="badge {{ badge.class }}">{{ badge.label|upper }}</span>
-                                </td>
-                                <td>
-                                    <a class="btn btn-sm btn-outline-primary" href="{{ path('app_cirugia_show', {'id': cirugia.id}) }}" target="_blank">
-                                        <i class="bi bi-eye"></i> Detalles
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% endif %}
+<div class="apple-section">
+    <div class="apple-section-header">
+        <h5 class="text-body">
+            <i class="bi bi-heart-pulse text-info me-2"></i> Historial Quirúrgico
+        </h5>
+        <small class="text-secondary">Intervenciones programadas y realizadas</small>
+    </div>
+
+    {% set cirugiasSorted = paciente.cirugias|sort((a, b) => b.fechaHoraProgramada <=> a.fechaHoraProgramada) %}
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle dtHere">
+            <thead>
+                <tr class="text-secondary small text-uppercase">
+                    <th>Fecha</th>
+                    <th>Procedimiento</th>
+                    <th>Cirujano Principal</th>
+                    <th>Quirófano</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for cirugia in cirugiasSorted %}
+                <tr>
+                    <td class="text-nowrap">
+                        <div class="fw-semibold">{{ cirugia.fechaHoraProgramada|date('d/m/Y') }}</div>
+                        <small class="text-secondary">{{ cirugia.fechaHoraProgramada|date('h:i A') }}</small>
+                    </td>
+                    <td>
+                        <div class="fw-semibold text-body">{{ cirugia.procedimientoPropuesto }}</div>
+                        {% if cirugia.diagnosticoPreoperatorio %}
+                            <small class="text-secondary d-block text-truncate" style="max-width: 240px;" title="{{ cirugia.diagnosticoPreoperatorio }}">
+                                Motivo: {{ cirugia.diagnosticoPreoperatorio }}
+                            </small>
+                        {% endif %}
+                    </td>
+                    <td class="fw-medium">Dr(a). {{ cirugia.cirujanoPrincipal.nombre }}</td>
+                    <td>
+                        {% if cirugia.quirofano %}
+                            <span class="apple-role-pill">{{ cirugia.quirofano.nombre }}</span>
+                        {% else %}
+                            <span class="text-muted small">No asignado</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% set badge = cirugia.cirugiaEstadosBadgeConfig %}
+                        <span class="apple-role-pill {{ badge.class }}">{{ badge.label }}</span>
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-xs d-inline-flex align-items-center gap-1"
+                           href="{{ path('app_cirugia_show', {'id': cirugia.id}) }}"
+                           target="_blank"
+                           data-controller="apple-spring">
+                            <i class="bi bi-eye"></i>
+                            <span>Detalles</span>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>

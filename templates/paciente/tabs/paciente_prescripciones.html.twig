@@ -1,95 +1,100 @@
-<h4>
-    Prescripciones Registradas
-</h4>
+<div class="apple-prescripciones-module">
+    <!-- Prescripciones Activas -->
+    <div class="apple-section">
+        <div class="apple-section-header">
+            <h5 class="text-body">
+                <i class="bi bi-capsule text-primary me-2"></i> Prescripciones Médicas Activas
+            </h5>
+            <span class="apple-role-pill text-bg-primary">En Curso</span>
+        </div>
 
-<div class="card card-primary card-outline">
-    <div class="card-header">
-        <div class="card-title">Prescripciones Activas</div>
-    </div>
-
-    <div class="card-body">
-        <table class="table table-striped dtHere">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>Medicicamento</th>
-                <th>Dosis</th>
-                <th>Frecuencia</th>
-                <th>Estado</th>
-                <th>Fecha Inicio</th>
-                <th>Fecha Fin</th>
-                <th>Observaciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for entity in prescripcionesActivas %}
-                <tr class="align-middle">
-                    <td>{{ loop.index }}</td>
-                    <td>{{ entity.medicamento }}</td>
-                    <td>{{ entity.dosis }}</td>
-                    <td>{{ entity.frecuencia }}</td>
-                    <td>
-                        {% set badge = entity.prescripcionesEstadosBadgeConfig %}
-                            <span class="badge rounded-pill {{ badge.class }}">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle dtHere">
+                <thead>
+                    <tr class="text-secondary small text-uppercase">
+                        <th>#</th>
+                        <th>Medicamento</th>
+                        <th>Dosis</th>
+                        <th>Frecuencia</th>
+                        <th>Estado</th>
+                        <th>Inicio</th>
+                        <th>Fin</th>
+                        <th>Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for entity in prescripcionesActivas %}
+                    <tr>
+                        <td class="text-muted small">{{ loop.index }}</td>
+                        <td class="fw-semibold text-primary">
+                            <i class="bi bi-capsule-pill me-1 text-secondary"></i>
+                            {{ entity.medicamento }}
+                        </td>
+                        <td class="fw-medium">{{ entity.dosis }}</td>
+                        <td>{{ entity.frecuencia }}</td>
+                        <td>
+                            {% set badge = entity.prescripcionesEstadosBadgeConfig %}
+                            <span class="apple-role-pill {{ badge.class }}">
                                 {{ badge.label }}
                             </span>
-                    </td>
-                    {#no dejar que twig traduzca del utc#}
-                    <td>{{ entity.fechaInicio|date('d/m/Y', false) }}</td>
-                    <td>{{ entity.fechaFin ? entity.fechaFin|date('d/m/Y', false) : ' ' }}</td>
-                    <td>
-                        {{ entity.observaciones ? entity.observaciones : '--' }}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<br>
-
-<div class="card card-success card-outline">
-    <div class="card-header">
-        <div class="card-title">Prescripciones Inactivas</div>
+                        </td>
+                        <td class="text-nowrap">{{ entity.fechaInicio|date('d/m/Y', false) }}</td>
+                        <td class="text-nowrap">{{ entity.fechaFin ? entity.fechaFin|date('d/m/Y', false) : 'Indefinido' }}</td>
+                        <td class="small text-secondary">
+                            {{ entity.observaciones ? entity.observaciones : '--' }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="card-body">
-        <table class="table table-striped dtHere">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>Medicicamento</th>
-                <th>Dosis</th>
-                <th>Frecuencia</th>
-                <th>Estado</th>
-                <th>Fecha Inicio</th>
-                <th>Fecha Fin</th>
-                <th>Observaciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for entity in prescripcionesInactivas %}
-                <tr class="align-middle">
-                    <td>{{ loop.index }}</td>
-                    <td>{{ entity.medicamento }}</td>
-                    <td>{{ entity.dosis }}</td>
-                    <td>{{ entity.frecuencia }}</td>
-                    <td>
-                        {% set badge = entity.prescripcionesEstadosBadgeConfig %}
-                        <span class="badge rounded-pill {{ badge.class }}">
-                            {{ badge.label }}
-                        </span>
-                    </td>
-                    {#no dejar que twig traduzca del utc#}
-                    <td>{{ entity.fechaInicio|date('d/m/Y', false) }}</td>
-                    <td>{{ entity.fechaFin ? entity.fechaFin|date('d/m/Y', false) : ' ' }}</td>
-                    <td>
-                        {{ entity.observaciones ? entity.observaciones : '--' }}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+    <!-- Prescripciones Inactivas / Historial -->
+    <div class="apple-section mt-4">
+        <div class="apple-section-header">
+            <h5 class="text-body text-secondary">
+                <i class="bi bi-clock-history text-muted me-2"></i> Historial de Prescripciones Finalizadas
+            </h5>
+            <span class="apple-role-pill">Concluidas</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle dtHere">
+                <thead>
+                    <tr class="text-secondary small text-uppercase">
+                        <th>#</th>
+                        <th>Medicamento</th>
+                        <th>Dosis</th>
+                        <th>Frecuencia</th>
+                        <th>Estado</th>
+                        <th>Inicio</th>
+                        <th>Fin</th>
+                        <th>Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for entity in prescripcionesInactivas %}
+                    <tr class="text-muted">
+                        <td class="small">{{ loop.index }}</td>
+                        <td class="fw-medium">{{ entity.medicamento }}</td>
+                        <td>{{ entity.dosis }}</td>
+                        <td>{{ entity.frecuencia }}</td>
+                        <td>
+                            {% set badge = entity.prescripcionesEstadosBadgeConfig %}
+                            <span class="apple-role-pill {{ badge.class }}">
+                                {{ badge.label }}
+                            </span>
+                        </td>
+                        <td class="text-nowrap">{{ entity.fechaInicio|date('d/m/Y', false) }}</td>
+                        <td class="text-nowrap">{{ entity.fechaFin ? entity.fechaFin|date('d/m/Y', false) : '--' }}</td>
+                        <td class="small">
+                            {{ entity.observaciones ? entity.observaciones : '--' }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

@@ -30,14 +30,14 @@
                     </td>
                     <td>
                         {% set badge = entity.alergiaSeveridadBadgeConfig %}
-                        <span class="badge rounded-pill {{ badge.class }} px-2 py-1">
+                        <span class="apple-role-pill {{ badge.class }}">
                             {{ badge.label }}
                         </span>
                     </td>
                     <td>
                         <div class="d-flex flex-wrap gap-1">
                             {% for reaccion in entity.reacciones %}
-                                <span class="badge text-bg-secondary rounded-pill fw-normal">{{ reaccion.nombre }}</span>
+                                <span class="apple-role-pill">{{ reaccion.nombre }}</span>
                             {% else %}
                                 <span class="text-muted small">Sin especificar</span>
                             {% endfor %}

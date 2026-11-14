@@ -1,20 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Editar Condicion{% endblock %}
+{% set catalog_title = 'Condiciones' %}
+{% set form_title = 'Editar Condición' %}
+{% set form_subtitle = 'Actualice la información de la condición seleccionada' %}
+{% set catalog_icon = 'bi-pencil-square' %}
+{% set index_route = 'app_condiciones_index' %}
 
-{% block titlewrap %}
-    Editar Condicion
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_condiciones_index') }}">Condiciones</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Editar Condicion</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('condiciones/_form.html.twig', {'button_label': 'Actualizar'}) }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('condiciones/_form.html.twig', {'button_label': 'Actualizar'}) }}
 {% endblock %}

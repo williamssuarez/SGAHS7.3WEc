@@ -1,20 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Nuevo Medicamento{% endblock %}
+{% set catalog_title = 'Medicamentos' %}
+{% set form_title = 'Nuevo Medicamento' %}
+{% set form_subtitle = 'Registre un nuevo medicamento en el catálogo farmacológico' %}
+{% set catalog_icon = 'bi-capsule' %}
+{% set index_route = 'app_medicamentos_index' %}
 
-{% block titlewrap %}
-    Nuevo Medicamento
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_medicamentos_index') }}">Medicamentos</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Nuevo Medicamento</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('medicamentos/_form.html.twig') }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('medicamentos/_form.html.twig') }}
 {% endblock %}

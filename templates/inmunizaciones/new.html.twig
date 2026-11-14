@@ -1,20 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Nueva Inmunizacion{% endblock %}
+{% set catalog_title = 'Inmunizaciones' %}
+{% set form_title = 'Nueva Inmunización' %}
+{% set form_subtitle = 'Registre una nueva vacuna o inmunización en el catálogo' %}
+{% set catalog_icon = 'bi-shield-check' %}
+{% set index_route = 'app_inmunizaciones_index' %}
 
-{% block titlewrap %}
-    Nueva Inmunizacion
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_inmunizaciones_index') }}">Inmunizaciones</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Nueva Inmunizacion</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('inmunizaciones/_form.html.twig') }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('inmunizaciones/_form.html.twig') }}
 {% endblock %}

@@ -1,20 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Nuevo Alergeno{% endblock %}
+{% set catalog_title = 'Alérgenos' %}
+{% set form_title = 'Nuevo Alérgeno' %}
+{% set form_subtitle = 'Registre un nuevo agente alérgeno en el catálogo' %}
+{% set catalog_icon = 'bi-shield-plus' %}
+{% set index_route = 'app_alergenos_index' %}
 
-{% block titlewrap %}
-    Nuevo Alergeno
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_alergenos_index') }}">Alergenos</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Nuevo Alergeno</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('alergenos/_form.html.twig') }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('alergenos/_form.html.twig') }}
 {% endblock %}

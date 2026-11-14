@@ -1,48 +1,68 @@
-<h4>
-    Alergias Registradas <a class="btn btn-primary btn-sm" href="{{ path('app_alergias_new_paciente', {'id': paciente.id}) }}"><i class="bi bi-plus-circle"></i> Agregar</a>
-</h4>
-<table class="table table-striped dtHere">
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Alergeno</th>
-        <th>Severidad</th>
-        <th>Reacciones</th>
-        <th>Observaciones</th>
-        <th>Fecha</th>
-        <th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for entity in alergias %}
-        <tr class="align-middle">
-            <td>{{ loop.index }}</td>
-            <td>{{ entity.alergeno.nombre }}</td>
-            <td>
-                {% set badge = entity.alergiaSeveridadBadgeConfig %}
-                <span class="badge rounded-pill {{ badge.class }}">
-                    {{ badge.label }}
-                </span>
-            </td>
-            <td>
-                <ul>
-                    {% for reaccion in entity.reacciones %}
-                        <li>{{ reaccion.nombre }}</li>
-                    {% endfor %}
-                </ul>
-            </td>
-            <td>
-                {{ entity.observaciones ? entity.observaciones : '--' }}
-            </td>
-            <td>
-                {{ entity.created|date('d/m/Y H:i') }} <i>{{ entity.created|time_ago }}</i>
-            </td>
-            <td>
-                <a class="btn btn-success" href="{{ path('app_alergias_edit_paciente', {'id': entity.id}) }}">
-                    <i class="bi bi-pencil-square"></i>
-                </a>
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<div class="apple-section">
+    <div class="apple-section-header">
+        <h5 class="text-body">
+            <i class="bi bi-virus text-warning me-2"></i> Alergias Registradas
+        </h5>
+        <a class="btn btn-primary apple-btn-primary btn-sm rounded-pill px-3 shadow-xs d-inline-flex align-items-center gap-1"
+           href="{{ path('app_alergias_new_paciente', {'id': paciente.id}) }}"
+           data-controller="apple-spring">
+            <i class="bi bi-plus-circle"></i>
+            <span>Agregar Alergia</span>
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle dtHere">
+            <thead>
+                <tr class="text-secondary small text-uppercase">
+                    <th>#</th>
+                    <th>Alergeno</th>
+                    <th>Severidad</th>
+                    <th>Reacciones Asociadas</th>
+                    <th>Observaciones</th>
+                    <th>Registrado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in alergias %}
+                <tr>
+                    <td class="text-muted small">{{ loop.index }}</td>
+                    <td class="fw-semibold text-danger">
+                        <i class="bi bi-shield-exclamation me-1"></i> {{ entity.alergeno.nombre }}
+                    </td>
+                    <td>
+                        {% set badge = entity.alergiaSeveridadBadgeConfig %}
+                        <span class="apple-role-pill {{ badge.class }}">
+                            {{ badge.label }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for reaccion in entity.reacciones %}
+                                <span class="apple-role-pill">{{ reaccion.nombre }}</span>
+                            {% else %}
+                                <span class="text-muted small">Sin especificar</span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td class="small text-secondary">
+                        {{ entity.observaciones ? entity.observaciones : '--' }}
+                    </td>
+                    <td class="text-nowrap small text-secondary">
+                        {{ entity.created|date('d/m/Y H:i') }} <span class="text-muted">({{ entity.created|time_ago }})</span>
+                    </td>
+                    <td>
+                        <a class="btn btn-outline-primary btn-sm rounded-circle shadow-xs"
+                           href="{{ path('app_alergias_edit_paciente', {'id': entity.id}) }}"
+                           title="Editar Alergia"
+                           data-controller="apple-spring">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

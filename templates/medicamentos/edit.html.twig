@@ -1,21 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Editar Medicamento{% endblock %}
+{% set catalog_title = 'Medicamentos' %}
+{% set form_title = 'Editar Medicamento' %}
+{% set form_subtitle = 'Actualice la información del medicamento seleccionado' %}
+{% set catalog_icon = 'bi-pencil-square' %}
+{% set index_route = 'app_medicamentos_index' %}
 
-{% block titlewrap %}
-    Editar Medicamento
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_medicamentos_index') }}">Medicamentos</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Editar Medicamento</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-
-            {{ include('medicamentos/_form.html.twig', {'button_label': 'Actualizar'}) }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('medicamentos/_form.html.twig', {'button_label': 'Actualizar'}) }}
 {% endblock %}

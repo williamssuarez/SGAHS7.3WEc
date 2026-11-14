@@ -1,20 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Nueva Discapacidad{% endblock %}
+{% set catalog_title = 'Discapacidades' %}
+{% set form_title = 'Nueva Discapacidad' %}
+{% set form_subtitle = 'Registre una nueva discapacidad en el catálogo' %}
+{% set catalog_icon = 'bi-person-wheelchair' %}
+{% set index_route = 'app_discapacidades_index' %}
 
-{% block titlewrap %}
-    Nueva Discapacidad
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_discapacidades_index') }}">Discapacidades</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Nueva Discapacidad</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('discapacidades/_form.html.twig') }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('discapacidades/_form.html.twig') }}
 {% endblock %}

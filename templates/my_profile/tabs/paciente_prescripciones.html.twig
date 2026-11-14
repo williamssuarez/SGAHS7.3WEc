@@ -5,7 +5,7 @@
             <h5 class="text-body">
                 <i class="bi bi-capsule text-primary me-2"></i> Prescripciones Médicas Activas
             </h5>
-            <span class="badge rounded-pill text-bg-primary px-3 py-1">En Curso</span>
+            <span class="apple-role-pill text-bg-primary">En Curso</span>
         </div>
 
         <div class="table-responsive">
@@ -34,7 +34,7 @@
                         <td>{{ entity.frecuencia }}</td>
                         <td>
                             {% set badge = entity.prescripcionesEstadosBadgeConfig %}
-                            <span class="badge rounded-pill {{ badge.class }} px-2 py-1">
+                            <span class="apple-role-pill {{ badge.class }}">
                                 {{ badge.label }}
                             </span>
                         </td>
@@ -56,7 +56,7 @@
             <h5 class="text-body text-secondary">
                 <i class="bi bi-clock-history text-muted me-2"></i> Historial de Prescripciones Finalizadas
             </h5>
-            <span class="badge rounded-pill text-bg-light border px-3 py-1">Concluidas</span>
+            <span class="apple-role-pill">Concluidas</span>
         </div>
 
         <div class="table-responsive">
@@ -82,7 +82,7 @@
                         <td>{{ entity.frecuencia }}</td>
                         <td>
                             {% set badge = entity.prescripcionesEstadosBadgeConfig %}
-                            <span class="badge rounded-pill {{ badge.class }} opacity-75">
+                            <span class="apple-role-pill {{ badge.class }}">
                                 {{ badge.label }}
                             </span>
                         </td>

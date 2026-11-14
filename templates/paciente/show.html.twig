@@ -1,32 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Paciente{% endblock %}
+{% block title %}{{ paciente.nombre }} {{ paciente.apellido }} · Paciente{% endblock %}
 
 {% block titlewrap %}
-    Detalles
+    Detalles del Paciente
 {% endblock %}
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{{ path('app_paciente_index') }}">Pacientes</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Detalles Paciente</li>
+    <li class="breadcrumb-item active" aria-current="page">{{ paciente.nombre }} {{ paciente.apellido }}</li>
 {% endblock %}
 
 {% block body %}
+<div class="apple-portal-container" data-controller="auto-animate">
     {% for label, messages in app.flashes %}
         {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+            <div class="apple-alert apple-alert-{{ label == 'error' or label == 'danger' ? 'danger' : (label == 'warning' ? 'warning' : 'success') }} alert-dismissible fade show mb-4" role="alert">
+                <i class="bi {{ label == 'error' or label == 'danger' ? 'bi-exclamation-octagon-fill' : (label == 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill') }} me-2"></i>
+                <div class="flex-grow-1">{{ message }}</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
     {% endfor %}
-    
+
     {% if paciente.fallecido %}
-        <div class="alert alert-danger shadow-sm border-danger border-2">
-            <div class="d-flex justify-content-between align-items-center">
+        <div class="apple-alert apple-alert-danger mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3 p-3" role="alert">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-exclamation-triangle-fill fs-3 text-danger flex-shrink-0"></i>
                 <div>
-                    <h4 class="alert-heading fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-2"></i> ALERTA CLÍNICA</h4>
-                    <p class="mb-0 fs-5">
+                    <h5 class="fw-bold mb-1 text-danger">ALERTA CLÍNICA: PACIENTE FALLECIDO</h5>
+                    <p class="mb-0 small">
                         Este paciente fue registrado como fallecido
                         {% if paciente.fechaFallecimiento %}
                             el <strong>{{ paciente.fechaFallecimiento|date('d/m/Y h:i A') }}</strong>.
@@ -35,150 +38,177 @@
                         {% endif %}
                     </p>
                 </div>
-                {% if is_granted('ROLE_ADMIN') %}
-                    <form action="{{ path('app_paciente_anular_fallecimiento', {'id': paciente.id}) }}" 
-                          method="POST" 
-                          data-controller="revoke-death" 
-                          data-action="submit->revoke-death#confirm" 
-                          data-revoke-death-patient-name-value="{{ paciente.nombre ~ ' ' ~ paciente.apellido }}">
-                        <input type="hidden" name="_token" value="{{ csrf_token('revoke_death' ~ paciente.id) }}">
-                        <button type="submit" class="btn btn-outline-danger fw-bold">
-                            <i class="bi bi-arrow-counterclockwise"></i> Revocar por Error
-                        </button>
-                    </form>
-                {% endif %}
             </div>
+            {% if is_granted('ROLE_ADMIN') %}
+                <form action="{{ path('app_paciente_anular_fallecimiento', {'id': paciente.id}) }}"
+                      method="POST"
+                      data-controller="revoke-death"
+                      data-action="submit->revoke-death#confirm"
+                      data-revoke-death-patient-name-value="{{ paciente.nombre ~ ' ' ~ paciente.apellido }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('revoke_death' ~ paciente.id) }}">
+                    <button type="submit" class="btn btn-outline-danger apple-btn-danger rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center gap-2" data-controller="apple-spring">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        <span>Revocar por Error</span>
+                    </button>
+                </form>
+            {% endif %}
         </div>
     {% endif %}
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card card-primary card-outline">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div id="photo-container">
-                                {% if paciente.foto %}
-                                    {% set full_photo_path = paciente_photo_path ~ paciente.foto %}
-                                    <img
-                                        src="{{ asset(full_photo_path) | imagine_filter('patient_profile') }}"
-                                        alt="{{ paciente.nombre }} Profile Photo"
-                                        class="img-fluid"
-                                        style="cursor: pointer; height: auto; border-radius: 0%; width: 100%;"
-                                        data-original="{{ asset(full_photo_path) | imagine_filter('patient_viewer_full') }}"
-                                    >
-                                {% else %}
-                                    <p>No hay foto de perfil cargada.</p>
-                                {% endif %}
+    <!-- Tarjeta Principal de Identidad del Paciente (Apple Health Profile) -->
+    <div class="apple-card p-3 p-md-4 mb-4">
+        <div class="row g-4 align-items-center">
+            <!-- Columna Foto de Perfil -->
+            <div class="col-12 col-md-4 col-lg-3 text-center text-md-start">
+                <div id="photo-container" class="apple-avatar-wrapper shadow-sm mx-auto mx-md-0" style="max-width: 180px;">
+                    {% if paciente.foto %}
+                        {% set full_photo_path = paciente_photo_path ~ paciente.foto %}
+                        <img
+                            src="{{ asset(full_photo_path) | imagine_filter('patient_profile') }}"
+                            alt="{{ paciente.nombre }} Profile Photo"
+                            class="img-fluid"
+                            style="cursor: pointer;"
+                            data-original="{{ asset(full_photo_path) | imagine_filter('patient_viewer_full') }}"
+                        >
+                    {% else %}
+                        <div class="apple-avatar-placeholder">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Columna Datos Principales -->
+            <div class="col-12 col-md-8 col-lg-9">
+                <div class="d-flex flex-wrap align-items-baseline gap-2 mb-1">
+                    <h2 class="apple-patient-name mb-0">
+                        {{ paciente.nombre }} {{ paciente.apellido }}
+                    </h2>
+                    {% if paciente.sexo == 'M' %}
+                        <i class="bi bi-gender-male fs-4 text-primary" title="Masculino"></i>
+                    {% else %}
+                        <i class="bi bi-gender-female fs-4 text-danger" title="Femenino"></i>
+                    {% endif %}
+                </div>
+
+                <div class="apple-patient-meta mb-2">
+                    <i class="bi bi-calendar3 me-1"></i>
+                    {{ paciente.fechaNacimiento|calculate_age }} años &middot; Nacimiento: {{ paciente.fechaNacimiento|date('d/m/Y', false) }}
+                </div>
+
+                <div class="apple-chip-group mb-3">
+                    <span class="apple-chip chip-primary">
+                        <i class="bi bi-person-vcard"></i>
+                        {{ paciente.tipoDocumento|title }} &middot; {{ paciente.cedula|number_format(0, '', '.') }}
+                    </span>
+                    <span class="apple-chip chip-danger">
+                        <i class="fa-solid fa-droplet"></i>
+                        Grupo: {{ paciente.sangreTipo.readableText }}
+                    </span>
+                    {% if paciente.hasMarcaPaso %}
+                        <span class="apple-chip text-warning border-warning-subtle bg-warning-subtle">
+                            <i class="bi bi-heart-pulse-fill"></i> Portador de Marcapasos
+                        </span>
+                    {% endif %}
+                    {% if paciente.externalProfile is not null %}
+                        <span class="apple-chip text-success border-success-subtle bg-success-subtle">
+                            <i class="bi bi-check-circle-fill"></i> Expediente Vinculado
+                        </span>
+                    {% endif %}
+                </div>
+
+                <!-- Acordeón Desplegable Limpio -->
+                <div class="accordion apple-accordion mt-3" id="accordionProfileDetails">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContact" aria-expanded="false" aria-controls="collapseContact">
+                                <i class="bi bi-telephone text-primary me-2"></i> Información de Contacto
+                            </button>
+                        </h2>
+                        <div id="collapseContact" class="accordion-collapse collapse" data-bs-parent="#accordionProfileDetails">
+                            <div class="accordion-body">
+                                <div class="row g-2">
+                                    <div class="col-sm-6">
+                                        <div class="text-secondary small">Teléfono móvil</div>
+                                        <div class="fw-semibold"><i class="bi bi-phone text-muted me-1"></i> {{ paciente.telefono ? paciente.telefono : 'No registrado' }}</div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="text-secondary small">Correo electrónico</div>
+                                        <div class="fw-semibold"><i class="bi bi-envelope text-muted me-1"></i> {{ paciente.correo }}</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="col-md-12">
-                                <h2>
-                                    {{ paciente.nombre }} {{ paciente.apellido }}
-                                    {% if paciente.sexo == 'M' %}
-                                        <i class="bi bi-gender-male" style="color: #2563EB"></i>
-                                    {% else %}
-                                        <i class="bi bi-gender-female" style="color: darkmagenta"></i>
-                                    {% endif %}
-                                </h2>
+                    </div>
 
-                                <h4>
-                                    {{ paciente.fechaNacimiento|calculate_age }} año(s) ( {{ paciente.fechaNacimiento|date('d-m-Y', false) }} )
-                                </h4>
-
-                                <h4>
-                                    <span class="badge rounded-pill text-bg-secondary">{{ paciente.tipoDocumento|title }} - {{ paciente.cedula|number_format(0, '', '.') }}</span>
-                                </h4>
-                                <h4>
-                                    <span class="badge rounded-pill text-bg-danger">
-                                        <i class="fa-solid fa-droplet"></i>
-                                        {{ paciente.sangreTipo.readableText }}
-                                    </span>
-                                </h4>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDirect" aria-expanded="false" aria-controls="collapseDirect">
+                                <i class="bi bi-geo-alt text-success me-2"></i> Ubicación y Domicilio
+                            </button>
+                        </h2>
+                        <div id="collapseDirect" class="accordion-collapse collapse" data-bs-parent="#accordionProfileDetails">
+                            <div class="accordion-body">
+                                <div class="text-secondary small mb-1">Zona geográfica</div>
+                                <div class="fw-medium mb-2">{{ paciente.sector.displayFullLocation }}</div>
+                                <div class="text-secondary small mb-1">Dirección exacta</div>
+                                <div class="fw-semibold">{{ paciente.direccion }}</div>
                             </div>
-                            <div class="accordion" id="accordionExample">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContact" aria-expanded="false" aria-controls="collapseContact">
-                                            <i class="bi bi-telephone" style="color: crimson"></i> &nbsp;Información de Contacto
-                                        </button>
-                                    </h2>
-                                    <div id="collapseContact" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
-                                        <div class="accordion-body">
-                                            <h4>
-                                                <i class="bi bi-telephone" style="color: crimson"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ paciente.telefono }}
-                                            </h4>
-                                            <h4>
-                                                <i class="bi bi-envelope-at" style="color: dodgerblue"></i> <i class="bi bi-arrow-right" style="color: grey"></i> {{ paciente.correo }}
-                                            </h4>
-                                        </div>
-                                    </div>
-                                </div>
+                        </div>
+                    </div>
 
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDirect" aria-expanded="false" aria-controls="collapseDirect">
-                                            <i class="bi bi-building-fill" style="color: forestgreen"></i> &nbsp;Dirección
-                                        </button>
-                                    </h2>
-                                    <div id="collapseDirect" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
-                                        <div class="accordion-body">
-                                            {{ paciente.sector.displayFullLocation }}
-                                            {{ paciente.direccion }}
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
+                                <i class="bi bi-hospital text-info me-2"></i> Datos de Registro Hospitalario
+                            </button>
+                        </h2>
+                        <div id="collapseMoreInfo" class="accordion-collapse collapse" data-bs-parent="#accordionProfileDetails">
+                            <div class="accordion-body text-secondary">
+                                Expediente abierto el <strong>{{ paciente.created|date('d/m/Y') }}</strong> (hace {{ paciente.created|time_ago }}) por <strong>{{ paciente.uidCreate|public_username|title }}</strong>.
+                            </div>
+                        </div>
+                    </div>
 
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMoreInfo" aria-expanded="false" aria-controls="collapseMoreInfo">
-                                            <i class="bi bi-three-dots-vertical"></i> &nbsp; Mas Información
-                                        </button>
-                                    </h2>
-                                    <div id="collapseMoreInfo" class="accordion-collapse collapse" data-bs-parent="#accordionExample" style="">
-                                        <div class="accordion-body">
-                                            Registrado el <strong>{{ paciente.created|date('d-m-Y') }}</strong> <i>({{ paciente.created|time_ago }})</i> por <strong>{{ paciente.uidCreate|public_username|title }}</strong>
-                                        </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWebAccess" aria-expanded="false" aria-controls="collapseWebAccess">
+                                <i class="bi bi-globe text-primary me-2"></i> Acceso Web Externo
+                            </button>
+                        </h2>
+                        <div id="collapseWebAccess" class="accordion-collapse collapse" data-bs-parent="#accordionProfileDetails">
+                            <div class="accordion-body">
+                                {% if paciente.externalProfile %}
+                                    <div class="d-flex align-items-center gap-2 text-success fw-medium">
+                                        <i class="bi bi-person-check-fill fs-5"></i>
+                                        <span>Este registro clínico ya se encuentra vinculado a la cuenta web de <strong>{{ paciente.externalProfile.nombre }} {{ paciente.externalProfile.apellido }}</strong>.</span>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="col-md-12 mt-4 mb-4">
-                                <div class="card bg-light">
-                                    <div class="card-header border-0 pb-0">
-                                        <h3 class="card-title"><i class="bi bi-globe"></i> Acceso Web Externo</h3>
-                                    </div>
-                                    <div class="card-body">
-                                        {% if paciente.externalProfile %}
-                                            <div class="alert alert-success text-start mb-0">
-                                                <i class="bi bi-person-check-fill"></i> Este registro clínico ya se encuentra vinculado a la cuenta web de <strong>{{ paciente.externalProfile.nombre }} {{ paciente.externalProfile.apellido }}</strong>.
-                                            </div>
-                                        {% else %}
-                                            {% if paciente.codigoVinculacion and paciente.codigoVinculacionExpiresAt > date() %}
-                                                <p class="mb-2">Código activo: <strong style="font-size: 1.2rem; letter-spacing: 2px;">{{ paciente.codigoVinculacion }}</strong></p>
-                                                <p class="text-muted small mb-3"><i class="bi bi-clock-history"></i> Expira: {{ paciente.codigoVinculacionExpiresAt|date('Y-m-d H:i') }}</p>
-                                            {% else %}
-                                                <p class="text-muted mb-3">No hay un código activo para este paciente.</p>
-                                            {% endif %}
-                                            
-                                            <form method="post" action="{{ path('app_paciente_generate_link_code', {'id': paciente.id}) }}">
-                                                <input type="hidden" name="_token" value="{{ csrf_token('generate_code' ~ paciente.id) }}">
-                                                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-arrow-repeat"></i> Generar Código de Vinculación</button>
-                                            </form>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-12">
-                                {% if not paciente.fallecido %}
-                                    <a class="btn btn-success form-control" href="{{ path('app_paciente_edit', {'id': paciente.id }) }}">
-                                        <i class="bi bi-pencil-square"></i> Editar
-                                    </a>
                                 {% else %}
-                                    <button class="btn btn-secondary form-control" disabled>
-                                        <i class="bi bi-pencil-square"></i> Editar (Paciente Fallecido)
-                                    </button>
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                                        <div>
+                                            {% if paciente.codigoVinculacion and paciente.codigoVinculacionExpiresAt > date() %}
+                                                <div class="mb-1">
+                                                    <span class="text-secondary small me-2">Código activo:</span>
+                                                    <span class="apple-role-pill text-bg-primary fw-bold" style="letter-spacing: 2px; font-size: 0.95rem;">
+                                                        {{ paciente.codigoVinculacion }}
+                                                    </span>
+                                                </div>
+                                                <div class="text-muted small">
+                                                    <i class="bi bi-clock-history me-1"></i> Expira: {{ paciente.codigoVinculacionExpiresAt|date('Y-m-d H:i') }}
+                                                </div>
+                                            {% else %}
+                                                <div class="text-secondary small">No hay un código de vinculación activo para este paciente.</div>
+                                            {% endif %}
+                                        </div>
+
+                                        <form method="post" action="{{ path('app_paciente_generate_link_code', {'id': paciente.id}) }}" class="m-0">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('generate_code' ~ paciente.id) }}">
+                                            <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill px-3 py-1 d-inline-flex align-items-center gap-2" data-controller="apple-spring">
+                                                <i class="bi bi-arrow-repeat"></i>
+                                                <span>Generar Código de Vinculación</span>
+                                            </button>
+                                        </form>
+                                    </div>
                                 {% endif %}
                             </div>
                         </div>
@@ -186,21 +216,33 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-12">
-        <div class="card card-primary card-outline mb-4">
+        <!-- Barra de Acciones al Pie de la Tarjeta -->
+        <div class="d-flex flex-column-reverse flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2 pt-3 mt-4 border-top border-secondary-subtle">
+            <a href="{{ path('app_paciente_index') }}" class="btn btn-secondary apple-btn-secondary rounded-pill px-4 py-2 d-inline-flex align-items-center justify-content-center gap-2" data-controller="apple-spring">
+                <i class="bi bi-arrow-left"></i>
+                <span>Volver</span>
+            </a>
 
-            {{ include('paciente/_showPacienteTabsCompressed.html.twig') }}
+            <div class="d-flex align-items-center gap-2">
+                {% if not paciente.fallecido %}
+                    <a href="{{ path('app_paciente_edit', {'id': paciente.id}) }}" class="btn btn-primary apple-btn-primary rounded-pill px-4 py-2 d-inline-flex align-items-center justify-content-center flex-fill flex-sm-grow-0 gap-2" data-controller="apple-spring">
+                        <i class="bi bi-pencil-square"></i>
+                        <span>Editar Paciente</span>
+                    </a>
+                {% else %}
+                    <button type="button" class="btn btn-secondary apple-btn-secondary rounded-pill px-4 py-2 d-inline-flex align-items-center justify-content-center flex-fill flex-sm-grow-0 gap-2 opacity-50" disabled>
+                        <i class="bi bi-lock-fill"></i>
+                        <span>Editar (Paciente Fallecido)</span>
+                    </button>
+                {% endif %}
+            </div>
         </div>
     </div>
 
-    {#<h1>Historias <a class="btn btn-success" href="{{ path('app_historia_paciente_new', {'id': paciente.id}) }}"><i class="bi bi-plus-circle"></i> Agregar Historia</a></h1>
-    <div class="row">
-        <div class="col-md-12">
-            <!-- The time line -->
-            {{ include('paciente/historia_timeline.html.twig') }}
-        </div>
-        <!-- /.col -->
-    </div>#}
+    <!-- Pestañas Clínicas y Administrativas del Paciente -->
+    <div class="apple-card p-3 p-md-4 mb-4">
+        {{ include('paciente/_showPacienteTabsCompressed.html.twig') }}
+    </div>
+</div>
 {% endblock %}

@@ -1,21 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Editar Alergeno{% endblock %}
+{% set catalog_title = 'Alérgenos' %}
+{% set form_title = 'Editar Alérgeno' %}
+{% set form_subtitle = 'Actualice la información del alérgeno seleccionado' %}
+{% set catalog_icon = 'bi-pencil-square' %}
+{% set index_route = 'app_alergenos_index' %}
 
-{% block titlewrap %}
-    Editar Alergeno
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_alergenos_index') }}">Alergenos</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Editar Alergeno</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-
-            {{ include('alergenos/_form.html.twig', {'button_label': 'Actualizar'}) }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('alergenos/_form.html.twig', {'button_label': 'Actualizar'}) }}
 {% endblock %}

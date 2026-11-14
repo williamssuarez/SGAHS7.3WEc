@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Detalles · {{ catalog_title|default('Catálogo') }}{% endblock %}
+
+{% block titlewrap %}
+    Detalles de {{ catalog_singular|default(catalog_title|default('Registro')) }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path(index_route) }}">{{ catalog_title|default('Catálogo') }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Detalles</li>
+{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6 mx-auto">
+            <div class="apple-table-card shadow-sm mb-4">
+                <div class="apple-table-header d-flex align-items-center gap-3 pb-3 mb-3 border-bottom">
+                    <div class="apple-header-icon-badge">
+                        <i class="bi {{ catalog_icon|default('bi-info-circle') }}"></i>
+                    </div>
+                    <div>
+                        <h3 class="apple-table-title m-0">{{ entity.nombre|default('Detalles del Registro') }}</h3>
+                        <p class="apple-table-subtitle text-muted small m-0">
+                            Ficha informativa de {{ catalog_singular|default(catalog_title)|lower }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="apple-table-body py-2">
+                    {% block detail_content %}{% endblock %}
+                </div>
+
+                <div class="d-flex flex-column-reverse flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2 pt-3 mt-3 border-top border-secondary-subtle">
+                    <a class="btn btn-secondary apple-btn-secondary rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-2" href="{{ path(index_route) }}" data-controller="apple-spring">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Volver</span>
+                    </a>
+
+                    <div class="d-flex align-items-center gap-2 ms-sm-auto">
+                        <a class="btn btn-primary apple-btn-primary rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center flex-fill flex-sm-grow-0 gap-2" href="{{ path(edit_route, {'id': entity.id}) }}" data-controller="apple-spring">
+                            <i class="bi bi-pencil-square"></i>
+                            <span>Editar</span>
+                        </a>
+
+                        <button type="button" class="btn btn-outline-danger apple-btn-danger rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center flex-fill flex-sm-grow-0 gap-2"
+                                onclick="softDeleteRecord('{{ path(delete_route, {'id': entity.id}) }}', '{{ csrf_token('delete' ~ entity.id) }}')"
+                                data-controller="apple-spring">
+                            <i class="bi bi-trash3"></i>
+                            <span>Eliminar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

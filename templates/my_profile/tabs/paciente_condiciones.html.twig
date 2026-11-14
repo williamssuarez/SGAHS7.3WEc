@@ -25,7 +25,7 @@
                     <td class="text-nowrap">{{ entity.fechaFinalizada ? entity.fechaFinalizada|date('d/m/Y', false) : 'En curso' }}</td>
                     <td>
                         {% set badge = entity.pacienteCondicionesEstadosBadgeConfig %}
-                        <span class="badge rounded-pill {{ badge.class }} px-2 py-1">
+                        <span class="apple-role-pill {{ badge.class }}">
                             {{ badge.label }}
                         </span>
                     </td>

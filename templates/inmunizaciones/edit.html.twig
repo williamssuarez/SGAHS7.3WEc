@@ -1,21 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Editar Inmunizacion{% endblock %}
+{% set catalog_title = 'Inmunizaciones' %}
+{% set form_title = 'Editar Inmunización' %}
+{% set form_subtitle = 'Actualice la información de la inmunización seleccionada' %}
+{% set catalog_icon = 'bi-pencil-square' %}
+{% set index_route = 'app_inmunizaciones_index' %}
 
-{% block titlewrap %}
-    Editar Inmunizacion
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_inmunizaciones_index') }}">Inmunizaciones</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Editar Inmunizacion</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-
-            {{ include('inmunizaciones/_form.html.twig', {'button_label': 'Actualizar'}) }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('inmunizaciones/_form.html.twig', {'button_label': 'Actualizar'}) }}
 {% endblock %}

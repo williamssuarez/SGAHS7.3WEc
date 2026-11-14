@@ -1,20 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Nueva Enfermedad{% endblock %}
+{% set catalog_title = 'Enfermedades' %}
+{% set form_title = 'Nueva Enfermedad' %}
+{% set form_subtitle = 'Registre una nueva patología o enfermedad en el catálogo' %}
+{% set catalog_icon = 'bi-virus2' %}
+{% set index_route = 'app_enfermedades_index' %}
 
-{% block titlewrap %}
-    Nueva Enfermedad
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_enfermedades_index') }}">Enfermedades</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Nueva Enfermedad</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('enfermedades/_form.html.twig') }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('enfermedades/_form.html.twig') }}
 {% endblock %}

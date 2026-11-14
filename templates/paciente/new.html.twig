@@ -12,10 +12,23 @@
 {% endblock %}
 
 {% block body %}
-    <div class="col-md-12">
-        <div class="card card-primary card-outline mb-4">
+    <div class="apple-portal-container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8 col-xl-7">
+                <div class="apple-form-card shadow-sm mb-4">
+                    <div class="form-header-group d-flex align-items-center gap-3">
+                        <div class="apple-header-icon-badge">
+                            <i class="bi bi-person-plus-fill"></i>
+                        </div>
+                        <div>
+                            <h3 class="form-header-title m-0">Registrar Nuevo Paciente</h3>
+                            <p class="form-header-subtitle">Completa los 4 pasos del asistente para abrir el expediente clínico hospitalario.</p>
+                        </div>
+                    </div>
 
-            {{ include('paciente/_form.html.twig') }}
+                    {{ include('paciente/_form.html.twig', {'button_label': 'Guardar Paciente'}) }}
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

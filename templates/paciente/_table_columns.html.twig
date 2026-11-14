@@ -3,22 +3,36 @@
         <img
             src="{{ asset(paciente_photo_path ~ row.foto) | imagine_filter('patient_thumb') }}"
             alt="{{ row.nombre }} Thumbnail Photo"
-            style="cursor: pointer; max-width: 50px; height: auto; border-radius: 100%;"
+            class="rounded-circle shadow-xs border border-secondary-subtle object-fit-cover"
+            style="width: 40px; height: 40px;"
         >
     {% else %}
-        <p class="m-0">---</p>
+        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-secondary bg-opacity-10 text-secondary border border-secondary-subtle" style="width: 40px; height: 40px;">
+            <i class="bi bi-person-fill"></i>
+        </div>
     {% endif %}
 
 {% elseif column.name == 'cedula' %}
-    {{ row.tipoDocumento }}-{{ row.cedula|number_format(0, ',', '.') }}
+    <span class="apple-role-pill">
+        <i class="bi bi-person-vcard"></i>
+        {{ row.tipoDocumento }}-{{ row.cedula|number_format(0, ',', '.') }}
+    </span>
 
 {% elseif column.name == 'acciones' %}
-    <a class="btn btn-secondary btn-sm" href="{{ path('app_paciente_show', {'id': row.id}) }}">
-        <i class="bi bi-search"></i> Detalles
-    </a>
-    <a class="btn btn-success btn-sm" href="{{ path('app_paciente_edit', {'id': row.id}) }}">
-        <i class="bi bi-pencil-square"></i> Editar
-    </a>
+    <div class="btn-group btn-group-sm rounded-pill shadow-sm" role="group" aria-label="Acciones">
+        <a href="{{ path('app_paciente_show', {'id': row.id}) }}"
+           class="btn btn-outline-secondary px-2"
+           title="Ver Detalles"
+           data-controller="apple-spring">
+            <i class="bi bi-eye"></i>
+        </a>
+        <a href="{{ path('app_paciente_edit', {'id': row.id}) }}"
+           class="btn btn-outline-primary px-2"
+           title="Editar Paciente"
+           data-controller="apple-spring">
+            <i class="bi bi-pencil"></i>
+        </a>
+    </div>
 
 {% else %}
     {{ value }}

@@ -12,53 +12,116 @@
 {% endblock %}
 
 {% block body %}
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
-    {% endfor %}
-
-    <div class="row justify-content-center">
-        <div class="col-md-6 mt-4">
-            <div class="card card-primary card-outline">
-                <div class="card-header">
-                    <h3 class="card-title">Vincular Registro Físico</h3>
+    <div class="apple-portal-container" data-controller="auto-animate">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="apple-alert apple-alert-{{ label == 'error' or label == 'danger' ? 'danger' : (label == 'warning' ? 'warning' : (label == 'success' ? 'success' : 'info')) }} alert-dismissible fade show mb-4" role="alert">
+                    <i class="bi {{ label == 'error' or label == 'danger' ? 'bi-exclamation-octagon-fill' : (label == 'warning' ? 'bi-exclamation-triangle-fill' : (label == 'success' ? 'bi-check-circle-fill' : 'bi-info-circle-fill')) }} flex-shrink-0"></i>
+                    <div>{{ message }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
                 </div>
-                <div class="card-body">
-                    <p>Para ver tu historial médico, debes vincular tu cuenta web con tu registro clínico en el hospital. Solicita tu <strong>Código de Vinculación Web</strong> en recepción.</p>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-7 col-xl-6">
+                <div class="apple-form-card shadow-sm mb-4">
+                    <div class="form-header-group d-flex align-items-center gap-3">
+                        <div class="apple-header-icon-badge">
+                            <i class="bi bi-link-45deg"></i>
+                        </div>
+                        <div>
+                            <h3 class="form-header-title m-0">Vincular Registro Físico</h3>
+                            <p class="form-header-subtitle">Enlaza tu cuenta web con tu historial clínico hospitalario.</p>
+                        </div>
+                    </div>
+
+                    <div class="apple-alert apple-alert-info mb-4" role="note">
+                        <i class="bi bi-info-circle-fill flex-shrink-0"></i>
+                        <div class="small">
+                            Para ver tu historial médico, solicita tu <strong>Código de Vinculación Web</strong> en recepción e ingrésalo junto a tu documento de identidad.
+                        </div>
+                    </div>
 
                     {{ form_start(form, {
                         'attr': {
                             'data-controller': 'submit-once',
-                            'data-action': 'submit->submit-once#disable'
+                            'data-action': 'submit->submit-once#disable',
+                            'data-submit-once-text-value': 'Vinculando...'
                         }
                     }) }}
-                        <div class="mb-3">
-                            {{ form_label(form.cedula) }}
-                            <div class="row">
-                                <div class="col-md-3">
-                                    {{ form_widget(form.tipoDocumento) }}
-                                    {{ form_errors(form.tipoDocumento) }}
+                        {{ include('base/_form_error_messages.html.twig') }}
+
+                        <div class="apple-form-group mb-3">
+                            <label class="apple-input-label" for="{{ form.cedula.vars.id }}">
+                                Número de Documento (Cédula) <span class="text-danger">*</span>
+                            </label>
+                            <div class="apple-composite-group">
+                                <div class="apple-composite-prefix apple-composite-prefix-doc">
+                                    {{ form_widget(form.tipoDocumento, {
+                                        'attr': {
+                                            'class': 'noSrchSelect form-select w-100'
+                                        }
+                                    }) }}
                                 </div>
-                                <div class="col-md-9">
-                                    {{ form_widget(form.cedula) }}
-                                    {{ form_errors(form.cedula) }}
+                                <div class="apple-composite-input">
+                                    {{ form_widget(form.cedula, {
+                                        'attr': {
+                                            'class': 'apple-text-input number-only',
+                                            'placeholder': 'Ej. 12345678',
+                                            'inputmode': 'numeric',
+                                            'maxlength': '8'
+                                        }
+                                    }) }}
                                 </div>
                             </div>
+                            {% if form_errors(form.tipoDocumento) %}
+                                <div class="apple-field-error">{{ form_errors(form.tipoDocumento) }}</div>
+                            {% endif %}
+                            {% if form_errors(form.cedula) %}
+                                <div class="apple-field-error">{{ form_errors(form.cedula) }}</div>
+                            {% endif %}
                         </div>
-                        <div class="mb-4">
-                            {{ form_label(form.codigo) }}
-                            {{ form_widget(form.codigo) }}
-                            {{ form_errors(form.codigo) }}
+
+                        <div class="apple-form-group mb-4">
+                            <label class="apple-input-label" for="{{ form.codigo.vars.id }}">
+                                Código de Vinculación Web <span class="text-danger">*</span>
+                            </label>
+                            <div class="apple-input-wrap">
+                                <i class="bi bi-key-fill apple-input-icon"></i>
+                                {{ form_widget(form.codigo, {
+                                    'attr': {
+                                        'class': 'apple-text-input text-uppercase font-monospace fw-semibold',
+                                        'placeholder': 'Ej. A1B2C3',
+                                        'style': 'letter-spacing: 2px;',
+                                        'autocomplete': 'one-time-code',
+                                        'maxlength': '6'
+                                    }
+                                }) }}
+                            </div>
+                            <div class="form-text mt-1 text-secondary small">
+                                Código alfanumérico temporal de 6 caracteres emitido en recepción.
+                            </div>
+                            {% if form_errors(form.codigo) %}
+                                <div class="apple-field-error">{{ form_errors(form.codigo) }}</div>
+                            {% endif %}
                         </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success" data-submit-once-target="submitButton">
-                                <i class="bi bi-link"></i> Vincular Historial
+
+                        <div class="apple-form-actions">
+                            <a href="{{ path('my_profile_show', {'uuid': externalProfile.uuid}) }}"
+                               class="apple-btn btn-apple-secondary"
+                               data-controller="apple-spring">
+                                <i class="bi bi-arrow-left"></i>
+                                <span>Cancelar</span>
+                            </a>
+
+                            <button type="submit"
+                                    class="apple-btn btn-apple-primary"
+                                    data-controller="apple-spring"
+                                    data-submit-once-target="submitButton">
+                                <i class="bi bi-link-45deg"></i>
+                                <span>Vincular Historial</span>
                             </button>
-                            <a href="{{ path('my_profile_show', {'uuid': externalProfile.uuid}) }}" class="btn btn-secondary">Cancelar</a>
                         </div>
                     {{ form_end(form) }}
                 </div>

@@ -8,14 +8,30 @@
 
 {% block breadcrumb %}
     <li class="breadcrumb-item"><a href="{{ path('app_paciente_index') }}">Pacientes</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Editar Paciente</li>
+    {% if paciente is defined and paciente.id %}
+        <li class="breadcrumb-item"><a href="{{ path('app_paciente_show', {'id': paciente.id}) }}">{{ paciente.nombre }} {{ paciente.apellido }}</a></li>
+    {% endif %}
+    <li class="breadcrumb-item active" aria-current="page">Editar</li>
 {% endblock %}
 
 {% block body %}
-    <div class="col-md-12">
-        <div class="card card-primary card-outline mb-4">
+    <div class="apple-portal-container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8 col-xl-7">
+                <div class="apple-form-card shadow-sm mb-4">
+                    <div class="form-header-group d-flex align-items-center gap-3">
+                        <div class="apple-header-icon-badge">
+                            <i class="bi bi-pencil-square"></i>
+                        </div>
+                        <div>
+                            <h3 class="form-header-title m-0">Editar Expediente de Paciente</h3>
+                            <p class="form-header-subtitle">Actualiza la información personal, de contacto, residencia o condiciones base del paciente.</p>
+                        </div>
+                    </div>
 
-            {{ include('paciente/_form.html.twig') }}
+                    {{ include('paciente/_form.html.twig', {'button_label': 'Guardar Cambios'}) }}
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

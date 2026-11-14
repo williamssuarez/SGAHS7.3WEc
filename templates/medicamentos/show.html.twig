@@ -1,60 +1,33 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_show.html.twig' %}
 
-{% block title %}Detalles{% endblock %}
+{% set catalog_title = 'Medicamentos' %}
+{% set catalog_singular = 'Medicamento' %}
+{% set catalog_icon = 'bi-capsule' %}
+{% set index_route = 'app_medicamentos_index' %}
+{% set edit_route = 'app_medicamentos_edit' %}
+{% set delete_route = 'app_medicamentos_delete' %}
 
-{% block titlewrap %}
-    Detalles
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_medicamentos_index') }}">Medicamentos</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Detalles</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            <div class="card-body">
-                <div class="mb-3">
-                    <h3>{{ entity.nombre }}</h3>
-                </div>
-                <div class="mb-3">
-                    <h3>{{ entity.nombreGenerico }}</h3>
-                </div>
-                <div class="mb-3">
-                    <h3>{{ entity.concentracion }}</h3>
-                </div>
-                <div class="mb-3">
-                    <h3>{{ entity.descripcion }}</h3>
-                </div>
-            </div>
-
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="d-flex justify-content-between">
-                            <a class="btn btn-primary" href="{{ path('app_medicamentos_index') }}">
-                                <i class="bi bi-arrow-left"></i> Volver
-                            </a>
-
-                            <a class="btn btn-success" href="{{ path('app_medicamentos_edit', {'id': entity.id}) }}">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </a>
-
-                            <div class="d-flex">
-                                <button class="btn btn-danger"
-                                        onclick="softDeleteRecord(
-                                            '{{ path('app_medicamentos_delete', {'id': entity.id}) }}',
-                                            '{{ csrf_token('delete' ~ entity.id) }}'
-                                            )">
-                                    <i class="bi bi-trash"></i> Eliminar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+{% block detail_content %}
+    <div class="mb-3">
+        <label class="text-secondary small fw-semibold text-uppercase d-block mb-1">Nombre Comercial</label>
+        <div class="fs-5 fw-bold text-body">{{ entity.nombre }}</div>
+    </div>
+    <div class="row g-3 mb-3">
+        <div class="col-sm-6">
+            <label class="text-secondary small fw-semibold text-uppercase d-block mb-1">Nombre Genérico</label>
+            <div class="text-body fw-medium">{{ entity.nombreGenerico|default('No especificado') }}</div>
         </div>
+        <div class="col-sm-6">
+            <label class="text-secondary small fw-semibold text-uppercase d-block mb-1">Concentración</label>
+            <div>
+                <span class="apple-role-pill text-bg-secondary">
+                    {{ entity.concentracion|default('No especificada') }}
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="mb-2">
+        <label class="text-secondary small fw-semibold text-uppercase d-block mb-1">Descripción</label>
+        <div class="text-body">{{ entity.descripcion|default('Sin descripción registrada') }}</div>
     </div>
 {% endblock %}

@@ -64,6 +64,7 @@ final class AlergenosController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/edit', name: 'app_alergenos_edit', methods: ['GET', 'POST'])]
     #[Route('/{id}/edit', name: 'app_alergias_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Alergenos $alergenos, EntityManagerInterface $entityManager): Response
     {

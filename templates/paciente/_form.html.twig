@@ -5,219 +5,390 @@
     }
 }) }}
 {{ include('base/_form_error_messages.html.twig') }}
-<div class="card-body">
-    <ul class="nav nav-tabs" id="formTab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="tab1" data-bs-toggle="tab" data-bs-target="#tab1-pane" type="button" role="tab" aria-controls="tab1-pane" aria-selected="true">
-                Datos Generales
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab2" data-bs-toggle="tab" data-bs-target="#tab2-pane" type="button" role="tab" aria-controls="tab2-pane" aria-selected="false">
-                Contactos
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab3" data-bs-toggle="tab" data-bs-target="#tab3-pane" type="button" role="tab" aria-controls="tab3-pane" aria-selected="false">
-                Direcciones
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab4" data-bs-toggle="tab" data-bs-target="#tab4-pane" type="button" role="tab" aria-controls="tab4-pane" aria-selected="false">
-                Condiciones
-            </button>
-        </li>
-    </ul>
 
-    <div class="tab-content" id="formTabContent">
-        <div class="tab-pane fade show active" id="tab1-pane" role="tabpanel" aria-labelledby="tab1" tabindex="0">
-            <h3>Informacion Basica</h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.nombre ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        {{form_widget( form.nombre ) }}
+{# 1. Navegación Segmentada del Asistente (Preserva IDs requeridos por assets/app.js) #}
+<ul class="nav nav-pills apple-segmented-steps" id="formTab" role="tablist">
+    <li class="nav-item flex-fill" role="presentation">
+        <button class="nav-link active w-100" id="tab1" data-bs-toggle="tab" data-bs-target="#tab1-pane" type="button" role="tab" aria-controls="tab1-pane" aria-selected="true">
+            <i class="bi bi-person-vcard-fill"></i>
+            <span class="apple-tab-num">1</span>
+            <span class="apple-tab-title">1. Datos Generales</span>
+        </button>
+    </li>
+    <li class="nav-item flex-fill" role="presentation">
+        <button class="nav-link w-100" id="tab2" data-bs-toggle="tab" data-bs-target="#tab2-pane" type="button" role="tab" aria-controls="tab2-pane" aria-selected="false">
+            <i class="bi bi-telephone-fill"></i>
+            <span class="apple-tab-num">2</span>
+            <span class="apple-tab-title">2. Contactos</span>
+        </button>
+    </li>
+    <li class="nav-item flex-fill" role="presentation">
+        <button class="nav-link w-100" id="tab3" data-bs-toggle="tab" data-bs-target="#tab3-pane" type="button" role="tab" aria-controls="tab3-pane" aria-selected="false">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span class="apple-tab-num">3</span>
+            <span class="apple-tab-title">3. Direcciones</span>
+        </button>
+    </li>
+    <li class="nav-item flex-fill" role="presentation">
+        <button class="nav-link w-100" id="tab4" data-bs-toggle="tab" data-bs-target="#tab4-pane" type="button" role="tab" aria-controls="tab4-pane" aria-selected="false">
+            <i class="bi bi-heart-pulse-fill"></i>
+            <span class="apple-tab-num">4</span>
+            <span class="apple-tab-title">4. Condiciones</span>
+        </button>
+    </li>
+</ul>
+
+{# 2. Barra de Progreso Discreta (4px) #}
+<div class="progress apple-wizard-progress" role="progressbar" aria-label="Progreso del formulario" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+    <div id="form-progress-bar" class="progress-bar" style="width: 0%;"></div>
+</div>
+
+{# 3. Contenido de Pasos #}
+<div class="tab-content pt-2" id="formTabContent">
+
+    {# PASO 1: Datos Generales #}
+    <div class="tab-pane fade show active" id="tab1-pane" role="tabpanel" aria-labelledby="tab1" tabindex="0">
+        <div class="apple-step-header mb-4">
+            <h5 class="fw-bold m-0 text-primary d-flex align-items-center gap-2">
+                <i class="bi bi-person-vcard"></i> Información Básica e Identificación
+            </h5>
+            <p class="text-muted small m-0">Registra la fotografía, nombres completos, documento de identidad y fecha de nacimiento del paciente.</p>
+        </div>
+
+        {# Apple ID Avatar Uploader #}
+        {% set existing_avatar = null %}
+        {% if paciente is defined and paciente.foto is not empty %}
+            {% set full_photo_path = paciente_photo_path ~ paciente.foto %}
+            {% set existing_avatar = asset(full_photo_path) | imagine_filter('patient_profile') %}
+        {% endif %}
+
+        <div class="apple-form-section text-center pt-2 pb-4">
+            <div data-controller="avatar-upload" class="apple-avatar-uploader">
+                <div class="apple-avatar-circle shadow-sm"
+                     data-action="click->avatar-upload#clickAvatar"
+                     title="Haz clic para seleccionar la foto del paciente">
+
+                    <div data-avatar-upload-target="placeholder" class="apple-avatar-placeholder {{ existing_avatar ? 'd-none' : '' }}">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+
+                    <img data-avatar-upload-target="preview"
+                         class="apple-avatar-preview {{ existing_avatar ? '' : 'd-none' }}"
+                         src="{{ existing_avatar|default('') }}"
+                         alt="Fotografía del paciente">
+
+                    <div class="apple-avatar-badge">
+                        <i class="bi bi-camera-fill"></i>
                     </div>
                 </div>
+
+                {{ form_widget(form.foto, {
+                    'attr': {
+                        'class': 'd-none',
+                        'accept': 'image/jpeg,image/png',
+                        'data-avatar-upload-target': 'input',
+                        'data-action': 'change->avatar-upload#fileChanged'
+                    }
+                }) }}
+
+                <button type="button"
+                        class="apple-avatar-remove-btn {{ existing_avatar ? '' : 'd-none' }}"
+                        data-avatar-upload-target="removeBtn"
+                        data-action="click->avatar-upload#remove">
+                    <i class="bi bi-x-circle me-1"></i> Quitar foto
+                </button>
+
+                <div class="apple-avatar-hint">
+                    Fotografía del paciente (Opcional) &middot; JPG o PNG, máx. 2 MB
+                </div>
+                <div data-avatar-upload-target="errorMsg" class="apple-field-error text-center mt-1 d-none"></div>
+                {{ form_errors(form.foto) }}
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.apellido ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        {{form_widget( form.apellido ) }}
-                    </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.nombre.vars.id }}">
+                        Nombres del Paciente <span class="text-danger">*</span>
+                    </label>
+                    {{ form_widget(form.nombre, {
+                        'attr': {
+                            'class': 'apple-text-input',
+                            'placeholder': 'Primer y segundo nombre'
+                        }
+                    }) }}
+                    {{ form_errors(form.nombre) }}
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.cedula ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        <div class="row">
-                            <div class="col-md-3">
-                                {{form_widget( form.tipoDocumento ) }}
-                            </div>
-                            <div class="col-md-9">
-                                {{form_widget( form.cedula ) }}
-                            </div>
+
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.apellido.vars.id }}">
+                        Apellidos del Paciente <span class="text-danger">*</span>
+                    </label>
+                    {{ form_widget(form.apellido, {
+                        'attr': {
+                            'class': 'apple-text-input',
+                            'placeholder': 'Primer y segundo apellido'
+                        }
+                    }) }}
+                    {{ form_errors(form.apellido) }}
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.cedula.vars.id }}">
+                        Cédula de Identidad <span class="text-danger">*</span>
+                    </label>
+                    <div class="apple-composite-group">
+                        <div class="apple-composite-prefix apple-composite-prefix-doc">
+                            {{ form_widget(form.tipoDocumento, {
+                                'attr': {
+                                    'class': 'noSrchSelect form-select w-100'
+                                }
+                            }) }}
+                        </div>
+                        <div class="apple-composite-input">
+                            {{ form_widget(form.cedula, {
+                                'attr': {
+                                    'class': 'apple-text-input number-only',
+                                    'placeholder': 'Ej. 12345678',
+                                    'inputmode': 'numeric',
+                                    'maxlength': '8'
+                                }
+                            }) }}
                         </div>
                     </div>
+                    {{ form_errors(form.cedula) }}
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.fechaNacimiento ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        {{form_widget( form.fechaNacimiento ) }}
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="input-group mb-3">
-                        {{form_widget( form.foto ) }}
-                        {{form_label( form.foto ) }}
-                    </div>
-                    <small>Archivos <strong>JPG y PNG</strong>, tamaño máximo <strong>2mb</strong></small> <p class="text-justify" style="font-size: 10pt; font-style: italic;">Tomele una foto al paciente y subala para guardarla (opcional)</p>
+
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.fechaNacimiento.vars.id }}">
+                        Fecha de Nacimiento <span class="text-danger">*</span>
+                    </label>
+                    {{ form_widget(form.fechaNacimiento, {
+                        'attr': {
+                            'class': 'apple-text-input mask'
+                        }
+                    }) }}
+                    {{ form_errors(form.fechaNacimiento) }}
                 </div>
             </div>
         </div>
-        <div class="tab-pane fade" id="tab2-pane" role="tabpanel" aria-labelledby="tab2" tabindex="0">
-            <h3>Contactos</h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.telefono ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        <div class="row">
-                            <div class="col-md-3">
-                                {{form_widget( form.telefono.prefix ) }}
-                            </div>
-                            <div class="col-md-9">
-                                {{form_widget( form.telefono.number ) }}
-                            </div>
+    </div>
+
+    {# PASO 2: Contactos #}
+    <div class="tab-pane fade" id="tab2-pane" role="tabpanel" aria-labelledby="tab2" tabindex="0">
+        <div class="apple-step-header mb-4">
+            <h5 class="fw-bold m-0 text-primary d-flex align-items-center gap-2">
+                <i class="bi bi-telephone"></i> Datos de Contacto y Sexo Biológico
+            </h5>
+            <p class="text-muted small m-0">Información telefónica y correo electrónico para notificaciones clínicas.</p>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.telefono.number.vars.id }}">
+                        Teléfono Móvil <span class="text-danger">*</span>
+                    </label>
+                    <div class="apple-composite-group">
+                        <div class="apple-composite-prefix apple-composite-prefix-phone">
+                            {{ form_widget(form.telefono.prefix, {
+                                'attr': {
+                                    'class': 'noSrchSelect form-select w-100'
+                                }
+                            }) }}
+                        </div>
+                        <div class="apple-composite-input">
+                            {{ form_widget(form.telefono.number, {
+                                'attr': {
+                                    'class': 'apple-text-input number-only',
+                                    'placeholder': '1234567',
+                                    'inputmode': 'numeric',
+                                    'maxlength': '7'
+                                }
+                            }) }}
                         </div>
                     </div>
+                    {{ form_errors(form.telefono) }}
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.correo ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        {{form_widget( form.correo ) }}
-                    </div>
+
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.correo.vars.id }}">
+                        Correo Electrónico <span class="text-danger">*</span>
+                    </label>
+                    {{ form_widget(form.correo, {
+                        'attr': {
+                            'class': 'apple-text-input',
+                            'placeholder': 'paciente@ejemplo.com'
+                        }
+                    }) }}
+                    {{ form_errors(form.correo) }}
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.sexo ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        {{form_widget( form.sexo ) }}
-                    </div>
+
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.sexo.vars.id }}">
+                        Sexo Biológico <span class="text-danger">*</span>
+                    </label>
+                    {{ form_widget(form.sexo, {
+                        'attr': {
+                            'class': 'noSrchSelect form-select w-100'
+                        }
+                    }) }}
+                    {{ form_errors(form.sexo) }}
                 </div>
             </div>
         </div>
-        <div class="tab-pane fade" id="tab3-pane" role="tabpanel" aria-labelledby="tab3" tabindex="0">
-            <h3>Direcciones</h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.location.estado ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        {{form_widget( form.location.estado ) }}
-                    </div>
+    </div>
+
+    {# PASO 3: Direcciones #}
+    <div class="tab-pane fade" id="tab3-pane" role="tabpanel" aria-labelledby="tab3" tabindex="0">
+        <div class="apple-step-header mb-4">
+            <h5 class="fw-bold m-0 text-primary d-flex align-items-center gap-2">
+                <i class="bi bi-geo-alt"></i> Ubicación y Domicilio
+            </h5>
+            <p class="text-muted small m-0">Selecciona el estado, municipio, parroquia y sector de residencia habitual del paciente.</p>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.location.estado.vars.id }}">
+                        Estado <span class="text-danger">*</span>
+                    </label>
+                    {{ form_widget(form.location.estado, {
+                        'attr': {'class': 'form-select srchSelect w-100'}
+                    }) }}
+                    {{ form_errors(form.location.estado) }}
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.location.municipio ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        {{form_widget( form.location.municipio ) }}
-                    </div>
+
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.location.municipio.vars.id }}">
+                        Municipio <span class="text-danger">*</span>
+                    </label>
+                    {{ form_widget(form.location.municipio, {
+                        'attr': {'class': 'form-select srchSelect w-100'}
+                    }) }}
+                    {{ form_errors(form.location.municipio) }}
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.location.parroquia ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        {{form_widget( form.location.parroquia ) }}
-                    </div>
+
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.location.parroquia.vars.id }}">
+                        Parroquia <span class="text-danger">*</span>
+                    </label>
+                    {{ form_widget(form.location.parroquia, {
+                        'attr': {'class': 'form-select srchSelect w-100'}
+                    }) }}
+                    {{ form_errors(form.location.parroquia) }}
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.location.sector ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        {{form_widget( form.location.sector ) }}
-                    </div>
+
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.location.sector.vars.id }}">
+                        Sector <span class="text-danger">*</span>
+                    </label>
+                    {{ form_widget(form.location.sector, {
+                        'attr': {'class': 'form-select srchSelect w-100'}
+                    }) }}
+                    {{ form_errors(form.location.sector) }}
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.direccion ) }}
-                        <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                        {{form_widget( form.direccion ) }}
-                    </div>
+
+            <div class="col-12">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.direccion.vars.id }}">
+                        Dirección Detallada del Paciente <span class="text-danger">*</span>
+                    </label>
+                    {{ form_widget(form.direccion, {
+                        'attr': {
+                            'class': 'apple-text-input apple-textarea',
+                            'rows': 3,
+                            'placeholder': 'Avenida, calle, edificio o casa, número y punto de referencia...'
+                        }
+                    }) }}
+                    {{ form_errors(form.direccion) }}
                 </div>
             </div>
         </div>
-        <div class="tab-pane fade" id="tab4-pane" role="tabpanel" aria-labelledby="tab4" tabindex="0">
-            <h3>Condiciones</h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        {{form_label( form.hasMarcaPaso ) }}
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        {{form_widget( form.hasMarcaPaso ) }}
-                    </div>
+    </div>
+
+    {# PASO 4: Condiciones #}
+    <div class="tab-pane fade" id="tab4-pane" role="tabpanel" aria-labelledby="tab4" tabindex="0">
+        <div class="apple-step-header mb-4">
+            <h5 class="fw-bold m-0 text-primary d-flex align-items-center gap-2">
+                <i class="bi bi-heart-pulse"></i> Datos Clínicos Base
+            </h5>
+            <p class="text-muted small m-0">Grupo sanguíneo y dispositivos cardíacos implantados.</p>
+        </div>
+
+        <div class="row g-3 align-items-center">
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label" for="{{ form.sangreTipo.vars.id }}">
+                        Tipo de Sangre <span class="text-danger">*</span>
+                    </label>
+                    {{ form_widget(form.sangreTipo, {
+                        'attr': {
+                            'class': 'noSrchSelect form-select w-100'
+                        }
+                    }) }}
+                    {{ form_errors(form.sangreTipo) }}
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            {{form_label( form.sangreTipo ) }}
-                            <small class="text-danger" style="font-weight: bold">&nbsp;(Requerido)</small>
-                            {{form_widget( form.sangreTipo ) }}
-                        </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="apple-form-group mb-3">
+                    <label class="apple-input-label d-block">
+                        Dispositivo Cardíaco
+                    </label>
+                    <div class="apple-checkbox-group p-3 rounded-4 border border-secondary-subtle">
+                        <label class="apple-checkbox-label" for="{{ form.hasMarcaPaso.vars.id }}">
+                            {{ form_widget(form.hasMarcaPaso, {
+                                'attr': {
+                                    'class': 'apple-checkbox-input'
+                                }
+                            }) }}
+                            <span class="apple-checkbox-text fw-medium text-body">
+                                ¿El paciente es portador de marcapasos?
+                            </span>
+                        </label>
                     </div>
+                    {{ form_errors(form.hasMarcaPaso) }}
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div class="card-footer">
-    <div class="row">
-        <div class="col-md-12">
 
-            <div class="progress mb-2" role="progressbar" aria-label="Form progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                <div id="form-progress-bar" class="progress-bar progress-bar-striped bg-success" style="width: 0%; border-radius: 0.375rem"></div>
-            </div>
-
-            <div class="d-flex justify-content-between" id="btnToolbar">
-                <button id="prev-tab" class="btn btn-secondary btn-lg" type="button" disabled="disabled">
-                    <i class="bi bi-caret-left-fill"></i> Anterior
-                </button>
-
-                <div class="d-flex">
-                    <button id="next-tab" class="btn btn-primary me-2 btn-lg" type="button">
-                        Siguiente <i class="bi bi-caret-right-fill"></i>
-                    </button>
-
-                    {# Ensure the submit button has a margin on the left if not using me-2 on next-tab #}
-                    <button id="submit-form" type="submit" class="btn btn-success btn-lg" data-submit-once-target="submitButton" style="display:none;">
-                        {{ button_label|default('Guardar') }}
-                    </button>
-                </div>
-            </div>
-        </div>
+{# 4. Barra de Acciones y Navegación (IDs requeridos por assets/app.js) #}
+<div class="apple-form-wizard-actions pt-4 mt-4 border-top" id="btnToolbar">
+    <div class="apple-wizard-buttons-grid">
+        <button id="prev-tab" class="btn btn-outline-secondary apple-spring rounded-pill px-4 py-2 btn-prev" type="button" disabled="disabled">
+            <i class="bi bi-arrow-left me-2"></i> Anterior
+        </button>
+        <a href="{{ (paciente is defined and paciente.id) ? path('app_paciente_show', {'id': paciente.id}) : path('app_paciente_index') }}" class="btn btn-link text-decoration-none apple-spring px-3 py-2 text-muted btn-cancel">
+            Cancelar
+        </a>
+        <button id="next-tab" class="btn btn-primary apple-btn-primary apple-spring rounded-pill px-4 py-2 btn-next" type="button">
+            Siguiente <i class="bi bi-arrow-right ms-2"></i>
+        </button>
+        <button id="submit-form" type="submit" class="btn btn-primary apple-btn-primary apple-spring rounded-pill px-4 py-2 btn-submit" data-submit-once-target="submitButton" style="display:none;">
+            <i class="bi bi-check2-circle me-2"></i> {{ button_label|default('Guardar Paciente') }}
+        </button>
     </div>
 </div>
 {{ form_end(form) }}

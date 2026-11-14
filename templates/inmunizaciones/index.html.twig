@@ -1,83 +1,46 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_index.html.twig' %}
+{% import 'catalog/_actions.html.twig' as actions %}
 
-{% block title %}Inmunizaciones{% endblock %}
+{% set catalog_title = 'Inmunizaciones' %}
+{% set catalog_header_title = 'Inmunizaciones Registradas' %}
+{% set catalog_subtitle = 'Listado y esquemas de vacunas e inmunizaciones registradas en el sistema' %}
+{% set catalog_icon = 'bi-shield-check' %}
+{% set new_route = 'app_inmunizaciones_new' %}
 
-{% block titlewrap %}
-    Inmunizaciones
+{% block table_head %}
+    <th>Nombre</th>
+    <th>Tipo</th>
+    <th>Administración</th>
+    <th>Frecuencia Sugerida</th>
+    <th>Descripción</th>
 {% endblock %}
 
-{% block breadcrumb %}
-    {#<li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Home</a></li>#}
-    <li class="breadcrumb-item active" aria-current="page">Inmunizaciones</li>
-{% endblock %}
-
-{% block body %}
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endfor %}
+{% block table_body %}
+    {% for entity in entities %}
+        <tr>
+            <td class="fw-semibold">{{ entity.nombre }}</td>
+            <td>
+                {% set badge = entity.inmunizacionesTiposBadgeConfig %}
+                <span class="apple-role-pill {{ badge.class }}">
+                    {{ badge.label }}
+                </span>
+            </td>
+            <td>
+                {% set badge = entity.inmunizacionesAdministracionesBadgeConfig %}
+                <span class="apple-role-pill {{ badge.class }}">
+                    {{ badge.label }}
+                </span>
+            </td>
+            <td>{{ entity.frecuenciaSugerida|default('N/A') }}</td>
+            <td class="text-muted">{{ entity.descripcion|default('Sin descripción') }}</td>
+            <td>
+                {{ actions.row_actions(
+                    path('app_inmunizaciones_show', {'id': entity.id}),
+                    path('app_inmunizaciones_edit', {'id': entity.id}),
+                    path('app_inmunizaciones_delete', {'id': entity.id}),
+                    entity.id
+                ) }}
+            </td>
+        </tr>
     {% endfor %}
-    <div class="card card-primary card-outline mb-4">
-        <div class="card-header">
-            <h3 class="card-title">Inmunizaciones Registrados</h3>
-        </div>
-
-        <div class="card-body">
-            <table class="table table-striped dtHere">
-                <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Tipo</th>
-                    <th>Administracion</th>
-                    <th>Frecuencia Sugerida</th>
-                    <th>Descripcion</th>
-                    <th>Acciones</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entity in entities %}
-                    <tr class="align-middle">
-                        <td>{{ entity.nombre }}</td>
-                        <td>
-                            {% set badge = entity.inmunizacionesTiposBadgeConfig %}
-                            <span class="badge rounded-pill {{ badge.class }}">
-                                {{ badge.label }}
-                            </span>
-                        </td>
-                        <td>
-                            {% set badge = entity.inmunizacionesAdministracionesBadgeConfig %}
-                            <span class="badge rounded-pill {{ badge.class }}">
-                                {{ badge.label }}
-                            </span>
-                        </td>
-                        <td>{{ entity.frecuenciaSugerida }}</td>
-                        <td>{{ entity.descripcion }}</td>
-                        <td>
-                            <a class="btn btn-secondary" href="{{ path('app_inmunizaciones_show', {'id': entity.id}) }}">
-                                <i class="bi bi-search"></i> Detalles
-                            </a>
-                            <a class="btn btn-success" href="{{ path('app_inmunizaciones_edit', {'id': entity.id}) }}">
-                                <i class="bi bi-pencil-square"></i> Editar
-                            </a>
-                            <button class="btn btn-danger"
-                                    onclick="softDeleteRecord(
-                                        '{{ path('app_inmunizaciones_delete', {'id': entity.id}) }}',
-                                        '{{ csrf_token('delete' ~ entity.id) }}'
-                                        )">
-                                <i class="bi bi-trash"></i> Eliminar
-                            </button>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
-        <div class="card-footer clearfix">
-            <a href="{{ path('app_inmunizaciones_new') }}" class="btn btn-primary btn-lg"><i class="bi bi-plus-circle-fill"></i> Nuevo</a>
-        </div>
-    </div>
 {% endblock %}

@@ -22,15 +22,15 @@
                     <td class="text-nowrap">{{ entity.fechaDiagnostico|date('d/m/Y', false) }}</td>
                     <td>
                         {% set badge = entity.pacienteEnfermedadesTiposBadgeConfig %}
-                        <span class="badge rounded-pill {{ badge.class }} px-2 py-1">
+                        <span class="apple-role-pill {{ badge.class }}">
                             {{ badge.label }}
                         </span>
                     </td>
                     <td>
                         {% if entity.cronica %}
-                            <span class="badge rounded-pill text-bg-warning px-2">Sí</span>
+                            <span class="apple-role-pill text-bg-warning">Sí</span>
                         {% else %}
-                            <span class="badge rounded-pill text-bg-light border px-2">No</span>
+                            <span class="apple-role-pill">No</span>
                         {% endif %}
                     </td>
                     <td class="small text-secondary">{{ entity.notas ? entity.notas : '--' }}</td>

@@ -333,10 +333,9 @@ body {
         }
 
         @media (min-width: 1400px) {
-            flex: 1 1 0;
-            min-width: 0;
+            flex: 1 0 auto;
             justify-content: center;
-            padding: 8px 6px;
+            padding: 8px 10px;
         }
 
         i, svg {
@@ -474,6 +473,13 @@ body {
         border-radius: 18px;
         padding: 20px;
         margin-bottom: 1.25rem;
+        box-sizing: border-box;
+        overflow-x: clip;
+
+        @media (max-width: 575.98px) {
+            padding: 16px 14px;
+            border-radius: 16px;
+        }
 
         [data-bs-theme="dark"] & {
             background: #242426;
@@ -482,8 +488,10 @@ body {
 
         .apple-section-header {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
+            gap: 8px;
             margin-bottom: 1rem;
             padding-bottom: 0.75rem;
             border-bottom: 1px solid rgba(0, 0, 0, 0.06);
@@ -4032,7 +4040,8 @@ body {
 .apple-portal-container {
     // Etiquetas de Formulario Apple
     .apple-input-label,
-    .apple-field-label {
+    .apple-field-label,
+    .form-label {
         font-size: 0.86rem;
         font-weight: 600;
         color: var(--apple-text-secondary, #6e6e73);
@@ -4742,6 +4751,8 @@ body {
     border-radius: 24px;
     padding: 24px;
     box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+    overflow-x: clip;
 
     @media (max-width: 575.98px) {
         padding: 18px 14px;
@@ -4765,10 +4776,14 @@ body {
             font-size: 0.85rem;
         }
     }
+}
 
+.apple-table-card,
+.apple-form-card {
     .apple-header-icon-badge {
         width: 44px;
         height: 44px;
+        flex-shrink: 0;
         border-radius: 13px;
         background: rgba(0, 113, 227, 0.12);
         color: #0071e3;
@@ -4782,11 +4797,23 @@ body {
             color: #2997ff;
         }
     }
+}
 
+// Estilos Apple Design compartidos para DataTables: listados (.apple-table-card) y pestañas clínicas (.apple-section)
+.apple-table-card,
+.apple-section {
     // Estilos Apple Design para DataTables (DataTables v2 .dt-container & v1 .dataTables_wrapper)
     .dt-container,
     .dataTables_wrapper {
         margin-top: 12px;
+
+        .dt-layout-row,
+        .dt-layout-cell,
+        .dt-layout-start,
+        .dt-layout-end {
+            max-width: 100%;
+            min-width: 0;
+        }
 
         // Selector de Cantidad de Registros
         .dt-length,
@@ -4796,6 +4823,7 @@ body {
                 font-weight: 500;
                 color: var(--apple-text-secondary, #8e8e93);
                 display: inline-flex;
+                flex-wrap: wrap;
                 align-items: center;
                 gap: 8px;
             }
@@ -4898,10 +4926,12 @@ body {
         .dt-search,
         .dataTables_filter {
             text-align: right;
+            max-width: 100%;
 
             @media (max-width: 575.98px) {
                 text-align: left;
                 margin-top: 10px;
+                width: 100%;
             }
 
             label {
@@ -4909,6 +4939,11 @@ body {
                 margin: 0;
                 padding: 0;
                 color: transparent;
+
+                @media (max-width: 575.98px) {
+                    display: block;
+                    width: 100%;
+                }
             }
 
             input[type="search"].form-control,
@@ -4928,6 +4963,15 @@ body {
                 outline: none !important;
                 transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
                 min-width: 230px;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+
+                @media (max-width: 575.98px) {
+                    min-width: 0 !important;
+                    width: 100% !important;
+                    margin-left: 0 !important;
+                    display: block !important;
+                }
 
                 &::placeholder {
                     color: var(--apple-text-tertiary, #8e8e93) !important;
@@ -5027,6 +5071,29 @@ body {
 
                         [data-bs-theme="dark"] & {
                             background-color: rgba(255, 255, 255, 0.04) !important;
+                        }
+                    }
+
+                    // Alertas clínicas de Vitales::statusColor() con tinte Apple
+                    td.table-danger {
+                        background-color: rgba(255, 59, 48, 0.12) !important;
+                        color: #d70015 !important;
+                        font-weight: 600;
+
+                        [data-bs-theme="dark"] & {
+                            background-color: rgba(255, 69, 58, 0.18) !important;
+                            color: #ff6961 !important;
+                        }
+                    }
+
+                    td.table-warning {
+                        background-color: rgba(255, 149, 0, 0.14) !important;
+                        color: #c93400 !important;
+                        font-weight: 600;
+
+                        [data-bs-theme="dark"] & {
+                            background-color: rgba(255, 159, 10, 0.18) !important;
+                            color: #ffb340 !important;
                         }
                     }
 
@@ -5335,8 +5402,16 @@ body {
     letter-spacing: -0.01em;
     padding: 4px 11px;
     border-radius: 9999px;
-    border: 1px solid transparent;
+    background: rgba(142, 142, 147, 0.14);
+    color: #636366;
+    border: 1px solid rgba(142, 142, 147, 0.2);
     transition: all 0.2s ease;
+
+    [data-bs-theme="dark"] & {
+        background: rgba(142, 142, 147, 0.2);
+        color: #aeaeb2;
+        border-color: rgba(142, 142, 147, 0.3);
+    }
 
     &.text-bg-dark {
         background: rgba(142, 142, 147, 0.16) !important;
@@ -5626,11 +5701,32 @@ body {
                 border-color: rgba(52, 199, 89, 0.4) !important;
                 color: #34c759 !important;
                 background: rgba(52, 199, 89, 0.12) !important;
+                position: relative !important;
                 .swal2-success-ring { display: none !important; }
                 .swal2-success-fix { display: none !important; }
                 .swal2-success-circular-line-left, .swal2-success-circular-line-right { display: none !important; }
                 .swal2-success-line-tip, .swal2-success-line-long {
+                    position: absolute !important;
+                    display: block !important;
+                    height: 3.5px !important;
+                    border-radius: 2px !important;
                     background-color: #34c759 !important;
+                    animation: none !important;
+                    margin: 0 !important;
+                }
+                .swal2-success-line-tip {
+                    width: 14px !important;
+                    top: 34px !important;
+                    left: 14px !important;
+                    right: auto !important;
+                    transform: rotate(45deg) !important;
+                }
+                .swal2-success-line-long {
+                    width: 26px !important;
+                    top: 29px !important;
+                    left: 21px !important;
+                    right: auto !important;
+                    transform: rotate(-45deg) !important;
                 }
             }
 

@@ -1,21 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Editar Enfermedad{% endblock %}
+{% set catalog_title = 'Enfermedades' %}
+{% set form_title = 'Editar Enfermedad' %}
+{% set form_subtitle = 'Actualice la información de la enfermedad seleccionada' %}
+{% set catalog_icon = 'bi-pencil-square' %}
+{% set index_route = 'app_enfermedades_index' %}
 
-{% block titlewrap %}
-    Editar Enfermedad
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_enfermedades_index') }}">Enfermedades</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Editar Enfermedad</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-
-            {{ include('enfermedades/_form.html.twig', {'button_label': 'Actualizar'}) }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('enfermedades/_form.html.twig', {'button_label': 'Actualizar'}) }}
 {% endblock %}

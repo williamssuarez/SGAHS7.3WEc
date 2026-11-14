@@ -1,55 +1,186 @@
-<h4>
-    Vitales Registradas
-</h4>
-<table class="table table-striped dtHere">
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Temperatura</th>
-        <th>P. Arterial</th>
-        <th>F. Cardíaca</th>
-        <th>F. Respiratoria</th>
-        <th>SpO2</th>
-        <th>Peso / Altura</th>
-        <th>CMB</th>
-        <th>IMC</th>
-        <th>Fecha</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for entity in vitales %}
-        <tr>
-            <td>
-                {{ loop.index }}
-            </td>
-            <td class="{{ entity.statusColor('temp') }}">
-                {{ entity.temperatura|number_format(1) }} °C
-            </td>
-            <td class="{{ (entity.paSistolica >= 140 or entity.paDiastolica >= 90) ? 'table-danger' : '' }}">
-                {{ entity.paSistolica }}/{{ entity.paDiastolica }}
-            </td>
-            <td class="{{ entity.statusColor('fc') }}">
-                {{ entity.frecuenciaCardiaca }} <small>lpm</small>
-            </td>
-            <td class="{{ entity.statusColor('fr') }}">
-                {{ entity.frecuenciaRespiratoria }} <small>rpm</small>
-            </td>
-            <td class="{{ entity.statusColor('spo2') }}">
-                {{ entity.spo2 }}%
-            </td>
-            <td>
-                {{ entity.peso }}kg / {{ entity.altura }}cm
-            </td>
-            <td>
-                {{ entity.cmb ? entity.cmb ~ 'cm' : ' ' }}
-            </td>
-            <td class="{{ entity.statusColor('imc') }}">
-                <strong>{{ entity.imc }}</strong>
-            </td>
-            <td>
-                {{ entity.created|date('d/m/Y H:i') }} <i>({{ entity.created|time_ago }})</i>
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<div class="apple-vitales-section">
+    {% if vitales is not empty %}
+        {% set latest = vitales|first %}
+
+        <!-- Apple Health Biometrics Grid (Último Registro) -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h5 class="fw-bold mb-0 text-body">
+                    <i class="bi bi-heart-pulse text-danger me-1"></i> Resumen de Signos Vitales
+                </h5>
+                <small class="text-secondary">Última toma registrada el {{ latest.created|date('d/m/Y H:i') }} (hace {{ latest.created|time_ago }})</small>
+            </div>
+            <span class="apple-role-pill d-none d-sm-inline-flex">
+                {{ vitales|length }} mediciones
+            </span>
+        </div>
+
+        <div class="apple-metrics-grid">
+            <!-- 1. Presión Arterial -->
+            <div class="apple-metric-card" data-controller="apple-spring">
+                <div class="metric-header">
+                    <span class="metric-label">Presión Arterial</span>
+                    <div class="metric-icon-bubble icon-rose">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                </div>
+                <div class="metric-value-wrap">
+                    <span class="metric-value">{{ latest.paSistolica }}/{{ latest.paDiastolica }}</span>
+                    <span class="metric-unit">mmHg</span>
+                </div>
+                <div class="metric-footer">
+                    {% if latest.paSistolica >= 140 or latest.paDiastolica >= 90 %}
+                        <span class="text-danger fw-semibold"><i class="bi bi-exclamation-circle-fill me-1"></i> Elevada</span>
+                    {% else %}
+                        <span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Óptima</span>
+                    {% endif %}
+                    <span>Sist/Diast</span>
+                </div>
+            </div>
+
+            <!-- 2. Frecuencia Cardíaca -->
+            <div class="apple-metric-card" data-controller="apple-spring">
+                <div class="metric-header">
+                    <span class="metric-label">Pulso Cardíaco</span>
+                    <div class="metric-icon-bubble icon-red">
+                        <i class="bi bi-activity"></i>
+                    </div>
+                </div>
+                <div class="metric-value-wrap">
+                    <span class="metric-value">{{ latest.frecuenciaCardiaca }}</span>
+                    <span class="metric-unit">lpm</span>
+                </div>
+                <div class="metric-footer">
+                    <span class="text-secondary">Ritmo en reposo</span>
+                    <span class="fw-medium">Latidos/min</span>
+                </div>
+            </div>
+
+            <!-- 3. Oxigenación SpO2 -->
+            <div class="apple-metric-card" data-controller="apple-spring">
+                <div class="metric-header">
+                    <span class="metric-label">Saturación SpO2</span>
+                    <div class="metric-icon-bubble icon-cyan">
+                        <i class="bi bi-lungs-fill"></i>
+                    </div>
+                </div>
+                <div class="metric-value-wrap">
+                    <span class="metric-value">{{ latest.spo2 }}</span>
+                    <span class="metric-unit">%</span>
+                </div>
+                <div class="metric-footer">
+                    {% if latest.spo2 >= 95 %}
+                        <span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Normal</span>
+                    {% else %}
+                        <span class="text-warning fw-semibold"><i class="bi bi-exclamation-triangle-fill me-1"></i> Atención</span>
+                    {% endif %}
+                    <span>Oxígeno</span>
+                </div>
+            </div>
+
+            <!-- 4. Temperatura Corporal -->
+            <div class="apple-metric-card" data-controller="apple-spring">
+                <div class="metric-header">
+                    <span class="metric-label">Temperatura</span>
+                    <div class="metric-icon-bubble icon-amber">
+                        <i class="bi bi-thermometer-half"></i>
+                    </div>
+                </div>
+                <div class="metric-value-wrap">
+                    <span class="metric-value">{{ latest.temperatura|number_format(1) }}</span>
+                    <span class="metric-unit">°C</span>
+                </div>
+                <div class="metric-footer">
+                    {% if latest.temperatura >= 38.0 %}
+                        <span class="text-danger fw-semibold">Fiebre</span>
+                    {% elseif latest.temperatura >= 37.5 %}
+                        <span class="text-warning fw-semibold">Febrícula</span>
+                    {% else %}
+                        <span class="text-success fw-semibold">Normal</span>
+                    {% endif %}
+                    <span>Axilar</span>
+                </div>
+            </div>
+
+            <!-- 5. Masa Corporal / IMC -->
+            <div class="apple-metric-card" data-controller="apple-spring">
+                <div class="metric-header">
+                    <span class="metric-label">Índice Masa (IMC)</span>
+                    <div class="metric-icon-bubble icon-purple">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                </div>
+                <div class="metric-value-wrap">
+                    <span class="metric-value">{{ latest.imc }}</span>
+                    <span class="metric-unit">kg/m²</span>
+                </div>
+                <div class="metric-footer">
+                    <span>{{ latest.peso }} kg &middot; {{ latest.altura }} cm</span>
+                    <span class="text-secondary">Estatura</span>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Tabla Histórica Completa -->
+    <div class="apple-section">
+        <div class="apple-section-header">
+            <h5 class="text-body"><i class="bi bi-clock-history me-1 text-primary"></i> Historial Completo de Tomas</h5>
+            <small class="text-secondary">Evolución en consultas</small>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle dtHere">
+                <thead>
+                    <tr class="text-secondary small text-uppercase">
+                        <th>#</th>
+                        <th>Fecha</th>
+                        <th>P. Arterial</th>
+                        <th>F. Cardíaca</th>
+                        <th>SpO2</th>
+                        <th>Temp</th>
+                        <th>F. Resp</th>
+                        <th>Peso / Altura</th>
+                        <th>CMB</th>
+                        <th>IMC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for entity in vitales %}
+                    <tr>
+                        <td class="text-muted small">{{ loop.index }}</td>
+                        <td class="fw-medium text-nowrap">
+                            {{ entity.created|date('d/m/Y H:i') }}
+                            <div class="text-secondary small">hace {{ entity.created|time_ago }}</div>
+                        </td>
+                        <td class="{{ (entity.paSistolica >= 140 or entity.paDiastolica >= 90) ? 'text-danger fw-bold' : '' }}">
+                            {{ entity.paSistolica }}/{{ entity.paDiastolica }} <small class="text-muted">mmHg</small>
+                        </td>
+                        <td class="{{ entity.statusColor('fc') }}">
+                            {{ entity.frecuenciaCardiaca }} <small class="text-muted">lpm</small>
+                        </td>
+                        <td class="{{ entity.statusColor('spo2') }}">
+                            {{ entity.spo2 }}%
+                        </td>
+                        <td class="{{ entity.statusColor('temp') }}">
+                            {{ entity.temperatura|number_format(1) }} °C
+                        </td>
+                        <td class="{{ entity.statusColor('fr') }}">
+                            {{ entity.frecuenciaRespiratoria }} <small class="text-muted">rpm</small>
+                        </td>
+                        <td>
+                            {{ entity.peso }}kg / {{ entity.altura }}cm
+                        </td>
+                        <td>
+                            {{ entity.cmb ? entity.cmb ~ 'cm' : '--' }}
+                        </td>
+                        <td class="{{ entity.statusColor('imc') }}">
+                            <strong>{{ entity.imc }}</strong>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -23,19 +23,19 @@
                     <td class="fw-semibold">{{ entity.discapacidad }}</td>
                     <td>
                         {% if entity.porcentaje <= 30 %}
-                            <span class="badge rounded-pill text-bg-success px-2 py-1">{{ entity.porcentaje }}%</span>
+                            <span class="apple-role-pill text-bg-success">{{ entity.porcentaje }}%</span>
                         {% elseif entity.porcentaje <= 60 %}
-                            <span class="badge rounded-pill text-bg-warning px-2 py-1">{{ entity.porcentaje }}%</span>
+                            <span class="apple-role-pill text-bg-warning">{{ entity.porcentaje }}%</span>
                         {% else %}
-                            <span class="badge rounded-pill text-bg-danger px-2 py-1">{{ entity.porcentaje }}%</span>
+                            <span class="apple-role-pill text-bg-danger">{{ entity.porcentaje }}%</span>
                         {% endif %}
                     </td>
                     <td>{{ entity.numeroCertificado ? entity.numeroCertificado : '--' }}</td>
                     <td>
                         {% if entity.congenita %}
-                            <span class="badge rounded-pill text-bg-secondary px-2">Sí</span>
+                            <span class="apple-role-pill text-bg-secondary">Sí</span>
                         {% else %}
-                            <span class="badge rounded-pill text-bg-light border px-2">No</span>
+                            <span class="apple-role-pill">No</span>
                         {% endif %}
                     </td>
                     <td>{{ entity.ayudaTecnica ? entity.ayudaTecnica : '--' }}</td>

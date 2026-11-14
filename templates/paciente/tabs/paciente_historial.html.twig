@@ -1,53 +1,61 @@
-<h4>
-    Historial del Paciente
-</h4>
-
-<div class="card card-success card-outline">
-    <div class="card-header">
-        <div class="card-title">Historial Completo</div>
+<div class="apple-section">
+    <div class="apple-section-header">
+        <h5 class="text-body"><i class="bi bi-clock-history text-primary me-2"></i> Historial Clínico Completo</h5>
+        <small class="text-secondary">Registro cronológico de eventos y auditoría</small>
     </div>
 
-    <div class="card-body">
-        <table class="table table-striped dtHere">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle dtHere">
             <thead>
-            <tr>
-                <th>#</th>
-                <th>Accion</th>
-                <th>Detalles</th>
-                <th>Direccion IP</th>
-                <th>Creado por</th>
-                <th>Fecha Creada</th>
-                <th>Acciones</th>
-            </tr>
+                <tr class="text-secondary small text-uppercase">
+                    <th>#</th>
+                    <th>Acción</th>
+                    <th>Detalles del Evento</th>
+                    <th>Dirección IP</th>
+                    <th>Registrado por</th>
+                    <th>Fecha y Hora</th>
+                    <th>Acciones</th>
+                </tr>
             </thead>
             <tbody>
             {% for entity in allHistory %}
-                <tr class="align-middle">
-                    <td>{{ loop.index }}</td>
-                    <td>{{ entity.tipoAudit.getReadableText }}</td>
-                    <td>{{ entity.descripcion }}</td>
-                    <td>{{ entity.direccionIp }}</td>
-                    {#<td>
-                        {% set badge = entity.prescripcionesEstadosBadgeConfig %}
-                        <span class="badge rounded-pill {{ badge.class }}">
-                                {{ badge.label }}
-                            </span>
-                    </td>#}
-                    <td>{{ entity.uidCreate|public_username|title }}</td>
-                    <td><strong>{{ entity.created|date('d-m-Y H:i') }}</strong> <i>({{ entity.created|time_ago }})</i></td>
+                <tr>
+                    <td class="text-muted small">{{ loop.index }}</td>
+                    <td class="fw-semibold">{{ entity.tipoAudit.getReadableText }}</td>
+                    <td class="small text-secondary">{{ entity.descripcion }}</td>
+                    <td class="small text-muted font-monospace">{{ entity.direccionIp }}</td>
+                    <td class="small">{{ entity.uidCreate|public_username|title }}</td>
+                    <td class="text-nowrap small">
+                        <strong>{{ entity.created|date('d/m/Y H:i') }}</strong>
+                        <div class="text-muted small">({{ entity.created|time_ago }})</div>
+                    </td>
                     <td>
-                        {% if entity.emergencia  %}
-                            <a class="btn btn-sm btn-primary" href="{{ path('app_emergencia_show_record', {'id': entity.emergencia.id}) }}" target="_blank">
-                                <i class="bi bi-list-columns"></i> Ver Expediente
+                        {% if entity.emergencia %}
+                            <a class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-xs d-inline-flex align-items-center gap-1"
+                               href="{{ path('app_emergencia_show_record', {'id': entity.emergencia.id}) }}"
+                               target="_blank"
+                               data-controller="apple-spring">
+                                <i class="bi bi-list-columns"></i>
+                                <span>Ver Expediente</span>
                             </a>
                         {% elseif entity.hospitalizacion %}
-                            <a class="btn btn-sm btn-primary" href="{{ path('app_hospitalizacion_expediente', {'id': entity.hospitalizacion.id}) }}" target="_blank">
-                                <i class="bi bi-list-columns"></i> Ver Expediente
+                            <a class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-xs d-inline-flex align-items-center gap-1"
+                               href="{{ path('app_hospitalizacion_expediente', {'id': entity.hospitalizacion.id}) }}"
+                               target="_blank"
+                               data-controller="apple-spring">
+                                <i class="bi bi-list-columns"></i>
+                                <span>Ver Expediente</span>
                             </a>
                         {% elseif entity.cirugia and entity.cirugia.estado == constant('App\\Enum\\CirugiaEstados::FINALIZADA') %}
-                            <a class="btn btn-sm btn-primary" href="{{ path('app_cirugia_show', {'id': entity.cirugia.id}) }}" target="_blank">
-                                <i class="bi bi-list-columns"></i> Ver Expediente Quirúrgico
+                            <a class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-xs d-inline-flex align-items-center gap-1"
+                               href="{{ path('app_cirugia_show', {'id': entity.cirugia.id}) }}"
+                               target="_blank"
+                               data-controller="apple-spring">
+                                <i class="bi bi-list-columns"></i>
+                                <span>Ver Expediente Quirúrgico</span>
                             </a>
+                        {% else %}
+                            <span class="text-muted small">--</span>
                         {% endif %}
                     </td>
                 </tr>

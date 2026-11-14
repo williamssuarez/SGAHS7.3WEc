@@ -1,20 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'catalog/_base_form.html.twig' %}
 
-{% block title %}Editar Reacción{% endblock %}
+{% set catalog_title = 'Reacciones' %}
+{% set form_title = 'Editar Reacción' %}
+{% set form_subtitle = 'Actualice la información de la reacción seleccionada' %}
+{% set catalog_icon = 'bi-pencil-square' %}
+{% set index_route = 'app_reacciones_index' %}
 
-{% block titlewrap %}
-    Editar Reacción
-{% endblock %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('app_reacciones_index') }}">Reacciones</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Editar Reacción</li>
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-6">
-        <div class="card card-primary card-outline mb-4">
-            {{ include('reacciones/_form.html.twig', { 'button_label': 'Actualizar' }) }}
-        </div>
-    </div>
+{% block form_content %}
+    {{ include('reacciones/_form.html.twig', {'button_label': 'Actualizar'}) }}
 {% endblock %}

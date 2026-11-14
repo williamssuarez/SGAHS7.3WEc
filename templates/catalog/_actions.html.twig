@@ -1,0 +1,17 @@
+{% macro row_actions(show_path, edit_path, delete_path, entity_id) %}
+<div class="text-end">
+    <div class="btn-group btn-group-sm rounded-pill shadow-sm" role="group" aria-label="Acciones">
+        <a class="btn btn-outline-secondary rounded-start-pill px-2" href="{{ show_path }}" title="Ver Detalles">
+            <i class="bi bi-eye"></i>
+        </a>
+        <a class="btn btn-outline-primary px-2" href="{{ edit_path }}" title="Editar">
+            <i class="bi bi-pencil"></i>
+        </a>
+        <button type="button" class="btn btn-outline-danger rounded-end-pill px-2"
+                onclick="softDeleteRecord('{{ delete_path }}', '{{ csrf_token('delete' ~ entity_id) }}')"
+                title="Eliminar">
+            <i class="bi bi-trash3"></i>
+        </button>
+    </div>
+</div>
+{% endmacro %}

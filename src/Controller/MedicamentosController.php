@@ -87,6 +87,7 @@ final class MedicamentosController extends AbstractController
         }
 
         return $this->render('medicamentos/edit.html.twig', [
+            'entity' => $medicamento,
             'medicamento' => $medicamento,
             'form' => $form,
         ]);

@@ -1,34 +1,40 @@
-<h4>
-    Condiciones Registradas
-</h4>
-<table class="table table-striped dtHere">
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Condicion</th>
-        <th>Fecha Aparición</th>
-        <th>Fecha Finalizada</th>
-        <th>Estado</th>
-        <th>Observaciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for entity in condiciones %}
-        <tr class="align-middle">
-            <td>{{ loop.index }}</td>
-            <td>{{ entity.condicion.nombre }}</td>
-            <td>{{ entity.fechaAparicion|date('d/m/Y', false) }}</td>
-            <td>{{ entity.fechaFinalizada ? entity.fechaFinalizada|date('d/m/Y', false) : ' ' }}</td>
-            <td>
-                {% set badge = entity.pacienteCondicionesEstadosBadgeConfig %}
-                <span class="badge rounded-pill {{ badge.class }}">
-                    {{ badge.label }}
-                </span>
-            </td>
-            <td>
-                {{ entity.observaciones ? entity.observaciones : '--' }}
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<div class="apple-section">
+    <div class="apple-section-header">
+        <h5 class="text-body"><i class="fa fa-person-cane text-info me-2"></i> Condiciones Clínicas</h5>
+        <small class="text-secondary">Diagnósticos activos y resueltos</small>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle dtHere">
+            <thead>
+                <tr class="text-secondary small text-uppercase">
+                    <th>#</th>
+                    <th>Condición</th>
+                    <th>Aparición</th>
+                    <th>Finalización</th>
+                    <th>Estado</th>
+                    <th>Observaciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in condiciones %}
+                <tr>
+                    <td class="text-muted small">{{ loop.index }}</td>
+                    <td class="fw-semibold">{{ entity.condicion.nombre }}</td>
+                    <td class="text-nowrap">{{ entity.fechaAparicion|date('d/m/Y', false) }}</td>
+                    <td class="text-nowrap">{{ entity.fechaFinalizada ? entity.fechaFinalizada|date('d/m/Y', false) : 'En curso' }}</td>
+                    <td>
+                        {% set badge = entity.pacienteCondicionesEstadosBadgeConfig %}
+                        <span class="apple-role-pill {{ badge.class }}">
+                            {{ badge.label }}
+                        </span>
+                    </td>
+                    <td class="small text-secondary">
+                        {{ entity.observaciones ? entity.observaciones : '--' }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
